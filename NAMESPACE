@@ -1,0 +1,26 @@
+useDynLib("flowCore",biexponential_transform, inPolygon)
+import("methods")
+
+importClassesFrom("graph","graphNEL")
+
+importFrom("utils", "getFromNamespace", "assignInNamespace")
+importFrom("MASS", "cov.rob")
+importFrom("rrcov", "covMcd")
+importFrom("geneplotter", "smoothScatter","densCols")
+importFrom("graphics", "plot")
+importFrom("prada","fitNorm2")
+
+importFrom("Biobase", "exprs", "exprs<-", "description", "description<-", "phenoData", "phenoData<-", "pData")
+importClassesFrom("Biobase", "eSet")
+
+
+exportClasses("fcsFrame", "fcsSet", "transformation","linearTransformation",
+              "quadraticTransformation", "lnTransformation", "logTransformation","biexponentialTransformation",
+              "filter", "rectangleGate", "polygonGate",
+              "filterResult", "norm2Filter", "filterTree")
+
+exportMethods("description", "description<-",
+              "exprs", "exprs<-", "show",
+              "applyTransformation", "applyFilter", "applyTransformation", "plot")
+
+export("read.FCS","logicleTransform")

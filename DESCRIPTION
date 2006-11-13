@@ -1,0 +1,11 @@
+Package: flowCore
+Title: flowcore: Base functions for flow cytometry
+Version: 0.2.05
+Date: 2006-11-12
+Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur 
+Description: Provides S4 data structures flow cytometry data.
+Maintainer: Nolwenn Le Meur <nlemeur@fhcrc.org>
+Depends: R (>= 2.4.0), Biobase, methods, colorspace, rrcov
+Imports: geneplotter, graphics, graph
+License: Artistic
+biocViews:  Infrastructure, Flowcytometry, CellBasedAssays
