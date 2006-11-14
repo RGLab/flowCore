@@ -27,14 +27,14 @@ For specifications of FCS 3.0 see
 \url{../doc/fcs3.html} in the \code{doc} directory of the package.
 }
 
-\value{An object of class \code{\link[flowcore]{fcsFrame}}.}
+\value{An object of class \code{\link[flowCore]{fcsFrame}}.}
 
 \author{F. Hahne N.Le Meur}
 
 
 \examples{
 samp <- read.FCS(system.file("data",
-   "0877408774.B08", package="flowcore"))
+   "0877408774.B08", package="flowCore"))
 exprs(samp[1:3,])
 description(samp)[3:6]
 class(samp)
