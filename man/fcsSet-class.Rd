@@ -20,12 +20,12 @@
 a quantitative cell-based assay}
 
 \description{This class is a container for a set of
-  \code{\link[flowcore]{fcsFrame}} objects}
+  \code{\link[flowCore]{fcsFrame}} objects}
 
 
 \section{Creating Objects}{
 Objects can be created using the function
-\code{\link[flowcore]{readfcsSet}} or via\cr
+\code{\link[flowCore]{readfcsSet}} or via\cr
 \code{  new('fcsSet,}\cr
 \code{    frames = ....,   # environment with fcsFrames}\cr
 \code{    phenoData = .... # object of class phenoData}\cr
@@ -55,7 +55,7 @@ operators for lists.}
 \item{plot}{Scatterplot of one or all (consecutively) \code{\link[fcsFrame]{fcsFrame}}
 objects.  The additional argument \code{gate} can be used to plot
 subsets of the data defined by an object of class
-\code{\link[flowcore]{filter}} or \code{\link[flowcore]{filterSet}}.}
+\code{\link[flowCore]{filter}} or \code{\link[flowCore]{filterSet}}.}
 \item{hist}{Draw histogram of the data. The additional argument
 \code{variable} can be used to subset to one variable prior to plotting.}
 }}
@@ -97,7 +97,7 @@ of a \code{fcsSet} \code{x}, use
 \author{Florian Hahne}
 
 \seealso{
-\code{\link[flowcore]{fcsFrame}}
+\code{\link[flowCore]{fcsFrame}}
 }
 
 \examples{

@@ -131,10 +131,10 @@ normFiltering <- function(filter,flowSet,parent){
     ndim = length(parameters)
     
     
-     lib.there <- require(prada)
-    if (lib.there==FALSE){
-        stop("Library prada can not be found but is needed")
-    }
+    ## lib.there <- require(prada)
+    ##if (lib.there==FALSE){
+    ##    stop("Library prada can not be found but is needed")
+    ##}
     fn.fit <- fitNorm2(data[,parameters[1]],data[,parameters[2]],scalefac=scale.factor,method=method)
        
     

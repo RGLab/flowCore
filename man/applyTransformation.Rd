@@ -17,23 +17,23 @@ applyTransformation(transformation,flowSet)
 }
 \arguments{
   \item{transformation}{Object of class transformation}
-  \item{flowSet}{Object of class \code{\link[flowcore]{fcsFrame}}.}
+  \item{flowSet}{Object of class \code{\link[flowCore]{fcsFrame}}.}
 }
 
 \details{
 }
 
-\value{Object of class \code{\link[flowcore]{fcsFrame}.}
+\value{Object of class \code{\link[flowCore]{fcsFrame}.}
 }  
 
-\seealso{\code{\link[flowcore::transformation-class]{transformation-class}}
+\seealso{\code{\link[flowCore::transformation-class]{transformation-class}}
 }
 
 \author{N. Le Meur}
 \examples{
 
   samp <- read.FCS(system.file("data",
-   "0877408774.B08", package="flowcore"))
+   "0877408774.B08", package="flowCore"))
   linear <- new("linearTransformation",transformationId="Linear-transformation",
                 parameters="FSC-H", a=2, b=0)
   dataTransform <- applyTransformation(linear,samp)

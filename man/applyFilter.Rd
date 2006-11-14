@@ -13,23 +13,23 @@ applyFilter(filter,flowSet,parent)
 }
 \arguments{
   \item{filter}{Object of class gate and slots parameters and boundaries}
-  \item{flowSet}{Object of class \code{\link[flowcore]{fcsFrame}}.}
+  \item{flowSet}{Object of class \code{\link[flowCore]{fcsFrame}}.}
   \item{parent}{Logical. Assign center of distribution.}
 }
 
 \details{
 }
 
-\value{Object of class \code{\link[flowcore]{filterResult}}
+\value{Object of class \code{\link[flowCore]{filterResult}}
 }  
 
-\seealso{\code{\link[flowcore::gate-class]{gate-class}},
-  \code{\link[flowcore::filterResult-class]{filterResult-class}}
+\seealso{\code{\link[flowCore::gate-class]{gate-class}},
+  \code{\link[flowCore::filterResult-class]{filterResult-class}}
 }
 
 \author{N. Le Meur}
 \examples{
- samp <- read.FCS(system.file("data","0877408774.B08", package="flowcore"))
+ samp <- read.FCS(system.file("data","0877408774.B08", package="flowCore"))
  limitMin <- 200
  limitMax<-  Inf
  filter <- new("rectangleGate",filterId="nonDebris",parameters="FSC-H",min= limitMin,max=limitMax)
