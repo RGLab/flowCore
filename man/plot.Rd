@@ -1,7 +1,6 @@
-\name{basicplot}
-\alias{basicplot}
-\alias{basicplot,FCS}
-\alias{basicplot,cytoFrame}
+\name{plot}
+\alias{plot}
+\alias{basicplot,fcsFrame}
 
 \title{Plot fcsframe object}
 \description{
@@ -29,15 +28,14 @@ basicplot(x, y, filter=NULL, plotParameters=c(1,2),parent,colParent="Grey",colSu
 \author{P. Haaland and N. Le Meur}
 
 \examples{
- samp <- read.FCS(system.file("data",
-   "0877408774.B08", package="flowcore"))
-  basicplot(samp)
+ samp <- read.FCS(system.file("data","0877408774.B08",package="flowCore"))
+ plot(samp)
 
 ##After filtering by a triangle gate
 triangleCut <- matrix(c(300,400,600,300,400,300),ncol=2,nrow=3)
 triangleF <- new("polygonGate",filterId="nonDebris",
             parameters=c("FSC-H","SSC-H"),boundaries= triangleCut)
 sampTrg <- applyFilter(triangleF,samp)
-basicplot(samp,sampTrg,filter=triangleF,pch="*")
+plot(samp,sampTrg,filter=triangleF,pch="*")
 }
 \keyword{methods}
