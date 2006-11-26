@@ -1,17 +1,18 @@
 \name{plot}
 \alias{plot}
-\alias{basicplot,fcsFrame}
+\alias{basicplot,flowFrame}
 
-\title{Plot fcsframe object}
+\title{Plot floFrame object}
 \description{
   A density plot of raw flowcytometry data or a scatterplot of
-  filterResult object, i.e. data of filtered the fcsframe object.
+  filterResult object, i.e. data of filtered the flowFrame object.
 }
 \usage{
-basicplot(x, y, filter=NULL, plotParameters=c(1,2),parent,colParent="Grey",colSubSet="Blue",xlim,ylim,...)
+basicplot(x, y, filter=NULL, plotParameters=c(1,2), parent,
+colParent="Grey", colSubSet="Blue", xlim, ylim,...)
 }
 \arguments{
-  \item{x}{fcsframe object}
+  \item{x}{flowFrame object}
   \item{y}{filterResult Object}
   \item{filter}{gate Object}
   \item{plotParameters}{parameters to plot}

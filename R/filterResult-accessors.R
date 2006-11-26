@@ -6,7 +6,7 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("plot",
           ## basic plot without a gate specified
-          signature(x="fcsFrame"),
+          signature(x="flowFrame"),
           function(x, y, filter=NULL, plotParameters=c("FSC-H","SSC-H"),parent,colParent="Grey",colSubSet="Blue",xlab,ylab,xlim,ylim,...){
             data <- x@exprs
             ncells <- nrow(data)
@@ -91,26 +91,3 @@ setMethod("plot",
               }
             }
           })
-## ========================================================================== 
-
-getParentSet <- function(parent,ncells) {
- 	if(missing(parent)) {
-  		## if the parent is missing assume that it is all cells
-		parentSet <- rep(1,ncells)
- 	}
-	else {  	
-		if(class(parent) != "filterResult") {
-			stop("parent must be of class filterResult.")
-		}
-		else {
-			if(is.null(parent@subSet)) {
-				stop("The filterResult parent must have a subSet slot.")
-			}
-			else {
-				parentSet <- parent@subSet
-	}  	
-		}
-	}
-	return(parentSet)
-}
- 

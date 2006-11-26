@@ -43,8 +43,8 @@ Objects can be created using methods of the generic function
 
 \section{Methods}{
   \describe{
-    \item{applyFilter:}{\code{applyFilter(filter,flowSet)}\cr applies the gating of
-      object \code{filter} on data objects of class \code{\link[flowCore]{fcsFrame}} 
+    \item{applyFilter:}{\code{applyFilter(filter,flowObject)}\cr applies the gating of
+      object \code{filter} on data objects of class \code{\link[flowCore]{flowFrame}} 
        or \code{matrix}.}
     \item{plot:}{Plot result}}
 }

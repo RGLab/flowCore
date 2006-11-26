@@ -1,21 +1,21 @@
 ## last changed November 2, 2006
-## pdh: rectangleGate was still using cytoFrame. I changed it to fcsFrame
+## pdh: rectangleGate was still using cytoFrame. I changed it to flowFrame
 ##      made the filterDetails more uniform among the methods
-##      got the right filename for a fcsFrame to go in the msg
+##      got the right filename for a flowFrame to go in the msg
 
 
 
 ## ==========================================================================
-## Apply polygon filter on fcsFrame Object
+## Apply polygon filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("applyFilter",
-          signature=signature(filter="polygonGate",flowSet="fcsFrame",parent="ANY"),
-          definition=function(filter,flowSet,parent) {
-              selectNew <-polygonFiltering(filter,flowSet,parent)
+          signature=signature(filter="polygonGate",flowObject="flowFrame",parent="ANY"),
+          definition=function(filter,flowObject,parent) {
+              selectNew <-polygonFiltering(filter,flowObject,parent)
               msg <- paste("polygonGate applied on ",
-                           deparse(substitute(flowSet)),
-                           " (file:",basename(flowSet@description["$FIL"]),
-                           ") a ", class(flowSet)," object", sep="")
+                           deparse(substitute(flowObject)),
+                           " (file:",basename(flowObject@description["$FIL"]),
+                           ") a ", class(flowObject)," object", sep="")
        			out = list(msg,filter=filter)
               new("filterResult", subSet=selectNew,filterDetails=out)
           } 
@@ -27,16 +27,16 @@ setMethod("applyFilter",
   
 
 ## ==========================================================================
-##  Apply rectangular filter on fcsFrame Object
+##  Apply rectangular filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("applyFilter",
-          signature=signature(filter="rectangleGate",flowSet="fcsFrame",parent="ANY"),
-          definition=function(filter,flowSet,parent) {
-              selectNew <-rectangleFiltering(filter,flowSet,parent)
+          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
+          definition=function(filter,flowObject,parent) {
+              selectNew <-rectangleFiltering(filter,flowObject,parent)
                msg <- paste("rectangleGate applied on ",
-                            deparse(substitute(flowSet)),
-                            " (file:",basename(flowSet@description["$FIL"]),
-                            ") a ", class(flowSet)," object", sep="")
+                            deparse(substitute(flowObject)),
+                            " (file:",basename(flowObject@description["$FIL"]),
+                            ") a ", class(flowObject)," object", sep="")
                out = list(msg,filter=filter)
               new("filterResult", subSet=selectNew,filterDetails=out)
           })
@@ -46,16 +46,16 @@ setMethod("applyFilter",
 
 
 ## ==========================================================================
-##  Apply norm2Filter on fcsFrame Object
+##  Apply norm2Filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("applyFilter",
-          signature=signature(filter="norm2Filter",flowSet="fcsFrame",parent="ANY"),
-          definition=function(filter,flowSet,parent) {
-              selectNew <-normFiltering(filter,flowSet,parent)
+          signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
+          definition=function(filter,flowObject,parent) {
+              selectNew <-normFiltering(filter,flowObject,parent)
               msg <- paste("norm2Filter applied on ",
-                            deparse(substitute(flowSet)),
-                            " (file:",basename(flowSet@description["$FIL"]),
-                            ") a ", class(flowSet)," object", sep="")
+                            deparse(substitute(flowObject)),
+                            " (file:",basename(flowObject@description["$FIL"]),
+                            ") a ", class(flowObject)," object", sep="")
                out = list(msg,filter=filter,mu=selectNew$mu,S=selectNew$S)
               new("filterResult", subSet=selectNew$sel,filterDetails=out)
           })

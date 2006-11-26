@@ -8,11 +8,11 @@ importFrom("geneplotter", "smoothScatter","densCols")
 importFrom("graphics", "plot")
 importFrom("prada","fitNorm2")
 
-importFrom("Biobase", "exprs", "exprs<-", "description", "description<-", "phenoData", "phenoData<-", "pData")
+importFrom("Biobase", "exprs", "exprs<-", "description", "description<-")
 importClassesFrom("Biobase", "eSet")
 
 
-exportClasses("fcsFrame", "fcsSet", "transformation","linearTransformation",
+exportClasses("flowFrame", "flowSet", "transformation","linearTransformation",
               "quadraticTransformation", "lnTransformation", "logTransformation","biexponentialTransformation",
               "filter", "rectangleGate", "polygonGate",
               "filterResult", "norm2Filter", "filterTree")

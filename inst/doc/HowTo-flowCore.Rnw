@@ -12,6 +12,7 @@
 \usepackage[authoryear,round]{natbib}
 \usepackage{times}
 \usepackage{comment}
+\usepackage{graphicx}
 \usepackage{subfigure}
 
 \textwidth=6.2in
@@ -19,9 +20,6 @@
 \oddsidemargin=.1in
 \evensidemargin=.1in
 \headheight=-.3in
-
-\newlength{\smallfigwidth}
-\setlength{\smallfigwidth}{6cm}
 
 \newcommand{\scscst}{\scriptscriptstyle}
 \newcommand{\scst}{\scriptstyle}
@@ -74,7 +72,7 @@ f06 <- read.FCS(file.location[3])
 > f06 = read.FCS(file.location[3])
 \end{verbatim}
 
-<<showB08,echo=TRUE>>=
+<<showB08,eval=FALSE,echo=FALSE>>=
 show(b08)
 @
  
@@ -82,14 +80,14 @@ We can plot the raw data for the FSC-H and SSC-H parameters.
 <<plotRaw1,eval=TRUE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
 plot(b08,plotParameters=c(1,2))
 @
-<<plotRaw2,eval=FALSE,echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
+<<plotRaw2,eval=TRUE,echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
 plot(b08,plotParameters=c(3,4))
 @ 
 \begin{verbatim}
-> basicplot(b08,plotParameters=c(1,2))
-> basicplot(b08,plotParameters=c(3,4))
-> basicplot(e07,plotParameters=c(1,2))
-> basicplot(f06,plotParameters=c(1,2))
+> plot(b08,plotParameters=c(1,2))
+> plot(b08,plotParameters=c(3,4))
+> plot(e07,plotParameters=c(1,2))
+> plot(f06,plotParameters=c(1,2))
 \end{verbatim}
 
 \begin{figure}
@@ -134,7 +132,6 @@ data08LogTransform <- applyTransformation(logTransform,b08)
 +                parameters="FSC-H", r=1, d=1,logbase=2)
 >data08LogTransform <- applyTransformation(logTransform,b08)
 \end{verbatim}
-
 <<ResultTransfoLinear>>=
 b08@exprs[1:5]
 #Linear transformation
@@ -148,7 +145,6 @@ data08LogTransform@exprs[1:5]
 ## either in the title or via the label of the axis 
 plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"))
 @
-
 
 \subsection{Filtering data (gating)}
 \subsubsection{Rectangular gate}
@@ -167,7 +163,7 @@ fil1 <- new("rectangleGate",filterId="nonDebris",
             parameters="FSC-H",min=min1,max=max1)
 b08fil1 <- applyFilter(fil1,b08)
 @ 
-<<plotfiltered, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08fil1,pch="*")
 @ 
 <<define and apply polygonGate2,eval=TRUE, echo=FALSE,results=hide>>=
@@ -177,18 +173,18 @@ centerFilter <- new("rectangleGate",filterId="center",
             parameters=c("FSC-H"), min=min2, max=max2)
 b08centerFilter <- applyFilter(centerFilter,b08)
 @ 
-<<plotCenterfiltered, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotCenterfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08centerFilter,pch="*")
 @
  
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=40mm]{plotfiltered} A}
-%%\subfigure{\includegraphics[width=40mm]{plotCenterfiltered} B} 
-%%\caption{
-%%  \label{fig:Fig02}{Example of the effect of filtering with a
-    rectangular gate.}} 
-%%\end{figure}
+\begin{figure}
+\centering
+\subfigure{\includegraphics[width=40mm]{plotfiltered} A}
+\subfigure{\includegraphics[width=40mm]{plotCenterfiltered} B} 
+\caption{
+  \label{fig:Fig02}{Example of the effect of filtering with a rectangular gate.}} 
+\end{figure}
+
 
 \subsubsection{polygon gate}
 %%We will define a rectangular gate and apply the filter it to the bO8 data.
@@ -199,7 +195,7 @@ sqrfilter <- new("polygonGate",filterId="nonDebris",
 b08sqrfilter <- applyFilter(sqrfilter,b08)
 @ 
 
-<<plotRectanglefilter, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotRectanglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08sqrfilter,pch="*")
 @ 
 
@@ -211,18 +207,18 @@ trianglefilter <- new("polygonGate",filterId="nonDebris",
 b08Trgfilter <- applyFilter(trianglefilter,b08)
 @ 
 
-<<plotTrianglefilter, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotTrianglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(x=b08,y=b08Trgfilter,filter=trianglefilter,colSubSet="red",pch="*")
 @ 
 
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=40mm]{plotRectanglefilter} A}
-%%\subfigure{\includegraphics[width=40mm]{plotTrianglefilter} B} 
-%%\caption{
-%%  \label{fig:Fig03}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
+\begin{figure}
+\centering
+\subfigure{\includegraphics[width=40mm]{plotRectanglefilter} A}
+\subfigure{\includegraphics[width=40mm]{plotTrianglefilter} B} 
+\caption{
+  \label{fig:Fig03}{Example of the effect of filtering with a
+    polygon gate.}} 
+\end{figure}
 
 \clearpage
 \section{Case studies}
@@ -252,17 +248,15 @@ The first gate is a range gate to filter out debris
 <<SelectNonDebris,eval=TRUE,echo=FALSE,results=hide>>=
 min1 <- c(200,0)
 max1 <- c(800,800)
-filter1 <- new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
+ilter1 <- new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
   min=min1,max=max1)
 
 b08.result1 <-  applyFilter(filter1,b08)
 e07.result1 <- applyFilter(filter1,e07)
 f06.result1 <- applyFilter(filter1,f06)
 
-
 tab <- c("B08"=sum(b08.result1@subSet),"E07"=sum(e07.result1@subSet),"F06"=sum(f06.result1@subSet))
 @ 
-
 <<plotResFilter1, echo=FALSE, eval=FALSE,  fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08.result1,main="B08",pch="*")
 @ 
@@ -281,7 +275,6 @@ plot(f06,y=f06.result1,main="F06",pch="*")
 %%  \label{fig:Fig05}{Example of the effect of filtering with a
 %%    polygon gate.}} 
 %%\end{figure}
-
 
 The second gate gets the live cells
 
@@ -321,7 +314,6 @@ are two subpopulations. Naturally we would like to automatically find them
 In this case we want to now what percent the positive population in FL1-H 
 is of the total population.
 
-
 <<FL1-H, echo=FALSE, eval=FALSE,fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1024),xlim=c(0,1024))
 @ 
@@ -352,7 +344,7 @@ plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
           xlim=c(0,1024),ylim=c(0,1024),pch="*")
 @ 
 <<FL1Filtered3, echo=FALSE, eval=FALSE,fig=TRUE, prefix=FALSE, include=FALSE>>=
-basicplot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
+plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
           xlim=c(0,1024),ylim=c(0,1024),pch="*")
 @
 

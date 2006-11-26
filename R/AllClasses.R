@@ -13,7 +13,7 @@ require("Biobase")
 ## on microtiter plate from experiment.  
 ## 
 ## ---------------------------------------------------------------------------
-setClass("fcsFrame",                
+setClass("flowFrame",                
   representation(exprs="matrix",
                  description="character"),
   prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
@@ -33,7 +33,7 @@ setClass("fcsFrame",
 ## frames, phenoData, colnames. Frames contains the cytoFrame objects,
 ## phenoData the experiment meta data and colnames the channel names. 
 ## ---------------------------------------------------------------------------
-setClass("fcsSet",                   
+setClass("flowSet",                   
   representation(frames="environment",
                  phenoData="phenoData",
                  colnames="character"),
@@ -51,7 +51,7 @@ setClass("fcsSet",
     setequal(ls(object@frames, all.names=TRUE), object@phenoData$name) &&
     all(sapply(ls(object@frames, all.names=TRUE), function(x)
       { fr <- get(x, envir=object@frames, inherits=FALSE)
-       is(fr, "fcsFrame") && is.null(colnames(fr))  &&
+       is(fr, "flowFrame") && is.null(colnames(fr))  &&
         ncol(exprs(fr))==nc } ))
   })
 

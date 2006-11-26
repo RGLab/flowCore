@@ -39,14 +39,14 @@ if(!isGeneric("ncol"))
 ## ===========================================================================
 ## Generic for applyFilter
 ## ---------------------------------------------------------------------------
-setGeneric("applyTransformation", function(transformation,flowSet) standardGeneric("applyTransformation"))
+setGeneric("applyTransformation", function(transformation,flowObject) standardGeneric("applyTransformation"))
 ## ---------------------------------------------------------------------------
 
 
 ## ===========================================================================
 ## Generic for applyFilter
 ## ---------------------------------------------------------------------------
-setGeneric("applyFilter", function(filter,flowSet,parent) standardGeneric("applyFilter"))
+setGeneric("applyFilter", function(filter,flowObject,parent) standardGeneric("applyFilter"))
 ## ---------------------------------------------------------------------------
 
 ## ===========================================================================
@@ -64,6 +64,6 @@ setGeneric("spillover",function(x,...) standardGeneric("spillover"))
 ## ===========================================================================
 ## Generic for applyCompensation
 ## ---------------------------------------------------------------------------
-setGeneric("applyCompensation", function(compensation,flowSet) standardGeneric("applyCompensation"))
+setGeneric("applyCompensation", function(compensation,flowObject) standardGeneric("applyCompensation"))
 ## ---------------------------------------------------------------------------
 

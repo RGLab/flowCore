@@ -5,18 +5,18 @@
 ## ==========================================================================
 ## filtering function for polygonal gates
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-rectangleFiltering <- function(filter,flowSet,parent){
+rectangleFiltering <- function(filter,flowObject,parent){
     parameters=filter@parameters
     min=filter@min
     max=filter@max
     ## test for validity of objects
     
-    if(class(flowSet)!="fcsFrame")
-      stop("flowset must be of class fcsFrame.")
-    if (is.null(flowSet@exprs)) 
+    if(class(flowObject)!="flowFrame")
+      stop("flowObject must be of class flowFrame.")
+    if (is.null(flowObject@exprs)) 
         stop("There is no data to createFilter.")
     
-    data=flowSet@exprs
+    data=flowObject@exprs
     
     
     ## ncells is the size of the original data
@@ -24,7 +24,7 @@ rectangleFiltering <- function(filter,flowSet,parent){
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectNew = rep(0,ncells)
     ## check for the parent. If it is a filterResult get the parentSet
-	parentSet = getParentSet(parent,ncells)
+    parentSet = getParentSet(parent,ncells)
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectCurrent = (parentSet == 1)
     data = data[selectCurrent,parameters,drop=FALSE]
@@ -48,18 +48,18 @@ rectangleFiltering <- function(filter,flowSet,parent){
 ## ==========================================================================
 ## filtering function for polygonal gates
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-polygonFiltering <- function(filter,flowSet,parent){
+polygonFiltering <- function(filter,flowObject,parent){
     parameters=filter@parameters
     boundaries=filter@boundaries
     ## test for validity of objects
 
 
-    if(class(flowSet)!="fcsFrame")
-      stop("flowset must be of class fcsFrame.")
-    if (is.null(flowSet@exprs)) 
+    if(class(flowObject)!="flowFrame")
+      stop("flowObject must be of class flowFrame.")
+    if (is.null(flowObject@exprs)) 
       stop("There is no data to createFilter.")
     
-    data=flowSet@exprs
+    data=flowObject@exprs
 
   
     ## ncells is the size of the original data
@@ -67,7 +67,7 @@ polygonFiltering <- function(filter,flowSet,parent){
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectNew = rep(0,ncells)
     ## check for the parent. If it is a filterResult get the parentSet
-	parentSet = getParentSet(parent,ncells)
+    parentSet = getParentSet(parent,ncells)
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectCurrent = (parentSet == 1)
     data = data[selectCurrent,parameters,drop=FALSE]
@@ -87,7 +87,7 @@ polygonFiltering <- function(filter,flowSet,parent){
         ##    stop("Library prada can not be found but is needed")
         ##}            
         data <- cbind(as.numeric(data[,parameters[1]]),as.numeric(data[,parameters[2]]))
-        rangeSel <-as.logical(.Call("inPolygon", data, boundaries ,PACKAGE="prada"))
+        rangeSel <-as.logical(.Call("inPolygon",data, boundaries,PACKAGE="flowCore"))
     }
     newIndex <-  ((1:ncells)[selectCurrent])[rangeSel]
     selectNew[newIndex] <- 1
@@ -97,19 +97,19 @@ polygonFiltering <- function(filter,flowSet,parent){
 ## ==========================================================================
 ## filtering function with bivariate normal distribution 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-normFiltering <- function(filter,flowSet,parent){
+normFiltering <- function(filter,flowObject,parent){
     parameters=filter@parameters
     scale.factor=filter@scale.factor
     method=filter@method
     ## test for validity of objects
 
 
-    if(class(flowSet)!="fcsFrame")
-      stop("flowset must be of class fcsFrame.")
-    if (is.null(flowSet@exprs)) 
+    if(class(flowObject)!="flowFrame")
+      stop("flowset must be of class flowFrame.")
+    if (is.null(flowObject@exprs)) 
       stop("There is no data to createFilter.")
     
-    data=flowSet@exprs
+    data=flowObject@exprs
     
     
     if(length(parameters)!=2) {
@@ -120,7 +120,7 @@ normFiltering <- function(filter,flowSet,parent){
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectNew = rep(0,ncells)
     ## check for the parent. If it is a filterResult get the parentSet
-	parentSet = getParentSet(parent,ncells)
+    parentSet = getParentSet(parent,ncells)
     ## a 1 means the cell (row) was in the filter, a 0 means it wasn't
     selectCurrent = (parentSet == 1)
     data = data[selectCurrent,parameters,drop=FALSE]
@@ -147,7 +147,7 @@ normFiltering <- function(filter,flowSet,parent){
 ## ==========================================================================
 ## 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-getParentSet = function(parent,ncells) {
+getParentSet <- function(parent,ncells) {
  	if(missing(parent)) {
    		## if the parent is missing assume that it is all cells
 		parentSet = rep(1,ncells)

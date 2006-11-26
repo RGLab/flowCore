@@ -19,7 +19,7 @@ The function \code{read.FCS} works with the output of the FACS machine
 software from a number of vendors. However, the FCS 3.0 standard
 includes some options that are not yet implemented in this function. If
 you need extensions, please let me know. The output of the fucntion is
-an object of class \code{fcsFrame}.
+an object of class \code{flowFrame}.
 
 
 For specifications of FCS 3.0 see
@@ -27,7 +27,7 @@ For specifications of FCS 3.0 see
 \url{../doc/fcs3.html} in the \code{doc} directory of the package.
 }
 
-\value{An object of class \code{\link[flowCore]{fcsFrame}}.}
+\value{An object of class \code{\link[flowCore]{flowFrame}}.}
 
 \author{F. Hahne N.Le Meur}
 
