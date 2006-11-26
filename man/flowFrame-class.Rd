@@ -1,26 +1,26 @@
-\name{fcsFrame-class}
+\name{flowFrame-class}
 \docType{class}
-\alias{fcsFrame-class}
-\alias{fcsFrame}
-\alias{[,fcsFrame-method}
-\alias{description,fcsFrame-method}
-\alias{description<-,fcsFrame,character-method}
-\alias{exprs,fcsFrame-method}
-\alias{exprs<-,fcsFrame,matrix-method}
-\alias{colnames,fcsFrame-method}
-\alias{colnames<-,fcsFrame-method}
-\alias{show,fcsFrame-method}
-\alias{plot,fcsFrame,missing-method}
-\alias{$.fcsFrame}
-\alias{gate,fcsFrame-method}
-\alias{gate<-,fcsFrame,gate-method}
-\alias{gate<-,fcsFrame,gateSet-method}
-\alias{ncol,fcsFrame-method}
-\alias{nrow,fcsFrame-method}
+\alias{flowFrame-class}
+\alias{flowFrame}
+\alias{[,flowFrame-method}
+\alias{description,flowFrame-method}
+\alias{description<-,flowFrame,character-method}
+\alias{exprs,flowFrame-method}
+\alias{exprs<-,flowFrame,matrix-method}
+\alias{colnames,flowFrame-method}
+\alias{colnames<-,flowFrame-method}
+\alias{show,flowFrame-method}
+\alias{plot,flowFrame,missing-method}
+\alias{$.flowFrame}
+\alias{gate,flowFrame-method}
+\alias{gate<-,flowFrame,gate-method}
+\alias{gate<-,flowFrame,gateSet-method}
+\alias{ncol,flowFrame-method}
+\alias{nrow,flowFrame-method}
 
 
 
-\title{'fcsFrame': a class for storing observed quantitative
+\title{'flowFrame': a class for storing observed quantitative
   properties from a population of cells, most likely from a FACS run or, 
   alternatively, from automated microscopy}
 
@@ -30,7 +30,7 @@
 
 \section{Creating Objects}{
 Objects can be created using\cr
-\code{  new('fcsFrame,}\cr
+\code{  new('flowFrame,}\cr
 \code{    exprs       = ...., # Object of class matrix}\cr
 \code{    description = ....  # Object of class character}\cr
 \code{  )}\cr
@@ -47,13 +47,13 @@ or the function \code{\link[prada]{readFCS}}.}
 }}
 
 \section{Methods}{\describe{
-\item{[}{subsetting. Returns an object of class \code{fcsFrame}.
+\item{[}{subsetting. Returns an object of class \code{flowFrame}.
   The subsetting is applied to the \code{exprs} slot, while the
   \code{description} slot is unchanged.}
 \item{exprs, exprs<-}{extract or replace the intensities.}
 \item{description, description<-}{extract or replace the description.}
 \item{show}{display summary.}
-\item{plot}{scatterplot for \code{fcsFrame} objects. The additional
+\item{plot}{scatterplot for \code{flowFrame} objects. The additional
 argument \code{gate} can be used to plot subsets of the data defined by
 either an object of class \code{\link[prada]{gate}} or by a character
 vector giving the name of one of the gates in the list.}
@@ -61,7 +61,7 @@ vector giving the name of one of the gates in the list.}
 }}
 
 \details{
-Although objects of class \code{fcsFrame} can be used to hold arbitrary
+Although objects of class \code{flowFrame} can be used to hold arbitrary
 data of cell populations, the main focus lies on flow-cytometry data.
  
 FCS 3.0 is the Data File Standard for Flow Cytometry, Version
@@ -78,7 +78,7 @@ using the object system for handling of flow-cytometry data.
 intens <- matrix(runif(100), ncol=4)
 colnames(intens) <- c("FL1-H", "FL2-H", "FL3-H", "FL4-H")
 
-a <- new("fcsFrame",
+a <- new("flowFrame",
           exprs=intens,
           description=c(name="example data", date=date()))
 

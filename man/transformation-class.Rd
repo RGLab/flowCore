@@ -39,7 +39,7 @@ example for a linear transformation of the type newFCS =a*parameters + b
 
 \section{Methods}{
   \describe{
-    \item{applyTransformation:}{\code{applyTransformation(transformation,flowSet)}\cr applies the transformation on data objects of class \code{\link[rflowcyt]{FCS}}, \code{\link[prada]{cytoFrame}} or \code{matrix}.}
+    \item{applyTransformation:}{\code{applyTransformation(transformation,flowObject)}\cr applies the transformation on data objects of class \code{\link[flowCore]{flowFrame}}.}
     \item{plot:}{Plot result}
   }
 }

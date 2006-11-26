@@ -1,10 +1,10 @@
 \name{applyTransformation}
 \alias{applyTransformation}
-\alias{applyTransformation,fcsFrame,transformation}
-\alias{applyTransformation,fcsFrame,linearTransformation}
-\alias{applyTransformation,fcsFrame,quadratictransformation}
-\alias{applyTransformation,fcsFrame,lnTransformation}
-\alias{applyTransformation,fcsFrame,logTransformation}
+\alias{applyTransformation,flowFrame,transformation}
+\alias{applyTransformation,flowFrame,linearTransformation}
+\alias{applyTransformation,flowFrame,quadratictransformation}
+\alias{applyTransformation,flowFrame,lnTransformation}
+\alias{applyTransformation,flowFrame,logTransformation}
 
 \title{Apply transformation on a data set}
 \description{applyTransformation is a function to perform
@@ -13,17 +13,17 @@ visualization.
 }
 
 \usage{
-applyTransformation(transformation,flowSet)
+applyTransformation(transformation,flowObject)
 }
 \arguments{
   \item{transformation}{Object of class transformation}
-  \item{flowSet}{Object of class \code{\link[flowCore]{fcsFrame}}.}
+  \item{flowObject}{Object of class \code{\link[flowCore]{flowFrame}}.}
 }
 
 \details{
 }
 
-\value{Object of class \code{\link[flowCore]{fcsFrame}.}
+\value{Object of class \code{\link[flowCore]{flowFrame}.}
 }  
 
 \seealso{\code{\link[flowCore::transformation-class]{transformation-class}}
