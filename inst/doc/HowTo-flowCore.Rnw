@@ -58,14 +58,14 @@ We first load the libraries and read the data into R as FCS object
 library("flowCore")
 @ 
 <<load data,echo=FALSE,results=hide>>=
-fcs.loc <- system.file("data", package="flowcore")
+fcs.loc <- system.file("extdata", package="flowCore")
 file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
 b08 <- read.FCS(file.location[1])
 e07 <- read.FCS(file.location[2])
 f06 <- read.FCS(file.location[3])
 @
 \begin{verbatim}
-> fcs.loc <- system.file("data", package="flowcore")
+> fcs.loc <- system.file("extdata", package="flowCore")
 > file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
 > b08 = read.FCS(file.location[1])
 > e07 = read.FCS(file.location[2])
@@ -248,7 +248,7 @@ The first gate is a range gate to filter out debris
 <<SelectNonDebris,eval=TRUE,echo=FALSE,results=hide>>=
 min1 <- c(200,0)
 max1 <- c(800,800)
-ilter1 <- new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
+filter1 <- new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
   min=min1,max=max1)
 
 b08.result1 <-  applyFilter(filter1,b08)

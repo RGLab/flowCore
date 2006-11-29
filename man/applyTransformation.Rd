@@ -32,7 +32,7 @@ applyTransformation(transformation,flowObject)
 \author{N. Le Meur}
 \examples{
 
-  samp <- read.FCS(system.file("data",
+  samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   linear <- new("linearTransformation",transformationId="Linear-transformation",
                 parameters="FSC-H", a=2, b=0)
