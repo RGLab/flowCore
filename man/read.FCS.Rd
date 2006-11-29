@@ -33,7 +33,7 @@ For specifications of FCS 3.0 see
 
 
 \examples{
-samp <- read.FCS(system.file("data",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
 exprs(samp[1:3,])
 description(samp)[3:6]

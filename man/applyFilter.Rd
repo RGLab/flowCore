@@ -29,7 +29,7 @@ applyFilter(filter,flowObject,parent)
 
 \author{N. Le Meur}
 \examples{
- samp <- read.FCS(system.file("data","0877408774.B08", package="flowCore"))
+ samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
  limitMin <- 200
  limitMax<-  Inf
  filter <- new("rectangleGate",filterId="nonDebris",parameters="FSC-H",min= limitMin,max=limitMax)
