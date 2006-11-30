@@ -35,26 +35,39 @@ setClass("flowFrame",
 ## ---------------------------------------------------------------------------
 setClass("flowSet",                   
   representation(frames="environment",
-                 phenoData="phenoData",
+                 phenoData="AnnotatedDataFrame",
                  colnames="character"),
   prototype=list(frames=new.env(),
-                 phenoData=new("phenoData",
-                   pData=data.frame(name=I(character(0))),
-                   varLabels=list(name="Name in frame")),
+                 phenoData=new("AnnotatedDataFrame",
+                   data=data.frame(name=I(character(0))),
+                   varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
                  colnames=character(0)),
   validity=function(object){
     nc <- length(colnames(object))
-    is(object@phenoData, "phenoData") &&
-    is(object@colnames, "character") &&
-    is(object@frames, "environment") &&
-    "name" %in% colnames(pData(object@phenoData)) &&
-    setequal(ls(object@frames, all.names=TRUE), object@phenoData$name) &&
-    all(sapply(ls(object@frames, all.names=TRUE), function(x)
-      { fr <- get(x, envir=object@frames, inherits=FALSE)
-       is(fr, "flowFrame") && is.null(colnames(fr))  &&
-        ncol(exprs(fr))==nc } ))
+	if(!(is(object@phenoData, "AnnotatedDataFrame") && 
+		is(object@colnames, "character") &&
+		is(object@frames, "environment"))) {
+			warning("An element of this object is of the wrong type.")
+			return(FALSE)
+		}
+	if(!("name" %in% colnames(pData(object@phenoData)))) {
+		warning("phenoData has no name column")
+		return(FALSE)
+	}
+	if(any(is.na(match(object@phenoData$name,ls(object@frames,all.names=TRUE))))) {
+		warning("Some names given in phenoData do not exist in this set.")
+		return(FALSE)
+	}
+	
+	if(!all(sapply(object@phenoData$name,function(i) {
+		x = get(i,env=object@frames)
+		if(ncol(exprs(x)) != nc || !is.null(colnames(x))) FALSE else TRUE
+	}))) {
+		warning("Some items identified in set are either have the wrong dimension or type.")
+		return(FALSE)
+	}
+	return(TRUE)
   })
-
 
 
 
