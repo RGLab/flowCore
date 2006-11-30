@@ -1,0 +1,56 @@
+#Convert an environment to a flowSet. 
+setAs("environment","flowSet",function(from) {
+	frameList  = ls(env=from)
+	isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
+	if(!all(isFrame))
+		warning("Some symbols are not flowFrames. They will be ignored but left intact.")
+	#If specified, remove extraneous symbols from the environment before continuing
+	frameList = frameList[isFrame]
+
+	#Check the column names
+	colNames = sapply(frameList,function(f) colnames(get(f,env=from)))
+	if(!all(apply(colNames,2,"==",colNames[,1])))
+		stop("Column names for all frames do not match.")
+	phenoData = new("AnnotatedDataFrame",
+		data=data.frame(name=I(frameList)),varMetadata=data.frame(labelDescription="Name of FCS file",row.names="name"))
+	for(f in frameList){
+		x = get(f,env=from)
+		colnames(x) = NULL
+		assign(f,x,env=from)
+	}
+	new("flowSet",frames=from,phenoData=phenoData,colnames=colNames[,1])
+})
+
+#Convert a list to a flowSet by creating an environment and converting THAT
+setAs("list","flowSet",function(from) {
+	env = new.env(hash=TRUE,parent=emptyenv())
+	multiassign(from,env=env)
+	as(env,"flowSet")
+})
+
+#Allow for the extraction an replacement of phenoData
+setMethod("phenoData","flowSet",function(object) object@phenoData)
+setMethod("phenoData<-","flowSet",function(object,value) {
+	current = phenoData(object)
+	#Sanity checking
+	if(nrow(current) != nrow(value))
+		stop("phenoData must have the same number of rows as flow files")
+	if(!value$name && length(unique(value$name)) == nrow(value))
+		stop("phenoData must have a name column to uniquely identify flowFrames.")
+	#If the names are different, we need to remap the environment assuming that the ordering is the same.
+	if(!all(current$name==value$name)) {
+		fr = object@frames
+		for(i in seq(along=current$name)) {
+			#If the name differs then swap the names
+			if(current$name[i] != value$name[i]) {
+				x = get(current$name[i],env=fr)
+				rm(current$name[i],env=fr)
+				assign(x,value$name[i],env=fr)
+			}
+		}
+	}
+	object@phenoData = phenoData
+	object
+})
+
+setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing") x@colnames)

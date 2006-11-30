@@ -66,4 +66,3 @@ setGeneric("spillover",function(x,...) standardGeneric("spillover"))
 ## ---------------------------------------------------------------------------
 setGeneric("applyCompensation", function(compensation,flowObject) standardGeneric("applyCompensation"))
 ## ---------------------------------------------------------------------------
-
