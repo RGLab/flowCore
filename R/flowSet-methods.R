@@ -54,3 +54,4 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 })
 
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing") x@colnames)
+setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))

@@ -3,8 +3,6 @@
 ##      made the filterDetails more uniform among the methods
 ##      got the right filename for a flowFrame to go in the msg
 
-
-
 ## ==========================================================================
 ## Apply polygon filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
