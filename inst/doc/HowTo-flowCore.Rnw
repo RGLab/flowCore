@@ -107,14 +107,14 @@ As example we performed two different tramsformations on "FSC-H" channel of samp
 
 A linear transformation is like parameter= a*parameter +b
 <<linearTransform,echo=FALSE,results=hide>>=
-linear <- new("linearTransformation",transformationId="Linear-transformation",
-                parameters="FSC-H", a=2, b=0)
-data08Transform <- applyTransformation(linear,b08)
+linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
+Bb <- b08
+colnames(Bb@exprs) <- paste("c",1:8,sep="")
+data08Transform <- transform(Bb,c1=linear(c1))
 @ 
 \begin{verbatim}
->linear <- new("linearTransformation",transformationId="Linear-transformation",
-+                parameters="FSC-H", a=2, b=0)
->data08Transform <- applyTransformation(linear,b08)
+>linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
+>data08Transform <- transform(b08,FCS-H=linear(FCS-H))
 \end{verbatim}
 
 <<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
@@ -122,22 +122,21 @@ plot(data08Transform,plotParameters=c(1,2))
 @
 
 A log transformation is of type: parameter=log(parameter,logbase) * r/d
-<<logTransform,echo=FALSE,results=hide>>=
-logTransform <- new("logTransformation",transformationId="Log-Transformation",
-                parameters="FSC-H", r=1, d=1,logbase=2)
-data08LogTransform <- applyTransformation(logTransform,b08)
+<<logTransform,eval=FALSE,echo=FALSE,results=hide>>=
+logTransform <- logTransformation(transformationId="Log-Transformation",
+                r=1, d=1,logbase=2)
+data08LogTransform <- transform(Bb,c1=logTransform(c1))
 @ 
 \begin{verbatim}
->logTransform <- new("logTransformation",transformationId="Log-Transformation",
-+                parameters="FSC-H", r=1, d=1,logbase=2)
->data08LogTransform <- applyTransformation(logTransform,b08)
+>logTransform <- logTransformation(transformationId="Log-Transformation", r=1, d=1,logbase=2)
+>data08LogTransform <- transform(b08,FCS-H=logTransform(FCS-H))
 \end{verbatim}
 <<ResultTransfoLinear>>=
 b08@exprs[1:5]
 #Linear transformation
 data08Transform@exprs[1:5]
 ##Log base 2 transformation
-data08LogTransform@exprs[1:5]
+##data08LogTransform@exprs[1:5]
 @
  
 <<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=

@@ -1,24 +1,34 @@
 ## ==========================================================================
 ## Linear transformation function
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-linearTransformation <- function(transformation,flowObject){
-    parameters=transformation@parameters
-    a=transformation@a
-    b=transformation@b
-    ## test for validity of objects
-    if(class(flowObject)!="flowFrame"){
-        stop("flowObject must of class flowFrame.")
+linearTransform <- function(transformationId,a,b){
+    function(x){
+        x <- x*a+b
     }
-    if (is.null(flowObject@exprs)) {
-        stop("There is no data to createFilter.")
-    }
-    data <- flowObject@exprs
-    flowObject@exprs[,parameters] <- a * data[,parameters] + b
-    flowObject@description[["transformation"]] <- paste("A linear transformation was applied on the",
-                                                     parameters, "channel",sep="",collapse=" ")
-    
-    return(flowObject)
 }
+
+
+## ==========================================================================
+## Linear transformation function
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##linearTransformation <- function(transformation,flowObject){
+##    parameters=transformation@parameters
+##    a=transformation@a
+##   b=transformation@b
+##    ## test for validity of objects
+##    if(class(flowObject)!="flowFrame"){
+##        stop("flowObject must of class flowFrame.")
+##    }
+##    if (is.null(flowObject@exprs)) {
+##        stop("There is no data to createFilter.")
+##    }
+##    data <- flowObject@exprs
+##    flowObject@exprs[,parameters] <- a * data[,parameters] + b
+##    flowObject@description[["transformation"]] <- paste("A linear transformation was applied on the",
+##                                                     parameters, "channel",sep="",collapse=" ")
+##    
+##    return(flowObject)
+##}
 
 ## ==========================================================================
 ## Quadratic transformation function

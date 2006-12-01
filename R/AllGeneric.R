@@ -39,10 +39,11 @@ if(!isGeneric("ncol"))
   setGeneric("ncol", function(x) standardGeneric("ncol"))
 ## ---------------------------------------------------------------------------
 
+
 ## ===========================================================================
-## Generic for applyFilter
+## Generic for applyTransformation
 ## ---------------------------------------------------------------------------
-setGeneric("applyTransformation", function(transformation,flowObject) standardGeneric("applyTransformation"))
+  setGeneric("transform")
 ## ---------------------------------------------------------------------------
 
 
@@ -52,11 +53,6 @@ setGeneric("applyTransformation", function(transformation,flowObject) standardGe
 setGeneric("applyFilter", function(filter,flowObject,parent) standardGeneric("applyFilter"))
 ## ---------------------------------------------------------------------------
 
-## ===========================================================================
-## Generic for applyFilter
-## ---------------------------------------------------------------------------
-setGeneric("basicplot", function(x,y,...) standardGeneric("basicplot"))
-## ---------------------------------------------------------------------------
 
 ## ===========================================================================
 ## Generic for spillover
@@ -67,5 +63,5 @@ setGeneric("spillover",function(x,...) standardGeneric("spillover"))
 ## ===========================================================================
 ## Generic for applyCompensation
 ## ---------------------------------------------------------------------------
-setGeneric("applyCompensation", function(compensation,flowObject) standardGeneric("applyCompensation"))
+setGeneric("applyCompensation", function(flowObject,compensation) standardGeneric("applyCompensation"))
 ## ---------------------------------------------------------------------------

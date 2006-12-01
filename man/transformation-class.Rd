@@ -18,7 +18,6 @@ Objects can be created using methods of the generic function. Here is an
 example for a linear transformation of the type newFCS =a*parameters + b 
 \code{  new("linearTransformation",}\cr
 \code{    transformationId= ....,   # character vector}\cr
-\code{    parameters=...., # object of class character}\cr
 \code{    a= ....  # factor}\cr
 \code{    b= ....  # factor}\cr
 \code{  )}\cr
@@ -30,8 +29,6 @@ example for a linear transformation of the type newFCS =a*parameters + b
     \item{\code{transformationId}:}{Object of class \code{character} giving the name
       of the object. You can reference the object by its name for subsequent
       operations (e.g. plotting).}
-    \item{\code{parameters}}{Object of class \code{character} or \code{numeric}
-      giving the name of the channels used.}
     \item{\code{a}}{Object of class \code{numeric}, scaling factor.}
     \item{\code{b}}{Object of class \code{numeric}, scaling factor.}
   }
@@ -39,7 +36,7 @@ example for a linear transformation of the type newFCS =a*parameters + b
 
 \section{Methods}{
   \describe{
-    \item{applyTransformation:}{\code{applyTransformation(transformation,flowObject)}\cr applies the transformation on data objects of class \code{\link[flowCore]{flowFrame}}.}
+    \item{transform:}{\code{transform(flowObject)}\cr applies the transformation on data objects of class \code{\link[flowCore]{flowFrame}}.}
     \item{plot:}{Plot result}
   }
 }
