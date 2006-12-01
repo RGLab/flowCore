@@ -122,7 +122,7 @@ setMethod("ncol",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show",signature=signature("flowFrame"),definition=function(object) {
    dm <- dim(exprs(object))
-    msg <- paste("cytoFrame object with ", dm[1], " cells and ", 
+    msg <- paste("flowFrame object with ", dm[1], " cells and ", 
         dm[2], " observables:\n", paste(colnames(exprs(object)), 
             collapse = " "), "\nslot 'description' has ", length(description(object)), 
         " elements\n", sep = "")

@@ -17,8 +17,9 @@ exportClasses("flowFrame", "flowSet", "transformation","linearTransformation",
               "filter", "rectangleGate", "polygonGate",
               "filterResult", "norm2Filter", "filterTree")
 
-exportMethods("description", "description<-",
+exportMethods("description", "description<-","phenoData","phenoData<-","%in%",
               "exprs", "exprs<-", "show",
               "applyTransformation", "applyFilter", "applyTransformation", "plot", "coerce")
-
-export("read.FCS","read.flowSet","logicleTransform")
+export("%in%") #We define a generic 
+export("read.FCS","read.flowSet","logicleTransform",
+	"rectGate")

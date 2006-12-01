@@ -202,12 +202,8 @@ setClass("biexponentialTransformation",
 ## a functions that return logical vectors subsetting the data
 ## ---------------------------------------------------------------------------
 setClass("filter", 
-         representation(filterId="character",
-                        parameters="ANY"), 
-         prototype=prototype(filterId="character",
-                        parameters="character"), 
-         contains="VIRTUAL",
-         
+         representation("VIRTUAL",filterId="character",
+                        parameters="ANY"),
          validity=function(object){
              msg <- TRUE
              if(!is.character(object@filterId) ||
@@ -370,3 +366,4 @@ setClass("filterResult",
          representation(subSet="numeric",
                         filterDetails="list")
          )
+
