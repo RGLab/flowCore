@@ -15,15 +15,15 @@ require("Biobase")
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
   representation(exprs="matrix",
-                 description="character"),
+                 description="vector"),
   prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
                  description=c(note="empty")),
  validity=function(object){
    msg <- TRUE
    if(!is.matrix(object@exprs))
       msg <- "\nslot 'exprs' must be matrix"
-   if(!is.character(object@description))
-      msg <- "\nslot 'description' must be character vector"
+   if(!is.vector(object@description))
+      msg <- "\nslot 'description' must be a vector"
 })
 
 ## ===========================================================================

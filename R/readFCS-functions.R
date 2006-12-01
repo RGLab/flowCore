@@ -19,7 +19,7 @@ read.FCS <- function(filename,transformation=FALSE,debug=FALSE)
   if(transformation==TRUE){
       txt[["tranformation"]] <-"applied" 
   }
-  return(new("flowFrame", exprs=mat, description=txt))
+  return(new("flowFrame", exprs=mat, description=c(txt)))
 }
 
 readFCSgetPar <- function(x, pnam) {
