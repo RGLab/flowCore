@@ -13,13 +13,12 @@ importClassesFrom("Biobase", "eSet")
 
 
 exportClasses("flowFrame", "flowSet", "transformation",
-              "quadraticTransformation", "lnTransformation", "logTransformation","biexponentialTransformation",
               "filter", "rectangleGate", "polygonGate",
               "filterResult", "norm2Filter", "filterTree")
 
 exportMethods("description", "description<-","phenoData","phenoData<-","%in%",
               "exprs", "exprs<-", "show",
-              "transform", "applyFilter", "transform", "plot", "coerce")
+              "transform", "applyFilter", "plot", "coerce")
+
 export("%in%") #We define a generic 
-export("read.FCS","read.flowSet","linearTransform","logicleTransform",
-	"rectGate")
+export("read.FCS","read.flowSet","linearTransform","quadraticTransform", "lnTransform", "logTransform","biexponentialTransform","logicleTransform","rectGate")

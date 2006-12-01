@@ -31,7 +31,7 @@
 \bibliographystyle{plainnat}
 
 \title{How to use flowCore package}
-\author{N. Le Meur F. Hahne P. Haaland}
+\author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
 \maketitle
@@ -108,13 +108,11 @@ As example we performed two different tramsformations on "FSC-H" channel of samp
 A linear transformation is like parameter= a*parameter +b
 <<linearTransform,echo=FALSE,results=hide>>=
 linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
-Bb <- b08
-colnames(Bb@exprs) <- paste("c",1:8,sep="")
-data08Transform <- transform(Bb,c1=linear(c1))
+data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
 @ 
 \begin{verbatim}
 >linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
->data08Transform <- transform(b08,FCS-H=linear(FCS-H))
+>data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
 \end{verbatim}
 
 <<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
@@ -123,14 +121,14 @@ plot(data08Transform,plotParameters=c(1,2))
 
 A log transformation is of type: parameter=log(parameter,logbase) * r/d
 <<logTransform,eval=FALSE,echo=FALSE,results=hide>>=
-logTransform <- logTransformation(transformationId="Log-Transformation",
-                r=1, d=1,logbase=2)
-data08LogTransform <- transform(Bb,c1=logTransform(c1))
+logTransform <- logTransform(transformationId="Log-Transformation",logbase=2,r=1,d=1)
+data08LogTransform <- transform(b08,`FSC-H`=logTransform(`FSC-H`))
 @ 
 \begin{verbatim}
 >logTransform <- logTransformation(transformationId="Log-Transformation", r=1, d=1,logbase=2)
->data08LogTransform <- transform(b08,FCS-H=logTransform(FCS-H))
+>data08LogTransform <- transformb08,`FSC-H`=logTransform(`FSC-H`))
 \end{verbatim}
+
 <<ResultTransfoLinear>>=
 b08@exprs[1:5]
 #Linear transformation
