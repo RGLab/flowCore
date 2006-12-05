@@ -4,7 +4,7 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.FCS(filename, transformation = NULL, debug = FALSE)
+   read.FCS(filename, transformation = NULL, debug = FALSE, alter.names=FALSE)
 }
 
 \arguments{
@@ -12,6 +12,7 @@
   \item{transformation}{An optional character string that defines the type of transformation. Valid values are \code{linearize} and \code{standardize}. The former applies the appropriate power transform to the data while the latter scales all columns to [0,1] as in the FCS4 specification.}
   \item{debug}{boolean indicating whether or not to print the
     debugging statements, default is TRUE}
+  \item{alter.names}{boolean indicating whether or not we should rename the columns to valid R names using \code{\link{make.names}}. The default is FALSE.}
 }
 
 \details{
