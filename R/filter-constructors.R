@@ -15,3 +15,6 @@ rectGate = function(.gate,...,id="rectangleGate") {
 	.gate = sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
 	new("rectangleGate",filterId=id,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
 }
+
+
+modeGate = function(.gate,...,id="modeGate")

@@ -54,4 +54,43 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 })
 
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing") x@colnames)
+setReplaceMethod("colnames","flowSet",function(x,value) {
+	x@colnames = value
+	x
+})
 setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
+
+#Subsetting methods. 
+setMethod("[",c("flowFrame"),function(x,i,j,...,drop=FALSE) {
+	if(missing(drop)) drop = FALSE
+	if(missing(i) && missing(j)) 
+		return(x)
+	if(!missing(j))
+		colnames(x) = colnames(x)[j]
+	orig= x@frames
+	fr  = new.env(hash=TRUE,parent=emptyenv())
+	if(missing(i))
+		for(nm in ls(orig)) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
+	else {
+		if(is.numeric(i) || is.logical(i)) {
+			copy = phenoData(x)$name[i]
+		} else {
+			copy = i
+			match(i,phenoData(x)$name)
+		}
+		phenoData(x) = phenoData(x)[i,]
+		if(missing(j))
+			for(nm in copy) fr[[nm]] = orig[[nm]][i,,...,drop=drop]
+		else
+			for(nm in copy) fr[[nm]] = orig[[nm]][i,j,...,drop=drop]
+	}
+	x@frames = orig
+	x		
+})
+setMethod("[[","flowFrame",function(x,i,j,...) {
+	if(length(i)!=1)
+		stop("subscript out of bounds (index must have length 1)")
+	fr = x@frames[[if(is.numeric(i)) phenoData(x)$name[i] else i]]
+	colnames(exprs(fr)) = x@colnames
+	fr
+})

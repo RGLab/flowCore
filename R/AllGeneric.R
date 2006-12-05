@@ -21,8 +21,8 @@ if(!isGeneric("hist"))
 if(!isGeneric("lines"))
   setGeneric("lines",          useAsDefault=lines)
 
-if(!isGeneric("%in%"))
-	setGeneric("%in%",function(x,table) standardGeneric("%in%"))
+#if(!isGeneric("%in%"))
+setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 ## ---------------------------------------------------------------------------
 
 ## ===========================================================================

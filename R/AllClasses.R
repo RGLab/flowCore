@@ -13,6 +13,8 @@ require("Biobase")
 ## on microtiter plate from experiment.  
 ## 
 ## ---------------------------------------------------------------------------
+setClass("parameterDescription",
+	representation(parameterId="character",name="character",description="character",max.value="numeric"))
 setClass("flowFrame",                
   representation(exprs="matrix",
                  description="vector"),
@@ -294,6 +296,8 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
+## mode gates are rectangle gates that automatically select their dominant region.
+setClass("modeGate",representation(bw="ANY",n="numeric"),prototype=list(bw="nrd0",n=512))
 
 ## ===========================================================================
 ## norm2Filter (adapted from prada)
@@ -367,3 +371,9 @@ setClass("filterResult",
                         filterDetails="list")
          )
 
+### Things for manipulation of populations
+setClass("population",representation("VIRTUAL"))
+setClass("filterPopulation",representation("population",filter="filter"))
+setClass("complementPopulation",representation("population",population="population"))
+setClass("unionPopulation",representation("population",members="list"))
+setClass("intersectionPopulation",representation("population",members="list"))

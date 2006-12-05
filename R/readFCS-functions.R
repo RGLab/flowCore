@@ -63,7 +63,7 @@ readFCStext <- function(con, offsets, debug) {
   return(rv)
 }
 
-readFCSdata <- function(con, offsets, x, transformation, debug) {
+readFCSdata <- function(con, offsets, x, transformation, debug, scale) {
   endian <- switch(readFCSgetPar(x, "$BYTEORD"),
     "4,3,2,1" = "big",
         "2,1" = "big",
@@ -100,17 +100,15 @@ readFCSdata <- function(con, offsets, x, transformation, debug) {
   dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
   colnames(dat) <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
 
-
-  if (transformation==TRUE) {
+	if(transformation) {
       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
       ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))
-      print(ampliPar)
       for (i in 1:nrpar){
          if(ampli[i,1] > 0){
-              dat[,i] <- 10^((dat[,i]/(range[1]-1))*ampli[i,1])
+              dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
           }
       }
-  }
+	}
   return(dat) 
 }
 
