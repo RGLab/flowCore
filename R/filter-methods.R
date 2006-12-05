@@ -66,6 +66,29 @@ setMethod("%in%",signature("flowFrame",table="modeGate"),function(x,table) {
 ## ==========================================================================
 ##  Apply norm2Filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
+	if(length(table@parameters) != 2)
+		stop("norm2 filters require exactly two parameters.")
+	y = exprs(x)[,table@parameters]
+	if(length(table@transformation)>0) {
+		for(i in seq(along=table@parameters)) {
+			f = table@transformation[[table@parameters[i]]]
+			if(is.function(f)) y[,i] = f(y[,i])
+		}
+	}
+	if(is.na(match(table@method,c("covMcd","cov.rob"))))
+		stop("Method must be either 'covMcd' or 'cov.rob'")
+	cov = switch(table@method,
+		covMcd = {
+			if(nrow(y)>50000) covMcd(y[sample(50000,nrow(y)),]) else covMcd(y)
+		},
+		cov.rob={cov.rob(y)},
+		stop("How did you get here?")
+		)
+	W  = t(y)-cov$center
+	exp(-.5*colSums((solve(cov$cov)%*%W)*W))>exp(-.5*table@scale.factor^2)
+})
+
 setMethod("applyFilter",
           signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
           definition=function(filter,flowObject,parent) {

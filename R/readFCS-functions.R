@@ -3,14 +3,22 @@
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
-read.FCS <- function(filename,transformation=FALSE,debug=FALSE)
+read.FCS <- function(filename,transformation=NULL,debug=FALSE,alter.names=FALSE)
 {
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
+
+  if(transformation = "linearize") {
+	transformation = TRUE
+	scale = FALSE
+  } else if(transformation = "scale") {
+	transformation = TRUE
+	scale = TRUE
+  }
   
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
-  mat     <- readFCSdata(con, offsets, txt, transformation, debug)
+  mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
 
   close(con)
   
@@ -63,7 +71,7 @@ readFCStext <- function(con, offsets, debug) {
   return(rv)
 }
 
-readFCSdata <- function(con, offsets, x, transformation, debug, scale) {
+readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.names) {
   endian <- switch(readFCSgetPar(x, "$BYTEORD"),
     "4,3,2,1" = "big",
         "2,1" = "big",
@@ -98,7 +106,10 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale) {
 
   stopifnot(length(dat)%%nrpar==0)
   dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
-  colnames(dat) <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
+  colnames(dat) <- if(alter.names) 
+	make.names(readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))) 
+  else 
+	readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
 
 	if(transformation) {
       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
@@ -108,6 +119,13 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale) {
               dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
           }
       }
+	}
+	if(scale){
+        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
+        ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
+		for(i in 1:nrpar) {
+			dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
+		}
 	}
   return(dat) 
 }
