@@ -8,10 +8,10 @@ read.FCS <- function(filename,transformation=NULL,debug=FALSE,alter.names=FALSE)
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
 
-  if(transformation = "linearize") {
+  if((is.logical(transformation) && transformation) || transformation == "linearize") {
 	transformation = TRUE
 	scale = FALSE
-  } else if(transformation = "scale") {
+  } else if(transformation == "scale") {
 	transformation = TRUE
 	scale = TRUE
   }
