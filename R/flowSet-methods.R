@@ -61,7 +61,7 @@ setReplaceMethod("colnames","flowSet",function(x,value) {
 setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
 
 #Subsetting methods. 
-setMethod("[",c("flowFrame"),function(x,i,j,...,drop=FALSE) {
+setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 	if(missing(drop)) drop = FALSE
 	if(missing(i) && missing(j)) 
 		return(x)
@@ -87,10 +87,16 @@ setMethod("[",c("flowFrame"),function(x,i,j,...,drop=FALSE) {
 	x@frames = orig
 	x		
 })
-setMethod("[[","flowFrame",function(x,i,j,...) {
+setMethod("[[","flowSet",function(x,i,j,...) {
 	if(length(i)!=1)
 		stop("subscript out of bounds (index must have length 1)")
 	fr = x@frames[[if(is.numeric(i)) phenoData(x)$name[i] else i]]
 	colnames(exprs(fr)) = x@colnames
 	fr
+})
+setMethod("show","flowSet",function(object) {
+	cat("A flowSet with ",length(object)," experiments.\n\n")
+	cat("Column names:\n")
+	cat(paste(object@colnames,sep=","))
+	cat("\n")
 })
