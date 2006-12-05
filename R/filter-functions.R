@@ -94,6 +94,11 @@ polygonFiltering <- function(filter,flowObject,parent){
     return(selectNew)
 }
 
+## A quick and dirty bound finder
+find.mode.bounds = function(x,bw="nrd0",n=512) {
+	
+}
+
 ## ==========================================================================
 ## filtering function with bivariate normal distribution 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

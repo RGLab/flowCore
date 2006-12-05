@@ -27,6 +27,22 @@ setMethod("applyFilter",
 ## ==========================================================================
 ##  Apply rectangular filter on flowFrame Object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("%in%",signature(x="flowFrame",table="rectangleGate"),function(x,table) {
+	e = if(length(table@parameters)==1) as.matrix(exprs(x)[,table@parameters]) else exprs(x)[,table@parameters]
+	apply(sapply(seq(along=table@parameters),function(i) {
+		!is.na(cut(e[,i],c(table@min[i],table@max[i]),labels=FALSE))
+	}),1,all)
+})
+setMethod("show","rectangleGate",function(object) {
+	cat("Rectangular gate with dimensions:\n")
+	for(i in seq(along=object@parameters)) {
+		cat("\t")
+		cat(object@parameters[i])
+		cat(": (")
+		cat(paste(object@min[i],object@max[i],sep=","))
+		cat(")\n")
+	}
+})
 setMethod("applyFilter",
           signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
           definition=function(filter,flowObject,parent) {
@@ -41,7 +57,11 @@ setMethod("applyFilter",
 ## ==========================================================================
 
 
-
+setMethod("%in%",signature("flowFrame",table="modeGate"),function(x,table) {
+	params       = x@parameters
+	pp           = structure(rbind(rep(x@bw,length=length(params)),rep(x@n,length=length(params))),dimnames=list(NULL,params))
+	x %in% rectGate(apply(pp,2,function(y) find.mode.bounds(x[[names(y)]])))
+})
 
 ## ==========================================================================
 ##  Apply norm2Filter on flowFrame Object
@@ -59,4 +79,4 @@ setMethod("applyFilter",
           })
 ## ==========================================================================
 
-  
+

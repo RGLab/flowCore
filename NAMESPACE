@@ -11,14 +11,15 @@ importFrom("prada","fitNorm2")
 importFrom("Biobase", "exprs", "exprs<-", "description", "description<-","phenoData","phenoData<-","multiassign")
 importClassesFrom("Biobase", "eSet")
 
-
 exportClasses("flowFrame", "flowSet", "transformation",
               "filter", "rectangleGate", "polygonGate",
-              "filterResult", "norm2Filter", "filterTree")
+              "filterResult", "norm2Filter", "filterTree",
+			  "population","filterPopulation","complementPopulation","unionPopulation","intersectionPopulation")
 
 exportMethods("description", "description<-","phenoData","phenoData<-","%in%",
               "exprs", "exprs<-", "show",
               "transform", "applyFilter", "plot", "coerce")
 
 export("%in%") #We define a generic 
-export("read.FCS","read.flowSet","linearTransform","quadraticTransform", "lnTransform", "logTransform","biexponentialTransform","logicleTransform","rectGate")
+export("read.FCS","read.flowSet",
+	"linearTransform","quadraticTransform", "lnTransform", "logTransform","biexponentialTransform","logicleTransform","rectGate")
