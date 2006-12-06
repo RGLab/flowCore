@@ -1,3 +1,6 @@
+## last changed: pdh 12-06-06
+##    I commended out the last line, which is the uncompleted beginning of a new function
+
 ## Happiness is a warm constructor function
 
 ## Constructs rectangleGates from the following forms:
@@ -16,4 +19,7 @@ rectGate = function(.gate,...,id="rectangleGate") {
 	new("rectangleGate",filterId=id,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
 }
 
+
+
+#modeGate = function(.gate,...,id="modeGate")=======
 
