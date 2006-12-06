@@ -1,3 +1,6 @@
+## last modified pdh 12-6-06
+##   I am working on getting up to speed on the new code
+##   I am going to go with transformation="scale" in order to get in gear with FCS4.0
 #library(rflowcyt)
 library(graph)
 #library(prada)
@@ -6,10 +9,14 @@ library(geneplotter)
 #library(flowcore)
 source("R/AllClasses.R")
 source("R/AllGeneric.R")
-source("R/fcsFrame-methods.R")
+source("R/filter-constructors.R")
 source("R/filter-functions.R")
 source("R/filter-methods.R")
 source("R/filterResult-accessors.R")
+source("R/flowFrame-methods.R")
+source("R/flowSet-functions.R")
+source("R/flowSet-methods.R")
+source("R/population-methods.R")
 source("R/readFCS-functions.R")
 source("R/transformation-functions.R")
 source("R/transformation-methods.R")
@@ -17,11 +24,11 @@ source("R/transformation-methods.R")
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
-b08 = readFCS("data/0877408774.B08",transformation=TRUE)
-e07 = readFCS("data/0877408774.E07",transformation=TRUE)
-f06 = readFCS("data/0877408774.F06",transformation=TRUE)
+b08 = read.FCS("inst/extdata/0877408774.B08",transformation="scale")
+e07 = read.FCS("inst/extdata/0877408774.E07",transformation="scale")
+f06 = read.FCS("inst/extdata/0877408774.F06",transformation="scale")
 class(b08)
-#[1] "fcsFrame"
+#[1] "flowFrame"
 dim(b08@exprs)
 #[1] 10000     8
 dimnames(b08@exprs)[[2]]
@@ -30,26 +37,17 @@ dimnames(b08@exprs)[[2]]
 
 ## transform the fluorescence readings to the  log scale
 range(b08@exprs[,"FL1-H"])
-#[1]    1.000 3681.141
-logTransform = new("logTransformation",transformationId="log10",
-	parameters=c("FL1-H","FL2-H","FL3-H"),
-	r=1,d=1,logbase=10)
-b08 = applyTransformation(logTransform,b08)
-#[1] "Logarithmical transformation applied on flowset (file:b08) a fcsFrame object"
-range(b08@exprs[,"FL1-H"])
-#[1]    1.000 3681.141
+#[1] 0.0001000 0.3681141
 range(b08@exprs[,"FL2-H"])
-#[1] 0 4
-
-e07 = applyTransformation(logTransform,e07)
-f06 = applyTransformation(logTransform,f06)
+#[1] 1e-04 1e+00
 
 ## these are the transformed values
 plot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
 plot(b08,plotParameters=c("FL1-H","FL2-H"),main="B08")
-plot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
+plot(b08,plotParameters=c("FSC-H","FL1-H"),main="B08")
 plot(e07,plotParameters=c("FSC-H","SSC-H",main="E07"))
 plot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
+plot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
 
 
 ## the first gate is a rectangleGate to filter out debris
