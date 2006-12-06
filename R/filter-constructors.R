@@ -17,4 +17,3 @@ rectGate = function(.gate,...,id="rectangleGate") {
 }
 
 
-modeGate = function(.gate,...,id="modeGate")
