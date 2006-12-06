@@ -1,3 +1,8 @@
+## last changed: pdh 12-06-06
+##     I believe the correct interpretation is that if scale=TRUE, then transformation=FALSE
+##     I changed this in the read.FCS function
+##     I also had to make a corresponding change in the readFCSData function.
+
 ## Adapted from F.Hahne last updated Oct 30 0.6
 ## For specifications of FACS 3.0 see
 ## http://www.isac-net.org and the file
@@ -12,7 +17,7 @@ read.FCS <- function(filename,transformation=NULL,debug=FALSE,alter.names=FALSE)
 	transformation = TRUE
 	scale = FALSE
   } else if(transformation == "scale") {
-	transformation = TRUE
+	transformation = FALSE
 	scale = TRUE
   }
   
@@ -121,10 +126,17 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
       }
 	}
 	if(scale){
-        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
-        ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
-		for(i in 1:nrpar) {
-			dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
+		if(transformation) {
+        	ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
+        	ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
+			for(i in 1:nrpar) {
+				dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
+			}
+		}
+		else {
+			for(i in 1:nrpar) {
+				dat[,i] = dat[,i]/(range[i]-1)
+			}
 		}
 	}
   return(dat) 
