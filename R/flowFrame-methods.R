@@ -58,11 +58,12 @@ setReplaceMethod("colnames",
 ## ==========================================================================
 ## plot method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("plot",
-  signature(x="flowFrame", y="missing"),
-  definition=function(x, col=densCols(exprs(x)[,1:2]), pch=20, ...){
-    values=exprs(x)
-    plot(values, col=col, pch=pch, ...)})
+#setMethod("plot",
+#  signature(x="flowFrame", y="missing"),
+#  definition=function(x, col=densCols(exprs(x)[,1:2]), pch=20, ...){
+#    values=exprs(x)
+#    browser()
+#    plot(values, col=col, pch=pch, ...)})
 ## ==========================================================================
 
 
