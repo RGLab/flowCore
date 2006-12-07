@@ -6,10 +6,10 @@
 setAs("filter","population",function(from) new("filterPopulation",filter=from))
 
 # populations act a lot like filters
-setMethod("%in%",signature(x="flowFrame",table="filterPopulation"),function(x,table) x %in% table@filter)
-setMethod("%in%",signature(x="flowFrame",table="unionPopulation"),function(x,table) apply(sapply(table@members,"%in%",x=x),1,any))
-setMethod("%in%",signature(x="flowFrame",table="intersectionPopulation"),function(x,table) apply(sapply(table@members,"%in%",x=x),1,all))
-setMethod("%in%",signature(x="flowFrame",table="complementPopulation"),function(x,table) !(x %in% table@population))
+setMethod("%in%",signature(x="ANY",table="filterPopulation"),function(x,table) x %in% table@filter)
+setMethod("%in%",signature(x="ANY",table="unionPopulation"),function(x,table) apply(sapply(table@members,"%in%",x=x),1,any))
+setMethod("%in%",signature(x="ANY",table="intersectionPopulation"),function(x,table) apply(sapply(table@members,"%in%",x=x),1,all))
+setMethod("%in%",signature(x="ANY",table="complementPopulation"),function(x,table) !(x %in% table@population))
 
 
 # we can also compose populations using logic filters
