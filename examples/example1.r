@@ -3,7 +3,7 @@
 ##   I am going to go with transformation="scale" in order to get in gear with FCS4.0
 #library(rflowcyt)
 library(graph)
-#library(prada)
+library(prada)
 library(geneplotter)
 ## FOR DEVELOPMENT PURPOSES ONLY
 #library(flowcore)
@@ -37,9 +37,9 @@ dimnames(b08@exprs)[[2]]
 
 ## transform the fluorescence readings to the  log scale
 range(b08@exprs[,"FL1-H"])
-#[1] 0.0001000 0.3681141
+#[1] 0.0000000 0.8914956
 range(b08@exprs[,"FL2-H"])
-#[1] 1e-04 1e+00
+#[1][1] 0 1
 
 ## these are the transformed values
 plot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
@@ -51,63 +51,63 @@ plot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
 
 
 ## the first gate is a rectangleGate to filter out debris
-min1=c(200,0)
-max1=c(800,800)
-filter1 = new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
-  min=min1,max=max1)
+filter1 = rectGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
 b08.result1 = applyFilter(filter1,b08)
-plot(b08,y=b08.result1)
+b08.result1
 sum(b08.result1@subSet)
-#[1] 8234
-##
+#[1] 8291
+plot(b08,y=b08.result1,main="B08 - Nondebris")
+## 
 e07.result1 = applyFilter(filter1,e07)
-plot(e07,y=e07.result1)
 sum(e07.result1@subSet)
-#[1] 8421
+#[1] 8514
+plot(e07,y=e07.result1,main="E07 - Nondebris")
 ##
 f06.result1 = applyFilter(filter1,f06)
-plot(f06,y=f06.result1)
+plot(f06,y=f06.result1,main="F06 - Nondebris")
 sum(f06.result1@subSet)
-#[1] 8738
+#[1] 8765
 
 
-## the second gate gets the live cells
+## the second gate gets the live cells (lymphocytes)
 filter2 = new("norm2Filter",filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
 b08.result2 = applyFilter(filter2,b08,b08.result1)
-plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1024),ylim=c(0,1024))
+plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1),ylim=c(0,1))
 sum(b08.result2@subSet)
-#[1] 6486
+#[1] 6496
 ##
 e07.result2 = applyFilter(filter2,e07,e07.result1)
-plot(e07,y=e07.result2,parent=e07.result1,xlim=c(0,1024),ylim=c(0,1024))
+plot(e07,y=e07.result2,parent=e07.result1,xlim=c(0,1),ylim=c(0,1))
 sum(e07.result2@subSet)
-#[1] 6390
+#[1] 6416
 f06.result2 = applyFilter(filter2,f06,f06.result1)
-plot(f06,y=f06.result2,parent=f06.result1,xlim=c(0,1024),ylim=c(0,1024))
+plot(f06,y=f06.result2,parent=f06.result1,xlim=c(0,1),ylim=c(0,1))
 sum(f06.result2@subSet)
-#[1] 6954
+#[1] 6959
 
 ## the third-fifth gates get the positive cells for the marker in FL1-H
 ## this is a really interesting example because it illustrates that there
 ## are two subpopulations. Naturally we would like to automatically find them
 ## In this case we want to now what percent the positive population in FL1-H is of the
 ## total population
-plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1024),xlim=c(0,4))
-filter3 = new("rectangleGate",filterId="FL1-H+",parameters="FL1-H",min=1.5,max=Inf)
+plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1),xlim=c(0,1))
+filter3 = rectGate("FL1-H"=c(.4,Inf),id="FL1-H+")
 b08.result3 = applyFilter(filter3,b08,b08.result2)
 plot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,4))
+          xlim=c(0,1),ylim=c(0,1))
 sum(b08.result3@subSet)
-#[1] 3560
+#[1] 3559
 sum(b08.result3@subSet)/sum(b08.result2@subSet)
-#[1] 0.5488745
+#[1] 0.54787
 
 filter4=new("norm2Filter",filterId="FL1-H+",scale.factor=2,method="covMcd",parameters=c("FSC-H","FL1-H"))
 b08.result4 = applyFilter(filter4,b08,b08.result2)
 plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,4))
+          xlim=c(0,1),ylim=c(0,1))
 sum(b08.result4@subSet)
-#[1] 3487
+#[1] 3490
+sum(b08.result4@subSet)/sum(b08.result2@subSet)
+#[1] 0.5372537
 
 ###############################################
 ## stop here because this filter requires a NOT gate
