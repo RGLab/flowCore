@@ -6,7 +6,7 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("plot",
           ## basic plot without a gate specified
-          signature(x="flowFrame",y="missing"),
+          signature(x="flowFrame"),
           function(x, y, filter=NULL, plotParameters=c("FSC-H","SSC-H"),parent,colParent="Grey",colSubSet="Blue",xlab,ylab,xlim,ylim,...){
             data <- x@exprs
             ncells <- nrow(data)
