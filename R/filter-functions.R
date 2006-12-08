@@ -1,11 +1,8 @@
-## last modified Nov 3, 2006
-## pdh: the method exprs wasn't being passed by the package to the workspace. I'm not sure why. So I
-##      changed to use the slot call directly
-
 ## ==========================================================================
 ## filtering function for polygonal gates
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 rectangleFiltering <- function(filter,flowObject,parent){
+
     parameters=filter@parameters
     min=filter@min
     max=filter@max
@@ -94,10 +91,8 @@ polygonFiltering <- function(filter,flowObject,parent){
     return(selectNew)
 }
 
-## A quick and dirty bound finder
-find.mode.bounds = function(x,bw="nrd0",n=512) {
-	
-}
+
+
 
 ## ==========================================================================
 ## filtering function with bivariate normal distribution 
@@ -148,6 +143,97 @@ normFiltering <- function(filter,flowObject,parent){
     ans <- list(sel=selectNew,mu=fn.fit$mu,S=fn.fit$S)
     return(ans)
 }
+
+
+## ==========================================================================
+## fitNorm2 copied from prada 
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+fitNorm2 <- function(x, y=NA, scalefac=1, method="covMcd", noise,
+                     gateName="fitNorm") {
+
+  if(!require(rrcov))
+    stop("Required package rrcov could not be found.")
+  if(is(x, "cytoFrame"))
+    x <- exprs(x)[,1:2]
+    
+  if (!(is.matrix(x) && ncol(x)==2)){
+    if (!length(x)==length(y) || !is.numeric(x) || !is.numeric(y))
+      stop("'x' and 'y' must be numeric vectors of equal length")
+    x <- cbind(x, y)
+  }
+  xorig <- x
+  if (!missing(noise)){
+    if(is.logical(noise))
+      noise <- which(noise)
+    if (!is.numeric(noise) || length(noise) > nrow(x) || length(noise)==0)
+      stop("'noise' should be an index or logical vector not longer than x") 
+    x <- x[-noise, ,drop=FALSE]
+  }
+  if (nrow(x)<50)
+    stop("Not enough data points for reliable analysis")
+  
+  if (!is.numeric(scalefac))
+    stop("'scalefac' must be numeric")
+  
+  cov <- switch(method,
+    covMcd = {
+      nmax <- 50000
+      if (nrow(x)>nmax)
+        covMcd(x[sample(nrow(x), nmax),])
+      else
+        covMcd(x)
+    },
+    cov.rob = {
+      cov.rob(x)
+    },
+    stop("'method' must be one of 'covMcd' or 'cov.rob'")
+   ) ## end of switch
+  
+  mu   <- cov$center
+  S    <- cov$cov
+  Sinv <- solve(S)
+  w    <- rbind(xorig[,1], xorig[,2])-mu
+  z    <- Sinv %*% w
+  p    <- exp(-0.5 * (z[1,]*w[1,] +  z[2,]*w[2,]))
+  sel  <- p > exp(-0.5 * scalefac^2)
+
+  gfun <- function(x=x, cov, scalefac){
+    mu   <- cov$center
+    S    <- cov$cov
+    Sinv <- solve(S)
+    w    <- rbind(x[,1], x[,2])-mu
+    z    <- Sinv %*% w
+    p    <- exp(-0.5 * (z[1,]*w[1,] +  z[2,]*w[2,]))
+    return(p > exp(-0.5 * scalefac^2))
+  }
+  cn <- colnames(x)
+  if(is.null(cn))
+    colnames(xorig) <- c("x", "y")
+     
+  gate <- new("gate", name=gateName,
+              gateFun=function(x) gfun(x=x, cov=cov, scalefac=scalefac),
+              colnames=colnames(xorig),
+              logic="&", type="fitNorm") 
+  return(invisible(list(mu=mu, S=S, p=p, sel=sel, scalefac=scalefac,
+                        data=xorig, gate=gate)))
+  
+}
+## ==========================================================================
+
+
+
+## ==========================================================================
+## A quick and dirty bound finder
+find.mode.bounds = function(x,bw="nrd0",n=512) {
+	
+}
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+
+
 
 ## ==========================================================================
 ## 

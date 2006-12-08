@@ -8,18 +8,18 @@
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
-read.FCS <- function(filename,transformation=NULL,debug=FALSE,alter.names=FALSE)
+read.FCS <- function(filename, transformation=NULL, debug=FALSE,alter.names=FALSE)
 {
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
-
-  if((is.logical(transformation) && transformation) || transformation == "linearize") {
-	transformation = TRUE
-	scale = FALSE
-  } else if(transformation == "scale") {
-	transformation = FALSE
-	scale = TRUE
-  }
+  
+      if(is.logical(transformation) && transformation ||  transformation == "linearize") {
+          transformation = TRUE
+          scale = FALSE
+      } else if (transformation == "scale") {
+          transformation = FALSE
+          scale = TRUE
+      }
   
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
@@ -114,31 +114,31 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
   colnames(dat) <- if(alter.names) 
 	make.names(readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))) 
   else 
-	readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
+    readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
 
-	if(transformation) {
+  if(transformation) {
       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
       ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))
       for (i in 1:nrpar){
-         if(ampli[i,1] > 0){
+          if(ampli[i,1] > 0){
               dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
           }
       }
-	}
-	if(scale){
-		if(transformation) {
-        	ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
-        	ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
-			for(i in 1:nrpar) {
-				dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
-			}
-		}
-		else {
-			for(i in 1:nrpar) {
-				dat[,i] = dat[,i]/(range[i]-1)
-			}
-		}
-	}
+  }
+  if(scale){
+      if(transformation) {
+          ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
+          ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
+          for(i in 1:nrpar) {
+              dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
+          }
+      }
+      else {
+          for(i in 1:nrpar) {
+              dat[,i] = dat[,i]/(range[i]-1)
+          }
+      }
+  }
   return(dat) 
 }
 

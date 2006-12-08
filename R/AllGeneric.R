@@ -50,7 +50,13 @@ if(!isGeneric("ncol"))
 ## ===========================================================================
 ## Generic for applyFilter
 ## ---------------------------------------------------------------------------
-setGeneric("applyFilter", function(filter,flowObject,parent) standardGeneric("applyFilter"))
+## setGeneric("applyFilter", function(filter,flowObject,parent) standardGeneric("applyFilter"))
+## ---------------------------------------------------------------------------
+
+## ===========================================================================
+## Generic for filter
+## ---------------------------------------------------------------------------
+ setGeneric("filter", function(filter,flowObject,parent) standardGeneric("filter"))
 ## ---------------------------------------------------------------------------
 
 
