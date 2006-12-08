@@ -14,7 +14,8 @@ require("Biobase")
 ## 
 ## ---------------------------------------------------------------------------
 setClass("parameterDescription",
-	representation(parameterId="character",name="character",description="character",max.value="numeric"))
+	representation(parameterId="character",
+                       name="character",description="character",max.value="numeric"))
 setClass("flowFrame",                
   representation(exprs="matrix",
                  description="vector"),
@@ -123,12 +124,16 @@ setClass("linearTransformation",
 ## ---------------------------------------------------------------------------
 setClass("quadraticTransformation",
          contains="transformation",
-         representation(a="numeric",b="numeric",c="numeric"), 
+         representation(a="numeric",b="ANY",c="ANY"), 
          prototype=prototype(transformationId="quadratic-Transformation",a=1,b=0,c=0), 
          validity=function(object){
              msg <- TRUE
-             if(!is.numeric(object@a) || !is.numeric(object@b) || !is.numeric(object@c))
-               msg <- "\nslot 'a', 'b', 'c' must be numeric" ##one of them might be missing?
+             if(!is.numeric(object@a)) 
+               msg <- "\nslot 'a' must be numeric"
+             if (!is.missing(object@b) & !is.numeric(object@b))
+               msg <- "\nslot 'b' must be numeric"
+             if (!is.missing(object@c) & !is.numeric(object@c))
+               msg <- "\nslot 'b' must be numeric"
              return(msg)
          })
 ## ===========================================================================
@@ -234,7 +239,6 @@ setClass("rectangleGate",
          contains="filter",
          representation(min="numeric",
                         max="numeric"),
-         ##minimum and maximum values for the coordinates
          prototype=list(filterId="Rectangle Gate",
            min=0,max=Inf)
          )
@@ -246,11 +250,9 @@ setClass("polygonGate",
          representation(boundaries="matrix"),
          contains="filter",
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=3)),
-
          validity=function(object){
              msg <- TRUE
-             if(!is.matrix(object@boundaries) ||
-                nrow(object@boundaries)<2)
+             if(!is.matrix(object@boundaries) || nrow(object@boundaries)<2)
                msg <- "\nslot 'boundaries' must be character vector longer than 2"
              return(msg)
          })
@@ -276,15 +278,11 @@ setClass("polytopeGate",
 ## ===========================================================================
 ## Ellipsoid gate
 ## ---------------------------------------------------------------------------
-## 
-## 
-## ---------------------------------------------------------------------------
 setClass("ellipsoidGate",
          representation(focus="matrix",
                         distance="numeric"),
          contains="filter",
-         prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2)),
-
+         prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2),distance=1),
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@focus) ||
@@ -301,9 +299,6 @@ setClass("modeGate",representation(bw="ANY",n="numeric"),prototype=list(bw="nrd0
 
 ## ===========================================================================
 ## norm2Filter (adapted from prada)
-## ---------------------------------------------------------------------------
-## 
-## 
 ## ---------------------------------------------------------------------------
 setClass("norm2Filter",
          ## the slot method holds the method argument to fitNorm2
@@ -370,10 +365,15 @@ setClass("filterResult",
          representation(subSet="numeric",
                         filterDetails="list")
          )
+## ===========================================================================
 
-### Things for manipulation of populations
+
+## ===========================================================================
+## Things for manipulation of populations
+## ---------------------------------------------------------------------------
 setClass("population",representation("VIRTUAL"))
 setClass("filterPopulation",representation("population",filter="filter"))
 setClass("complementPopulation",representation("population",population="population"))
 setClass("unionPopulation",representation("population",members="list"))
 setClass("intersectionPopulation",representation("population",members="list"))
+## ===========================================================================

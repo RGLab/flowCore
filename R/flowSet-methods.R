@@ -1,4 +1,6 @@
-#Convert an environment to a flowSet. 
+## ==========================================================================
+## Convert an environment to a flowSet.
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("environment","flowSet",function(from) {
 	frameList  = ls(env=from)
 	isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
@@ -20,15 +22,23 @@ setAs("environment","flowSet",function(from) {
 	}
 	new("flowSet",frames=from,phenoData=phenoData,colnames=colNames[,1])
 })
+## ==========================================================================
+                                        
 
-#Convert a list to a flowSet by creating an environment and converting THAT
+## ==========================================================================
+## Convert a list to a flowSet by creating an environment and converting THAT
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("list","flowSet",function(from) {
 	env = new.env(hash=TRUE,parent=emptyenv())
 	multiassign(from,env=env)
 	as(env,"flowSet")
 })
+## ==========================================================================
 
-#Allow for the extraction an replacement of phenoData
+
+## ==========================================================================
+## Allow for the extraction and replacement of phenoData
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("phenoData","flowSet",function(object) object@phenoData)
 setMethod("phenoData<-","flowSet",function(object,value) {
 	current = phenoData(object)
@@ -52,15 +62,35 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	object@phenoData = phenoData
 	object
 })
+## ==========================================================================
 
+
+## ==========================================================================
+## accessor method for slot colnames
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing") x@colnames)
+## ==========================================================================
+
+## ==========================================================================
+## replace method for slot colnames
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setReplaceMethod("colnames","flowSet",function(x,value) {
 	x@colnames = value
 	x
 })
-setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
+## ==========================================================================
 
-#Subsetting methods. 
+
+## ==========================================================================
+## accessor method for length of flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
+## ==========================================================================
+
+
+## ==========================================================================
+## subsetting method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 	if(missing(drop)) drop = FALSE
 	if(missing(i) && missing(j)) 
@@ -94,9 +124,16 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 	colnames(exprs(fr)) = x@colnames
 	fr
 })
+## ==========================================================================
+
+
+## ==========================================================================
+## show method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show","flowSet",function(object) {
 	cat("A flowSet with ",length(object)," experiments.\n\n")
 	cat("Column names:\n")
 	cat(paste(object@colnames,sep=","))
 	cat("\n")
 })
+## ==========================================================================

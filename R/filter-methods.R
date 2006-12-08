@@ -4,11 +4,29 @@
 ##      got the right filename for a flowFrame to go in the msg
 
 ## ==========================================================================
-## Apply polygon filter on flowFrame Object
+## filter flowFrame Object using rectangleGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("applyFilter",
-          signature=signature(filter="polygonGate",flowObject="flowFrame",parent="ANY"),
+setMethod("filter",
+          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
           definition=function(filter,flowObject,parent) {
+              selectNew <-rectangleFiltering(filter,flowObject,parent)
+               msg <- paste("rectangleGate applied on ",
+                            deparse(substitute(flowObject)),
+                            " (file:",basename(flowObject@description["$FIL"]),
+                            ") a ", class(flowObject)," object", sep="")
+               out = list(msg,filter=filter)
+              new("filterResult", subSet=selectNew,filterDetails=out)
+          })
+## ==========================================================================
+
+
+
+## ==========================================================================
+## filter flowFrame Object using polygonGate
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("filter",
+          signature=signature(filter="polygonGate",flowObject="flowFrame",parent="ANY"),
+          definition=function(flowObject,filter,parent) {
               selectNew <-polygonFiltering(filter,flowObject,parent)
               msg <- paste("polygonGate applied on ",
                            deparse(substitute(flowObject)),
@@ -21,8 +39,26 @@ setMethod("applyFilter",
 ## ==========================================================================
 
 
+## ==========================================================================
+##  filter  flowFrame Object using norm2Filter
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("filter",
+          signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
+          definition=function(filter,flowObject,parent) {
+              selectNew <-normFiltering(filter,flowObject,parent)
+              msg <- paste("norm2Filter applied on ",
+                            deparse(substitute(flowObject)),
+                            " (file:",basename(flowObject@description["$FIL"]),
+                            ") a ", class(flowObject)," object", sep="")
+               out = list(msg,filter=filter,mu=selectNew$mu,S=selectNew$S)
+              new("filterResult", subSet=selectNew$sel,filterDetails=out)
+          })
+## ==========================================================================
 
-  
+
+
+
+
 
 ## ==========================================================================
 ##  Apply rectangular filter on flowFrame Object
@@ -43,17 +79,6 @@ setMethod("show","rectangleGate",function(object) {
 		cat(")\n")
 	}
 })
-setMethod("applyFilter",
-          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
-          definition=function(filter,flowObject,parent) {
-              selectNew <-rectangleFiltering(filter,flowObject,parent)
-               msg <- paste("rectangleGate applied on ",
-                            deparse(substitute(flowObject)),
-                            " (file:",basename(flowObject@description["$FIL"]),
-                            ") a ", class(flowObject)," object", sep="")
-               out = list(msg,filter=filter)
-              new("filterResult", subSet=selectNew,filterDetails=out)
-          })
 ## ==========================================================================
 
 
@@ -62,6 +87,8 @@ setMethod("%in%",signature("flowFrame",table="modeGate"),function(x,table) {
 	pp           = structure(rbind(rep(x@bw,length=length(params)),rep(x@n,length=length(params))),dimnames=list(NULL,params))
 	x %in% rectGate(apply(pp,2,function(y) find.mode.bounds(x[[names(y)]])))
 })
+
+
 
 ## ==========================================================================
 ##  Apply norm2Filter on flowFrame Object
@@ -88,18 +115,4 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 	W  = t(y)-cov$center
 	exp(-.5*colSums((solve(cov$cov)%*%W)*W))>exp(-.5*table@scale.factor^2)
 })
-
-setMethod("applyFilter",
-          signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
-          definition=function(filter,flowObject,parent) {
-              selectNew <-normFiltering(filter,flowObject,parent)
-              msg <- paste("norm2Filter applied on ",
-                            deparse(substitute(flowObject)),
-                            " (file:",basename(flowObject@description["$FIL"]),
-                            ") a ", class(flowObject)," object", sep="")
-               out = list(msg,filter=filter,mu=selectNew$mu,S=selectNew$S)
-              new("filterResult", subSet=selectNew$sel,filterDetails=out)
-          })
 ## ==========================================================================
-
-

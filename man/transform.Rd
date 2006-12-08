@@ -13,10 +13,10 @@ visualization.
 }
 
 \usage{
-transform(flowObject,...)
+transform(`_data`,...)
 }
 \arguments{
-  \item{flowObject}{Object of class \code{\link[flowCore]{flowFrame}}.}
+  \item{`_data`}{Object of class \code{\link[flowCore]{flowFrame}}.}
    \item{...}{transformation function to be applied}
 }
 
