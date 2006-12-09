@@ -1,7 +1,7 @@
 ## ==========================================================================
 ## filtering function for polygonal gates
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-rectangleFiltering <- function(filter,flowObject,parent){
+rectangleFiltering <- function(flowObject,filter,parent){
 
     parameters=filter@parameters
     min=filter@min
@@ -45,7 +45,7 @@ rectangleFiltering <- function(filter,flowObject,parent){
 ## ==========================================================================
 ## filtering function for polygonal gates
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-polygonFiltering <- function(filter,flowObject,parent){
+polygonFiltering <- function(flowObject,filter,parent){
     parameters=filter@parameters
     boundaries=filter@boundaries
     ## test for validity of objects
@@ -76,7 +76,7 @@ polygonFiltering <- function(filter,flowObject,parent){
     
     
     if (ndim==1) {
-        rangeSel <- rangeSel & ((data[,parameters] >= boundaries[1,]) & (data[,parameters] <  boundaries[2,]))
+        rangeSel <- rangeSel & ((data[,parameters] >= boundaries[,1]) & (data[,parameters] <  boundaries[,2]))
     }
     if (ndim==2) {
         ##lib.there <- require(prada)
@@ -97,7 +97,7 @@ polygonFiltering <- function(filter,flowObject,parent){
 ## ==========================================================================
 ## filtering function with bivariate normal distribution 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-normFiltering <- function(filter,flowObject,parent){
+normFiltering <- function(flowObject,filter,parent){
     parameters=filter@parameters
     scale.factor=filter@scale.factor
     method=filter@method

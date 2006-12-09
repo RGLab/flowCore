@@ -1,18 +1,24 @@
-\name{rectGate}
-\alias{rectGate}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{Create a Rectangle Gate}
+\name{rectangleGate}
+\alias{rectangleGate}
+
+
+\title{Define filter boundaries}
 \description{
-  A convenience method to facilitate the construction of \code{\link{rectangleGate}} objects
+  A convenience method to facilitate the construction of \code{\link{filter}} objects
 }
 \usage{
-rectGate(.gate, ..., id = "rectangleGate")
+rectangleGate(filterId = "rectangleGate", .gate, \dots)
+polygonGate(filterId = "polygonGate", .gate, \dots)
+polytope(filterId = "polygonGate", .gate, \dots)
+ellipsoidGate(filterId = "polygonGate", .gate, distance, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+  \item{id}{ An optional parameter that sets the \code{filterId} of this
+    gate. }
   \item{.gate}{ A definition of the gate. This can be either a list or matrix, described below. }
   \item{\dots}{ You can also directly describe a gate without wrapping it in a list, as described below. }
-  \item{id}{ An optional parameter that sets the \code{filterId} of this gate. }
+  
 }
 \details{
 	This function is designed to be useful in both direct and programmatic usage. In the first case, simply describe 
@@ -30,17 +36,15 @@ rectGate(.gate, ..., id = "rectangleGate")
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 #Create directly. Most likely from a command line
-rectGate("FSC-H"=c(1,50),"SSC-H"=c(50,800),id="foo")
+rectangleGate(filterId="foo","FSC-H"=c(1,50),"SSC-H"=c(50,800))
 
 #To facilitate programmatic construction we also have the following
-rectGate(list("FSC-H"=c(1,50),"SSC-H"=c(50,800)),id="foo")
+rectangleGate(filterId="foo",list("FSC-H"=c(1,50),"SSC-H"=c(50,800)))
 
 m = matrix(c(1,50,50,800),ncol=2)
 colnames(m) = c("FSC-H","SSC-H")
-rectGate(m,id="foo")
+rectangleGate(filterId="foo",m)
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ misc }
 

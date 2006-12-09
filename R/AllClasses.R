@@ -218,6 +218,7 @@ setClass("filter",
                msg <- "\nslot 'name' must be character vector of length 1"
              if(!is.character(object@parameters))
              msg <- "\nslot 'parameters' must be  vector"
+             print(object@parameters)
             
              test <- matrix(1:length(object@parameters),
                             ncol=length(object@parameters))
@@ -236,9 +237,9 @@ setClass("filter",
 ## Rectangular gate
 ## ---------------------------------------------------------------------------
 setClass("rectangleGate",
-         contains="filter",
-         representation(min="numeric",
+          representation(min="numeric",
                         max="numeric"),
+         contains="filter",
          prototype=list(filterId="Rectangle Gate",
            min=0,max=Inf)
          )
@@ -262,8 +263,8 @@ setClass("polygonGate",
 ## Polytope gate
 ## ---------------------------------------------------------------------------
 setClass("polytopeGate",
-         representation(boundaries="matrix"),
          contains="filter",
+         representation(boundaries="matrix"),
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=2)), 
 
          validity=function(object){

@@ -18,7 +18,7 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 rectangleGate <- function(filterId="rectangleGate",.gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
-	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
 	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -27,11 +27,13 @@ rectangleGate <- function(filterId="rectangleGate",.gate,...) {
 ## ==========================================================================
 ## polygonGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-polygonGate <- function(filterId="polygonGate",.gate,...) {
-	if(missing(.gate) || !is.matrix(.gate))
-	.gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) c("min"=x[1],"max"=x[2]))
+polygonGate <- function(filterId="polygonGate", boundaries,...) {
+    
+    if(missing(boundaries) || !is.matrix(boundaries))
+      boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries, function(x) c("min"=x[1],"max"=x[2]))
 
-        new("polygonGate",filterId=filterId,parameters=colnames(.gate),boundaries=.gate)
+    new("polygonGate",filterId=filterId, parameters=colnames(boundaries),boundaries=boundaries)
+    
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

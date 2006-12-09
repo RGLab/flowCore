@@ -56,7 +56,7 @@ if(!isGeneric("ncol"))
 ## ===========================================================================
 ## Generic for filter
 ## ---------------------------------------------------------------------------
- setGeneric("filter", function(filter,flowObject,parent) standardGeneric("filter"))
+setGeneric("filter", function(flowObject, filter,parent) standardGeneric("filter"),useAsDefault=FALSE)
 ## ---------------------------------------------------------------------------
 
 
