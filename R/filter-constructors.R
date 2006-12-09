@@ -16,7 +16,7 @@
 ## ==========================================================================
 ## rectangleGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-rectangleGate <- function(filterId="rectangleGate",.gate,...) {
+rectangleGate <- function(.gate,...,filterId="rectangleGate") {
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
 	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
@@ -28,12 +28,9 @@ rectangleGate <- function(filterId="rectangleGate",.gate,...) {
 ## polygonGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
-    
     if(missing(boundaries) || !is.matrix(boundaries))
       boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries, function(x) c("min"=x[1],"max"=x[2]))
-
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),boundaries=boundaries)
-    
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -41,7 +38,7 @@ polygonGate <- function(filterId="polygonGate", boundaries,...) {
 ## ==========================================================================
 ## polytopeGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-polytopeGate <- function(filterId="polytopeGate",.gate,...) {
+polytopeGate <- function(.gate,...,filterId="polytopeGate") {
     if(missing(.gate) || !is.matrix(.gate))
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
@@ -50,13 +47,34 @@ polytopeGate <- function(filterId="polytopeGate",.gate,...) {
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+
 ## ==========================================================================
 ## EllipsoideGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ellipsoideGate <- function(filterId="ellipsoidGate",.gate, distance,...) {
+ellipsoideGate <- function(.gate, distance,...,filterId="ellipsoidGate") {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       
     new("ellipsoidGate",filterId=filterId,parameters=colnames(.gate), focus=.gate,distance=distance)
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+## ==========================================================================
+## Norm2Filter contructors
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",...) {
+	if(missing(y)) {
+		if(length(x)==1)
+			stop("You must specify two parameters for a norm2 gate.")
+		if(length(x)>2)
+			warning("Only the first two parameters will be used.")
+		y=x[2]
+		x=x[1]
+	} else {
+		if(length(x)>1 || length(y)>1)
+			warning("Only the first two parameters from 'x' and 'y' will be used.")
+			x = x[1]
+			y = y[1]
+	}
+	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,filterId=filterId,...)
+}

@@ -1,0 +1,44 @@
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+%\VignetteIndexEntry{Filtering Flow Cytometry Data}
+%\VignetteDepends{flowCore}
+%\VignetteKeywords{}
+%\VignettePackage{flowCore}
+\documentclass[11pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+\usepackage{times}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\textwidth=6.2in
+\textheight=8.5in
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textsf{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+\bibliographystyle{plainnat}
+
+\title{Filtering in the flowCore package}
+\author{N. Le Meur F. Hahne B. Ellis P. Haaland}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent One of the more common operations in flow cytometry data analysis is a process of filtering, also known as gating. This is often either the target of analysis in the case of surface staining or a necessary pre-processing step for further analysis on the cell population of interest. For example, a researcher may be interested in CD4+ T cells, which typically requires a lymphocyte gate and a CD4 gate to obtain a relatively clean population and other cell types might be even more complex. In the case where the number of cells within a gate is of interest, it is not uncommon to require a fairly complex composition of gates for analysis. This document describes the rich filter construction and composition facilities in the flowCore package as well as what is needed for developing your own filter objects. \\ \\
+\textbf{keywords} Flow cytometry, high throughtput, software, standard
+\end{abstract}
+
+\end{document}

@@ -13,13 +13,11 @@ require("Biobase")
 ## on microtiter plate from experiment.  
 ## 
 ## ---------------------------------------------------------------------------
-setClass("parameterDescription",
-	representation(parameterId="character",
-                       name="character",description="character",max.value="numeric"))
 setClass("flowFrame",                
   representation(exprs="matrix",
+				 parameters="list",
                  description="vector"),
-  prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
+  prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),parameters=list(),
                  description=c(note="empty")),
  validity=function(object){
    msg <- TRUE
@@ -215,7 +213,7 @@ setClass("filter",
              msg <- TRUE
              if(!is.character(object@filterId) ||
                 length(object@filterId)!=1)
-               msg <- "\nslot 'name' must be character vector of length 1"
+               msg <- "\nslot 'filterId' must be character vector of length 1"
              if(!is.character(object@parameters))
              msg <- "\nslot 'parameters' must be  vector"
              print(object@parameters)
@@ -330,6 +328,12 @@ setClass("filterTree",
          }
          )
 
+setClass("unionFilter",representation("filter",filters="list"))
+setClass("intersectFilter",representation("filter",filters="list"))
+setClass("subsetFilter",representation("filter",left="filter",right="filter"))
+setClass("complementFilter",representation("filter",filter="filter"))
+setClass("fixedFilter",representation("filter",subset="logical"))
+
 
 ## ===========================================================================
 ## Decision Tree - listed in the standard
@@ -363,9 +367,10 @@ setClass("filterResult",
          ## a single FCS object
          ## the subset is the filter applied to the original data
          ## filterDetails is any output calculated by an algorithmic
-         representation(subSet="numeric",
-                        filterDetails="list")
-         )
+         representation("filter",
+						subSet="numeric",
+						frameId="character",
+                        filterDetails="list"))
 ## ===========================================================================
 
 
