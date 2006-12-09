@@ -182,7 +182,7 @@ setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 
 setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
 	frameId = if(is.null(x@description["GUID"])) x@description["$FIL"] else x@description["GUID"]
-	if(frameId != table@frameId)
+	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
 		warning("Frame identifiers do not match. It is possible that this filter is not compatible with this frame.")
 	if(nrow(x) != length(table@subSet))
 		stop("Number of rows in frame do not match those expected by this filter.")

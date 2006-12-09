@@ -216,8 +216,6 @@ setClass("filter",
                msg <- "\nslot 'filterId' must be character vector of length 1"
              if(!is.character(object@parameters))
              msg <- "\nslot 'parameters' must be  vector"
-             print(object@parameters)
-            
              test <- matrix(1:length(object@parameters),
                             ncol=length(object@parameters))
              colnames(test) <- object@parameters
