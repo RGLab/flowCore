@@ -368,7 +368,7 @@ setClass("filterResult",
          ## the subset is the filter applied to the original data
          ## filterDetails is any output calculated by an algorithmic
          representation("filter",
-						subSet="numeric",
+						subSet="logical",
 						frameId="character",
                         filterDetails="list"))
 ## ===========================================================================
