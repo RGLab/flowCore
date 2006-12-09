@@ -26,4 +26,4 @@ export("read.FCS","read.flowSet",
 	"linearTransform","quadraticTransform",
        "lnTransform", "logTransform",
        "biexponentialTransform","logicleTransform",
-       "rectangleGate","polygonGate","polytopeGate","ellipsoideGate")
+       "rectangleGate","polygonGate","polytopeGate","ellipsoideGate","norm2Filter")

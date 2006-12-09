@@ -14,40 +14,33 @@ b08.result1 = filter(b08,filter1)
 sum(as(b08.result1,"logical"))
 sum(b08 %in% filter1)
 # [1] 8291
-q()
 
-
-## 
-e07.result1 = applyFilter(filter1,e07)
-sum(e07.result1@subSet)
+e07.result1 = filter(e07,filter1)
+sum(as(e07.result1,"logical"))
 sum(e07 %in% filter1)
-#[1] 8514
-plot(e07,y=e07.result1,main="E07 - Nondebris")
-##
-f06.result1 = applyFilter(filter1,f06)
-plot(f06,y=f06.result1,main="F06 - Nondebris")
-sum(f06.result1@subSet)
+# [1] 8514
+
+f06.result1 = filter(f06,filter1)
+sum(as(f06.result1,"logical"))
 sum(f06 %in% filter1)
-#[1] 8765
+# [1] 8765
 
+filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
+b08.result2 = filter(b08,filter2 %subset% b08.result1)
+sum(as(b08.result2,"logical"))
+sum(b08 %in% (filter2 %subset% b08.result1))
+# [1] 6496
 
-## the second gate gets the live cells (lymphocytes)
-filter2 = new("norm2Filter",filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
-b08.result2 = applyFilter(filter2,b08,b08.result1)
-plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1),ylim=c(0,1))
-sum(b08.result2@subSet)
-sum(b08 %in% (filter2 %subset% as(b08.result1,"filter")))
-#[1] 6496
-##
-e07.result2 = applyFilter(filter2,e07,e07.result1)
-plot(e07,y=e07.result2,parent=e07.result1,xlim=c(0,1),ylim=c(0,1))
-sum(e07.result2@subSet)
-sum(e07 %in% (filter2 %subset% as(e07.result1,"filter")))
-#[1] 6416
-f06.result2 = applyFilter(filter2,f06,f06.result1)
-plot(f06,y=f06.result2,parent=f06.result1,xlim=c(0,1),ylim=c(0,1))
-sum(f06.result2@subSet)
-#[1] 6959
+e07.result2 = filter(e07,filter2 %subset% e07.result1)
+sum(as(e07.result2,"logical"))
+sum(e07 %in% (filter2 %subset% e07.result1))
+# [1] 6416
+
+f06.result2 = filter(f06,filter2 %subset% f06.result1)
+sum(as(f06.result2,"logical"))
+sum(f06 %in% (filter2 %subset% f06.result1))
+# [1] 6959
+q()
 
 ## the third-fifth gates get the positive cells for the marker in FL1-H
 ## this is a really interesting example because it illustrates that there
