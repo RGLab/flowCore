@@ -8,17 +8,17 @@
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
-read.FCS <- function(filename, transformation=NULL, debug=FALSE,alter.names=FALSE)
+read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.names=FALSE)
 {
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
-  
-      if(is.logical(transformation) && transformation ||  transformation == "linearize") {
-          transformation = TRUE
-          scale = FALSE
-      } else if (transformation == "scale") {
-          transformation = FALSE
-          scale = TRUE
+
+  if(is.logical(transformation) && transformation || !is.null(transformation) && transformation == "linearize") {
+          transformation <- TRUE
+          scale <- FALSE
+      } else if ( !is.null(transformation) && transformation == "scale") {
+          transformation <- FALSE
+          scale <- TRUE
       }
   
   offsets <- readFCSheader(con)

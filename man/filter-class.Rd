@@ -1,15 +1,15 @@
 \name{filter-class}
 \docType{class}
 \alias{filter-class}
-\alias{filtergate}
-\alias{rectangleGate}
-\alias{polygonGate}
-\alias{polytopeGate}
-\alias{ellipsoidGate}
-\alias{norm2Filter}
-\alias{decisionTreeGate}
-\alias{booleanGate}
-\alias{applyGate, filter-method}
+\alias{filtergate,filter-class}
+\alias{rectangleGate,filter-class}
+\alias{polygonGate,filter-class}
+\alias{polytopeGate,}
+\alias{ellipsoidGate,filter-class}
+\alias{norm2Filter,filter-class}
+\alias{decisionTreeGate,filter-class}
+\alias{booleanGate,filter-class}
+\alias{filter, filter-method}
 
 \title{'filter': a class for subsetting flow-cytometry data by defining
   regions in n-dimesional projections of the data}

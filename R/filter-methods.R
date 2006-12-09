@@ -7,9 +7,9 @@
 ## filter flowFrame Object using rectangleGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("filter",
-          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
-          definition=function(filter,flowObject,parent) {
-              selectNew <-rectangleFiltering(filter,flowObject,parent)
+          signature=signature(flowObject="flowFrame", filter="rectangleGate",parent="ANY"),
+          definition=function(flowObject, filter, parent) {
+              selectNew <-rectangleFiltering(flowObject,filter,parent)
                msg <- paste("rectangleGate applied on ",
                             deparse(substitute(flowObject)),
                             " (file:",basename(flowObject@description["$FIL"]),
@@ -25,9 +25,9 @@ setMethod("filter",
 ## filter flowFrame Object using polygonGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("filter",
-          signature=signature(filter="polygonGate",flowObject="flowFrame",parent="ANY"),
-          definition=function(flowObject,filter,parent) {
-              selectNew <-polygonFiltering(filter,flowObject,parent)
+          signature=signature(flowObject="flowFrame", filter="polygonGate", parent="ANY"),
+          definition=function(flowObject, filter, parent) {
+              selectNew <-polygonFiltering(flowObject, filter,parent)
               msg <- paste("polygonGate applied on ",
                            deparse(substitute(flowObject)),
                            " (file:",basename(flowObject@description["$FIL"]),
@@ -43,8 +43,8 @@ setMethod("filter",
 ##  filter  flowFrame Object using norm2Filter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("filter",
-          signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
-          definition=function(filter,flowObject,parent) {
+          signature=signature(flowObject="flowFrame", filter="norm2Filter",parent="ANY"),
+          definition=function(flowObject, filter, parent) {
               selectNew <-normFiltering(filter,flowObject,parent)
               msg <- paste("norm2Filter applied on ",
                             deparse(substitute(flowObject)),

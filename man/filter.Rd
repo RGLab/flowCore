@@ -1,19 +1,19 @@
-\name{applyFilter}
-\alias{applyFilter}
-\alias{applyFilter,flowFrame,filter}
-\alias{applyFilter,flowFrame,rectangleGate}
-\alias{applyFilter,flowFrame,polygonGate}
-\alias{applyFilter,flowFrame,norm2Filter}
+\name{filter}
+\alias{filter}
+\alias{filter,flowFrame,filter}
+\alias{filter,flowFrame,rectangleGate}
+\alias{filter,flowFrame,polygonGate}
+\alias{filter,flowFrame,norm2Filter}
 
-\title{Apply filter on a data set}
-\description{applyFilter is a function for subsetting data by applying}
+\title{Filter on a data set}
+\description{filter is a function for subsetting data}
 
 \usage{
-applyFilter(filter,flowObject,parent)
+filter(flowObject,filter)
 }
 \arguments{
-  \item{filter}{Object of class gate and slots parameters and boundaries}
   \item{flowObject}{Object of class \code{\link[flowCore]{flowFrame}}.}
+  \item{filter}{Object of class gate and slots parameters and boundaries}
   \item{parent}{Logical. Assign center of distribution.}
 }
 
@@ -30,10 +30,8 @@ applyFilter(filter,flowObject,parent)
 \author{N. Le Meur}
 \examples{
  samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
- limitMin <- 200
- limitMax<-  Inf
- filter <- new("rectangleGate",filterId="nonDebris",parameters="FSC-H",min= limitMin,max=limitMax)
- dataSubset <- applyFilter(filter,samp)
+ rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+ dataSubset <- filter(samp,rectGate)
 
 }
 \keyword{methods}  

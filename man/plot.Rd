@@ -29,14 +29,14 @@ colParent="Grey", colSubSet="Blue", xlim, ylim,...)
 \author{P. Haaland and N. Le Meur}
 
 \examples{
- samp <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
- plot(samp)
+samp <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
+plot(samp)
 
 ##After filtering by a triangle gate
 triangleCut <- matrix(c(300,400,600,300,400,300),ncol=2,nrow=3)
-triangleF <- new("polygonGate",filterId="nonDebris",
-            parameters=c("FSC-H","SSC-H"),boundaries= triangleCut)
-sampTrg <- applyFilter(triangleF,samp)
+colnames(triangleCut) <- c("FSC-H","SSC-H")
+triangleF <- polygonGate(filterId="nonDebris", boundaries= triangleCut)
+sampTrg <- filter(samp,triangleF)
 plot(samp,sampTrg,filter=triangleF,pch="*")
 }
 \keyword{methods}
