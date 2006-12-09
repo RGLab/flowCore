@@ -11,12 +11,12 @@
 ## AND associating a filterResult with a particular flowFrame if possible.
 setMethod("filter",signature("flowFrame","filter"),function(flowObject,filter) {
 	result = flowObject %in% filter
-	details= filterDetails(flowObject,result,filter)
+	details= filterDetails(flowObject,filter,result)
 	new("filterResult",
 		parameters=filter@parameters,
 		filterId=filter@filterId,
 		frameId=if(is.null(flowObject@description["GUID"])) flowObject@description["$FIL"] else flowObject@description["GUID"],
-		subSet=result,filterDetails=detauls)
+		subSet=result,filterDetails=details)
 })
 ## Printing out a filter should give us something at least mildly sensible.
 setMethod("show","filter",function(object) 
