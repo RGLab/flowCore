@@ -17,8 +17,9 @@ exportClasses("flowFrame", "flowSet", "transformation",
               "population","filterPopulation","complementPopulation",
               "unionPopulation","intersectionPopulation")
 
-exportMethods("description", "description<-","phenoData","phenoData<-","%in%",
-              "exprs", "exprs<-", "show", "transform", "filter", "plot", "coerce")
+exportMethods("description", "description<-","phenoData","phenoData<-","%in%","%subset%",
+              "exprs", "exprs<-", "show",
+              "transform","filter","filterDetails","plot", "coerce","spillover","compensate")
 
 export("%in%") #We define a generic 
 export("read.FCS","read.flowSet",

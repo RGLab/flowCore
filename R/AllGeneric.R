@@ -23,6 +23,9 @@ if(!isGeneric("lines"))
 
 #if(!isGeneric("%in%"))
 setGeneric("%in%",function(x,table) standardGeneric("%in%"))
+
+setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
+
 ## ---------------------------------------------------------------------------
 
 ## ===========================================================================
@@ -48,15 +51,10 @@ if(!isGeneric("ncol"))
 
 
 ## ===========================================================================
-## Generic for applyFilter
-## ---------------------------------------------------------------------------
-## setGeneric("applyFilter", function(filter,flowObject,parent) standardGeneric("applyFilter"))
-## ---------------------------------------------------------------------------
-
-## ===========================================================================
 ## Generic for filter
 ## ---------------------------------------------------------------------------
-setGeneric("filter", function(flowObject, filter,parent) standardGeneric("filter"),useAsDefault=FALSE)
+setGeneric("filter", function(flowObject, filter) standardGeneric("filter"),useAsDefault=FALSE)
+setGeneric("filterDetails",function(flowObject,filter,result) standardGeneric("filterDetails"))
 ## ---------------------------------------------------------------------------
 
 
@@ -64,10 +62,5 @@ setGeneric("filter", function(flowObject, filter,parent) standardGeneric("filter
 ## Generic for spillover
 ## ---------------------------------------------------------------------------
 setGeneric("spillover",function(x,...) standardGeneric("spillover"))
-## ---------------------------------------------------------------------------
-
-## ===========================================================================
-## Generic for applyCompensation
-## ---------------------------------------------------------------------------
-setGeneric("applyCompensation", function(flowObject,compensation) standardGeneric("applyCompensation"))
+setGeneric("compensate",function(x,spillover) standardGeneric("compensate"))
 ## ---------------------------------------------------------------------------
