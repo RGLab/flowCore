@@ -9,72 +9,73 @@ b08 = read.FCS(system.file("extdata","0877408774.B08",package="flowCore"),transf
 e07 = read.FCS(system.file("extdata","0877408774.E07",package="flowCore"),transformation="scale")
 f06 = read.FCS(system.file("extdata","0877408774.F06",package="flowCore"),transformation="scale")
 
+# I sort of wish that as.logical would attempt to coerce using S4 rather than doing the hard coded
+# thing. Might be something to propose to R-devel.
+
 filter1 = rectangleGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
 b08.result1 = filter(b08,filter1)
-sum(as(b08.result1,"logical"))
+summary(b08.result1)
 sum(b08 %in% filter1)
 # [1] 8291
 
 e07.result1 = filter(e07,filter1)
-sum(as(e07.result1,"logical"))
+summary(e07.result1)
 sum(e07 %in% filter1)
 # [1] 8514
 
 f06.result1 = filter(f06,filter1)
-sum(as(f06.result1,"logical"))
+summary(f06.result1)
 sum(f06 %in% filter1)
 # [1] 8765
 
 filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
 b08.result2 = filter(b08,filter2 %subset% b08.result1)
-sum(as(b08.result2,"logical"))
+summary(b08.result2)
 sum(b08 %in% (filter2 %subset% b08.result1))
 # [1] 6496
 
 e07.result2 = filter(e07,filter2 %subset% e07.result1)
-sum(as(e07.result2,"logical"))
+summary(e07.result2)
 sum(e07 %in% (filter2 %subset% e07.result1))
 # [1] 6416
 
 f06.result2 = filter(f06,filter2 %subset% f06.result1)
-sum(as(f06.result2,"logical"))
+summary(f06.result2)
 sum(f06 %in% (filter2 %subset% f06.result1))
 # [1] 6959
-q()
 
 ## the third-fifth gates get the positive cells for the marker in FL1-H
 ## this is a really interesting example because it illustrates that there
 ## are two subpopulations. Naturally we would like to automatically find them
 ## In this case we want to now what percent the positive population in FL1-H is of the
 ## total population
-plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1),xlim=c(0,1))
-filter3 = rectGate("FL1-H"=c(.4,Inf),id="FL1-H+")
-b08.result3 = applyFilter(filter3,b08,b08.result2)
-plot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1),ylim=c(0,1))
-sum(b08.result3@subSet)
-#[1] 3559
-sum(b08.result3@subSet)/sum(b08.result2@subSet)
-#[1] 0.54787
 
-filter4=new("norm2Filter",filterId="FL1-H+",scale.factor=2,method="covMcd",parameters=c("FSC-H","FL1-H"))
-b08.result4 = applyFilter(filter4,b08,b08.result2)
-plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1),ylim=c(0,1))
-sum(b08.result4@subSet)
-#[1] 3490
-sum(b08.result4@subSet)/sum(b08.result2@subSet)
-#[1] 0.5372537
+filter3 = rectangleGate("FL1-H"=c(.4,Inf),filterId="FL1-H+")
+b08.result3 = filter(b08,filter3 %subset% b08.result2)
+summary(b08.result3)
+# An example of doing manipulations with filterResult objects 
+# since they are now also filter objects. The %subset% argument
+# has a special summary meaning because it does it's calculations
+# relative to the RHS argument, whereas filterResults are ALWAYS
+# wrt to the full dataset. So, the value below should differ from 
+# the value above.
+summary(b08.result3 %subset% b08.result2)
 
-###############################################
-## stop here because this filter requires a NOT gate
-b08.result5 = applyFilter(filter4,b08,b08.result2@subSet-b08.result4@subSet)
-plot(b08,y=b08.result5,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,1024))
-sum(b08.result5@subSet)
-#[1] 2568
-sum(b08.result4@subSet)/(sum(b08.result4@subSet)+sum(b08.result5@subSet))
-#[1] 0.5758877
+filter4 = norm2Filter("FSC-H","FL1-H",scale.factor=2,filterId="FL1-H+")
+b08.result4 = filter(b08,filter4 %subset% b08.result2)
+summary(b08.result4)
+# [1] 3490
+summary(b08.result4 %subset% b08.result2)
+# ~53.73%
+
+#We now have NOT gates so we can proceed!
+b08.result5 = filter(b08,filter4 %subset% (b08.result2 & !b08.result4))
+summary(b08.result5)
+# [1] 2568
+summary(b08.result4 %subset% (b08.result4 | b08.result5))$p
+# [1] 0.5758877
+q()
+
 
 
 ## the sixth-eighth gates get the positive cells for the marker in FL2-H

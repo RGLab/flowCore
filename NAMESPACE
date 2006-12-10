@@ -17,11 +17,12 @@ exportClasses("flowFrame", "flowSet", "transformation",
               "population","filterPopulation","complementPopulation",
               "unionPopulation","intersectionPopulation")
 
-exportMethods("description", "description<-","phenoData","phenoData<-","%in%","%subset%",
+exportMethods("description", "description<-","phenoData","phenoData<-","%in%","%subset%","summary",
               "exprs", "exprs<-", "show",
               "transform","filter","filterDetails","plot", "coerce","spillover","compensate")
 
 export("%in%") #We define a generic 
+export("print.filterSummary")
 export("read.FCS","read.flowSet",
 	"linearTransform","quadraticTransform",
        "lnTransform", "logTransform",
