@@ -330,25 +330,9 @@ setClass("unionFilter",representation("filter",filters="list"))
 setClass("intersectFilter",representation("filter",filters="list"))
 setClass("subsetFilter",representation("filter",left="filter",right="filter"))
 setClass("complementFilter",representation("filter",filter="filter"))
+
+
 setClass("fixedFilter",representation("filter",subset="logical"))
-
-
-## ===========================================================================
-## Decision Tree - listed in the standard
-## ---------------------------------------------------------------------------
-## An object describing a selection applied to a data matrix. Consist of
-## a functions that return logical vectors subsetting the data
-## ---------------------------------------------------------------------------
-
-
-## ===========================================================================
-## Boolean gate ~ gateSet
-## ---------------------------------------------------------------------------
-## 
-##
-## ---------------------------------------------------------------------------
-
-
 
 ## ===========================================================================
 ## filterResult
@@ -371,13 +355,29 @@ setClass("filterResult",
                         filterDetails="list"))
 ## ===========================================================================
 
+##
+## randomFilterResult
+## --
+## Just like filterResult, except that the subset is a a probability of inclusion
+## into the filter. Using the as(...,"logical") coercion causes a particular 
+## realization of this result to be included.
+setClass("randomFilterResult",
+	representation("filter",subSet="numeric",frameId="character",filterDetails="list"))
+
+
 
 ## ===========================================================================
-## Things for manipulation of populations
+## Decision Tree - listed in the standard
 ## ---------------------------------------------------------------------------
-setClass("population",representation("VIRTUAL"))
-setClass("filterPopulation",representation("population",filter="filter"))
-setClass("complementPopulation",representation("population",population="population"))
-setClass("unionPopulation",representation("population",members="list"))
-setClass("intersectionPopulation",representation("population",members="list"))
+## An object describing a selection applied to a data matrix. Consist of
+## a functions that return logical vectors subsetting the data
+## ---------------------------------------------------------------------------
+
+
 ## ===========================================================================
+## Boolean gate ~ gateSet
+## ---------------------------------------------------------------------------
+## 
+##
+## ---------------------------------------------------------------------------
+

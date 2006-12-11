@@ -8,7 +8,7 @@
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
-read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.names=FALSE)
+read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.names=FALSE,column.pattern=NULL)
 {
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
@@ -22,9 +22,9 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
-
   close(con)
-  
+  if(!is.null(column.pattern))
+	mat = mat[,grep(column.pattern,colnames(mat))]
   if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
     stop(paste("file", filename, "seems to corrupted."))
   if(transformation==TRUE){

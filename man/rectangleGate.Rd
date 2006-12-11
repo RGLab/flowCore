@@ -7,7 +7,7 @@
   A convenience method to facilitate the construction of \code{\link{filter}} objects
 }
 \usage{
-rectangleGate(filterId = "rectangleGate", .gate, \dots)
+rectangleGate(.gate, \dots,filterId = "rectangleGate")
 polygonGate(filterId = "polygonGate", .gate, \dots)
 polytope(filterId = "polygonGate", .gate, \dots)
 ellipsoidGate(filterId = "polygonGate", .gate, distance, \dots)

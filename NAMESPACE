@@ -13,13 +13,11 @@ importClassesFrom("Biobase", "eSet")
 
 exportClasses("flowFrame", "flowSet", "transformation",
               "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
-              "filterResult", "norm2Filter", "filterTree",
-              "population","filterPopulation","complementPopulation",
-              "unionPopulation","intersectionPopulation")
+              "filterResult",  "norm2Filter", "filterTree")
 
 exportMethods("description", "description<-","phenoData","phenoData<-","%in%","%subset%","summary",
               "exprs", "exprs<-", "show",
-              "transform","filter","filterDetails","plot", "coerce","spillover","compensate")
+              "transform","split","Subset","filter","filterDetails","filterResultType","plot", "coerce","spillover","compensate")
 
 export("%in%") #We define a generic 
 export("print.filterSummary")

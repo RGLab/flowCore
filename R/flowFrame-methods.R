@@ -131,3 +131,14 @@ setMethod("show",signature=signature("flowFrame"),definition=function(object) {
     return(msg)
 })
 ## ==========================================================================
+
+setMethod("Subset",signature("flowFrame","filter"),function(x,subset,select,...) {
+	result = subset %in% x
+	if(!missing(select)) x[result & !is.na(result),select] else x[result & !is.na(result),]
+})
+
+setMethod("split",signature("flowFrame","filter"),function(x,f,drop=FALSE,population=NULL,...) {
+	result = x %in% f
+	if(is.null(population)) population=f@filterId
+	as(structure(list(x[result,],x[!result,]),names=c(paste(population,"+",sep=""),paste(population,"-",sep=""))),"flowSet")
+})
