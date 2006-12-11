@@ -29,7 +29,7 @@ rectangleGate <- function(.gate,...,filterId="rectangleGate") {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
     if(missing(boundaries) || !is.matrix(boundaries))
-      boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries, function(x) c("min"=x[1],"max"=x[2]))
+      boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries, function(x) x)
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),boundaries=boundaries)
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -60,9 +60,9 @@ library("flowCore")
 <<load data,echo=FALSE,results=hide>>=
 fcs.loc <- system.file("extdata", package="flowCore")
 file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
-b08 <- read.FCS(file.location[1])
-e07 <- read.FCS(file.location[2])
-f06 <- read.FCS(file.location[3])
+b08 <- read.FCS(file.location[1],transformation="scale")
+e07 <- read.FCS(file.location[2],transformation="scale")
+f06 <- read.FCS(file.location[3],transformation="scale")
 @
 \begin{verbatim}
 > fcs.loc <- system.file("extdata", package="flowCore")
@@ -140,7 +140,7 @@ data08Transform@exprs[1:5]
 <<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
 ##we should find a way to specified if an parameters has been transformed 
 ## either in the title or via the label of the axis 
-plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"))
+plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"),main="Log2 transformed data")
 @
 
 \subsection{Filtering data (gating)}
@@ -148,30 +148,25 @@ plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"))
 We will define rectangular gates and apply them to filter the bO8 data.
 Figure \ref{fig:Fig02} presents the results of such filtering. 
 The plot in Figure \ref{fig:Fig02}A shows the result of 
-filtering out the data points that are below 200 in the FSC-H channel.
+filtering out the data points that are below 0.2 in the FSC-H channel.
 Figure \ref{fig:Fig02}B shows the result of 
-filtering out the data points are between 200 
-and 500  in the FSC-H channel.
+filtering out the debris that are between 0.2 and 0.8 in the FSC-H channel and 
+and 0 and 0.8 in the SSC-H channel.
 
-<<define and apply rectangleGate1,eval=TRUE, echo=FALSE,results=hide>>=
-min1 <- 200
-max1 <- Inf
-fil1 <- new("rectangleGate",filterId="nonDebris",
-            parameters="FSC-H",min=min1,max=max1)
-b08fil1 <- applyFilter(fil1,b08)
+<<define and apply rangeGate1,eval=TRUE, echo=FALSE,results=hide>>=
+rangeGate <- rectangleGate(filterId="rangeGate","FSC-H"=c(.2,Inf))
+b08rangeGate <- filter(b08,rangeGate)
 @ 
 <<plotfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08fil1,pch="*")
+plot(b08,y=b08rangeGate, pch="*",main="B08, lower debris")
 @ 
-<<define and apply polygonGate2,eval=TRUE, echo=FALSE,results=hide>>=
-min2 <- 200
-max2 <- 500
-centerFilter <- new("rectangleGate",filterId="center",
-            parameters=c("FSC-H"), min=min2, max=max2)
-b08centerFilter <- applyFilter(centerFilter,b08)
+<<define and apply ploygoneGate2,eval=TRUE, echo=FALSE,results=hide>>=
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(0.2,0.8),"SSC-H"=c(0,0.8))
+b08rectGate <- filter(b08,rectGate)
+b08Filtered <- b08[b08rectGate,]
 @ 
 <<plotCenterfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08centerFilter,pch="*")
+plot(b08,y=b08rectGate,pch="*",main="B08 - Nondebris")
 @
  
 \begin{figure}
@@ -186,10 +181,11 @@ plot(b08,y=b08centerFilter,pch="*")
 \subsubsection{polygon gate}
 %%We will define a rectangular gate and apply the filter it to the bO8 data.
 <<define and apply rectangleGate,eval=TRUE,echo=FALSE>>=
-sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
-sqrfilter <- new("polygonGate",filterId="nonDebris",
-            parameters=c("FSC-H","SSC-H"),boundaries= sqrcut)
-b08sqrfilter <- applyFilter(sqrfilter,b08)
+##sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
+##sqrfilter <- new("polygonGate",filterId="nonDebris",
+##            parameters=c("FSC-H","SSC-H"),boundaries= sqrcut)
+sqrfilter <- polygonGate(filterId="nonDebris","FSC-H"=c(0.3,0.3,0.6,0.6),"SSC-H"=c(0.05,0.3,0.3,.05))
+b08sqrfilter <- filter(b08,sqrfilter)
 @ 
 
 <<plotRectanglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
@@ -198,10 +194,10 @@ plot(b08,y=b08sqrfilter,pch="*")
 
 
 <<define and apply polygonGate,eval=TRUE,echo=FALSE>>=
-triangleCut <- matrix(c(300,400,600,300,400,300),ncol=2,nrow=3)
-trianglefilter <- new("polygonGate",filterId="nonDebris",
-            parameters=c("FSC-H","SSC-H"),boundaries= triangleCut)
-b08Trgfilter <- applyFilter(trianglefilter,b08)
+triangleCut <- matrix(c(0.3,0.4,0.6,0.3,0.4,0.3),ncol=2,nrow=3)
+colnames(triangleCut) <- c("FSC-H","SSC-H")
+trianglefilter <- polygonGate(filterId="nonDebris",boundaries= triangleCut)
+b08Trgfilter <- filter(b08,trianglefilter)
 @ 
 
 <<plotTrianglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
@@ -240,28 +236,24 @@ plot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
 %%    polygon gate.}} 
 %%\end{figure}
 
-The first gate is a range gate to filter out debris
+The first filter is a serie of rectangle gates to filter out debris
 
 <<SelectNonDebris,eval=TRUE,echo=FALSE,results=hide>>=
-min1 <- c(200,0)
-max1 <- c(800,800)
-filter1 <- new("rectangleGate",filterId="Nondebris",parameters=c("FSC-H","SSC-H"),
-  min=min1,max=max1)
-
-b08.result1 <-  applyFilter(filter1,b08)
-e07.result1 <- applyFilter(filter1,e07)
-f06.result1 <- applyFilter(filter1,f06)
-
-tab <- c("B08"=sum(b08.result1@subSet),"E07"=sum(e07.result1@subSet),"F06"=sum(f06.result1@subSet))
+filter1 <- rectangleGate(filterId="nonDebris","FSC-H"=c(0.2,0.8),"SSC-H"=c(0,0.8))
+b08.result1 <-  filter(b08,filter1)
+##e07.result1 <- filter(e07,filter1)
+##f06.result1 <- filter(f06,filter1)
+summary(b08.result1)
+##tab <- c("B08"=sum(b08.result1@subSet),"E07"=sum(e07.result1@subSet),"F06"=sum(f06.result1@subSet))
 @ 
 <<plotResFilter1, echo=FALSE, eval=FALSE,  fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result1,main="B08",pch="*")
+plot(b08,y=b08.result1,main="B08 nonDebris",pch="*")
 @ 
 <<plotResFilter2, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(e07,y=e07.result1,main="E07",pch="*")
+plot(e07,y=e07.result1,main="E07 nonDebris",pch="*")
 @ 
 <<plotResFilter3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(f06,y=f06.result1,main="F06",pch="*")
+plot(f06,y=f06.result1,main="F06 nonDebris",pch="*")
 @ 
 %%\begin{figure}
 %%\centering
@@ -276,13 +268,15 @@ plot(f06,y=f06.result1,main="F06",pch="*")
 The second gate gets the live cells
 
 <<FilterLiveCell,eval=TRUE,echo=FALSE,results=hide>>=
-filter2 = new("norm2Filter",filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
+##filter2 <- norm2Filter(filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
+filter2 <- norm2Filter("FSC-H","SSC-H",filterId="Live Cells",scale.factor=2,method="covMcd")
+b08.result2 <-  filter(b08, filter2 %subset% b08.result1) 
 
-b08.result2 = applyFilter(filter2,b08,parent=b08.result1)
-e07.result2 = applyFilter(filter2,e07,parent=e07.result1)
-f06.result2 = applyFilter(filter2,f06,parent=f06.result1)
+##e07.result2 <- filter(e07,filter2,parent=e07.result1)
+##f06.result2 <- filter(f06,filter2,parent=f06.result1)
 
-tab <- rbind(tab,c(sum(b08.result2@subSet),sum(e07.result2@subSet),sum(f06.result2@subSet)))
+summary(b08.result2)
+##tab <- rbind(tab,c(sum(b08.result2@subSet),sum(e07.result2@subSet),sum(f06.result2@subSet)))
 
 @ 
 
@@ -320,11 +314,11 @@ plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1024),xli
 %%\end{figure}
 
 <<FL1Filter,eval=TRUE,echo=FALSE,results=hide>>=
-filter3 <- new("rectangleGate",filterId="FL1-H+",parameters="FL1-H",min=400,max=Inf)
-b08.result3 <- applyFilter(filter3,b08,b08.result2)
+filter3 <- rectangleGate(filterId="FL1-H+","FL1-H"=c(400,Inf))
+b08.result3 <- filter(b08,filter3 %subset%b08.result2)
 
-filter4 <-new("norm2Filter",filterId="FL1-H+",scale.factor=2,method="covMcd",parameters=c("FSC-H","FL1-H"))
-b08.result4 <- applyFilter(filter4,b08,b08.result2)
+filter4 <- norm2Filter("FSC-H","FL1-H",filterId="FL1-H+",scale.factor=2,method="covMcd")
+b08.result4 <- filter(b08,filter4 %subset% b08.result2)
 
 ##b08.result5 <- applyFilter(filter4,b08,b08.result2@subSet-b08.result4@subSet)
 

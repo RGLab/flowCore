@@ -74,10 +74,11 @@ setMethod("show","rectangleGate",function(object) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%in%",signature("flowFrame","polygonGate"),function(x,table) {
 	ndim = length(table@parameters)
-	#If there is only a single dimension then we have a degenerate case.
+        ##If there is only a single dimension then we have a degenerate case.
 	if(ndim==1) 
 		!is.na(cut(exprs(x)[,table@parameters[[1]]],range(table@boundaries[,1]),labels=FALSE))
 	else if(ndim==2) {
+            print(table@boundaries)
 	 	as.logical(.Call(inPolygon,exprs(x)[,table@parameters],table@boundaries))
 	} else 
 		stop("Polygonal gates only support 1 or 2 dimensional gates (for now).")
