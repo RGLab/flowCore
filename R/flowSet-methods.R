@@ -45,7 +45,7 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	#Sanity checking
 	if(nrow(current) != nrow(value))
 		stop("phenoData must have the same number of rows as flow files")
-	if(!value$name && length(unique(value$name)) == nrow(value))
+	if(length(unique(value$name)) != nrow(value))
 		stop("phenoData must have a name column to uniquely identify flowFrames.")
 	#If the names are different, we need to remap the environment assuming that the ordering is the same.
 	if(!all(current$name==value$name)) {
@@ -59,7 +59,7 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 			}
 		}
 	}
-	object@phenoData = phenoData
+	object@phenoData = value
 	object
 })
 ## ==========================================================================
@@ -124,6 +124,7 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 	colnames(exprs(fr)) = x@colnames
 	fr
 })
+
 ## ==========================================================================
 
 

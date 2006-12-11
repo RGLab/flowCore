@@ -44,9 +44,16 @@ if(!isGeneric("ncol"))
 
 
 ## ===========================================================================
-## Generic for applyTransformation
+## Generic for transformation
 ## ---------------------------------------------------------------------------
   setGeneric("transform")
+## ---------------------------------------------------------------------------
+
+## ===========================================================================
+## Generic for split
+## ---------------------------------------------------------------------------
+setGeneric("split")
+setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## ---------------------------------------------------------------------------
 
 
@@ -55,6 +62,7 @@ if(!isGeneric("ncol"))
 ## ---------------------------------------------------------------------------
 setGeneric("filter", function(flowObject, filter) standardGeneric("filter"),useAsDefault=FALSE)
 setGeneric("filterDetails",function(flowObject,filter,result) standardGeneric("filterDetails"))
+setGeneric("filterResultType",function(filter) standardGeneric("filterResultType"))
 ## ---------------------------------------------------------------------------
 
 

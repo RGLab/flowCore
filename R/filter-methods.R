@@ -11,8 +11,9 @@
 ## AND associating a filterResult with a particular flowFrame if possible.
 setMethod("filter",signature("flowFrame","filter"),function(flowObject,filter) {
 	result = flowObject %in% filter
+	resultType = filterResultType(filter)
 	details= filterDetails(flowObject,filter,result)
-	new("filterResult",
+	new(resultType,
 		parameters=filter@parameters,
 		filterId=filter@filterId,
 		frameId=if(is.null(flowObject@description["GUID"])) flowObject@description["$FIL"] else flowObject@description["GUID"],
@@ -32,7 +33,7 @@ setMethod("filterDetails",signature("flowFrame","filter","ANY"),function(flowObj
 		class(flowObject),"object")
 	list(message=msg,filter=filter)
 })
-
+setMethod("filterResultType","filter",function(filter) "filterResult")
 
 ## ==========================================================================
 ## support methods for filtering flowFrame Object using rectangleGate
@@ -132,7 +133,18 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 		stop("How did you get here?")
 		)
 	W  = t(y)-cov$center
-	exp(-.5*colSums((solve(cov$cov)%*%W)*W))>exp(-.5*table@scale.factor^2)
+	result = exp(-.5*colSums((solve(cov$cov)%*%W)*W))>exp(-.5*table@scale.factor^2)
+	attr(result,'center') = cov$center
+	attr(result,'cov')    = cov$cov
+	result
+})
+# TODO: This should call the less specialized filterDetails instead of redoing everything.
+setMethod("filterDetails",signature("flowFrame","norm2Filter","ANY"),function(flowObject,filter,result) {
+	msg = paste(class(filter),"applied on",
+		deparse(substitute(flowObject))," (file:",
+		basename(flowObject@description["$FIL"]),") a",
+		class(flowObject),"object")
+	list(message=msg,filter=filter,cov=attr(result,'cov'),center=attr(result,'center'))	
 })
 
 ## ==========================================================================
