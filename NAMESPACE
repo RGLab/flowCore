@@ -8,16 +8,18 @@ importFrom("geneplotter", "smoothScatter","densCols")
 importFrom("graphics", "plot")
 
 
-importFrom("Biobase", "exprs", "exprs<-", "description", "description<-","phenoData","phenoData<-","multiassign")
+importFrom("Biobase", "exprs", "exprs<-", "description", "description<-","phenoData","phenoData<-","multiassign",
+	"sampleNames","sampleNames<-","featureNames","featureNames<-")
 importClassesFrom("Biobase", "eSet")
 
 exportClasses("flowFrame", "flowSet", "transformation",
               "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
-              "filterResult",  "norm2Filter", "filterTree")
+              "filterResult", "randomFilterResult", "multipleFilterResult",  "norm2Filter", "filterTree")
 
-exportMethods("description", "description<-","phenoData","phenoData<-","%in%","%subset%","summary",
-              "exprs", "exprs<-", "show",
-              "transform","split","Subset","filter","filterDetails","filterResultType","plot", "coerce","spillover","compensate")
+exportMethods("description", "description<-","phenoData","phenoData<-","featureNames",
+			"%in%","%subset%","summary","identifier",
+            "exprs", "exprs<-", "show",
+            "transform","split","Subset","filter","filterDetails","filterResultType","plot", "coerce","spillover","compensate","fsApply")
 
 export("%in%") #We define a generic 
 export("print.filterSummary")

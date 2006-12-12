@@ -23,8 +23,14 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
   close(con)
-  if(!is.null(column.pattern))
-	mat = mat[,grep(column.pattern,colnames(mat))]
+  if(!is.null(column.pattern)) {
+	n <- colnames(mat)
+	i <- grep(column.pattern,n)
+	mat <- mat[,i]
+	n2 = n[i]
+	names(n2) = names(n)[i] #Preserve the column names names properly
+	colnames(mat) <- n2 
+  }
   if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
     stop(paste("file", filename, "seems to corrupted."))
   if(transformation==TRUE){
@@ -109,11 +115,8 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
 
   stopifnot(length(dat)%%nrpar==0)
   dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
-  colnames(dat) <- if(alter.names) 
-	make.names(readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))) 
-  else 
-    readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
-
+  cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
+  colnames(dat) <- if(alter.names) structure(make.names(cn),names=names(cn)) else cn
   if(transformation) {
       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
       ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))

@@ -22,8 +22,9 @@ if(!isGeneric("lines"))
   setGeneric("lines",          useAsDefault=lines)
 
 #if(!isGeneric("%in%"))
-setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 
+## %in% asks a question whereas %subset% forms a set.
+setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
 
 ## ---------------------------------------------------------------------------
@@ -41,6 +42,8 @@ if(!isGeneric("nrow"))
 if(!isGeneric("ncol"))
   setGeneric("ncol", function(x) standardGeneric("ncol"))
 ## ---------------------------------------------------------------------------
+
+setGeneric("identifier",function(object) standardGeneric("identifier"))
 
 
 ## ===========================================================================
@@ -72,3 +75,5 @@ setGeneric("filterResultType",function(filter) standardGeneric("filterResultType
 setGeneric("spillover",function(x,...) standardGeneric("spillover"))
 setGeneric("compensate",function(x,spillover) standardGeneric("compensate"))
 ## ---------------------------------------------------------------------------
+
+setGeneric("fsApply",function(x,FUN,...) standardGeneric("fsApply"))
