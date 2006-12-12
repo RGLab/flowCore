@@ -363,7 +363,8 @@ setClass("filterResult",
 ## realization of this result to be included.
 setClass("randomFilterResult",
 	representation("filter",subSet="numeric",frameId="character",filterDetails="list"))
-
+setClass("multipleFilterResult",
+	representation("filter",subSet="integer",populations="character",frameId="character",filterDetails="list"))
 
 
 ## ===========================================================================

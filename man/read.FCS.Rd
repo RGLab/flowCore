@@ -4,7 +4,7 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.FCS(filename, transformation = NULL, debug = FALSE, alter.names=FALSE)
+   read.FCS(filename, transformation = NULL, debug = FALSE, alter.names=FALSE, column.pattern=NULL)
 }
 
 \arguments{
@@ -13,13 +13,14 @@
   \item{debug}{boolean indicating whether or not to print the
     debugging statements, default is TRUE}
   \item{alter.names}{boolean indicating whether or not we should rename the columns to valid R names using \code{\link{make.names}}. The default is FALSE.}
+  \item{column.pattern}{An optional regular expression defining parameters we should keep when loading the file. The default is NULL. }
 }
 
 \details{
 The function \code{read.FCS} works with the output of the FACS machine
 software from a number of vendors. However, the FCS 3.0 standard
 includes some options that are not yet implemented in this function. If
-you need extensions, please let me know. The output of the fucntion is
+you need extensions, please let me know. The output of the function is
 an object of class \code{flowFrame}.
 
 

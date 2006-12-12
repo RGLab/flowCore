@@ -127,6 +127,12 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 
 ## ==========================================================================
 
+setMethod("fsApply",signature("flowSet","function"),function(x,FUN,...) {
+	res = as(structure(lapply(phenoData(x)$name,function(n) FUN(x[[n]],...)),names=phenoData(x)$name),"flowSet")
+	phenoData(res) = phenoData(x)
+	res
+})
+
 
 ## ==========================================================================
 ## show method for flowSet

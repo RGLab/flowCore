@@ -1,3 +1,6 @@
+setMethod("identifier","flowFrame",function(object) if(is.null(object@description["GUID"])) object@description["$FIL"] else object@description["GUID"])
+setMethod("featureNames","flowFrame",function(object) object@description[gsub("N","S",names(colnames(exprs(object))))])
+
 ## ==========================================================================
 ## accessor method for slot exprs
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -90,13 +93,23 @@ setMethod("[",
   valueClass="flowFrame")
 setMethod("[",signature=signature("flowFrame","filterResult"),definition=function(x,i,j,...,drop=FALSE) {
 	if(missing(j))
-		x[i@subSet==1,,...,drop=drop]
+		x[as(i,"logical"),,...,drop=drop]
 	else
-		x[i@subSet==1,j,...,drop=drop]
+		x[as(i,"logical"),j,...,drop=drop]
 },valueClass="flowFrame")
 ## ==========================================================================
-
-
+setMethod("[",signature=signature("flowFrame","filterResult"),definition=function(x,i,j,...,drop=FALSE) {
+	if(missing(j))
+		x[as(i,"logical"),,...,drop=drop]
+	else
+		x[as(i,"logical"),j,...,drop=drop]
+},valueClass="flowFrame")
+setMethod("[",signature=signature("flowFrame","filterResult"),definition=function(x,i,j,...,drop=FALSE) {
+	if(missing(j))
+		x[x%in%i,,...,drop=drop]
+	else
+		x[x%in%i,j,...,drop=drop]
+},valueClass="flowFrame")
 
 ## ==========================================================================
 ## nrow method

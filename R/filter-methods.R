@@ -16,7 +16,7 @@ setMethod("filter",signature("flowFrame","filter"),function(flowObject,filter) {
 	new(resultType,
 		parameters=filter@parameters,
 		filterId=filter@filterId,
-		frameId=if(is.null(flowObject@description["GUID"])) flowObject@description["$FIL"] else flowObject@description["GUID"],
+		frameId=identifier(flowObject),
 		subSet=result,filterDetails=details)
 })
 ## Printing out a filter should give us something at least mildly sensible.
@@ -191,7 +191,7 @@ setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 })
 
 setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
-	frameId = if(is.null(x@description["GUID"])) x@description["$FIL"] else x@description["GUID"]
+	frameId = identifier(x)
 	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
 		warning("Frame identifiers do not match. It is possible that this filter is not compatible with this frame.")
 	if(nrow(x) != length(table@subSet))
@@ -224,5 +224,10 @@ setMethod("summary","subsetFilter",function(object,...) {
 	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),name=object@filterId),class="filterSummary")	
 })
 print.filterSummary <- function(x,...) {
-	with(x,cat(sprintf("%s: %d of %d (%.2f%%)\n",name,true,n,100*p)))
+	if(length(x$name) == 1) {
+		with(x,cat(sprintf("%s: %d of %d (%.2f%%)\n",name,true,n,100*p)))
+	} else {
+		for(i in seq(along=x$name))
+			with(x,cat(sprintf("%s: %d of %d (%.2f%%)\n",name[i],true[i],n[i],100*p[i])))
+	}
 }
