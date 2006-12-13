@@ -307,6 +307,12 @@ setClass("norm2Filter",
                         transformation="list"),
          contains="filter")
 
+## ===========================================================================
+## kmeansFilter 
+## ---------------------------------------------------------------------------
+setClass("kmeansFilter",
+	representation("filter",populations="character"))
+
 
 ## =================================================================
 ## filterTree

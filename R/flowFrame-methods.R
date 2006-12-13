@@ -150,8 +150,13 @@ setMethod("Subset",signature("flowFrame","filter"),function(x,subset,select,...)
 	if(!missing(select)) x[result & !is.na(result),select] else x[result & !is.na(result),]
 })
 
-setMethod("split",signature("flowFrame","filter"),function(x,f,drop=FALSE,population=NULL,...) {
-	result = x %in% f
+setMethod("split",signature("flowFrame","filter"),function(x,f,drop=FALSE,...) split(x,filter(x,f),drop,...))
+
+#We actually filter on filterResults and multipleFilterResults
+setMethod("split",signature("flowFrame","filterResult"),function(x,f,drop=FALSE,population=NULL,...) {
 	if(is.null(population)) population=f@filterId
-	as(structure(list(x[result,],x[!result,]),names=c(paste(population,"+",sep=""),paste(population,"-",sep=""))),"flowSet")
+	structure(list(x[f@subSet,],x[!f@subSet,]),names=c(paste(population,"+",sep=""),paste(population,"-",sep="")))
+})
+setMethod("split",signature("flowFrame","multipleFilterResult"),function(x,f,drop=FALSE,prefix=NULL,...) {
+	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=if(!is.null(prefix)) paste(prefix,f@populations,sep="") else f@populations)
 })

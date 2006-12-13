@@ -4,38 +4,41 @@
 \alias{filterResult-accessors}
 \alias{filterResult}
 
-\title{'filterResult': a class for representing the results of the
-  applyFilter method}
+\title{'filterResult': a filter class representing a filter resolved for a particular data set.}
 
 
-\description{In flow-cytometry analysis, regions in n-dimensional
-  projections of the data space often have to be selected. Objects of
-  this class can store the results of these selections.}
+\description{The \code{filterResult} class describes a realization
+ of an abstract filter against a particular \code{\link{flowFrame}}. Being itself a filter
+the filter result can participate all other filter compositions. Additionally, \code{filterResult}
+objects support a summary method for obtaining simple count statistics relative to the entire data
+set. Combined with the \code{\link{\%subset\%}} operator, these summary statistics can also be 
+calculated conditional on \code{filterResult} object.
+}
 
 \section{Creating Objects}{
 Objects can be created using methods of the generic function 
 \code{  new("filterResult",}\cr
-\code{    subSet= ....,   # numeric vector}\cr
-\code{    gateDetails=...., # object of class character}\cr
+\code{    frameId=....,   # character string identifying the \code{\link{flowFrame}} used as the data.}
+\code{    subSet= ....,   # logical vector}\cr
+\code{    filterDetails=...., # a list of details about the filtering operation}\cr
 }}
-
 
 \section{Slots}{
   \describe{
-    \item{\code{subSet}:}{Numeric \code{vector} of 1 and 0 to indicates
-      if the data points belongs or not to the selection.}
-    \item{\code{gateDetails}}{Object of class \code{character} giving
-      some information of the filtering procedure.}
+    \item{\code{subSet}:}{Logical \code{vector} identifying data points in the region of interest.}
+	\item{\code{frameId}:}{Character \code{vector} identifying the \code{\link{flowFrame}} for this result. Used to check consistency.}
+    \item{\code{filterDetails}}{A list giving details about the filtering process.}
   }
 }
 
 \section{Methods}{
   \describe{
+	\item{\code{summary}:}{Obtain a \code{\link{filterSummary}} object containing simple count statistics.}
     \item{\code{plot:}}{plot the results}
   }
 }
 
 
-\author{P.D. Haaland N. Le Meur}
+\author{B. Ellis, P.D. Haaland, N. Le Meur}
 
 \keyword{classes}
