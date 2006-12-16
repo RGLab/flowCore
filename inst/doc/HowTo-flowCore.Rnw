@@ -349,7 +349,6 @@ plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
 %%    polygon gate.}} 
 %%\end{figure}
 
-
 \clearpage
 \small{
 <<sessionInfo>>=

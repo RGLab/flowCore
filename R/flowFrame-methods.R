@@ -1,5 +1,5 @@
 setMethod("identifier","flowFrame",function(object) if(is.null(object@description["GUID"])) object@description["$FIL"] else object@description["GUID"])
-setMethod("featureNames","flowFrame",function(object) object@description[gsub("N","S",names(colnames(exprs(object))))])
+
 
 ## ==========================================================================
 ## accessor method for slot exprs
@@ -45,6 +45,18 @@ setReplaceMethod("description",
 setMethod("colnames",
   signature="flowFrame", definition=function(x, do.NULL="missing",
   prefix="missing") colnames(exprs(x)), valueClass="character")
+setMethod("featureNames","flowFrame",function(object) object@parameters$desc)
+setMethod("names","flowFrame",function(x) {
+	cn = colnames(x)
+	fn = featureNames(x)
+	if(length(fn) == length(cn)) {
+		for(i in seq(along=fn)) {
+			if(!is.na(fn[i])) cn[i] = paste("<",cn[i],"> ",fn[i],sep="")
+		}
+	}
+	cn
+})
+
 ## ==========================================================================
 
 
@@ -88,6 +100,8 @@ setMethod("[",
          { exprs(x)[ , j, ..., drop=drop] },
          { exprs(x)[i,  , ..., drop=drop] },
          { exprs(x)[ ,  , ..., drop=drop] } )
+	if(!missing(j)) 
+		x@parameters = x@parameters[j,]
     x
   },
   valueClass="flowFrame")
@@ -137,7 +151,7 @@ setMethod("ncol",
 setMethod("show",signature=signature("flowFrame"),definition=function(object) {
    dm <- dim(exprs(object))
     msg <- paste("flowFrame object with ", dm[1], " cells and ", 
-        dm[2], " observables:\n", paste(colnames(exprs(object)), 
+        dm[2], " observables:\n", paste(names(object), 
             collapse = " "), "\nslot 'description' has ", length(description(object)), 
         " elements\n", sep = "")
     cat(msg)
@@ -146,9 +160,10 @@ setMethod("show",signature=signature("flowFrame"),definition=function(object) {
 ## ==========================================================================
 
 setMethod("Subset",signature("flowFrame","filter"),function(x,subset,select,...) {
-	result = subset %in% x
+	result = x %in% subset
 	if(!missing(select)) x[result & !is.na(result),select] else x[result & !is.na(result),]
 })
+setMethod("Subset",signature("flowFrame","logical"),function(x,subset,select,...) if(!missing(select)) x[subset,select] else x[subset,])
 
 setMethod("split",signature("flowFrame","filter"),function(x,f,drop=FALSE,...) split(x,filter(x,f),drop,...))
 
@@ -158,5 +173,5 @@ setMethod("split",signature("flowFrame","filterResult"),function(x,f,drop=FALSE,
 	structure(list(x[f@subSet,],x[!f@subSet,]),names=c(paste(population,"+",sep=""),paste(population,"-",sep="")))
 })
 setMethod("split",signature("flowFrame","multipleFilterResult"),function(x,f,drop=FALSE,prefix=NULL,...) {
-	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=if(!is.null(prefix)) paste(prefix,f@populations,sep="") else f@populations)
+	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=if(!is.null(prefix)) paste(prefix,names(f),sep="") else names(f))
 })
