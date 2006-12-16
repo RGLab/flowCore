@@ -26,6 +26,7 @@ if(!isGeneric("lines"))
 ## %in% asks a question whereas %subset% forms a set.
 setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
+setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 
 ## ---------------------------------------------------------------------------
 
@@ -65,7 +66,7 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## ---------------------------------------------------------------------------
 setGeneric("filter", function(flowObject, filter) standardGeneric("filter"),useAsDefault=FALSE)
 setGeneric("filterDetails",function(flowObject,filter,result) standardGeneric("filterDetails"))
-setGeneric("filterResultType",function(filter) standardGeneric("filterResultType"))
+setGeneric("filterResultType",function(filter,result) standardGeneric("filterResultType"))
 ## ---------------------------------------------------------------------------
 
 

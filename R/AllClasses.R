@@ -15,9 +15,11 @@ require("Biobase")
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
   representation(exprs="matrix",
-				 parameters="list",
+				 parameters="AnnotatedDataFrame",
                  description="vector"),
-  prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),parameters=list(),
+  prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
+				 parameters=new("AnnotatedDataFrame",
+					data=data.frame(name=I(character(0))),varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
                  description=c(note="empty")),
  validity=function(object){
    msg <- TRUE
@@ -370,7 +372,7 @@ setClass("filterResult",
 setClass("randomFilterResult",
 	representation("filter",subSet="numeric",frameId="character",filterDetails="list"))
 setClass("multipleFilterResult",
-	representation("filter",subSet="integer",populations="character",frameId="character",filterDetails="list"))
+	representation("filter",subSet="factor",frameId="character",filterDetails="list"))
 
 
 ## ===========================================================================

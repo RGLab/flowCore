@@ -22,21 +22,30 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
+  params  <- makeFCSparameters(colnames(mat),txt)
   close(con)
+
+
   if(!is.null(column.pattern)) {
 	n <- colnames(mat)
 	i <- grep(column.pattern,n)
 	mat <- mat[,i]
-	n2 = n[i]
-	names(n2) = names(n)[i] #Preserve the column names names properly
-	colnames(mat) <- n2 
+	params <- params[i,]
   }
   if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
     stop(paste("file", filename, "seems to corrupted."))
   if(transformation==TRUE){
       txt[["tranformation"]] <-"applied" 
   }
-  return(new("flowFrame", exprs=mat, description=c(txt)))
+  return(new("flowFrame", exprs=mat, description=c(txt), parameters=params))
+}
+
+makeFCSparameters <- function(cn,txt) {
+	npar = length(cn)
+	id   = paste("$P",1:npar,sep="")
+	new("AnnotatedDataFrame",
+		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),range=as.numeric(txt[paste(id,"S",sep="")])),
+		varMetadata=data.frame(row.names=I(c("name","desc","range")),labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
 }
 
 readFCSgetPar <- function(x, pnam) {
