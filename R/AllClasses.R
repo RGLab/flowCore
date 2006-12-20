@@ -218,9 +218,10 @@ setClass("filter",
                msg <- "\nslot 'filterId' must be character vector of length 1"
              if(!is.character(object@parameters))
              msg <- "\nslot 'parameters' must be  vector"
-             test <- matrix(1:length(object@parameters),
-                            ncol=length(object@parameters))
-             colnames(test) <- object@parameters
+# Not sure what this test was supposed to do, but it's really annoying
+#             test <- matrix(1:length(object@parameters),
+#                            ncol=length(object@parameters))
+#             colnames(test) <- object@parameters
              return(msg)
          })
 ## ===========================================================================
@@ -306,7 +307,8 @@ setClass("norm2Filter",
          ## applied to the data before gating
          representation(method="character",
                         scale.factor="numeric",
-                        transformation="list"),
+                        transformation="list",
+						n="numeric"),
          contains="filter")
 
 ## ===========================================================================
@@ -339,9 +341,6 @@ setClass("intersectFilter",representation("filter",filters="list"))
 setClass("subsetFilter",representation("filter",left="filter",right="filter"))
 setClass("complementFilter",representation("filter",filter="filter"))
 
-
-setClass("fixedFilter",representation("filter",subset="logical"))
-
 ## ===========================================================================
 ## filterResult
 ## ---------------------------------------------------------------------------
@@ -353,27 +352,11 @@ setClass("fixedFilter",representation("filter",subset="logical"))
 ## 
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
-         ## this holds the result of applying a filter to
-         ## a single FCS object
-         ## the subset is the filter applied to the original data
-         ## filterDetails is any output calculated by an algorithmic
-         representation("filter",
-						subSet="logical",
-						frameId="character",
-                        filterDetails="list"))
-## ===========================================================================
-
-##
-## randomFilterResult
-## --
-## Just like filterResult, except that the subset is a a probability of inclusion
-## into the filter. Using the as(...,"logical") coercion causes a particular 
-## realization of this result to be included.
-setClass("randomFilterResult",
-	representation("filter",subSet="numeric",frameId="character",filterDetails="list"))
-setClass("multipleFilterResult",
-	representation("filter",subSet="factor",frameId="character",filterDetails="list"))
-
+	representation("filter",frameId="character",filterDetails="list"),
+	prototype=list(frameId=character(0),filterDetails=list()))
+setClass("logicalFilterResult",representation("filterResult",subSet="logical"))
+setClass("multipleFilterResult",representation("filterResult",subSet="factor"))
+setClass("randomFilterResult",representation("filterResult",subSet="numeric"))
 
 ## ===========================================================================
 ## Decision Tree - listed in the standard

@@ -9,37 +9,31 @@
 ## anything filter specific has been moved to either filterDetails or the %in%
 ## implementation. A filter operation is now about assembling those two calls 
 ## AND associating a filterResult with a particular flowFrame if possible.
-setMethod("filter",signature("flowFrame","filter"),function(flowObject,filter) {
-	result = flowObject %in% filter
-	resultType = filterResultType(filter,result)
-	details= filterDetails(flowObject,filter,result)
-	new(resultType,
-		parameters=filter@parameters,
-		filterId=filter@filterId,
-		frameId=identifier(flowObject),
-		subSet=result,filterDetails=details)
+setMethod("filter",signature("flowFrame","filter"),function(x,filter) {
+	result                = as(x %in% filter,"filterResult")
+	filterDetails(result) = filter
+	result@frameId        = identifier(x)
+	result
 })
+setReplaceMethod("filterDetails",signature("filterResult","filter"),function(result,value) {
+	result@parameters    = value@parameters
+	result@filterId      = value@filterId
+	result@filterDetails = list(filter=value)
+	
+	result
+})
+
+#msg = paste(class(filter),"applied on",
+#	deparse(substitute(flowObject))," (file:",
+#	basename(flowObject@description["$FIL"]),") a",
+#	class(flowObject),"object")
+
+
 ## Printing out a filter should give us something at least mildly sensible.
 setMethod("show","filter",function(object) 
 	cat(paste("A filter named '",object@filterId,"'\n",sep="")))
 ## Most filters define only a single population
 setMethod("length","filter",function(x) 1)
-setMethod("identifier","filter",function(object) object@filterId)
-## ==========================================================================
-## filterDetails constructs the metadata carried around by the filterResult
-## this should generally be specific enough, but you may want to override your
-## own.
-setMethod("filterDetails",signature("flowFrame","filter","ANY"),function(flowObject,filter,result) {
-	msg = paste(class(filter),"applied on",
-		deparse(substitute(flowObject))," (file:",
-		basename(flowObject@description["$FIL"]),") a",
-		class(flowObject),"object")
-	list(message=msg,filter=filter)
-})
-#By default we know some different types of results we can get from an %in% operation.
-setMethod("filterResultType",signature("filter","logical"),function(filter,result) "filterResult")
-setMethod("filterResultType",signature("filter","factor"),function(filter,result)  "multipleFilterResult")
-setMethod("filterResultType",signature("filter","numeric"),function(filter,result) "randomFilterResult")
 
 
 ## ==========================================================================
@@ -134,7 +128,7 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 		stop("Method must be either 'covMcd' or 'cov.rob'")
 	cov = switch(table@method,
 		covMcd = {
-			if(nrow(y)>50000) covMcd(y[sample(50000,nrow(y)),]) else covMcd(y)
+			if(nrow(y)>table@n) covMcd(y[sample(nrow(y),table@n),]) else covMcd(y)
 		},
 		cov.rob={cov.rob(y)},
 		stop("How did you get here?")
@@ -145,13 +139,12 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 	attr(result,'cov')    = cov$cov
 	result
 })
-# TODO: This should call the less specialized filterDetails instead of redoing everything.
-setMethod("filterDetails",signature("flowFrame","norm2Filter","ANY"),function(flowObject,filter,result) {
-	msg = paste(class(filter),"applied on",
-		deparse(substitute(flowObject))," (file:",
-		basename(flowObject@description["$FIL"]),") a",
-		class(flowObject),"object")
-	list(message=msg,filter=filter,cov=attr(result,'cov'),center=attr(result,'center'))	
+setReplaceMethod("filterDetails",signature("filterResult","norm2Filter"),function(result,value) {
+	result = callNextMethod()
+	#Bring the cov and center values into the details for easier access
+	result@filterDetails$cov = attr(result@subSet,'cov')
+	result@filterDetails$center = attr(result@subSet,'center')
+	result
 })
 
 setMethod("summary","filter",function(object,...) {

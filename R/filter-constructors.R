@@ -62,7 +62,7 @@ ellipsoideGate <- function(.gate, distance,...,filterId="ellipsoidGate") {
 ## ==========================================================================
 ## Norm2Filter contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",...) {
+norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",n=50000,...) {
 	if(missing(y)) {
 		if(length(x)==1)
 			stop("You must specify two parameters for a norm2 gate.")
@@ -76,7 +76,7 @@ norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
 			x = x[1]
 			y = y[1]
 	}
-	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,filterId=filterId,...)
+	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,filterId=filterId,n=50000,...)
 }
 
 

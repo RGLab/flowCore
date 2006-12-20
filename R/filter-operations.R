@@ -67,7 +67,6 @@ setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
 #converted into a logical vector. This allows for a lot of processing to be done simply using the filter
 #results.
 setAs("filter","logical",function(from) stop("Only resolved filters can be converted to a logical vector."))
-setAs("filterResult","logical",function(from) if(is.logical(from@subSet)) from@subSet else from@subSet==1)
 setAs("subsetFilter","logical",function(from) as(from@left,"logical") & as(from@right,"logical"))
 setAs("intersectFilter","logical",function(from) apply(sapply(from@filters,as,Class="logical"),1,all))
 setAs("unionFilter","logical",function(from) apply(sapply(from@filters,as,Class="logical"),1,any))

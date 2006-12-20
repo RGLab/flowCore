@@ -44,7 +44,7 @@ makeFCSparameters <- function(cn,txt) {
 	npar = length(cn)
 	id   = paste("$P",1:npar,sep="")
 	new("AnnotatedDataFrame",
-		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),range=as.numeric(txt[paste(id,"S",sep="")])),
+		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),range=as.numeric(txt[paste(id,"R",sep="")])),
 		varMetadata=data.frame(row.names=I(c("name","desc","range")),labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
 }
 
