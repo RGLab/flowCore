@@ -159,11 +159,10 @@ setMethod("show",signature=signature("flowFrame"),definition=function(object) {
 })
 ## ==========================================================================
 
-setMethod("Subset",signature("flowFrame","filter"),function(x,subset,select,...) {
-	result = x %in% subset
-	if(!missing(select)) x[result & !is.na(result),select] else x[result & !is.na(result),]
-})
-setMethod("Subset",signature("flowFrame","logical"),function(x,subset,select,...) if(!missing(select)) x[subset,select] else x[subset,])
+setMethod("Subset",signature("flowFrame","filter"),function(x,subset,select,...)
+	if(!missing(select)) Subset(x,x %in% subset,select,...) else Subset(x,x %in% subset,...))
+setMethod("Subset",signature("flowFrame","logical"),function(x,subset,select,...) 
+	if(!missing(select)) x[subset & !is.na(subset),select] else x[subset,])
 
 setMethod("split",signature("flowFrame","filter"),function(x,f,drop=FALSE,...) split(x,filter(x,f),drop,...))
 

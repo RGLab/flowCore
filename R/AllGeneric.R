@@ -64,9 +64,11 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## ===========================================================================
 ## Generic for filter
 ## ---------------------------------------------------------------------------
-setGeneric("filter", function(flowObject, filter) standardGeneric("filter"),useAsDefault=FALSE)
-setGeneric("filterDetails",function(flowObject,filter,result) standardGeneric("filterDetails"))
-setGeneric("filterResultType",function(filter,result) standardGeneric("filterResultType"))
+setGeneric("filter", function(x, filter,...) standardGeneric("filter"),useAsDefault=FALSE)
+
+setGeneric("filterDetails<-",function(result,value) standardGeneric("filterDetails<-"))
+setGeneric("filterDetails",function(result) standardGeneric("filterDetails"))
+
 ## ---------------------------------------------------------------------------
 
 

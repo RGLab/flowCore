@@ -2,7 +2,7 @@
 kmeansFilter = function(...,filterId="kmeans") {
 	l = length(list(...))
 	if(l>1)
-		stop("Barcode filters only operate on a single parameter.")
+		stop("k-means filters only operate on a single parameter.")
 	x = ..1
 	if(is.list(x)) {
 	} else
@@ -11,12 +11,10 @@ kmeansFilter = function(...,filterId="kmeans") {
 
 ## Filtering Methods -- we are not a logical filter so we return a vector
 ## of indices indicating a population.
-setMethod("filterDetails",signature("flowFrame","kmeansFilter","ANY"),function(flowObject,filter,result) {
-	msg = paste(class(filter),"applied on",
-		deparse(substitute(flowObject))," (file:",
-		basename(flowObject@description["$FIL"]),") a",
-		class(flowObject),"object")
-	list(message=msg,filter=filter,populations=filter@populations)	
+setReplaceMethod("filterDetails",signature("filterResult","kmeansFilter"),function(result,value) {
+	result = callNextMethod()
+	result@filterDetails$populations = value@populations
+	result
 })
 setMethod("%in%",signature("flowFrame","kmeansFilter"),function(x,table) {
 	##We accomplish the actual filtering via K-means
