@@ -104,6 +104,13 @@ setMethod("plot", signature(x="flowFrame", y="missing"),
             values=exprs(x)
             geneplotter:::smoothScatter(values[,1:2], ...)
           })
+setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
+	l = length(y)
+	if(l==1)
+		hist(exprs(x)[,y],...)
+	else if(l==2)
+		geneploter:::smoothScatter(values[,y],...)
+})
 ## ==========================================================================
 
 
@@ -129,13 +136,20 @@ setMethod("[", signature="flowFrame",
               x@parameters = x@parameters[j,]
             x
           })
-
 setMethod("[", signature=signature("flowFrame","filterResult"),
           definition=function(x,i,j,...,drop=FALSE) {
             if(missing(j))
-              x[x%in%i,,...,drop=drop]
+              x[x %in% i,,...,drop=drop]
             else
-              x[x%in%i,j,...,drop=drop]
+              x[x %in% i,j,...,drop=drop]
+          })
+setMethod("[", signature=signature("flowFrame","filter"),
+          definition=function(x,i,j,...,drop=FALSE) {
+			result = filter(x,i)
+            if(missing(j))
+              x[result,,...,drop=drop]
+            else
+              x[result,j,...,drop=drop]
           })
 ## ==========================================================================
 
