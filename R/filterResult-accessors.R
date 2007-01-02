@@ -7,6 +7,11 @@ setAs("numeric","filterResult",function(from) new("randomFilterResult",parameter
 setAs("filterResult","logical",function(from) stop("Unable to convert to a logical vector"))
 setAs("logicalFilterResult","logical",function(from) from@subSet)
 setAs("randomFilterResult","logical",function(from) runif(length(from@subSet))<from@subSet)
+setMethod("%in%",signature("ANY","filterResult"),function(x,table) {
+	if(x != table) stop("filterResult doesn't match left-hand side.")
+	as(table,"logical")
+})
+
 
 ##Allow us to compare filterResults and flowFrames. This lets us check (and warn or stop)
 ##that a particular flowFrame generated a filterResult allowing us to use it for further processing.
@@ -21,8 +26,6 @@ setMethod("==",signature("flowFrame","filterResult"),
 #Does S4 do this for us automagically? I don't know!
 setMethod("==",signature("filterResult","flowFrame"),
           definition=function(e1,e2) e2==e1)
-
-
 
 
 

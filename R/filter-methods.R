@@ -55,6 +55,30 @@ setMethod("show","rectangleGate",function(object) {
 		cat(")\n")
 	}
 })
+#Draw a rectangular gate, either onto an existing plot or by themselves (which would be weird)
+setMethod("plot",signature(x="filterResult",y="rectangleGate"),function(x,y,
+	add=FALSE,percentage=FALSE,axes=TRUE,
+	xlim=NULL,ylim=NULL,parameters=1:2,gate.fill="transparent",gate.border="black",...) {
+	if(!add) {
+		#If this isn't an add
+		if(is.null(xlim)) xlim   = c(y@min[parameters[1]],y@max[parameters[1]])
+		if(is.null(xlim)) ylim   = c(y@min[parameters[2]],y@max[parameters[2]])
+		plot.new()
+		plot.window(xlim,ylim,"")
+		title(main = main,sub = sub,xlab = xlab,ylab = ylab,...)
+		if(axes){
+			axis(1,...)
+			axis(2,...)
+		}
+	}
+	# Draw a percentage using the summary method for this gate
+	rect(y@min[parameters[1]],y@min[parameters[2]],y@max[parameters[1]],y@max[parameters[2]],col=gate.fill,border=gate.border,...)	
+	# Drop a percentage onto this bad boy.
+	if(percentage) {
+		center = y@min[parameters] + (y@max[parameters]-y@min[parameters])/2
+		text(center[1],center[2],labels=sprintf("%.2f%%",100*summary(x)$p),...)
+	}
+})
 
 #setMethod("filter",
 #          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
