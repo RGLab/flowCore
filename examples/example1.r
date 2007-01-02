@@ -20,7 +20,10 @@ source("R/population-methods.R")
 source("R/readFCS-functions.R")
 source("R/transformation-functions.R")
 source("R/transformation-methods.R")
-
+## my local functions that will get moved eventually
+source("R/perry.r")
+Sweave("inst/doc/filtering-flowCore.Rnw")
+Sweave("inst/doc/HowTo-flowCore.Rnw")
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
@@ -35,43 +38,48 @@ dimnames(b08@exprs)[[2]]
 #  $P1N    $P2N    $P3N    $P4N    $P5N    $P6N    $P7N    $P8N 
 #"FSC-H" "SSC-H" "FL1-H" "FL2-H" "FL3-H" "FL1-A" "FL4-H"  "Time" 
 
-## transform the fluorescence readings to the  log scale
+## the fluorescence readings where converted to a relative range at the time of import
 range(b08@exprs[,"FL1-H"])
 #[1] 0.0000000 0.8914956
 range(b08@exprs[,"FL2-H"])
 #[1][1] 0 1
 
 ## these are the transformed values
-plot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
-plot(b08,plotParameters=c("FL1-H","FL2-H"),main="B08")
-plot(b08,plotParameters=c("FSC-H","FL1-H"),main="B08")
-plot(e07,plotParameters=c("FSC-H","SSC-H",main="E07"))
-plot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
-plot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
+flowplot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
+flowplot(b08,plotParameters=c("FL1-H","FL2-H"),main="B08")
+flowplot(b08,plotParameters=c("FSC-H","FL1-H"),main="B08")
+flowplot(e07,plotParameters=c("FSC-H","SSC-H",main="E07"))
+flowplot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
+flowplot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
 
 
 ## the first gate is a rectangleGate to filter out debris
-filter1 = rectGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
-b08.result1 = applyFilter(filter1,b08)
-b08.result1
-sum(b08.result1@subSet)
+filter1 = rectangleGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
+b08.result1 = filter(b08,filter1)
+summary(b08.result1)
+#rectangleGate: 8291 of 10000 (82.91%)
+sum(b08 %in% filter1)
 #[1] 8291
-plot(b08,y=b08.result1,main="B08 - Nondebris")
+flowplot(b08,y=b08.result1,main="B08 - Nondebris")
 ## 
-e07.result1 = applyFilter(filter1,e07)
+e07.result1 = filter(e07,filter1)
+summary(e07.result1)
+#rectangleGate: 8514 of 10000 (85.14%)
 sum(e07.result1@subSet)
 #[1] 8514
-plot(e07,y=e07.result1,main="E07 - Nondebris")
+flowplot(e07,y=e07.result1,main="E07 - Nondebris")
 ##
-f06.result1 = applyFilter(filter1,f06)
-plot(f06,y=f06.result1,main="F06 - Nondebris")
+f06.result1 = filter(f06,filter1)
+flowplot(f06,y=f06.result1,main="F06 - Nondebris")
+summary(f06.result1)
+#rectangleGate: 8765 of 10000 (87.65%)
 sum(f06.result1@subSet)
 #[1] 8765
 
 
 ## the second gate gets the live cells (lymphocytes)
 filter2 = new("norm2Filter",filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
-b08.result2 = applyFilter(filter2,b08,b08.result1)
+b08.result2 = filter(b08,filter2 %subset% b08.result1)
 plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1),ylim=c(0,1))
 sum(b08.result2@subSet)
 #[1] 6496
