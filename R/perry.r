@@ -9,11 +9,14 @@
 ## ==========================================================================
 ## Basic plot for fcsFrame object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setGeneric("flowplot",function(x,...) standardGeneric("flowplot"))
-setMethod("flowplot",
+setGeneric("flowPlot",function(x,...) standardGeneric("flowPlot"))
+setMethod("flowPlot",
           ## basic plot without a gate specified
           signature(x="flowFrame"),
-          function(x, y, filter=NULL, plotParameters=c("FSC-H","SSC-H"),parent,colParent="Grey",colSubSet="Blue",xlab,ylab,xlim,ylim,...){
+          function(x, y, filter=NULL, plotParameters=c("FSC-H","SSC-H"),
+          	parent,colParent="Grey",colSubSet="Blue",
+          	showFilter=TRUE,gate.fill="transparent",gate.border="black",
+          	xlab,ylab,xlim,ylim,...){
             data <- x@exprs
             ncells <- nrow(data)
             if(missing(xlab)){
@@ -32,16 +35,42 @@ setMethod("flowplot",
                 ylab <-  colnames(data)[plotParameters[2]]
               }
             }
-            if(missing(y)) {
-              ## check for the parent. If it is a filterResult get the parentSet
-              parentSet <-  getParentSet(parent,ncells)
-              selectParent <- (parentSet==1)
-              if(missing(xlim)) {
-                xlim <- range(data[selectParent,plotParameters[1]])
+            ## check for the parent. If it is a filterResult get the parentSet
+            if(missing(parent)) {
+   				## if the parent is missing assume that it is all cells
+				selectParent = rep(TRUE,ncells)
+ 			}
+			else {  	
+				if(class(parent) != "logicalFilterResult") {
+					stop("parent must be of class filterResult.")
+				}
+				else {
+					if(is.null(parent@subSet)) {
+						stop("The filterResult parent must have a subSet slot.")
+					}
+					else {
+						selectParent = parent@subSet
+					}  	
+				}
+			}
+            ## the default limits are going to be 0,1 or the range of the data
+            if(missing(xlim)) {
+              	if(max(data[selectParent,plotParameters[1]]) <= 1.0) {
+              		xlim = c(0,1)
+              	}
+              	else {
+              		xlim <-  range(data[selectParent,plotParameters[1]])
+              	}
               }
               if(missing(ylim)) {
-                ylim <-  range(data[selectParent,plotParameters[2]])
+              	if(max(data[selectParent,plotParameters[2]]) <= 1.0) {
+              		ylim = c(0,1)
+              	}
+              	else {
+                	ylim <-  range(data[selectParent,plotParameters[2]])
+                }
               }
+            if(missing(y)) {             
               
               smoothScatter(data[selectParent,plotParameters[1]],data[selectParent,plotParameters[2]],nrpoints=50,
                             xlim=xlim,
@@ -60,27 +89,17 @@ setMethod("flowplot",
                   stop("The filterResult y must have a subSet slot.")
                 }
                 else {
-                  subSet <-  y@subSet
+                  selectChild <-  y@subSet
                 }
               }
-              ## check for the parent. If it is a filterResult get the parentSet
-              parentSet <- getParentSet(parent,ncells)
-              
               ## check for the proper relationship between the parent and child
-              if(any(subSet>parentSet)) {
+              if(any(selectChild>selectParent)) {
                 stop("The child population must be contained in the parent population.")
               }
-              selectParent <-  (parentSet==1)
-              selectSubSet <-  (subSet==1)
-              selectUnfiltered <- ((parentSet-subSet) ==1)
-              if(missing(xlim)) {
-                xlim = range(data[selectParent,plotParameters[1]])
-              }
-              if(missing(ylim)) {
-                ylim = range(data[selectParent,plotParameters[2]])
-              }
+              selectUnfiltered <- ((selectParent & !selectChild))
               
-              plot(data[selectSubSet,plotParameters[1]],data[selectSubSet,plotParameters[2]],
+              
+              plot(data[selectChild,plotParameters[1]],data[selectChild,plotParameters[2]],
                    xlab=xlab,
                    ylab=ylab,
                    xlim=xlim,
@@ -88,12 +107,48 @@ setMethod("flowplot",
                    type="n",
                    ...)
               ## filtered population
-              points(data[selectSubSet,plotParameters[1]],data[selectSubSet,plotParameters[2]],col=colSubSet,...)
+              points(data[selectChild,plotParameters[1]],data[selectChild,plotParameters[2]],col=colSubSet,...)
               ## unfiltered population
               points(data[selectUnfiltered,plotParameters[1]],data[selectUnfiltered,plotParameters[2]],col=colParent,...)
-              if(length(filter)!=0){
-                ln <- filter@boundaries
-                lines(rbind(ln,ln[1,]),col="green",lwd=2)  
+              if(showFilter){
+              	yf = y@filterDetails$filter
+              	         #    		browser()
+              	if(class(yf) == "subsetFilter") {
+              		yf = yf@left
+              	}
+             	if(class(yf) == "rectangleGate") {
+             		## a simple range gate
+             		if(length(yf@parameters)==1){
+             			if(yf@parameters==plotParameters[1]) {
+             				abline(v=yf@min,col=gate.border)
+             				abline(v=yf@max,col=gate.border)
+             			}
+             			else if(yf@parameters==plotParameters[2]) {
+             				abline(h=yf@min,col=gate.border)
+             				abline(h=yf@max,col=gate.border)
+             			}
+             		}
+             		## the classic rectangle
+             		else if(length(yf@parameters)==2) {
+             			rectends = c(yf@min[plotParameters[1]],yf@min[plotParameters[2]],yf@max[plotParameters[1]],yf@max[plotParameters[2]])
+             			## draw the rectangles out to the boundaries if -Inf or Inf appears
+
+             			if(rectends[1] == -Inf) {
+             				rectends[1] = xlim[1]
+             			}
+             			if(rectends[2] == -Inf) {
+             				rectends[2] = ylim[1]
+             			}
+             			if(rectends[3] == Inf) {
+             				rectends[3] = xlim[2]
+             			}
+             			if(rectends[4] == -Inf) {
+             				rectends[4] = ylim[2]
+             			}
+             			rect(rectends[1],rectends[2],rectends[3],rectends[4],col=gate.fill,border=gate.border,...)	
+             		}
+				}
+ 
               }
             }
           })
