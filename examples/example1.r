@@ -4,26 +4,35 @@
 #library(rflowcyt)
 library(graph)
 library(prada)
-library(geneplotter)
+
 ## FOR DEVELOPMENT PURPOSES ONLY
 #library(flowcore)
 source("R/AllClasses.R")
 source("R/AllGeneric.R")
+source("R/compensation-methods.R")
 source("R/filter-constructors.R")
 source("R/filter-functions.R")
 source("R/filter-methods.R")
+source("R/filter-operations.R")
 source("R/filterResult-accessors.R")
 source("R/flowFrame-methods.R")
 source("R/flowSet-functions.R")
 source("R/flowSet-methods.R")
+source("R/kmeansFilter-implementation.R")
+source("R/multipleFilterResult-methods.R")
 source("R/population-methods.R")
 source("R/readFCS-functions.R")
 source("R/transformation-functions.R")
 source("R/transformation-methods.R")
 ## my local functions that will get moved eventually
-source("R/perry.r")
+
 Sweave("inst/doc/filtering-flowCore.Rnw")
 Sweave("inst/doc/HowTo-flowCore.Rnw")
+
+## if the package is built, you can start from here
+library(flowCore)
+#source("R/perry.r")
+#library(geneplotter)
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
@@ -45,12 +54,12 @@ range(b08@exprs[,"FL2-H"])
 #[1][1] 0 1
 
 ## these are the transformed values
-flowplot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
-flowplot(b08,plotParameters=c("FL1-H","FL2-H"),main="B08")
-flowplot(b08,plotParameters=c("FSC-H","FL1-H"),main="B08")
-flowplot(e07,plotParameters=c("FSC-H","SSC-H",main="E07"))
-flowplot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
-flowplot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
+flowPlot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
+flowPlot(b08,plotParameters=c("FL1-H","FL2-H"),main="B08")
+flowPlot(b08,plotParameters=c("FSC-H","FL1-H"),main="B08")
+flowPlot(e07,plotParameters=c("FSC-H","SSC-H",main="E07"))
+flowPlot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
+flowPlot(f06,plotParameters=c("FL1-H","FL2-H"),main="F06")
 
 
 ## the first gate is a rectangleGate to filter out debris
@@ -60,17 +69,17 @@ summary(b08.result1)
 #rectangleGate: 8291 of 10000 (82.91%)
 sum(b08 %in% filter1)
 #[1] 8291
-flowplot(b08,y=b08.result1,main="B08 - Nondebris")
+flowPlot(b08,y=b08.result1,main="B08 - Nondebris")
 ## 
 e07.result1 = filter(e07,filter1)
 summary(e07.result1)
 #rectangleGate: 8514 of 10000 (85.14%)
 sum(e07.result1@subSet)
 #[1] 8514
-flowplot(e07,y=e07.result1,main="E07 - Nondebris")
+flowPlot(e07,y=e07.result1,main="E07 - Nondebris")
 ##
 f06.result1 = filter(f06,filter1)
-flowplot(f06,y=f06.result1,main="F06 - Nondebris")
+flowPlot(f06,y=f06.result1,main="F06 - Nondebris")
 summary(f06.result1)
 #rectangleGate: 8765 of 10000 (87.65%)
 sum(f06.result1@subSet)
@@ -78,18 +87,18 @@ sum(f06.result1@subSet)
 
 
 ## the second gate gets the live cells (lymphocytes)
-filter2 = new("norm2Filter",filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
+filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,method="covMcd",filterId="Live Cells")
 b08.result2 = filter(b08,filter2 %subset% b08.result1)
-plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1),ylim=c(0,1))
+flowPlot(b08,y=b08.result2,parent=b08.result1)
 sum(b08.result2@subSet)
 #[1] 6496
 ##
-e07.result2 = applyFilter(filter2,e07,e07.result1)
-plot(e07,y=e07.result2,parent=e07.result1,xlim=c(0,1),ylim=c(0,1))
+e07.result2 = filter(e07,filter2 %subset% e07.result1)
+flowPlot(e07,y=e07.result2,parent=e07.result1)
 sum(e07.result2@subSet)
 #[1] 6416
-f06.result2 = applyFilter(filter2,f06,f06.result1)
-plot(f06,y=f06.result2,parent=f06.result1,xlim=c(0,1),ylim=c(0,1))
+f06.result2 = filter(f06,filter2 %subset% f06.result1)
+flowPlot(f06,y=f06.result2,parent=f06.result1)
 sum(f06.result2@subSet)
 #[1] 6959
 
@@ -98,62 +107,70 @@ sum(f06.result2@subSet)
 ## are two subpopulations. Naturally we would like to automatically find them
 ## In this case we want to now what percent the positive population in FL1-H is of the
 ## total population
-plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1),xlim=c(0,1))
-filter3 = rectGate("FL1-H"=c(.4,Inf),id="FL1-H+")
-b08.result3 = applyFilter(filter3,b08,b08.result2)
-plot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1),ylim=c(0,1))
+flowPlot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"))
+## filter 3 is a range gate for the positive cells
+filter3 = rectangleGate("FL1-H"=c(.4,Inf),filterId="FL1-H+")
+b08.result3 = filter(b08,filter3 %subset% b08.result2)
+flowPlot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"))
 sum(b08.result3@subSet)
 #[1] 3559
+summary(b08.result3 %subset% b08.result2)
+#FL1-H+ in Live Cells in rectangleGate in Live Cells in rectangleGate: 3559 of 6496 (54.79%)
 sum(b08.result3@subSet)/sum(b08.result2@subSet)
 #[1] 0.54787
 
-filter4=new("norm2Filter",filterId="FL1-H+",scale.factor=2,method="covMcd",parameters=c("FSC-H","FL1-H"))
-b08.result4 = applyFilter(filter4,b08,b08.result2)
-plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1),ylim=c(0,1))
-sum(b08.result4@subSet)
-#[1] 3490
-sum(b08.result4@subSet)/sum(b08.result2@subSet)
-#[1] 0.5372537
+## filter4 is an norm2Fit filter on the positive cells
+filter4=norm2Filter("FSC-H","FL1-H",filterId="FL1-H+",scale.factor=2,method="covMcd")
+b08.result4 = filter(b08,filter4 %subset% b08.result2)
+flowPlot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"))
+summary(b08.result4)
+#FL1-H+ in Live Cells in rectangleGate: 3490 of 10000 (34.90%)
+summary(b08.result4 %subset% b08.result2)
+#FL1-H+ in Live Cells in rectangleGate in Live Cells in rectangleGate: 3490 of 6496 (53.73%)
+
 
 ###############################################
-## stop here because this filter requires a NOT gate
-b08.result5 = applyFilter(filter4,b08,b08.result2@subSet-b08.result4@subSet)
-plot(b08,y=b08.result5,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,1024))
-sum(b08.result5@subSet)
-#[1] 2568
+## the next filter requires a NOT gate
+## result5 is a norm2Fit filter on the negative cells
+b08.result5 = filter(b08,filter4 %subset% (b08.result2 & !b08.result4))
+flowPlot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"))
+## the cells in the filter as a subset of the current cells
+summary(b08.result5 %subset% b08.result2)
+#FL1-H+ in Live Cells in rectangleGate and not FL1-H+ in Live Cells in rectangleGate in Live Cells in rectangleGate: 2572 of 6496 (39.59%)
+## the cells in the filter as a subset of all cells
+summary(b08.result5)
+#FL1-H+ in Live Cells in rectangleGate and not FL1-H+ in Live Cells in rectangleGate: 2572 of 10000 (25.72%)
+## the cells in the filter as a subset of the negative cells (not in the positive range gate)
+summary(b08.result5 %subset% (b08.result2 & !b08.result4))
+#FL1-H+ in ...  rectangleGate and not FL1-H+ in Live Cells in rectangleGate: 2572 of 3006 (85.56%)
 sum(b08.result4@subSet)/(sum(b08.result4@subSet)+sum(b08.result5@subSet))
-#[1] 0.5758877
-
+#[1] 0.5757176
+## the cells in the negative norm2Fit as a percent of the cells in both norm2Fit gates
+summary(b08.result4 %subset% (b08.result4 | b08.result5))
+#FL1-H+ in Live Cells in rectangleGate ... e and not FL1-H+ in Live Cells in rectangleGate: 3490 of 6062 (57.57%)
 
 ## the sixth-eighth gates get the positive cells for the marker in FL2-H
 ## in this case there is only a negative population
-plot(b08,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL2-H"),ylim=c(0,1024),xlim=c(0,1024))
-filter6 = new("rectangleGate",filterId="FL2-H+",parameters="FL2-H",min=600,max=Inf)
-b08.result6 = applyFilter(filter6,b08,b08.result2@subSet)
-plot(b08,y=b08.result6,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL2-H"),
-          xlim=c(0,1024),ylim=c(0,1024))
-sum(b08.result6@subSet)
-#[1] 12
-sum(b08.result6@subSet)/sum(b08.result2@subSet)
-#[1] 0.001
-filter7=new("norm2Filter",filterId="FL2-H-",scale.factor=2,method="covMcd",parameters=c("FSC-H","FL2-H"))
-b08.result7 = applyFilter(filter7,b08,b08.result2@subSet)
-plot(b08,y=b08.result7,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL2-H"),
-          xlim=c(0,1024),ylim=c(0,1024))
-sum(b08.result7@subSet)
-#[1] 5422
+flowPlot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL2-H"))
+filter6 = rectangleGate("FL2-H"=c(.4,Inf),filterId="FL2-H+")
+b08.result6 = filter(b08,filter6 %subset% b08.result2)
+flowPlot(b08,y=b08.result6,parent=b08.result2,plotParameters=c("FSC-H","FL2-H"))
+summary(b08.result6 %subset% b08.result2)
+#FL2-H+ in Live Cells in rectangleGate in Live Cells in rectangleGate: 301 of 6496 (4.63%)
+filter7=norm2Filter("FSC-H","FL2-H",filterId="FL2-H-",scale.factor=2,method="covMcd")
+b08.result7 = filter(b08,filter7 %subset% b08.result2)
+flowPlot(b08,y=b08.result7,parent=b08.result2,plotParameters=c("FSC-H","FL2-H"))
+summary(b08.result7 %subset% b08.result2)
+#FL2-H- in Live Cells in rectangleGate in Live Cells in rectangleGate: 5432 of 6496 (83.62%)
 
-## this doesn't produce a sensible result since there is no positive population remaining
-b08.result8 = applyFilter(filter7,b08,b08.result2@subSet-b08.result7@subSet)
-plot(b08,y=b08.result8,parent=b08.result2@subSet,plotParameters=c("FSC-H","FL2-H"),
-          xlim=c(0,1024),ylim=c(0,1024))
-sum(b08.result8@subSet)
-#[1] 
-sum(b08.result8@subSet8)/(sum(b08.result7@subSet)+sum(b08.result8@subSet))
-#[1] 
+## where do the cells with 0 fluorescence in FL2-H?
+filter8 = rectangleGate("FL2-H"=c(-Inf,0.01),filterId="No Signal in FL2")
+b08.result8 = filter(b08,filter8 %subset% b08.result2)
+flowPlot(b08,y=b08.result8,parent=b08.result2,plotParameters=c("FSC-H","FL2-H"))
+flowPlot(b08,y=b08.result8,parent=b08.result2,plotParameters=c("FSC-H","SSC-H"))
+flowPlot(b08,y=b08.result8,plotParameters=c("FSC-H","SSC-H"))
+flowPlot(b08,y=b08.result8,parent=b08.result2,plotParameters=c("FL1-H","FL2-H"))
+
 
 
 ## the ninth-eleventh gates get the positive cells for the marker in FL3-H
