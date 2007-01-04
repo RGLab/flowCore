@@ -12,6 +12,6 @@ setMethod("[[",signature("multipleFilterResult"),function(x,i,j,drop=FALSE) {
 		stop("Only a single subpopulation can be selected.")
 	filterDetails = x@filterDetails
 	filterDetails$population = i
-	new("filterResult",parameters=x@parameters,subSet=(x@subSet==i & !is.na(x@subSet)),filterDetails=filterDetails,
+	new("logicalFilterResult",parameters=x@parameters,subSet=(x@subSet==i & !is.na(x@subSet)),filterDetails=filterDetails,
 		frameId=x@frameId,filterId=paste(x@filterId,"[[",i,"]]",sep=""))
 })
