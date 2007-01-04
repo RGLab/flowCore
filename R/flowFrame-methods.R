@@ -108,8 +108,9 @@ setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
 	l = length(y)
 	if(l==1)
 		hist(exprs(x)[,y],...)
-	else if(l==2)
-		geneploter:::smoothScatter(values[,y],...)
+	else if(l==2) {
+		geneplotter:::smoothScatter(exprs(x)[,y],...)
+	}
 })
 ## ==========================================================================
 
@@ -219,7 +220,7 @@ setMethod("split", signature("flowFrame","filter"),
           )
 
 #We actually filter on filterResults and multipleFilterResults
-setMethod("split", signature("flowFrame","filterResult"),
+setMethod("split", signature("flowFrame","logicalFilterResult"),
           definition=function(x,f,drop=FALSE,population=NULL,...) {
             if(is.null(population)) population=f@filterId
             structure(list(x[f@subSet,],x[!f@subSet,]),
@@ -227,9 +228,7 @@ setMethod("split", signature("flowFrame","filterResult"),
                         paste(population,"-",sep="")))
           })
 
-setMethod("split", signature("flowFrame","multipleFilterResult"),
-          function(x,f,drop=FALSE,prefix=NULL,...) {
-            structure(lapply(seq(along=f), function(i) x[f[[i]],]),
-                      names=ifelse(!is.null(prefix), paste(prefix,names(f),sep=""),
-                        names(f)))
+setMethod("split", signature("flowFrame","multipleFilterResult"),function(x,f,drop=FALSE,prefix=NULL,...) {
+	nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
+	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })

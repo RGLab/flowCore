@@ -106,16 +106,14 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 			copy = phenoData(x)$name[i]
 		} else {
 			copy = i
-			match(i,phenoData(x)$name)
+			i    = match(i,phenoData(x)$name)
 		}
-		phenoData(x) = phenoData(x)[i,]
 		if(missing(j))
-			for(nm in copy) fr[[nm]] = orig[[nm]][i,,...,drop=drop]
+			for(nm in copy) fr[[nm]] = orig[[nm]][,,...,drop=drop]
 		else
-			for(nm in copy) fr[[nm]] = orig[[nm]][i,j,...,drop=drop]
+			for(nm in copy) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
 	}
-	x@frames = orig
-	x		
+	new("flowSet",frames = fr,phenoData=phenoData(x)[i,],colnames=if(missing(j)) x@colnames else x@colnames[j])
 })
 setMethod("[[","flowSet",function(x,i,j,...) {
 	if(length(i)!=1)
