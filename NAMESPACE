@@ -20,7 +20,8 @@ exportClasses("flowFrame", "flowSet", "transformation",
 exportMethods("initialize","description", "description<-","phenoData","phenoData<-","featureNames","names","colnames",
 			"%in%","%subset%","%&%","summary","identifier",
             "exprs", "exprs<-", "show","nrow","ncol",
-            "transform","split","Subset","filter","filterDetails","filterDetails<-","plot", "coerce","spillover","compensate","fsApply")
+            "transform","split","Subset","filter","filterDetails","filterDetails<-","plot", "coerce","spillover","compensate","fsApply",
+            "flowPlot")
 
 export("%in%") #We define a generic 
 export("print.filterSummary")
@@ -29,3 +30,4 @@ export("read.FCS","read.flowSet",
        "lnTransform", "logTransform",
        "biexponentialTransform","logicleTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoideGate","norm2Filter","kmeansFilter")
+       
