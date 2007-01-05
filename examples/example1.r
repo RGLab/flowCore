@@ -32,7 +32,7 @@ Sweave("inst/doc/HowTo-flowCore.Rnw")
 ## if the package is built, you can start from here
 library(flowCore)
 #source("R/perry.r")
-#library(geneplotter)
+library(geneplotter)
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
@@ -90,8 +90,10 @@ sum(f06.result1@subSet)
 filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,method="covMcd",filterId="Live Cells")
 b08.result2 = filter(b08,filter2 %subset% b08.result1)
 flowPlot(b08,y=b08.result2,parent=b08.result1)
-sum(b08.result2@subSet)
-#[1] 6496
+summary(b08.result2)
+#Live Cells in rectangleGate: 6496 of 10000 (64.96%)
+summary(b08.result2 %subset% b08.result1)
+#Live Cells in rectangleGate in rectangleGate: 6496 of 8291 (78.35%)
 ##
 e07.result2 = filter(e07,filter2 %subset% e07.result1)
 flowPlot(e07,y=e07.result2,parent=e07.result1)
