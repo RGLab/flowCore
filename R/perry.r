@@ -117,7 +117,9 @@ setMethod("flowPlot",
               		yf = yf@left
               	}
              	if(class(yf) == "rectangleGate") {
-             		## a simple range gate
+             		## a simple range gate, note that it may be possible that the graph
+             		## isn't based on the parameters of the gate in which case the 
+             		## gate won't show
              		if(length(yf@parameters)==1){
              			if(yf@parameters==plotParameters[1]) {
              				abline(v=yf@min,col=gate.border)
@@ -130,24 +132,40 @@ setMethod("flowPlot",
              		}
              		## the classic rectangle
              		else if(length(yf@parameters)==2) {
-             			rectends = c(yf@min[plotParameters[1]],yf@min[plotParameters[2]],yf@max[plotParameters[1]],yf@max[plotParameters[2]])
-             			## draw the rectangles out to the boundaries if -Inf or Inf appears
-
-             			if(rectends[1] == -Inf) {
-             				rectends[1] = xlim[1]
+             			## check to be sure the parameters actually match
+             			if(all(yf@parameters %in% plotParameters)) {
+             				rectends = c(yf@min[plotParameters[1]],yf@min[plotParameters[2]],yf@max[plotParameters[1]],yf@max[plotParameters[2]])
+             				## draw the rectangles out to the boundaries if -Inf or Inf appears
+             				if(rectends[1] == -Inf) {
+             					rectends[1] = xlim[1]
+             				}
+             				if(rectends[2] == -Inf) {
+             					rectends[2] = ylim[1]
+             				}
+             				if(rectends[3] == Inf) {
+             					rectends[3] = xlim[2]
+             				}
+             				if(rectends[4] == -Inf) {
+             					rectends[4] = ylim[2]
+             				}
+             				rect(rectends[1],rectends[2],rectends[3],rectends[4],col=gate.fill,border=gate.border,...)	
              			}
-             			if(rectends[2] == -Inf) {
-             				rectends[2] = ylim[1]
-             			}
-             			if(rectends[3] == Inf) {
-             				rectends[3] = xlim[2]
-             			}
-             			if(rectends[4] == -Inf) {
-             				rectends[4] = ylim[2]
-             			}
-             			rect(rectends[1],rectends[2],rectends[3],rectends[4],col=gate.fill,border=gate.border,...)	
              		}
 				}
+				if(class(yf) = "norm2Filter") {
+					## add ellipse  
+					S = yf@filterDetails
+  					eigen <- eigen(S)
+  					phi   <- seq(0, 2*pi, len = 180)
+  					phi0  <- -atan2(abs(eigen$vector[1,2]), abs(eigen$vector[1,1]))
+  					xc    <- rad * sqrt(eigen$value[1]) * cos(phi)
+  					yc    <- rad * sqrt(eigen$value[2]) * sin(phi)
+  					xc1 <- mu[1] + xc*cos(phi0) + yc*sin(phi0)
+  					yc1 <- mu[2] - xc*sin(phi0) + yc*cos(phi0)
+  					#polygon(x=xc1, y=yc1, col="#fffab1")
+  					ell <- cbind(xc1, yc1)
+ 				}
+					
  
               }
             }
