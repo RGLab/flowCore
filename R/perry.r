@@ -152,7 +152,7 @@ setMethod("flowPlot",
              			}
              		}
 				}
-				if(class(yf) = "norm2Filter") {
+				if(class(yf) == "norm2Filter") {
 					## add ellipse  
 					S = yf@filterDetails
   					eigen <- eigen(S)
