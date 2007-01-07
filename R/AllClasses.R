@@ -64,9 +64,9 @@ setClass("flowSet",
 	
 	if(!all(sapply(object@phenoData$name,function(i) {
 		x = get(i,env=object@frames)
-		if(ncol(exprs(x)) != nc || !is.null(colnames(x))) FALSE else TRUE
+		if(identical(object@colnames, colnames(x)))  TRUE else FALSE 
 	}))) {
-		warning("Some items identified in set are either have the wrong dimension or type.")
+		warning("Some items identified in the data environment either have the wrong dimension or type.")
 		return(FALSE)
 	}
 	return(TRUE)
