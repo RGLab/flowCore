@@ -119,7 +119,7 @@ setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
 ## the $-operator
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 "$.flowFrame" <- function(x, val)
-    (description(x))[val]
+    x[,val]
 ## ==========================================================================
 
 
@@ -232,3 +232,4 @@ setMethod("split", signature("flowFrame","multipleFilterResult"),function(x,f,dr
 	nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
 	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })
+
