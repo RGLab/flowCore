@@ -144,4 +144,4 @@ setMethod("show","flowSet",function(object) {
 ## ==========================================================================
 
 setMethod("sampleNames", "flowSet", function(object) 
-       sampleNames(phenoData(object))
+       sampleNames(phenoData(object)))
