@@ -57,6 +57,10 @@ setClass("flowSet",
 		warning("phenoData has no name column")
 		return(FALSE)
 	}
+        if(!(identical(object@phenoData$name, sampleNames(object@phenoData)){
+              warning("sampleNames not consistent")
+              return(FALSE)
+        } 
 	if(any(is.na(match(object@phenoData$name,ls(object@frames,all.names=TRUE))))) {
 		warning("Some names given in phenoData do not exist in this set.")
 		return(FALSE)
