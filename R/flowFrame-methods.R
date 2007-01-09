@@ -233,3 +233,8 @@ setMethod("split", signature("flowFrame","multipleFilterResult"),function(x,f,dr
 	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })
 
+
+setMethod("summary", signature("flowFrame"), 
+    function(object, ...) 
+        apply(exprs(object), 2, summary)
+ )
