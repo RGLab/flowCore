@@ -57,7 +57,7 @@ setClass("flowSet",
 		warning("phenoData has no name column")
 		return(FALSE)
 	}
-        if(!(identical(object@phenoData$name, sampleNames(object@phenoData)){
+        if(!(identical(object@phenoData$name, sampleNames(object@phenoData)))){
               warning("sampleNames not consistent")
               return(FALSE)
         } 
