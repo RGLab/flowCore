@@ -35,7 +35,7 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
     stop(paste("file", filename, "seems to corrupted."))
   if(transformation==TRUE){
-      txt[["tranformation"]] <-"applied" 
+      txt[["transformation"]] <-"applied" 
   }
   return(new("flowFrame", exprs=mat, description=c(txt), parameters=params))
 }
