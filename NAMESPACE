@@ -21,7 +21,7 @@ exportMethods("initialize","description", "description<-","phenoData","phenoData
 			"%in%","%subset%","%&%","summary","identifier",
             "exprs", "exprs<-", "show","nrow","ncol",
             "transform","split","Subset","filter","filterDetails","filterDetails<-","plot", "coerce","spillover","compensate","fsApply",
-            "flowPlot", "sampleNames", "summary")
+            "sampleNames", "summary")
 
 export("%in%") #We define a generic 
 export("print.filterSummary")
