@@ -19,6 +19,9 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
           transformation <- FALSE
           scale <- TRUE
       }
+      else if (is.logical(transformation) && !transformation) {
+      	scale = FALSE
+      }
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
