@@ -11,23 +11,39 @@
 ## AND associating a filterResult with a particular flowFrame if possible.
 setMethod("filter",signature("flowFrame","filter"),function(x,filter) {
 	result                = as(x %in% filter,"filterResult")
-	filterDetails(result) = filter
+	result@filterId       = filter@filterId
+	result@parameters     = filter@parameters
+	filterDetails(result,result@filterId) = filter
 	result@frameId        = identifier(x)
 	result
 })
-setReplaceMethod("filterDetails",signature("filterResult","filter"),function(result,value) {
-	result@parameters    = value@parameters
-	result@filterId      = value@filterId
-	result@filterDetails = list(filter=value)
-	
+setReplaceMethod("filterDetails",signature("filterResult","character",value="ANY"),function(result,filterId,...,value) {
+	result@filterDetails[[filterId]] = value
+	result
+})
+setReplaceMethod("filterDetails",signature("filterResult","character",value="filter"),function(result,filterId,...,value) {
+	filterDetails(result,filterId) = summarizeFilter(result,value)
 	result
 })
 
-#msg = paste(class(filter),"applied on",
-#	deparse(substitute(flowObject))," (file:",
-#	basename(flowObject@description["$FIL"]),") a",
-#	class(flowObject),"object")
+setMethod("filterDetails",signature("filterResult","missing"),function(result,filterId) {
+	result@filterDetails
+})
+setMethod("filterDetails",signature("filterResult","ANY"),function(result,filterId) {
+	result@filterDetails[[filterId]]
+})
 
+
+setMethod("summarizeFilter",signature("filterResult","filter"),function(result,filter) {
+	list(filter=filter)
+})
+
+setMethod("summary","filter",function(object,...) {
+	l = as(object,"logical")
+	true = sum(l)
+	count= length(l)
+	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),name=object@filterId),class="filterSummary")
+})
 
 ## Printing out a filter should give us something at least mildly sensible.
 setMethod("show","filter",function(object) 
@@ -55,43 +71,9 @@ setMethod("show","rectangleGate",function(object) {
 		cat(")\n")
 	}
 })
-#Draw a rectangular gate, either onto an existing plot or by themselves (which would be weird)
-setMethod("plot",signature(x="filterResult",y="rectangleGate"),function(x,y,
-	add=FALSE,percentage=FALSE,axes=TRUE,
-	xlim=NULL,ylim=NULL,parameters=1:2,gate.fill="transparent",gate.border="black",...) {
-	if(!add) {
-		#If this isn't an add
-		if(is.null(xlim)) xlim   = c(y@min[parameters[1]],y@max[parameters[1]])
-		if(is.null(xlim)) ylim   = c(y@min[parameters[2]],y@max[parameters[2]])
-		plot.new()
-		plot.window(xlim,ylim,"")
-		title(main = main,sub = sub,xlab = xlab,ylab = ylab,...)
-		if(axes){
-			axis(1,...)
-			axis(2,...)
-		}
-	}
-	# Draw a percentage using the summary method for this gate
-	rect(y@min[parameters[1]],y@min[parameters[2]],y@max[parameters[1]],y@max[parameters[2]],col=gate.fill,border=gate.border,...)	
-	# Drop a percentage onto this bad boy.
-	if(percentage) {
-		center = y@min[parameters] + (y@max[parameters]-y@min[parameters])/2
-		text(center[1],center[2],labels=sprintf("%.2f%%",100*summary(x)$p),...)
-	}
+setMethod("summary","rectangleGate",function(object,...) {
+	structure(sapply(seq(along=object@parameters),function(i) c(min=object@min[i],max=object@max[i])),names=object@parameters)
 })
-
-#setMethod("filter",
-#          signature=signature(filter="rectangleGate",flowObject="flowFrame",parent="ANY"),
-#          definition=function(filter,flowObject,parent) {
-#              selectNew <-rectangleFiltering(filter,flowObject,parent)
-#               msg <- paste("rectangleGate applied on ",
-#                            deparse(substitute(flowObject)),
-#                            " (file:",basename(flowObject@description["$FIL"]),
-#                            ") a ", class(flowObject)," object", sep="")
-#               out = list(msg,filter=filter)
-#              new("filterResult", subSet=selectNew,filterDetails=out)
-#          })
-## ==========================================================================
 
 
 
@@ -110,38 +92,9 @@ setMethod("%in%",signature("flowFrame","polygonGate"),function(x,table) {
 		stop("Polygonal gates only support 1 or 2 dimensional gates (for now).")
 })
 
-
-#setMethod("filter",
-#          signature=signature(filter="polygonGate",flowObject="flowFrame",parent="ANY"),
-#          definition=function(flowObject,filter,parent) {
-#              selectNew <-polygonFiltering(filter,flowObject,parent)
-#              msg <- paste("polygonGate applied on ",
-#                           deparse(substitute(flowObject)),
-#                           " (file:",basename(flowObject@description["$FIL"]),
-#                           ") a ", class(flowObject)," object", sep="")
-#       			out = list(msg,filter=filter)
-#              new("filterResult", subSet=selectNew,filterDetails=out)
-#          } 
-#          )
-
-
-## ==========================================================================
-
 ## ==========================================================================
 ##  filter  flowFrame Object using norm2Filter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#setMethod("filter",
-#          signature=signature(filter="norm2Filter",flowObject="flowFrame",parent="ANY"),
-#          definition=function(filter,flowObject,parent) {
-#              selectNew <-normFiltering(filter,flowObject,parent)
-#              msg <- paste("norm2Filter applied on ",
-#                            deparse(substitute(flowObject)),
-#                            " (file:",basename(flowObject@description["$FIL"]),
-#                            ") a ", class(flowObject)," object", sep="")
-#               out = list(msg,filter=filter,mu=selectNew$mu,S=selectNew$S)
-#              new("filterResult", subSet=selectNew$sel,filterDetails=out)
-#          })
-## ==========================================================================
 setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 	if(length(table@parameters) != 2)
 		stop("norm2 filters require exactly two parameters.")
@@ -161,26 +114,14 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 	result = exp(-.5*colSums((solve(cov$cov)%*%W)*W))>exp(-.5*table@scale.factor^2)
 	attr(result,'center') = cov$center
 	attr(result,'cov')    = cov$cov
+	attr(result,'radius') = table@scale.factor
 	result
 })
-setReplaceMethod("filterDetails",signature("filterResult","norm2Filter"),function(result,value) {
-	result = callNextMethod()
-	#Bring the cov and center values into the details for easier access
-	result@filterDetails$cov = attr(result@subSet,'cov')
-	result@filterDetails$center = attr(result@subSet,'center')
-	result
+setMethod("summarizeFilter",signature("filterResult","norm2Filter"),function(result,filter) {
+	ret = callNextMethod()
+	ret$cov    = attr(result@subSet,'cov')
+	ret$center = attr(result@subSet,'center')
+	ret$radius = attr(result@subSet,'radius')
+	ret
 })
 
-setMethod("summary","filter",function(object,...) {
-	l = as(object,"logical")
-	true = sum(l)
-	count= length(l)
-	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),name=object@filterId),class="filterSummary")
-})
-setMethod("summary","subsetFilter",function(object,...) {
-	e1 = as(object@left,"logical")
-	e2 = as(object@right,"logical")
-	true = sum(e1&e2)
-	count= sum(e2)
-	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),name=object@filterId),class="filterSummary")	
-})

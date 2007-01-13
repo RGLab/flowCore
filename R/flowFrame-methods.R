@@ -30,23 +30,24 @@ setReplaceMethod("exprs", signature=c("flowFrame", "matrix"),
 
 
 ## ==========================================================================
-## accessor method for slot description
+## accessor methods for slot description
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("description", signature="flowFrame",
-          definition=function(object)
-            object@description,
-          )
-## ==========================================================================
-
-
-## ==========================================================================
-## replace method for slot description
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setReplaceMethod("description", signature=c("flowFrame", "character"),
-                 definition=function(object, value) {
-                   object@description <- value
-                   return(object)
-                 })
+setMethod("keyword",signature("flowFrame","character"),function(object,keyword) {
+	structure(object@description[keyword],names=keyword)
+})
+setMethod("keyword",signature("flowFrame","function"),function(object,keyword) {
+	keyword(object,object@description)
+})
+setMethod("keyword",signature("flowFrame","list"),function(object,keyword) {
+	sapply(keyword,function(k) {
+		if(is.character(k))
+			object@description[k]
+		else if(is.function(k))
+			k(object,object@description,k)
+		else NA
+	})
+})
+setMethod("description",signature("flowFrame"),function(object) object@description)
 ## ==========================================================================
 
 

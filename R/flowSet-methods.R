@@ -10,17 +10,17 @@ setAs("environment","flowSet",function(from) {
 	frameList = frameList[isFrame]
 
 	#Check the column names
-	colNames = sapply(frameList,function(f) colnames(get(f,env=from)))
+	colNames = sapply(frameList,function(f) colnames(from[[f]]))
 	if(!all(apply(colNames,2,"==",colNames[,1])))
 		stop("Column names for all frames do not match.")
-	phenoData = new("AnnotatedDataFrame",
-		data=data.frame(name=I(frameList)),varMetadata=data.frame(labelDescription="Name of FCS file",row.names="name"))
-	for(f in frameList){
-		x = get(f,env=from)
-		colnames(x) = NULL
-		assign(f,x,env=from)
-	}
-	new("flowSet",frames=from,phenoData=phenoData,colnames=colNames[,1])
+	new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
+		data=data.frame(name=I(frameList),row.names=frameList),varMetadata=data.frame(labelDescription="Name",row.names="name")))
+},function(from,value) {
+	if(!canCoerce(value,"AnnotatedDataFrame"))
+		stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
+	from            = as(from,"flowSet")
+	phenoData(from) = as(value,"AnnotatedDataFrame")
+	from
 })
 ## ==========================================================================
                                         
@@ -32,6 +32,10 @@ setAs("list","flowSet",function(from) {
 	env = new.env(hash=TRUE,parent=emptyenv())
 	multiassign(from,env=env)
 	as(env,"flowSet")
+},function(from,value) {
+	env = new.env(hash=TRUE,parent=emptyenv())
+	multiassign(from,env=env)
+	as(env,"flowSet") <- value
 })
 ## ==========================================================================
 
@@ -125,9 +129,15 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 ## ==========================================================================
 
 setMethod("fsApply",signature("flowSet","function"),function(x,FUN,...) {
-	res = as(structure(lapply(phenoData(x)$name,function(n) FUN(x[[n]],...)),names=phenoData(x)$name),"flowSet")
-	phenoData(res) = phenoData(x)
-	res
+	as(structure(lapply(sampleNames(x),function(n) {
+		FUN(as(x[[n]],"flowFrame"),...)
+	}),names=sampleNames(x)),"flowSet") = phenoData(x)
+})
+
+setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
+	do.call("data.frame",c(lapply(keyword,function(k) {
+		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
+	}),list(row.names=sampleNames(object))))
 })
 
 
@@ -136,7 +146,8 @@ setMethod("fsApply",signature("flowSet","function"),function(x,FUN,...) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show","flowSet",function(object) {
 	cat("A flowSet with ",length(object)," experiments.\n\n")
-	cat("Column names:\n")
+	show(phenoData(object))
+	cat("\nColumn names:\n")
 	cat(paste(object@colnames,sep=","))
 	cat("\n")
 })

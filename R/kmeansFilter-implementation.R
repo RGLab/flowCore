@@ -12,10 +12,10 @@ kmeansFilter = function(...,filterId="kmeans") {
 
 ## Filtering Methods -- we are not a logical filter so we return a vector
 ## of indices indicating a population.
-setReplaceMethod("filterDetails",signature("filterResult","kmeansFilter"),function(result,value) {
-	result = callNextMethod()
-	result@filterDetails$populations = value@populations
-	result
+setMethod("summarizeFilter",signature("filterResult","kmeansFilter"),function(result,filter) {
+	ret = callNextMethod()
+	ret$populations = filter@populations
+	ret
 })
 setMethod("%in%",signature("flowFrame","kmeansFilter"),function(x,table) {
 	##We accomplish the actual filtering via K-means
