@@ -28,6 +28,10 @@ setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
 setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 
+
+setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
+
+
 ## ---------------------------------------------------------------------------
 
 ## ===========================================================================
@@ -54,7 +58,7 @@ setGeneric("identifier",function(object) standardGeneric("identifier"))
 ## ---------------------------------------------------------------------------
 
 ## ===========================================================================
-## Generic for split
+## Generic for split and subset
 ## ---------------------------------------------------------------------------
 setGeneric("split")
 setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
@@ -66,8 +70,14 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## ---------------------------------------------------------------------------
 setGeneric("filter", function(x, filter,...) standardGeneric("filter"),useAsDefault=FALSE)
 
-setGeneric("filterDetails<-",function(result,value) standardGeneric("filterDetails<-"))
-setGeneric("filterDetails",function(result) standardGeneric("filterDetails"))
+## For accessing certain aspects of the filtering process.
+setGeneric("filterDetails<-",function(result,filterId,...,value)  standardGeneric("filterDetails<-"))
+setGeneric("filterDetails",function(result,filterId,...) standardGeneric("filterDetails"))
+
+## Used to summarize the operation of a filter on a frame. Used for the implementation
+## of filters, not for the use of filters.
+setGeneric("summarizeFilter",function(result,filter) standardGeneric("summarizeFilter"))
+
 
 ## ---------------------------------------------------------------------------
 

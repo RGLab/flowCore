@@ -42,33 +42,35 @@ setClass("flowSet",
                  colnames="character"),
   prototype=list(frames=new.env(),
                  phenoData=new("AnnotatedDataFrame",
-                   data=data.frame(name=I(character(0))),
-                   varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
+                   data=data.frame(),
+                   varMetadata=data.frame()),
                  colnames=character(0)),
   validity=function(object){
     nc <- length(colnames(object))
-	if(!(is(object@phenoData, "AnnotatedDataFrame") && 
-		is(object@colnames, "character") &&
-		is(object@frames, "environment"))) {
-			warning("An element of this object is of the wrong type.")
-			return(FALSE)
-		}
-	if(!("name" %in% colnames(pData(object@phenoData)))) {
-		warning("phenoData has no name column")
-		return(FALSE)
-	}
-        if(!(identical(object@phenoData$name, sampleNames(object@phenoData)))){
-              warning("sampleNames not consistent")
-              return(FALSE)
-        } 
-	if(any(is.na(match(object@phenoData$name,ls(object@frames,all.names=TRUE))))) {
-		warning("Some names given in phenoData do not exist in this set.")
+	# Why do we do this? It seems like new() should already check this against the representation().
+	# replicating it here seems superfluorous.
+#	if(!(is(object@phenoData, "AnnotatedDataFrame") && 
+#		is(object@colnames, "character") &&
+#		is(object@frames, "environment"))) {
+#			warning("An element of this object is of the wrong type.")
+#			return(FALSE)
+#		}
+
+	#Make sure that all of our samples list
+	name.check = is.na(match(sampleNames(object),ls(object@frames,all.names=TRUE)))
+	if(any(name.check)) {
+		name.list = paste(sampleNames(object)[name.check],sep=",")
+		warning(paste("These objects are not in the data environment:",name.list))
 		return(FALSE)
 	}
 	
-	if(!all(sapply(object@phenoData$name,function(i) {
+	#Ensure that all frames match our colnames
+	if(!all(sapply(sampleNames(object),function(i) {
 		x = get(i,env=object@frames)
-		if(identical(object@colnames, colnames(x)))  TRUE else FALSE 
+		if(identical(object@colnames, colnames(x)))  TRUE else { 
+			warning(paste(i,"failing colnames check: ",paste(object@colnames,sep=","),"vs",paste(colnames(x),sep=",")))
+			FALSE 
+		}
 	}))) {
 		warning("Some items identified in the data environment either have the wrong dimension or type.")
 		return(FALSE)
@@ -340,10 +342,25 @@ setClass("filterTree",
          }
          )
 
-setClass("unionFilter",representation("filter",filters="list"))
-setClass("intersectFilter",representation("filter",filters="list"))
-setClass("subsetFilter",representation("filter",left="filter",right="filter"))
-setClass("complementFilter",representation("filter",filter="filter"))
+setClass("setOperationFilter",representation("filter",filters="list"))
+setClass("unionFilter",representation("setOperationFilter"))
+setClass("intersectFilter",representation("setOperationFilter"))
+setClass("complementFilter",representation("setOperationFilter"),
+	validity=function(object) { 
+		if(length(object@filters) != 1) {
+			warning("Complement filters can only operate on a single filter")
+			return(FALSE)
+		}
+		TRUE
+	})
+setClass("subsetFilter",representation("setOperationFilter"),
+	validity=function(object) {
+		if(length(object@filters) != 2) {
+			warning("Subset filters are only defined as binary operators")
+			return(FALSE)
+		}
+		TRUE
+	})
 
 ## ===========================================================================
 ## filterResult
