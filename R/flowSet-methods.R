@@ -128,10 +128,21 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 
 ## ==========================================================================
 
-setMethod("fsApply",signature("flowSet","function"),function(x,FUN,...) {
-	as(structure(lapply(sampleNames(x),function(n) {
-		FUN(as(x[[n]],"flowFrame"),...)
-	}),names=sampleNames(x)),"flowSet") = phenoData(x)
+setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE) {
+	FUN = match.fun(FUN)
+	res = structure(lapply(sampleNames(x),function(n) FUN(as(x[[n]],"flowFrame"),...)),names=sampleNames(x))
+	if(simplify && all(sapply(res,is,"flowFrame"))) {
+		res = as(res,"flowSet")
+		phenoData(res) = phenoData(x)
+	}
+	res
+})
+
+setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
+	if(missing(select))
+		fsApply(x,Subset,subset,...)
+	else
+		fsApply(x,Subset,subset,select,...)
 })
 
 setMethod("keyword",signature("flowSet","list"),function(object,keyword) {

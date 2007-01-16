@@ -14,7 +14,7 @@ importClassesFrom("Biobase", "eSet")
 
 exportClasses("flowFrame", "flowSet", "transformation",
               "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
-              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult", 
+              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","setOperationFilter", 
  			  "norm2Filter", "kmeansFilter", "filterTree")
 
 exportMethods("initialize","description","phenoData","phenoData<-","featureNames","names","colnames","keyword",
