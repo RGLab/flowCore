@@ -4,7 +4,7 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.FCS(filename, transformation = NULL, debug = FALSE, alter.names=FALSE, column.pattern=NULL)
+   read.FCS(filename, transformation = "linearize", debug = FALSE, alter.names=FALSE, column.pattern=NULL)
 }
 
 \arguments{
