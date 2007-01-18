@@ -10,19 +10,18 @@ setMethod("transform",
                         ##Add any new parameter values
 			param.names <- colnames(transformed)
                         newParams <- is.na(match(param.names,`_data`@parameters$name))
-			#params      = parameters(`_data`)
-                        params <- `_data`@parameters$name
+			params      = parameters(`_data`)$name
                         if(any(newParams)) {
 				params <- cbind(params,
                                   data.frame(name=param.names))
                                 ##params = cbind(params,
                                 ##data.frame(name=param.names[newParams]))
                             }
-                        colnames(transformed) <- `_data`@parameters$name
+                        colnames(transformed) <- parameters(`_data`)$name
                         new("flowFrame",
 				##exprs=transformed[,params$name],
                                 exprs=transformed,
-				parameters=`_data`@parameters,
+				parameters=parameters(`_data`),
 				description=description(`_data`))
           })
  

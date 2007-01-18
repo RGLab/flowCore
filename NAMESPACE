@@ -19,7 +19,7 @@ exportClasses("flowFrame", "flowSet", "transformation",
 
 exportMethods("initialize","description","phenoData","phenoData<-","featureNames","names","colnames","keyword",
 			"%in%","%subset%","%&%","summary","identifier",
-            "exprs", "exprs<-", "show","nrow","ncol",
+            "exprs", "exprs<-", "parameters", "show","nrow","ncol",
             "transform","split","Subset","filter","filterDetails","filterDetails<-","plot", "coerce","spillover","compensate","fsApply",
             "sampleNames", "summary")
 

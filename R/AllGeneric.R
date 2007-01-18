@@ -1,7 +1,5 @@
-##  Generic methods definition - last changes PDH November 2, 2006
-##      changed subSet to parent in applyFilter
-
-
+##  Generic methods definition - last changes NLM January 17, 2006
+##      add parameters
 
 ## ===========================================================================
 ## These are already defined as generic functions:
@@ -31,6 +29,8 @@ setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
 
+## to access parameters in a flowframe
+setGeneric("parameters",function(object) standardGeneric("parameters"))
 
 ## ---------------------------------------------------------------------------
 
