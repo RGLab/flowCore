@@ -7,6 +7,7 @@ setAs("numeric","filterResult",function(from) new("randomFilterResult",parameter
 setAs("filterResult","logical",function(from) stop("Unable to convert to a logical vector"))
 setAs("logicalFilterResult","logical",function(from) from@subSet)
 setAs("randomFilterResult","logical",function(from) runif(length(from@subSet))<from@subSet)
+
 setMethod("%in%",signature("ANY","filterResult"),function(x,table) {
 	if(x != table) stop("filterResult doesn't match left-hand side.")
 	as(table,"logical")

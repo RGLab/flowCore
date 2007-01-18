@@ -49,20 +49,9 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	#Sanity checking
 	if(nrow(current) != nrow(value))
 		stop("phenoData must have the same number of rows as flow files")
-	if(length(unique(value$name)) != nrow(value))
-		stop("phenoData must have a name column to uniquely identify flowFrames.")
-	#If the names are different, we need to remap the environment assuming that the ordering is the same.
-	if(!all(current$name==value$name)) {
-		fr = object@frames
-		for(i in seq(along=current$name)) {
-			#If the name differs then swap the names
-			if(current$name[i] != value$name[i]) {
-				x = get(current$name[i],env=fr)
-				rm(current$name[i],env=fr)
-				assign(x,value$name[i],env=fr)
-			}
-		}
-	}
+	#If the row.names have changed (not just reordered we should remap them)
+	if(!all(sampleNames(current)==sampleNames(value)))
+		stop("The sample names no longer match.")
 	object@phenoData = value
 	object
 })
@@ -130,7 +119,11 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 
 setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE) {
 	FUN = match.fun(FUN)
-	res = structure(lapply(sampleNames(x),function(n) FUN(as(x[[n]],"flowFrame"),...)),names=sampleNames(x))
+	if(!is.function(FUN))
+		stop("This is not a function!")
+	# row.names and sampleNames had damn well better match, use this to give us access to the phenoData
+	pD  = phenoData(x)
+	res = structure(lapply(sampleNames(x),function(n) with(pD[x,],FUN(as(x[[n]],"flowFrame"),...))),names=sampleNames(x))
 	if(simplify && all(sapply(res,is,"flowFrame"))) {
 		res = as(res,"flowSet")
 		phenoData(res) = phenoData(x)
@@ -149,6 +142,20 @@ setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
 	do.call("data.frame",c(lapply(keyword,function(k) {
 		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
 	}),list(row.names=sampleNames(object))))
+})
+
+setMethod("rbind2",signature("flowSet","missing"),function(x,y) x)
+setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
+	env = new.env(hash=TRUE,parent=emptyenv())
+	lx  = sampleNames(x)
+	ly  = sampleNames(y)
+	if(lx %in% ly)
+		stop("These flowSets contain overlapping samples.")
+	for(i in lx) assign(i,x[[i]],env=env)
+	for(i in ly) assign(i,y[[i]],env=env)
+	fs            = as(env,"flowSet")
+	phenoData(fs) = rbind2(phenoData(x),phenoData(y))
+	fs
 })
 
 
