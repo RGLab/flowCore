@@ -14,20 +14,21 @@ require("Biobase")
 ## 
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
-  representation(exprs="matrix",
-				 parameters="AnnotatedDataFrame",
-                 description="vector"),
-  prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
-				 parameters=new("AnnotatedDataFrame",
-					data=data.frame(name=I(character(0))),varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
-                 description=c(note="empty")),
- validity=function(object){
-   msg <- TRUE
-   if(!is.matrix(object@exprs))
-      msg <- "\nslot 'exprs' must be matrix"
-   if(!is.vector(object@description))
-      msg <- "\nslot 'description' must be a vector"
-})
+         representation(exprs="matrix",
+                        parameters="AnnotatedDataFrame",
+                        description="vector"),
+         prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
+           parameters=new("AnnotatedDataFrame",
+             data=data.frame(name=I(character(0))),
+             varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
+           description=c(note="empty")),
+         validity=function(object){
+             msg <- TRUE
+             if(!is.matrix(object@exprs))
+               msg <- "\nslot 'exprs' must be matrix"
+             if(!is.vector(object@description))
+               msg <- "\nslot 'description' must be a vector"
+         })
 
 ## ===========================================================================
 ##  ~cytoSet

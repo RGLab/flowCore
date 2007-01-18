@@ -13,7 +13,7 @@ setMethod("identifier", signature="flowFrame",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("exprs", signature="flowFrame",
           definition=function(object)
-            object@exprs,
+            object@exprs
           )
 ## ==========================================================================
 
@@ -26,6 +26,15 @@ setReplaceMethod("exprs", signature=c("flowFrame", "matrix"),
                    object@exprs <- value
                    return(object)
                  })
+## ==========================================================================
+
+## ==========================================================================
+## accessor method for slot parameters
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("parameters", signature="flowFrame",
+          definition=function(object)
+            object@parameters
+          )
 ## ==========================================================================
 
 
