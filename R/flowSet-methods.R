@@ -111,7 +111,7 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 setMethod("[[","flowSet",function(x,i,j,...) {
 	if(length(i)!=1)
 		stop("subscript out of bounds (index must have length 1)")
-	fr = x@frames[[if(is.numeric(i)) phenoData(x)$name[i] else i]]
+	fr = x@frames[[if(is.numeric(i)) sampleNames(x)[[i]] else i]]
 	fr
 })
 
