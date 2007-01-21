@@ -12,7 +12,7 @@ importFrom("Biobase", "exprs", "exprs<-", "description", "description<-","phenoD
 	"sampleNames","sampleNames<-","featureNames","featureNames<-")
 importClassesFrom("Biobase", "eSet")
 
-exportClasses("flowFrame", "flowSet", "transformation",
+exportClasses("flowFrame", "flowSet",
               "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
               "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","setOperationFilter", 
  			  "norm2Filter", "kmeansFilter", "filterTree")
@@ -24,10 +24,10 @@ exportMethods("initialize","description","phenoData","phenoData<-","featureNames
             "sampleNames", "summary")
 
 export("%in%") #We define a generic 
-export("print.filterSummary")
+
 export("read.FCS","read.flowSet",
-	"linearTransform","quadraticTransform",
-       "lnTransform", "logTransform",
+	"linearTransform","quadraticTransform", "lnTransform", "logTransform",
        "biexponentialTransform","logicleTransform",
-       "rectangleGate","polygonGate","polytopeGate","ellipsoideGate","norm2Filter","kmeansFilter")
+       "rectangleGate","polygonGate","polytopeGate","ellipsoideGate",
+       "norm2Filter","kmeansFilter","print.filterSummary")
        

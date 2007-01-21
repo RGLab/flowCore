@@ -4,6 +4,7 @@ setMethod("spillover","flowFrame",function(x) {
 	# extract it.
 	"spillover"
 })
+
 setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",ssc="SSC-A",method="median") {
 	if(is.null(unstained)) {
 		"is.null(unstained)"

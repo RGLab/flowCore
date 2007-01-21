@@ -9,7 +9,12 @@
 
 \arguments{
   \item{filename}{Character of length 1: filename}
-  \item{transformation}{An optional character string that defines the type of transformation. Valid values are \code{linearize} and \code{standardize}. The former applies the appropriate power transform to the data while the latter scales all columns to [0,1] as in the FCS4 specification.}
+  \item{transformation}{An character string that defines the
+    type of transformation. Valid values are \code{linearize} (default) or
+    \code{standardize}.The former applies the appropriate power
+    transform to the data while the latter scales all columns to [0,1]
+    as in the FCS4 specification. A logical can also be used: \code{TRUE} is
+    equal to \code{linearize} and \code{FALSE} correponds to no transformation.}
   \item{debug}{boolean indicating whether or not to print the
     debugging statements, default is TRUE}
   \item{alter.names}{boolean indicating whether or not we should rename the columns to valid R names using \code{\link{make.names}}. The default is FALSE.}
@@ -36,7 +41,7 @@ For specifications of FCS 3.0 see
 
 \examples{
 samp <- read.FCS(system.file("extdata",
-   "0877408774.B08", package="flowCore"))
+   "0877408774.B08", package="flowCore"), transformation="linearize")
 exprs(samp[1:3,])
 description(samp)[3:6]
 class(samp)
