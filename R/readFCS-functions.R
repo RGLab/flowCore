@@ -1,7 +1,5 @@
-## last changed: pdh 12-06-06
-##     I believe the correct interpretation is that if scale=TRUE, then transformation=FALSE
-##     I changed this in the read.FCS function
-##     I also had to make a corresponding change in the readFCSData function.
+## last changed: nlm 01-20-07
+##     Add the FCS version number in the description slot.
 
 ## Adapted from F.Hahne last updated Oct 30 0.6
 ## For specifications of FACS 3.0 see
@@ -13,15 +11,15 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   stopifnot(is.character(filename), length(filename)==1, filename!="")
   con <- file(filename, open="rb")
   if(is.logical(transformation) && transformation || !is.null(transformation) && transformation == "linearize") {
-          transformation <- TRUE
-          scale <- FALSE
-      } else if ( !is.null(transformation) && transformation == "scale") {
-          transformation <- FALSE
-          scale <- TRUE
-      }
-      else if (is.logical(transformation) && !transformation) {
-      	scale = FALSE
-      }
+      transformation <- TRUE
+      scale <- FALSE
+  } else if ( !is.null(transformation) && transformation == "scale") {
+      transformation <- FALSE
+      scale <- TRUE
+  }
+  else if (is.logical(transformation) && !transformation) {
+      scale <- FALSE
+  }
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
@@ -64,18 +62,19 @@ readFCSheader <- function(con) {
   version <- readChar(con, 6)
   if(!version %in% c("FCS2.0", "FCS3.0"))
     stop("This does not seem to be a valid FCS2.0 or FCS3.0 file")
-  
+
+  version <-  substring(version,4,nchar(version))
   tmp <- readChar(con, 4)
   stopifnot(tmp=="    ")
 
   coffs <- character(6)
   for(i in 1:length(coffs))
     coffs[i] <- readChar(con=con, nchars=8)
-  
-  ioffs <- as.integer(coffs)
-  names(ioffs) <- c("textstart", "textend", "datastart", "dataend", "anastart", "anaend")
-  
-  stopifnot(all(!is.na(ioffs) | coffs=="        "), !any(ioffs[1:4]==0))
+ 
+  ioffs <- c(as.double(version),as.integer(coffs))
+  names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart", "dataend", "anastart", "anaend")
+  stopifnot(all(!is.na(ioffs) | ioffs==""), !any(ioffs[1:5]==0))
+
   return(ioffs)
 }
 
@@ -87,8 +86,8 @@ readFCStext <- function(con, offsets, debug) {
   sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
   ## if(length(sp)%%2!=0)
   ##  stop("In readFCStext: unexpected format of the text segment")
-  rv <- sp[seq(2, length(sp), by=2)]
-  names(rv) <- sp[seq(1, length(sp)-1, by=2)]
+  rv <- c(offsets["FCSversion"],sp[seq(2, length(sp), by=2)])
+  names(rv) <- c("FCSversion",sp[seq(1, length(sp)-1, by=2)])
   return(rv)
 }
 
@@ -129,6 +128,7 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
   dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
   cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
   colnames(dat) <- if(alter.names) structure(make.names(cn),names=names(cn)) else cn
+
   if(transformation) {
       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
       ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))

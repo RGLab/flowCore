@@ -1,6 +1,5 @@
 \name{transform}
 \alias{transform}
-\alias{transform,flowFrame,transformation}
 \alias{transform,flowFrame,linearTransformation}
 \alias{transform,flowFrame,quadratictransformation}
 \alias{transform,flowFrame,lnTransformation}
@@ -17,10 +16,12 @@ transform(`_data`,...)
 }
 \arguments{
   \item{`_data`}{Object of class \code{\link[flowCore]{flowFrame}}.}
-   \item{...}{transformation function to be applied}
+   \item{...}{transformation function to be applied such as \code{\link[flowCore]{linearTransformation}}
 }
 
 \details{
+ Note that the arguments on which to apply the transformation should be
+ called with single quote, e.g.,transform(`_data`,`FLH-1`=2*`FLH-1`).
 }
 
 \value{Object of class \code{\link[flowCore]{flowFrame}.}

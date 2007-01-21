@@ -1,9 +1,13 @@
 ## ==========================================================================
 ## Linear transformation function
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-linearTransform <- function(transformationId,a,b){
-    function(x){
-        x <- x*a+b
+linearTransform <- function(transformationId,a=1,b=0){
+    if(!is.double(a)) 
+      stop("a must be numeric")
+    if(!is.double(b))
+       stop("b must be numeric")
+    function(x){    
+        x <- a*x+b
     }
 }
 
