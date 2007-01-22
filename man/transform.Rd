@@ -17,7 +17,8 @@ transform(`_data`,...)
 \arguments{
   \item{`_data`}{Object of class \code{\link[flowCore]{flowFrame}}.}
    \item{...}{transformation function to be applied such as \code{\link[flowCore]{linearTransformation}}
-}
+   }
+ }
 
 \details{
  Note that the arguments on which to apply the transformation should be

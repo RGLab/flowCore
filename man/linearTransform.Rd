@@ -11,7 +11,7 @@ visualization.
 linearTransform(transformationId,a,b)
 }
 \arguments{
-  \item{transformationId}{character vector to annotate the
+  \item{transformationId}{character string to annotate the
     transformation applied}
   \item{a}{numeric multiplicative factor}
   \item{b}{numeric additive factor}

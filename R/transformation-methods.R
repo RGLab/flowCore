@@ -24,12 +24,13 @@ setMethod("transform",
 				parameters=parameters(`_data`),
 				description=description(`_data`))
           })
- ## ==========================================================================
+## ==========================================================================
 ## Transform function for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
- setMethod("transform",signature("flowSet"),function(x,...) {
-	y = as(structure(lapply(seq(along=x),function(i) transform(`_data`=x[[i]],...)),names=phenoData(x)$name),"flowSet")
-	phenoData(y) = phenoData(x)
-	y
+setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
+    `_data`=x
+    y = as(structure(lapply(seq(along=x),
+      function(i) transform(`_data`=x[[i]],...)),names=phenoData(x)$name),"flowSet")
+    phenoData(y) = phenoData(x)
+    y
 })
