@@ -13,7 +13,7 @@ colParent="Grey", colSubSet="Blue", xlim, ylim,...)
 }
 \arguments{
   \item{x}{flowFrame object}
-  \item{y}{filterResult Object}
+  \item{y}{character vector}
   \item{filter}{gate Object}
   \item{plotParameters}{parameters to plot}
   \item{parent}{}
@@ -37,6 +37,6 @@ triangleCut <- matrix(c(300,400,600,300,400,300),ncol=2,nrow=3)
 colnames(triangleCut) <- c("FSC-H","SSC-H")
 triangleF <- polygonGate(filterId="nonDebris", boundaries= triangleCut)
 sampTrg <- filter(samp,triangleF)
-plot(samp,sampTrg,filter=triangleF,pch="*")
+plot(samp[sampTrg],pch="*")
 }
 \keyword{methods}

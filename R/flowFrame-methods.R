@@ -114,6 +114,7 @@ setMethod("plot", signature(x="flowFrame", y="missing"),
             values=exprs(x)
             geneplotter:::smoothScatter(values[,1:2], ...)
           })
+
 setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
 	l = length(y)
 	if(l==1)

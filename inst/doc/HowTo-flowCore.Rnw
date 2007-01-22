@@ -157,26 +157,40 @@ and 0 and 0.8 in the SSC-H channel.
 rangeGate <- rectangleGate(filterId="rangeGate","FSC-H"=c(.2,Inf))
 b08rangeGate <- filter(b08,rangeGate)
 @ 
+<<plotTOfilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+plot(b08,y="FSC-H", pch="*",main="B08, with debris")
+@
 <<plotfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08rangeGate, pch="*",main="B08, lower debris")
+plot(b08[b08rangeGate],y="FSC-H", pch="*",main="B08, lower debris removed")
 @ 
+
+\begin{figure}
+\centering
+\subfigure{\includegraphics[width=40mm]{plotTOfilter} A}
+\subfigure{\includegraphics[width=40mm]{plotCenterfiltered} B} 
+\caption{
+  \label{fig:Fig02}{Example of the effect of filtering out low intensities debris with a rectangular gate.}} 
+\end{figure}
+
 <<define and apply ploygoneGate2,eval=TRUE, echo=FALSE,results=hide>>=
 rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(0.2,0.8),"SSC-H"=c(0,0.8))
 b08rectGate <- filter(b08,rectGate)
 b08Filtered <- b08[b08rectGate,]
 @ 
-<<plotCenterfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08rectGate,pch="*",main="B08 - Nondebris")
+<<plot3, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+plot(b08,y=c("FL1-H","FL2-H"),pch="*",main="B08 - Nondebris")
+@
+<<plot4, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+plot(b08Filtered,y=c("FL1-H","FL2-H"),pch="*",main="B08 - Nondebris")
 @
  
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=40mm]{plotfiltered} A}
-\subfigure{\includegraphics[width=40mm]{plotCenterfiltered} B} 
+\subfigure{\includegraphics[width=40mm]{plot3} A}
+\subfigure{\includegraphics[width=40mm]{plot4} B} 
 \caption{
-  \label{fig:Fig02}{Example of the effect of filtering with a rectangular gate.}} 
+  \label{fig:Fig03}{Second example of the effect of filtering out low intensities debris with a rectangular gate.}} 
 \end{figure}
-
 
 \subsubsection{polygon gate}
 %%We will define a rectangular gate and apply the filter it to the bO8 data.
@@ -189,29 +203,29 @@ b08sqrfilter <- filter(b08,sqrfilter)
 @ 
 
 <<plotRectanglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08sqrfilter,pch="*")
+plot(b08[b08sqrfilter],pch="*")
 @ 
 
 
-<<define and apply polygonGate,eval=TRUE,echo=FALSE>>=
+<<define and apply polygonGate,eval=FALSE,echo=FALSE>>=
 triangleCut <- matrix(c(0.3,0.4,0.6,0.3,0.4,0.3),ncol=2,nrow=3)
 colnames(triangleCut) <- c("FSC-H","SSC-H")
 trianglefilter <- polygonGate(filterId="nonDebris",boundaries= triangleCut)
 b08Trgfilter <- filter(b08,trianglefilter)
 @ 
 
-<<plotTrianglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotTrianglefilter, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(x=b08,y=b08Trgfilter,filter=trianglefilter,colSubSet="red",pch="*")
 @ 
 
-\begin{figure}
-\centering
-\subfigure{\includegraphics[width=40mm]{plotRectanglefilter} A}
-\subfigure{\includegraphics[width=40mm]{plotTrianglefilter} B} 
-\caption{
-  \label{fig:Fig03}{Example of the effect of filtering with a
-    polygon gate.}} 
-\end{figure}
+%%\begin{figure}
+%%\\centering
+%%\\subfigure{\includegraphics[width=40mm]{plotRectanglefilter} A}
+%%\\subfigure{\includegraphics[width=40mm]{plotTrianglefilter} B} 
+%%\\caption{
+%%\  \label{fig:Fig03}{Example of the effect of filtering with a
+%%\    polygon gate.}} 
+%%\\end{figure}
 
 \clearpage
 \section{Case studies}

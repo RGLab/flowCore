@@ -1,26 +1,43 @@
-\name{logicleTransform}
-\alias{logicleTransform}
-\docType{data}
-\title{ ~~ data name/kind ... ~~}
-\description{
-  ~~ A concise (1-5 lines) description of the dataset. ~~
+\name{logicleTransformation}
+\alias{logicleTransformation}
+
+
+\title{Define logicle transformation function to apply a data set}
+\description{Logicle transformation to perform on flowFrame parameters to provide suitable
+visualization. 
 }
-\usage{data(logicleTransform)}
-\format{
-  The format is:
- chr "logicleTransform"
+
+\usage{
+logicleTransform(w=0,r=262144,d=5,...)
 }
+\arguments{
+  \item{transformationId}{character string to annotate the
+    transformation applied}
+  \item{r}{positive numeric value corresponding to the analog-to-digital resolution}
+  \item{d}{positive numeric value corresponding to the number of decades for the dynamic
+range of parameter.}
+  \item{w}{positive numeric value}
+  
+}
+
 \details{
-  ~~ If necessary, more details than the __description__ above ~~
 }
-\source{
-  ~~ reference to a publication or URL from which the data were obtained ~~
+
+\value{fucntion}
+}  
+
+\seealso{\code{\link[flowCore::transform]{transform}}
 }
-\references{
-  ~~ possibly secondary sources and usages ~~
-}
+
+\author{N. Le Meur}
 \examples{
-data(logicleTransform)
-## maybe str(logicleTransform) ; plot(logicleTransform) ...
+\dontrun{
+  samp <- read.FCS(system.file("extdata",
+   "0877408774.B08", package="flowCore"))
+  logicle <- logicleTransform(transformationId="Logicle-transformation", w=0,r=262144,d=5)
+  dataTransform <- transform(samp,`FSC-H`=logicle(`FSC-H`))
+
+ }
 }
-\keyword{datasets}
+\keyword{methods}  
+
