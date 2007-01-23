@@ -232,8 +232,9 @@ setMethod("split", signature("flowFrame","filter"),
 
 #We actually filter on filterResults and multipleFilterResults
 setMethod("split", signature("flowFrame","logicalFilterResult"),
-          definition=function(x,f,drop=FALSE,population=NULL,...) {
-            if(is.null(population)) population=f@filterId
+          definition=function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
+	        if(is.null(population)) population=f@filterId
+			if(!is.null(prefix)) paste(prefix,population,sep="")
             structure(list(x[f@subSet,],x[!f@subSet,]),
                       names=c(paste(population,"+",sep=""),
                         paste(population,"-",sep="")))
