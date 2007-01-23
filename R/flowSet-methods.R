@@ -122,8 +122,7 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE)
 	if(!is.function(FUN))
 		stop("This is not a function!")
 	# row.names and sampleNames had damn well better match, use this to give us access to the phenoData
-	pD  = phenoData(x)
-	res = structure(lapply(sampleNames(x),function(n) with(pD[x,],FUN(as(x[[n]],"flowFrame"),...))),names=sampleNames(x))
+	res = with(pData(phenoData(x)),structure(lapply(sampleNames(x),function(n) FUN(as(x[[n]],"flowFrame"))),names=sampleNames(x)))
 	if(simplify && all(sapply(res,is,"flowFrame"))) {
 		res = as(res,"flowSet")
 		phenoData(res) = phenoData(x)
@@ -136,6 +135,15 @@ setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
 		fsApply(x,Subset,subset,...)
 	else
 		fsApply(x,Subset,subset,select,...)
+})
+
+setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
+	#Split always returns a list
+	fsApply(x,function(y) {
+		l = split(y,f,drop,population,prefix,...)
+		names(l) = paste(names(l),"in",sample.name)
+		l
+	},simplify=FALSE)
 })
 
 setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
