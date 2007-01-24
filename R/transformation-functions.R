@@ -74,3 +74,13 @@ logicleTransform <- function(w=0,r=262144,d=5,...) {
   ##new("biexponentialTransformation",a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
  biexponentialTransform(a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
 }
+
+## ===========================================================================
+## Truncation Transformation
+## ---------------------------------------------------------------------------
+truncateTransform <- function(transformationId,a){
+    function(x){
+        x[x<a] <- a
+        x
+    }
+}
