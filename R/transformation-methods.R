@@ -28,7 +28,8 @@ setMethod("transform",
 ## Transform function for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
-    `_data`=x
+    ##`_data`=x
+    x = `_data`
     y = as(structure(lapply(seq(along=x),
       function(i) transform(`_data`=x[[i]],...)),names=phenoData(x)$name),"flowSet")
     phenoData(y) = phenoData(x)
