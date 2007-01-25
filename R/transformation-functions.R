@@ -84,3 +84,18 @@ truncateTransform <- function(transformationId,a){
         x
     }
 }
+
+
+## ===========================================================================
+## Scale Transformation
+## ---------------------------------------------------------------------------
+scaleTransform <- function(transformationId,ampliPar,rangePar){
+    function(x){
+     	if(ampliPar > 0) {
+     		x = log(x,base=10) / (rangePar-1)
+     	} else {
+     		x = x / (rangePar-1)
+        }
+        x
+    }
+}
