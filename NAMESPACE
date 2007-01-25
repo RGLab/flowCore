@@ -26,7 +26,7 @@ exportMethods("initialize","description","phenoData","phenoData<-","featureNames
 export("%in%") #We define a generic 
 
 export("read.FCS","read.flowSet",
-	"linearTransform","quadraticTransform", "lnTransform", "logTransform",
+	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
        "biexponentialTransform","logicleTransform","truncateTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoideGate",
        "norm2Filter","kmeansFilter","print.filterSummary")
