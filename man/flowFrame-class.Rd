@@ -2,23 +2,42 @@
 \docType{class}
 \alias{flowFrame-class}
 \alias{flowFrame}
-\alias{[,flowFrame-method}
+\alias{[,flowFrame,ANY}
+\alias{[,flowFrame,filter}
+\alias{[,flowFrame,filterResult-class}
+\alias{[,flowFrame,ANY}
+\alias{Subset,flowFrame,ANY}
+\alias{Subset,flowFrame,logical-method}
+\alias{Subset,flowFrame,filter-metho}
 \alias{description,flowFrame-method}
 \alias{description<-,flowFrame,character-method}
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{colnames,flowFrame-method}
 \alias{colnames<-,flowFrame-method}
+\alias{names,flowFrame-method}
+\alias{parameters,flowFrame-method}
+\alias{keyword,flowFrame,function-method}
+\alias{keyword,flowFrame,character-method}
+\alias{keyword,flowFrame,list-method}
 \alias{show,flowFrame-method}
 \alias{plot,flowFrame,missing-method}
+\alias{plot,flowFrame,character-method}
 \alias{$.flowFrame}
 \alias{gate,flowFrame-method}
 \alias{gate<-,flowFrame,gate-method}
 \alias{gate<-,flowFrame,gateSet-method}
+\alias{filter,flowFrame}
+\alias{compensate,flowFrame,matrix-method}
+\alias{spillover,flowFrame-method}
+\alias{transform,flowFrame-method}
+\alias{split,flowFrame,filter-method}
+\alias{split, flowFrame,logicalFilterResult}
+\alias{split, flowFrame,multipleFilterResult}
 \alias{ncol,flowFrame-method}
 \alias{nrow,flowFrame-method}
-
-
+\alias{identifier,flowFrame-method}
+\alias{summary,flowFrame-method}
 
 \title{'flowFrame': a class for storing observed quantitative
   properties from a population of cells, most likely from a FACS run or, 
@@ -52,6 +71,10 @@ or the function \code{\link[prada]{readFCS}}.}
   \code{description} slot is unchanged.}
 \item{exprs, exprs<-}{extract or replace the intensities.}
 \item{description, description<-}{extract or replace the description.}
+\item{compensate}{apply a compensation matrix on a \code{flowSet}
+  object.}
+\item{transform}{apply a transformation fucntion on a \code{flowSet}
+  object.}
 \item{show}{display summary.}
 \item{plot}{scatterplot for \code{flowFrame} objects. The additional
 argument \code{gate} can be used to plot subsets of the data defined by

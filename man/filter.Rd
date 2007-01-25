@@ -1,20 +1,23 @@
 \name{filter}
 \alias{filter}
-\alias{filter,flowFrame,filter}
+\alias{filter,flowFrame,filter-method}
 \alias{filter,flowFrame,rectangleGate}
 \alias{filter,flowFrame,polygonGate}
 \alias{filter,flowFrame,norm2Filter}
+\alias{summary,filter-method}
+\alias{show,filter-method}
+\alias{length,filter-method}
 
 \title{Filter on a data set}
 \description{filter is a function for subsetting data}
 
 \usage{
-filter(flowObject,filter)
+filter(x,filter,...)
 }
 \arguments{
-  \item{flowObject}{Object of class \code{\link[flowCore]{flowFrame}}.}
+  \item{x}{Object of class \code{\link[flowCore]{flowFrame}}.}
   \item{filter}{Object of class gate and slots parameters and boundaries}
-  \item{parent}{Logical. Assign center of distribution.}
+  \item{...}{optional argument}
 }
 
 \details{

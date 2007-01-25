@@ -1,7 +1,17 @@
 \name{rectangleGate}
 \alias{rectangleGate}
-
-
+\alias{polygonGate}
+\alias{polytope}
+\alias{ellipsoideGate}
+\alias{show,rectangleGate}
+\alias{summary,rectangleGate}
+\alias{show,polygonGate}
+\alias{summary,polygonGate}
+\alias{show,polytopeGate}
+\alias{summary,polytopeGate}
+\alias{show,ellipsoideGate}
+\alias{summary,ellipsoideGate}
+    
 \title{Define filter boundaries}
 \description{
   A convenience method to facilitate the construction of \code{\link{filter}} objects
