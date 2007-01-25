@@ -27,7 +27,7 @@ export("%in%") #We define a generic
 
 export("read.FCS","read.flowSet",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform",
-       "biexponentialTransform","logicleTransform",
+       "biexponentialTransform","logicleTransform","truncateTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoideGate",
        "norm2Filter","kmeansFilter","print.filterSummary")
        
