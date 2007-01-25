@@ -3,6 +3,16 @@
 \alias{filterResult-class}
 \alias{filterResult-accessors}
 \alias{filterResult}
+\alias{filterDetails,filterResult,missing-method}
+\alias{filterDetails,filterResult,ANY}
+\alias{filterDetails<-,filterResult,character-method}
+\alias{filterDetails<-,filterResult,character,ANY}
+\alias{filterDetails<-,filterResult,character,filter-class}
+\alias{filterDetails<-,filterResult,character,setOperationFilter}
+\alias{[,filterResult-method}
+\alias{identifier,filterResult-method}
+\alias{==,filterResult,flowFrame-class}
+\alias{coerce,filterResult,logical-method}
 
 \title{'filterResult': a filter class representing a filter resolved for a particular data set.}
 

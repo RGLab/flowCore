@@ -5,15 +5,24 @@
 \alias{[,flowSet-method}
 \alias{[[,flowSet-method}
 \alias{[[<-,flowSet-method}
+\alias{Subset,flowSet,ANY}
+\alias{fsApply,flowSet-method}
 \alias{show,flowSet-method}
 \alias{length,flowSet-method}
 \alias{pData,flowSet-method}
 \alias{colnames,flowSet-method}
 \alias{colnames<-,flowSet-method}
+\alias{sampleNames,flowSet-method}
 \alias{phenoData,flowSet-method}
+\alias{phenoData<-,flowSet,ANY}
 \alias{phenoData<-,flowSet,phenoData-method}
+\alias{keyword,flowSet,list-method}
 \alias{plot,flowSet,missing-method}
 \alias{hist,flowSet-method}
+\alias{compensate,flowSet,matrix-method}
+\alias{spillover,flowSet-method}
+\alias{transform,flowSet-method}
+\alias{split, flowSet,ANY}
 
 
 \title{'flowSet': a class for storing raw data from
@@ -49,6 +58,10 @@ It is mandatory that the pData has column named \code{name}}
 returns a \code{flowSet} object, and \code{x[[i]]} a \code{flowFrame}
 object. The semantics is similar to the behavior of the subsetting
 operators for lists.}
+\item{fsApply}{apply fucntion on a \code{flowSet} object.}
+\item{compensate}{apply a compensation matrix on a \code{flowSet} object.}
+\item{transform}{apply a transformation fucntion on a \code{flowSet}
+  object.}
 \item{colnames, colnames<-}{extract or replace the \code{colnames} slot.}
 \item{phenoData, phenoData<-}{extract or replace the \code{phenoData} slot.}
 \item{show}{display summary.}

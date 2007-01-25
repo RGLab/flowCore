@@ -1,6 +1,6 @@
 \name{plot}
 \alias{plot}
-\alias{basicplot,flowFrame}
+\alias{plot,flowFrame}
 
 \title{Plot floFrame object}
 \description{
@@ -8,21 +8,11 @@
   filterResult object, i.e. data of filtered the flowFrame object.
 }
 \usage{
-basicplot(x, y, filter=NULL, plotParameters=c(1,2), parent,
-colParent="Grey", colSubSet="Blue", xlim, ylim,...)
+plot(x, y, filter=NULL,...)
 }
 \arguments{
   \item{x}{flowFrame object}
-  \item{y}{character vector}
-  \item{filter}{gate Object}
-  \item{plotParameters}{parameters to plot}
-  \item{parent}{}
-  \item{colParent}{}
-  \item{colSubSet}{}
-  \item{xlim}{numerical vector of the range of the x variable
-    (horizontal axis)}
-  \item{ylim}{numerical vector of the range of the y variable
-    (vertical axis)}
+  \item{y}{missing or character vector}
   \item{...}{\code{plot} options}
 }
 
@@ -32,11 +22,5 @@ colParent="Grey", colSubSet="Blue", xlim, ylim,...)
 samp <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
 plot(samp)
 
-##After filtering by a triangle gate
-triangleCut <- matrix(c(300,400,600,300,400,300),ncol=2,nrow=3)
-colnames(triangleCut) <- c("FSC-H","SSC-H")
-triangleF <- polygonGate(filterId="nonDebris", boundaries= triangleCut)
-sampTrg <- filter(samp,triangleF)
-plot(samp[sampTrg],pch="*")
 }
 \keyword{methods}
