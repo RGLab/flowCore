@@ -122,8 +122,7 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE)
 	if(!is.function(FUN))
 		stop("This is not a function!")
 	# row.names and sampleNames had damn well better match, use this to give us access to the phenoData
-	res = with(pData(phenoData(x)),structure(lapply(sampleNames(x),
-		function(n) FUN(as(x[[n]],"flowFrame"),...),names=sampleNames(x))))
+	res = structure(lapply(sampleNames(x),function(n) FUN(as(x[[n]],"flowFrame"),...)),names=sampleNames(x))
 	if(simplify && all(sapply(res,is,"flowFrame"))) {
 		res = as(res,"flowSet")
 		phenoData(res) = phenoData(x)
