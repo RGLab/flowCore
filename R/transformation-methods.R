@@ -9,8 +9,8 @@ setMethod("transform",
               x = `_data`
               transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
               ##Add any new parameter values
-              if(ncol(transformed) > ncol(x)) {
-              	cnames = c(colnames(x),colnames(transformed)[-c(1:ncol(x))])
+              if(ncol(transformed) > ncol(x@exprs)) {
+              	cnames = c(colnames(x),colnames(transformed)[-c(1:ncol(x@exprs))])
               }
               else {
               	cnames = colnames(x)
