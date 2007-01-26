@@ -6,13 +6,14 @@ setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, ...) {
               e <- substitute(list(...))
-              transformed <- as.matrix(transform(as.data.frame(exprs(`_data`)),...))
+              x = `_data`
+              transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
               ##Add any new parameter values
-              if(ncol(transformed) > ncol(`_data`)) {
-              	cnames = c(colnames(`_data`),colnames(transformed)[-c(1:ncol(`_data`))])
+              if(ncol(transformed) > ncol(x)) {
+              	cnames = c(colnames(x),colnames(transformed)[-c(1:ncol(x))])
               }
               else {
-              	cnames = colnames(`_data`)
+              	cnames = colnames(x)
               }
               ##param.names <- colnames(transformed)
               ##newParams <- is.na(match(param.names,`_data`@parameters$name))
@@ -27,8 +28,8 @@ setMethod("transform",
               colnames(transformed) = cnames
               new("flowFrame",
                   exprs=transformed, 
-                  parameters=parameters(`_data`),#[,params$name],
-                  description=description(`_data`))
+                  parameters=parameters(x),#[,params$name],
+                  description=description(x))
           })
 ## ==========================================================================
 ## Transform function for flowSet
