@@ -91,6 +91,6 @@ truncateTransform <- function(transformationId,a){
 ## ---------------------------------------------------------------------------
 scaleTransform <- function(transformationId,a,b){
     function(x){
-     	(x-a)/(b-a)
+     	x=(x-a)/(b-a)
     }
 }
