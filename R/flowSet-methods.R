@@ -117,15 +117,22 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 
 ## ==========================================================================
 
-setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE) {
+setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) {
 	FUN = match.fun(FUN)
 	if(!is.function(FUN))
 		stop("This is not a function!")
 	# row.names and sampleNames had damn well better match, use this to give us access to the phenoData
-	res = structure(lapply(sampleNames(x),function(n) FUN(as(x[[n]],"flowFrame"),...)),names=sampleNames(x))
-	if(simplify && all(sapply(res,is,"flowFrame"))) {
-		res = as(res,"flowSet")
-		phenoData(res) = phenoData(x)
+	res = structure(lapply(sampleNames(x),function(n) {
+		y = as(x[[n]],"flowFrame")
+		FUN(if(use.exprs) exprs(y) else y,...)
+	}),names=sampleNames(x))
+	if(simplify) {
+		if(all(sapply(res,is,"flowFrame"))) {
+			res = as(res,"flowSet")
+			phenoData(res) = phenoData(x)
+		} else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
+			res = do.call(rbind,res)
+		}
 	}
 	res
 })

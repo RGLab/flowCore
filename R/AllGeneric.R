@@ -25,6 +25,7 @@ if(!isGeneric("lines"))
 setGeneric("%in%",function(x,table) standardGeneric("%in%"))
 setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
 setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
+setGeneric("%on%",function(e1,e2) standardGeneric("%on%"))
 
 
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
@@ -90,3 +91,5 @@ setGeneric("compensate",function(x,spillover) standardGeneric("compensate"))
 ## ---------------------------------------------------------------------------
 
 setGeneric("fsApply",function(x,FUN,...) standardGeneric("fsApply"))
+setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
+setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
