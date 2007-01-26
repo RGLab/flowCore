@@ -35,6 +35,7 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   }
   if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
     stop(paste("file", filename, "seems to corrupted."))
+  txt[["FILENAME"]] = filename
   if(transformation==TRUE){
       txt[["transformation"]] <-"applied" 
   }
