@@ -242,10 +242,6 @@ setClass("subsetFilter",representation("setOperationFilter"),
 ## ---------------------------------------------------------------------------
 ## A container for the results after applying a filter (e.g. gate) 
 ## to flow cytometry data with slots 
-##  
-## 
-##   
-## 
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
 	representation("filter",frameId="character",filterDetails="list"),
@@ -253,19 +249,3 @@ setClass("filterResult",
 setClass("logicalFilterResult",representation("filterResult",subSet="logical"))
 setClass("multipleFilterResult",representation("filterResult",subSet="factor"))
 setClass("randomFilterResult",representation("filterResult",subSet="numeric"))
-
-## ===========================================================================
-## Decision Tree - listed in the standard
-## ---------------------------------------------------------------------------
-## An object describing a selection applied to a data matrix. Consist of
-## a functions that return logical vectors subsetting the data
-## ---------------------------------------------------------------------------
-
-
-## ===========================================================================
-## Boolean gate ~ gateSet
-## ---------------------------------------------------------------------------
-## 
-##
-## ---------------------------------------------------------------------------
-
