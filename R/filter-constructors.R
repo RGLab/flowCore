@@ -51,7 +51,7 @@ polytopeGate <- function(.gate,...,filterId="polytopeGate") {
 ## ==========================================================================
 ## EllipsoideGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ellipsoideGate <- function(.gate, distance,...,filterId="ellipsoidGate") {
+ellipsoidGate <- function(.gate, distance,...,filterId="ellipsoidGate") {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       

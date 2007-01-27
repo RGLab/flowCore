@@ -31,7 +31,6 @@
 \alias{compensate,flowFrame,matrix-method}
 \alias{spillover,flowFrame-method}
 \alias{transform,flowFrame-method}
-\alias{split,flowFrame,filter-method}
 \alias{split, flowFrame,logicalFilterResult}
 \alias{split, flowFrame,multipleFilterResult}
 \alias{ncol,flowFrame-method}

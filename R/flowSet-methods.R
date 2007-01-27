@@ -1,5 +1,5 @@
 ## ==========================================================================
-## Convert an environment to a flowSet.
+## Coerce method: Convert an environment to a flowSet.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("environment","flowSet",function(from) {
 	frameList  = ls(env=from)
@@ -26,13 +26,13 @@ setAs("environment","flowSet",function(from) {
                                         
 
 ## ==========================================================================
-## Convert a list to a flowSet by creating an environment and converting THAT
+## Coerce method: Convert a list to a flowSet by creating an environment and converting THAT
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("list","flowSet",function(from) {
 	env = new.env(hash=TRUE,parent=emptyenv())
 	multiassign(from,env=env)
 	as(env,"flowSet")
-},function(from,value) {
+    },function(from,value) {
 	env = new.env(hash=TRUE,parent=emptyenv())
 	multiassign(from,env=env)
 	as(env,"flowSet") <- value
@@ -61,7 +61,8 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 ## ==========================================================================
 ## accessor method for slot colnames
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing") x@colnames)
+setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
+          x@colnames)
 ## ==========================================================================
 
 ## ==========================================================================
@@ -117,7 +118,11 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 
 ## ==========================================================================
 
-setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) {
+
+## ==========================================================================
+## apply method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,simplify=TRUE,use.exprs=FALSE,...) {
 	FUN = match.fun(FUN)
 	if(!is.function(FUN))
 		stop("This is not a function!")
