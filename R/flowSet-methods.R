@@ -2,25 +2,25 @@
 ## Coerce method: Convert an environment to a flowSet.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("environment","flowSet",function(from) {
-	frameList  = ls(env=from)
-	isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
-	if(!all(isFrame))
-		warning("Some symbols are not flowFrames. They will be ignored but left intact.")
-	#If specified, remove extraneous symbols from the environment before continuing
-	frameList = frameList[isFrame]
-
-	#Check the column names
-	colNames = sapply(frameList,function(f) colnames(from[[f]]))
-	if(!all(apply(colNames,2,"==",colNames[,1])))
-		stop("Column names for all frames do not match.")
-	new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
-		data=data.frame(name=I(frameList),row.names=frameList),varMetadata=data.frame(labelDescription="Name",row.names="name")))
+    frameList  = ls(env=from)
+    isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
+    if(!all(isFrame))
+      warning("Some symbols are not flowFrames. They will be ignored but left intact.")
+    ##If specified, remove extraneous symbols from the environment before continuing
+    frameList = frameList[isFrame]
+    
+    ##Check the column names
+    colNames = sapply(frameList,function(f) colnames(from[[f]]))
+    if(!all(apply(colNames,2,"==",colNames[,1])))
+      stop("Column names for all frames do not match.")
+    new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
+                                                        data=data.frame(name=I(frameList),row.names=frameList),varMetadata=data.frame(labelDescription="Name",row.names="name")))
 },function(from,value) {
-	if(!canCoerce(value,"AnnotatedDataFrame"))
-		stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
-	from            = as(from,"flowSet")
-	phenoData(from) = as(value,"AnnotatedDataFrame")
-	from
+    if(!canCoerce(value,"AnnotatedDataFrame"))
+      stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
+    from            = as(from,"flowSet")
+    phenoData(from) = as(value,"AnnotatedDataFrame")
+    from
 })
 ## ==========================================================================
                                         
@@ -29,8 +29,8 @@ setAs("environment","flowSet",function(from) {
 ## Coerce method: Convert a list to a flowSet by creating an environment and converting THAT
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("list","flowSet",function(from) {
-	env = new.env(hash=TRUE,parent=emptyenv())
-	multiassign(from,env=env)
+    env = new.env(hash=TRUE,parent=emptyenv())
+    multiassign(from,env=env)
 	as(env,"flowSet")
     },function(from,value) {
 	env = new.env(hash=TRUE,parent=emptyenv())

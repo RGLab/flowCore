@@ -48,14 +48,14 @@ kmeansFilter(filterId = "kmeans",\dots)
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 #Create directly. Most likely from a command line
-rectangleGate(filterId="foo","FSC-H"=c(1,50),"SSC-H"=c(50,800))
+rectangleGate(filterId="rectangleGateI","FSC-H"=c(1,50),"SSC-H"=c(50,800))
 
 #To facilitate programmatic construction we also have the following
-rectangleGate(filterId="foo",list("FSC-H"=c(1,50),"SSC-H"=c(50,800)))
+rectangleGate(filterId="rectangleGateII",list("FSC-H"=c(1,50),"SSC-H"=c(50,800)))
 
 m <- matrix(c(1,50,50,800),ncol=2)
 colnames(m) <- c("FSC-H","SSC-H")
-rectangleGate(filterId="foo",m)
+rectangleGate(filterId="rectangleGate",m)
 
 }
 \keyword{methods}
