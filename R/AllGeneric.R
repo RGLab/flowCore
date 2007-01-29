@@ -90,6 +90,6 @@ setGeneric("spillover",function(x,...) standardGeneric("spillover"))
 setGeneric("compensate",function(x,spillover) standardGeneric("compensate"))
 ## ---------------------------------------------------------------------------
 
-setGeneric("fsApply",function(x,FUN,...) standardGeneric("fsApply"))
+setGeneric("fsApply",function(x,FUN,simplify=TRUE,use.exprs=FALSE,...) standardGeneric("fsApply"))
 setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
 setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
