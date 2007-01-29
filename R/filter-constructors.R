@@ -16,7 +16,7 @@
 ## ==========================================================================
 ## rectangleGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-rectangleGate <- function(.gate,...,filterId="rectangleGate") {
+rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
 	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
@@ -38,7 +38,7 @@ polygonGate <- function(filterId="polygonGate", boundaries,...) {
 ## ==========================================================================
 ## polytopeGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-polytopeGate <- function(.gate,...,filterId="polytopeGate") {
+polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
     if(missing(.gate) || !is.matrix(.gate))
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
@@ -51,7 +51,7 @@ polytopeGate <- function(.gate,...,filterId="polytopeGate") {
 ## ==========================================================================
 ## EllipsoideGate contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ellipsoidGate <- function(.gate, distance,...,filterId="ellipsoidGate") {
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       

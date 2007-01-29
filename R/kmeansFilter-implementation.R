@@ -1,5 +1,5 @@
 ## Constructors
-kmeansFilter = function(...,filterId="kmeans") {
+kmeansFilter = function(filterId="kmeans",...) {
 	l = length(list(...))
 	if(l>1)
 		stop("k-means filters only operate on a single parameter.")
