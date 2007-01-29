@@ -115,7 +115,7 @@ data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
 >data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
 \end{verbatim}
 
-<<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
+<<plotTransfo1,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
 plot(data08Transform,plotParameters=c(1,2))
 @
 
@@ -137,7 +137,7 @@ data08Transform@exprs[1:5]
 ##data08LogTransform@exprs[1:5]
 @
  
-<<plotTRansfo,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
+<<plotTransfo2,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
 ##we should find a way to specified if an parameters has been transformed 
 ## either in the title or via the label of the axis 
 plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"),main="Log2 transformed data")
@@ -157,7 +157,7 @@ and 0 and 0.8 in the SSC-H channel.
 rangeGate <- rectangleGate(filterId="rangeGate","FSC-H"=c(.2,Inf))
 b08rangeGate <- filter(b08,rangeGate)
 @ 
-<<plotTOfilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<plotTofilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y="FSC-H", pch="*",main="B08, with debris")
 @
 <<plotfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
@@ -166,8 +166,8 @@ plot(b08[b08rangeGate],y="FSC-H", pch="*",main="B08, lower debris removed")
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=40mm]{plotTOfilter} A}
-\subfigure{\includegraphics[width=40mm]{plotCenterfiltered} B} 
+\subfigure{\includegraphics[width=40mm]{plotTofilter} A}
+\subfigure{\includegraphics[width=40mm]{plotfiltered} B} 
 \caption{
   \label{fig:Fig02}{Example of the effect of filtering out low intensities debris with a rectangular gate.}} 
 \end{figure}
@@ -344,11 +344,11 @@ b08.result4 <- filter(b08,filter4 %subset% b08.result2)
 plot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
           xlim=c(0,1024),ylim=c(0,1024),pch="*")
 @ 
-<<FL1Filtered2, echo=FALSE, eval=FALSE,fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<FL1Filtered2, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
           xlim=c(0,1024),ylim=c(0,1024),pch="*")
 @ 
-<<FL1Filtered3, echo=FALSE, eval=FALSE,fig=TRUE, prefix=FALSE, include=FALSE>>=
+<<FL1Filtered3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
 plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
           xlim=c(0,1024),ylim=c(0,1024),pch="*")
 @
@@ -363,6 +363,10 @@ plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
 %%    polygon gate.}} 
 %%\end{figure}
 
+
+\clearpage
+\bibliographystyle{cyto} 
+\bibliography{cytoref}
 \clearpage
 \small{
 <<sessionInfo>>=
