@@ -122,7 +122,7 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 ## ==========================================================================
 ## apply method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,simplify=TRUE,use.exprs=FALSE,...) {
+setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) {
 	FUN = match.fun(FUN)
 	if(!is.function(FUN))
 		stop("This is not a function!")
@@ -134,7 +134,8 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,simplify=TRUE,use.
 	if(simplify) {
 		if(all(sapply(res,is,"flowFrame"))) {
 			res = as(res,"flowSet")
-			phenoData(res) = phenoData(x)
+			if(all(sampleNames(res) == sampleNames(x)))
+				phenoData(res) = phenoData(x)
 		} else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
 			res = do.call(rbind,res)
 		}
