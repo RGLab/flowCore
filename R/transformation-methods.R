@@ -35,9 +35,31 @@ setMethod("transform",
 ## Transform function for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
-    x = `_data`
-    y = as(structure(lapply(seq(along=x),
-      function(i) transform(`_data`=x[[i]],...)),names=sampleNames(phenoData(x))),"flowSet")
-    phenoData(y) = phenoData(x)
-    y
+	fsApply(`_data`,transform,...)
 })
+
+setMethod("transform",signature(`_data`="missing"),function(...) {
+	funs = list(...)
+	io   = names(funs)
+	#Consistency check
+	if(!all(sapply(funs,is.function)))
+		stop("All transforms must be functions")
+	if(!all(sapply(io,is.character)))
+		stop("All transforms must be named")
+	new("transformList",transforms=lapply(seq(along=funs),function(i) new("transformMap",input=io[i],output=io[i],f=funs[[i]])))
+})
+
+setMethod("colnames",signature("transformList"),function(x, do.NULL=TRUE, prefix="col") {
+	unique(sapply(x@transforms,slot,"input"))
+})
+
+setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
+	x = exprs(e2)
+	for(y in e1@transforms){
+		x[,y@input] = y@f(x[,y@output])
+	}
+	exprs(e2) = x
+	e2
+})
+setMethod("%on%",signature("transformList","flowSet"),function(e1,e2) fsApply(e2,"%on%",e1=e1))
+

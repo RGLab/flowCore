@@ -198,7 +198,6 @@ setClass("norm2Filter",
 setClass("kmeansFilter",
 	representation("filter",populations="character"))
 
-
 ## =================================================================
 ## filterTree
 ## ----------------------------------------------------------------
@@ -249,3 +248,18 @@ setClass("filterResult",
 setClass("logicalFilterResult",representation("filterResult",subSet="logical"))
 setClass("multipleFilterResult",representation("filterResult",subSet="factor"))
 setClass("randomFilterResult",representation("filterResult",subSet="numeric"))
+
+
+## Describing transforms
+
+# Parameterize transforms so that we can describe them.
+setClass("transform",representation("function"))
+
+# I want to be able to include transforms within a filter. First we need to know which parameters should
+# be input filters
+setClass("transformMap",representation(output="character",input="character",f="function"))
+#A list of transformMaps
+setClass("transformList",representation(transforms="list"))
+setClass("transformFilter",representation("filter",transforms="transformList",filter="filter"))
+
+
