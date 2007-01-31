@@ -28,7 +28,7 @@
 \newcommand{\Rpackage}[1]{{\textsf{#1}}}
 \newcommand{\Rclass}[1]{{\textit{#1}}}
 
-\bibliographystyle{plainnat}
+
 
 \title{How to use flowCore package}
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
@@ -92,8 +92,8 @@ plot(b08,plotParameters=c(3,4))
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=40mm]{plotRaw1} A}
-\subfigure{\includegraphics[width=40mm]{plotRaw2} B}
+\subfigure{\includegraphics[width=0.4\textwidth]{plotRaw1} A}
+\subfigure{\includegraphics[width=0.4\textwidth]{plotRaw2} B}
 \caption{
   \label{fig:Fig01}{Example of smooth scatter plot.(A) FSC-H
     \textit{vs.} SSC-H (B) FL2-H \textit{vs.} FL3-H}} 
@@ -166,8 +166,8 @@ plot(b08[b08rangeGate],y="FSC-H", pch="*",main="B08, lower debris removed")
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=40mm]{plotTofilter} A}
-\subfigure{\includegraphics[width=40mm]{plotfiltered} B} 
+\subfigure{\includegraphics[width=0.4\textwidth]{plotTofilter} A}
+\subfigure{\includegraphics[width=0.4\textwidth]{plotfiltered} B} 
 \caption{
   \label{fig:Fig02}{Example of the effect of filtering out low intensities debris with a rectangular gate.}} 
 \end{figure}
@@ -186,8 +186,8 @@ plot(b08Filtered,y=c("FL1-H","FL2-H"),pch="*",main="B08 - Nondebris")
  
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=40mm]{plot3} A}
-\subfigure{\includegraphics[width=40mm]{plot4} B} 
+\subfigure{\includegraphics[width=0.4\textwidth]{plot3} A}
+\subfigure{\includegraphics[width=0.4\textwidth]{plot4} B} 
 \caption{
   \label{fig:Fig03}{Second example of the effect of filtering out low intensities debris with a rectangular gate.}} 
 \end{figure}
@@ -220,8 +220,8 @@ plot(x=b08,y=b08Trgfilter,filter=trianglefilter,colSubSet="red",pch="*")
 
 %%\begin{figure}
 %%\\centering
-%%\\subfigure{\includegraphics[width=40mm]{plotRectanglefilter} A}
-%%\\subfigure{\includegraphics[width=40mm]{plotTrianglefilter} B} 
+%%\\subfigure{\includegraphics[width=0.4\textwidth]{plotRectanglefilter} A}
+%%\\subfigure{\includegraphics[width=0.4\textwidth]{plotTrianglefilter} B} 
 %%\\caption{
 %%\  \label{fig:Fig03}{Example of the effect of filtering with a
 %%\    polygon gate.}} 
@@ -242,9 +242,9 @@ plot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
 @ 
 %%\begin{figure}
 %%\centering
-%%\subfigure{\includegraphics[width=40mm]{rawdata1}}
-%%\subfigure{\includegraphics[width=40mm]{rawdata2}} 
-%%\subfigure{\includegraphics[width=40mm]{rawdata3}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata1}}
+%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata2}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata3}} 
 %%\caption{
 %%  \label{fig:Fig04}{Example of the effect of filtering with a
 %%    polygon gate.}} 
@@ -271,9 +271,9 @@ plot(f06,y=f06.result1,main="F06 nonDebris",pch="*")
 @ 
 %%\begin{figure}
 %%\centering
-%%\subfigure{\includegraphics[width=40mm]{plotResFilter1}}
-%%\subfigure{\includegraphics[width=40mm]{plotResFilter2}} 
-%%\subfigure{\includegraphics[width=40mm]{plotResFilter3}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter1}}
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter2}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter3}} 
 %%\caption{
 %%  \label{fig:Fig05}{Example of the effect of filtering with a
 %%    polygon gate.}} 
@@ -305,9 +305,9 @@ plot(f06,y=f06.result2,parent=f06.result1, xlim=c(0,1024),ylim=c(0,1024),main="F
 @ 
 %%\begin{figure}
 %%\centering
-%%\subfigure{\includegraphics[width=40mm]{plotLivingCell1}}
-%%\subfigure{\includegraphics[width=40mm]{plotLivingCell2}} 
-%%\subfigure{\includegraphics[width=40mm]{plotLivingCell3}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell1}}
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell2}} 
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell3}} 
 %%\caption{
 %%  \label{fig:Fig06}{Example of the effect of filtering with a
 %%    polygon gate.}} 
@@ -365,7 +365,7 @@ plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
 
 
 \clearpage
-\bibliographystyle{cyto} 
+\bibliographystyle{plainnat} 
 \bibliography{cytoref}
 \clearpage
 \small{
