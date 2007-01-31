@@ -12,7 +12,7 @@
 }
 
 \usage{
-    fsApply(x, FUN, simplify=TRUE, use.exprs=FALSE,\dots )
+    fsApply(x, FUN,\dots, simplify=TRUE, use.exprs=FALSE )
 }
 
 \arguments{
@@ -21,7 +21,7 @@
   \item{simplify}{logical; should the result be simplified to a vector
     or matrix if possible?}
   \item{use.exprs}{logical: should the \code{FUN} be applied on the
-    \code{\link[flowCore]{flowFrame}} object}
+    \code{\link[flowCore]{flowFrame}} object or the expression values}
   \item{\dots}{optional arguments to \code{FUN}.}
   
 }
