@@ -15,17 +15,17 @@ importClassesFrom("Biobase", "eSet")
 exportClasses("flowFrame", "flowSet",
               "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
               "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","setOperationFilter", 
- 			  "norm2Filter", "kmeansFilter", "filterTree")
+ 			  "norm2Filter", "kmeansFilter", "filterTree","transform","transformMap","transformList")
 
 exportMethods("initialize","description","phenoData","phenoData<-",
               "featureNames","names","colnames","keyword",
-              "%in%","%subset%","%&%","summary","identifier",
+              "%in%","%subset%","%&%","%on%","summary","identifier",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
               "transform","split","Subset","filter","filterDetails",
               "filterDetails<-","plot", "coerce","spillover",
               "compensate","fsApply","sampleNames", "summary","each_row","each_col")
 
-export("%in%") #We define a generic 
+export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
 export("read.FCS","read.flowSet",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",

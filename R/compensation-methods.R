@@ -46,8 +46,5 @@ setMethod("compensate",signature("flowFrame","matrix"),function(x,spillover) {
 	exprs(x) = e
 	x
 })
-setMethod("compensate",signature("flowSet","matrix"),function(x,spillover) {
-	y = as(structure(lapply(seq(along=x),function(i) compensate(x[[i]],spillover)),names=phenoData(x)$name),"flowSet")
-	phenoData(y) = phenoData(x)
-	y
-})
+setMethod("compensate",signature("flowSet","matrix"),function(x,spillover) fsApply(x,compensate,spillover))
+

@@ -123,6 +123,8 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 ## apply method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) {
+	if(missing(FUN))
+		stop("fsApply function missing")
 	FUN = match.fun(FUN)
 	if(!is.function(FUN))
 		stop("This is not a function!")

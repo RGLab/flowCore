@@ -256,13 +256,9 @@ setMethod("summary", signature("flowFrame"),
         apply(exprs(object), 2, summary)
  )
 
-setMethod("each_row",signature("flowFrame","ANY"),function(x,FUN,...) {
-	FUN = match.fun(FUN)
-	if(!is.function(FUN)) stop("FUN is not a function")
+setMethod("each_row",signature("flowFrame"),function(x,FUN,...) {
 	apply(exprs(x),1,FUN,...)
 })
-setMethod("each_col",signature("flowFrame","ANY"),function(x,FUN,...) {
-	FUN = match.fun(FUN)
-	if(!is.function(FUN)) stop("FUN is not a function")
+setMethod("each_col",signature("flowFrame"),function(x,FUN,...) {
 	apply(exprs(x),2,FUN,...)
 })

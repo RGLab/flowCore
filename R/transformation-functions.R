@@ -94,3 +94,11 @@ scaleTransform <- function(transformationId,a,b){
      	x=(x-a)/(b-a)
     }
 }
+
+## ===========================================================================
+## Hyperbolic Arcsin Transformation
+## ---------------------------------------------------------------------------
+arcsinhTransform <- function(transformationId,a,b,c=1) {
+	function(x) asinh(a+b*x)+log(c)
+}
+
