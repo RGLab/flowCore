@@ -43,7 +43,7 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
          
-    new("polytopeGate",filterId=filterId,parameters=colnames(.gate), boundaries=.gate)
+    new("polytopeGate", filterId=filterId, parameters=colnames(.gate), boundaries=.gate)
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -55,7 +55,7 @@ ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       
-    new("ellipsoidGate",filterId=filterId,parameters=colnames(.gate), focus=.gate,distance=distance)
+    new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate), focus=.gate, distance=distance)
 }
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
