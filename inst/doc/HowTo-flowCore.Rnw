@@ -77,10 +77,10 @@ show(b08)
 @
  
 We can plot the raw data for the FSC-H and SSC-H parameters.
-<<plotRaw1,eval=TRUE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
+<<plotRaw1,eval=TRUE, echo=FALSE,fig=TRUE, prefix=FALSE,include=FALSE>>=
 plot(b08,plotParameters=c(1,2))
 @
-<<plotRaw2,eval=TRUE,echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
+<<plotRaw2,eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE,include=FALSE>>=
 plot(b08,plotParameters=c(3,4))
 @ 
 \begin{verbatim}
@@ -219,13 +219,13 @@ plot(x=b08,y=b08Trgfilter,filter=trianglefilter,colSubSet="red",pch="*")
 @ 
 
 %%\begin{figure}
-%%\\centering
-%%\\subfigure{\includegraphics[width=0.4\textwidth]{plotRectanglefilter} A}
-%%\\subfigure{\includegraphics[width=0.4\textwidth]{plotTrianglefilter} B} 
-%%\\caption{
-%%\  \label{fig:Fig03}{Example of the effect of filtering with a
-%%\    polygon gate.}} 
-%%\\end{figure}
+%%\centering
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotRectanglefilter} A}
+%%\subfigure{\includegraphics[width=0.4\textwidth]{plotTrianglefilter} B} 
+%%\caption{
+%%  \label{fig:Fig03}{Example of the effect of filtering with a
+%%    polygon gate.}} 
+%%\end{figure}
 
 \clearpage
 \section{Case studies}
