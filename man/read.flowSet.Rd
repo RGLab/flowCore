@@ -12,13 +12,12 @@
   \item{path}{Directory where to look for the files.}
   \item{pattern}{This argument is passed on to \code{\link[base]{dir}} (see
     details). }
-  \item{phenoData}{Either an object of class \code{phenoData} or 
-    \code{character}.}
+  \item{phenoData}{An object of class \code{phenoData},
+    \code{character} or a list of values to be extracted from the \code{\link[flowCore]{flowFrame}} object.}
    \item{descriptions}{Character vector to annotate the object of class \code{\link{flowSet-class}{flowSet}}.}
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.phenoData]{read.phenoData}}.}
-  \item{\dots}{Further arguments that get passed on to
-    \code{\link[Biobase::read.phenoData]{read.phenoData}}, see details.}
+  \item{\dots}{Further arguments that get passed on to \code{\link[flowCore]{read.FCS}}, see details.}
 }
 
 \details{There are three different ways to specify the file names:

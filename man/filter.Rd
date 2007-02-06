@@ -8,6 +8,7 @@
 \alias{show,filter-method}
 \alias{length,filter-method}
 
+
 \title{Filter on a data set}
 \description{filter is a function for subsetting data}
 
