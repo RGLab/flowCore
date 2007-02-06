@@ -25,6 +25,14 @@ setMethod("filter",signature(x="flowFrame",filter="filter"),function(x,filter) {
 	result
 })
 
+## ===========================================================================
+## filter method for flowSets
+##
+## ----------------------------------------------------------------------
+setMethod("filter",signature=signature(x="flowSet",filter="filter"),function(x,filter) {
+	fsApply(x,function(x) filter(x,filter))
+})
+
 
 ## ==========================================================================
 ## support methods for filtering flowFrame Object using rectangleGate
@@ -142,4 +150,5 @@ setMethod("show",signature("filter"),function(object)
 
 ## Most filters define only a single population
 ## setMethod("length","filter",function(x) 1)
+
 
