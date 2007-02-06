@@ -63,3 +63,10 @@ setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
 })
 setMethod("%on%",signature("transformList","flowSet"),function(e1,e2) fsApply(e2,"%on%",e1=e1))
 
+#So that we can get parameters back OUT of a transform
+setMethod("summary",signature("transform"),function(object,..) {
+	e = environment(object)
+	x = ls(env=e)
+	structure(lapply(x,"get",env=e),names=x)
+})
+

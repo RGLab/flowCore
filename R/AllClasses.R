@@ -198,6 +198,11 @@ setClass("norm2Filter",
 setClass("kmeansFilter",
 	representation("filter",populations="character"))
 
+## ===========================================================================
+## sampleFilter 
+## ---------------------------------------------------------------------------
+setClass("sampleFilter",representation("filter",size="numeric"))
+
 ## =================================================================
 ## filterTree
 ## ----------------------------------------------------------------
