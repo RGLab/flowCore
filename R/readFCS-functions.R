@@ -39,7 +39,11 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   if(transformation==TRUE){
       txt[["transformation"]] <-"applied" 
   }
-  return(new("flowFrame", exprs=mat, description=c(txt), parameters=params))
+
+  
+  description <- strsplit(txt,split=" ")
+  names(description) <- names(txt)
+  return(new("flowFrame", exprs=mat, description= description, parameters=params))
 }
 
 makeFCSparameters <- function(cn,txt) {
@@ -74,8 +78,8 @@ readFCSheader <- function(con) {
  
   ioffs <- c(as.double(version),as.integer(coffs))
   names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart", "dataend", "anastart", "anaend")
-  stopifnot(all(!is.na(ioffs) | ioffs==""), !any(ioffs[1:5]==0))
-
+  ##stopifnot(all(!is.na(ioffs) | ioffs==""), !any(ioffs[1:5]==0))
+  stopifnot(all(!is.na(ioffs) | ioffs==""))
   return(ioffs)
 }
 
@@ -116,6 +120,26 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
   if(length(bitwidth)!=1)
     stop("Sorry, I am expecting the bitwidth to be the same for all parameters")
 
+  ##for DATA segment exceeding 99,999,999 byte.
+  if(offsets["FCSversion"] == 3){
+      datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA"))
+      dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA"))
+      if(offsets["datastart"] != datastart && offsets["datastart"]== 0){
+          offsets["datastart"] <-  datastart
+      }
+      if(offsets["datastart"] != datastart && offsets["datastart"]!= 0){
+          print(datastart)
+          print(offsets["datastart"])
+          stop("The HEADER and the TEXT segment define different starting point to read the data.")
+      }
+      
+      if(offsets["dataend"] != dataend && offsets["dataend"]== 0){
+          offsets["dataend"] <-  dataend
+      }
+      if(offsets["dataend"] != dataend && offsets["dataend"]!= 0){
+          stop("The HEADER and the TEXT segment define different ending point to read the data.")
+      }
+  }
   seek(con, offsets["datastart"])
 
   size <- bitwidth/8

@@ -6,10 +6,8 @@
 \alias{polygonGate}
 \alias{polytopeGate}
 \alias{polytopeGate-class}
-\alias{ellipsoidGate}
-\alias{ellipsoidGate-class}
-\alias{kmeansFilter}
-\alias{kmeansFilter-class}
+\alias{summary, rectangleGate-method}
+
 
    
 \title{Define filter boundaries}
@@ -20,7 +18,6 @@
 rectangleGate( filterId = "rectangleGate", .gate, \dots)
 polygonGate(filterId = "polygonGate", boundaries, \dots)
 polytopeGate(filterId = "polytopeGate", .gate, \dots)
-ellipsoidGate(filterId = "ellipsoidGate", .gate, distance, \dots)
 kmeansFilter(filterId = "kmeans",\dots)
 }
 
@@ -28,7 +25,6 @@ kmeansFilter(filterId = "kmeans",\dots)
   \item{filterId}{ An optional parameter that sets the \code{filterId} of this gate. }
   \item{.gate}{ A definition of the gate. This can be either a list or matrix, described below. }
   \item{boundaries}{ A definition of the gate.}
-  \item{distance}{Positive numeric value}
   \item{\dots}{ You can also directly describe a gate without wrapping it in a list, as described below. }
   
 }

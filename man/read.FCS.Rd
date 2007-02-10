@@ -1,8 +1,7 @@
 \name{read.FCS}
 \alias{read.FCS}
 \title{Read an FCS file}
-\description{Read one or several FCS files: Data File Standard for Flow
-  Cytometry}
+\description{Read Data File Standard for Flow Cytometry}
 \usage{
    read.FCS(filename, transformation = "linearize", debug = FALSE, alter.names=FALSE, column.pattern=NULL)
 }

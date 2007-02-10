@@ -73,6 +73,7 @@ setMethod("summary","subsetFilter",function(object,...) {
 
 setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
 	frameId = identifier(x)
+        print(class(frameId))
 	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
 		warning("Frame identifiers do not match. It is possible that this filter is not compatible with this frame.")
 	if(nrow(x) != length(table@subSet))

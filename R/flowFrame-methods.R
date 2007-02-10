@@ -4,9 +4,9 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier", signature="flowFrame",
           definition=function(object){
-            oid <- object@description["GUID"]
+            oid <- object@description[["GUID"]]
             if(is.null(oid) || is.na(oid))
-              as.vector(object@description["$FIL"])
+              as.vector(object@description[["$FIL"]])
             else
               as.vector(oid)
           })
