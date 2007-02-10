@@ -1,0 +1,39 @@
+\name{filterResult-class}
+\docType{class}
+\alias{filterResult-class}
+
+\title{Class "filterResult" }
+\description{Container to store the result of applying a \code{filter} on a
+  \code{flowFrame} object}
+
+\section{Slots}{
+	 \describe{
+    \item{\code{frameId}:}{Object of class \code{"character"}
+      referencing the \code{flowFrame} object filtered}
+    \item{\code{filterDetails}:}{Object of class \code{"list"}
+      describing the filter applied}
+    \item{\code{filterId}:}{Object of class \code{"character"}
+      refereceng the filter applied}
+    \item{\code{parameters}:}{Object of class \code{"ANY"} describing
+      the parametersused to filter the \code{flowFrame} }
+  }
+}
+\section{Extends}{
+Class \code{"\linkS4class{filter}"}, directly.
+}
+\section{Methods}{
+No methods defined with class "filterResult" in the signature.
+}
+
+\author{B. Ellis N. LeMeur}
+
+\seealso{
+  \code{\link{filter}},
+  \code{\linkS4class{logicalFilterResult-class}},
+  \code{\linkS4class{multipleFilterResult-class}},
+  \code{\linkS4class{randomFilterResult-class}}
+}
+\examples{
+showClass("filterResult")
+}
+\keyword{classes}

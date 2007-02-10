@@ -30,339 +30,172 @@
 
 
 
-\title{How to use flowCore package}
+\title{flowCore: data structures for flow cytometry data}
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\noindent \textbf{Background} The recent application of modern automation technologies to staining and collecting flow cytometry (FCM) samples has led to many new challenges in data management and analysis. We limit our attention here to the associated problems in the analysis of the massive amounts of FCM data now being collected. From our viewpoint, see two related but substantially different problems arising. On the one hand, there is the problem of adapting existing software to apply standard methods to the increased volume of data. The second problem, which we intend to address here, is the absence of any research platform which bioinformaticians, computer scientists, and statisticians can use to develop novel methods that address both the volume and multidimensionality of the mounting tide of data. In our opinion, such a platform should be Open Source, be focused on visualization,  support rapid prototyping, have a large existing base of users, and have demonstrated suitability for development of new methods. We believe that the Open Source statistical software R in conjunction with the Bioconductor Project fills all of these requirements. Consequently we have developed a Bioconductor package that we call flowcore. The flowcore package is not intended to be a complete analysis package for FCM data, rather, we see it as providing a clear object model and a collection of standard tools that enable R as an informatics research platform for flow cytometry. One of the important issues that we have addressed in the flowcore package is that of using a standardized representation that will insure compatibility with existing technologies for data analysis and will support collaboration and interoperability of new methods as they are developed. In order to do this, we have followed the current standardized descriptions of FCM data analysis as being developed under NIH Grant xxxx [n]. We believe that researchers will find flowcore to be a solid foundation for future development of new methods to attack the many interesting open research questions in FCM data analysis.\\
-\textbf{Methods} We propose a variety different data structures. We have implemented the classes and methods in the Bioconductor package flowcore. We illustrate their use with X case studies.\\
+\noindent \textbf{Background} The recent application of modern automation technologies to staining and collecting flow cytometry (FCM) samples has led to many new challenges in data management and analysis. We limit our attention here to the associated problems in the analysis of the massive amounts of FCM data now being collected. From our viewpoint, see two related but substantially different problems arising. On the one hand, there is the problem of adapting existing software to apply standard methods to the increased volume of data. The second problem, which we intend to address here, is the absence of any research platform which bioinformaticians, computer scientists, and statisticians can use to develop novel methods that address both the volume and multidimensionality of the mounting tide of data. In our opinion, such a platform should be Open Source, be focused on visualization,  support rapid prototyping, have a large existing base of users, and have demonstrated suitability for development of new methods. We believe that the Open Source statistical software R in conjunction with the Bioconductor Project fills all of these requirements. Consequently we have developed a Bioconductor package that we call flowCore. The flowCore package is not intended to be a complete analysis package for FCM data, rather, we see it as providing a clear object model and a collection of standard tools that enable R as an informatics research platform for flow cytometry. One of the important issues that we have addressed in the flowCore package is that of using a standardized representation that will insure compatibility with existing technologies for data analysis and will support collaboration and interoperability of new methods as they are developed. In order to do this, we have followed the current standardized descriptions of FCM data analysis as being developed under NIH Grant xxxx [n]. We believe that researchers will find flowCore to be a solid foundation for future development of new methods to attack the many interesting open research questions in FCM data analysis.\\
+\textbf{Methods} We propose a variety different data structures. We have implemented the classes and methods in the Bioconductor package flowCore. 
+We illustrate their use with X case studies.\\
 \textbf{Results} We hope that those proposed data structures will the base for the development of many tools for the analysis of high throughput flowcytometry.\\
 \textbf{keywords} Flow cytometry, high throughtput, software, standard
 \end{abstract}
 
 
 \section{Introduction}
-Traditionnally, flow cytometry has been a tube-based technique limited to small-scale laboratory and clinical studies. High throughput methods for flow cytometry have recently been developed for drug discovery and advanced research methods \cite{Gasparetto2004, Young2004}. As an example, the flow cytometry high content screening (FC-HCS) can process up to a thousand samples daily at a single workstation, and the results have been equivalent or superior to traditional manual multiparameter staining and analysis techniques. \\
-The amount of information generated by high throughput technologies such as FC-HCS need to be transformed into executive summaries (which are brief enough) for creative studies by a human researcher \cite{Brazma2001}. Standardization is critical when developing new high throughput technologies and their associated information services \cite{Brazma2001, Chicurel2002, Boguski2003}. Standardization efforts have been made in clinical cell analysis by flow cytometry \cite{Keeney2004}, however data interpretation has not been standardized for even low throughput FCM. It is one of the most difficult and time consuming aspects of the entire analytical process as well as a primary source of variation in clinical tests, and investigators have traditionally relied on intuition rather than standardized statistical inference \cite{Bagwell2004,Braylan2004,Parks1997,Suni2003}. In the development of standards in high throughput FCM, few progress has been done in term of Open Source software. In this article we propose data structures to handle flow cytometry data through the main steps of prprocessing: compensation, transformation, filtering.\\
+Traditionnally, flow cytometry has been a tube-based technique limited to small-scale laboratory and clinical studies. 
+High throughput methods for flow cytometry have recently been developed for drug discovery and advanced research methods 
+\cite{Gasparetto2004, Young2004}. As an example, the flow cytometry high content screening (FC-HCS) can process up 
+to a thousand samples daily at a single workstation, and the results have been equivalent or superior to traditional 
+manual multiparameter staining and analysis techniques. \\
+
+The amount of information generated by high throughput technologies such as FC-HCS need to be transformed into 
+executive summaries (which are brief enough) for creative studies by a human researcher \cite{Brazma2001}. 
+Standardization is critical when developing new high throughput technologies and their associated information services 
+\cite{Brazma2001, Chicurel2002, Boguski2003}. Standardization efforts have been made in clinical cell analysis 
+by flow cytometry \cite{Keeney2004}, however data interpretation has not been standardized for even low throughput FCM. 
+It is one of the most difficult and time consuming aspects of the entire analytical process as well as a primary source 
+of variation in clinical tests, and investigators have traditionally relied on intuition rather than standardized statistical inference 
+\cite{Bagwell2004,Braylan2004,Parks1997,Suni2003}. In the development of standards in high throughput FCM, 
+few progress has been done in term of Open Source software. In this article we propose R data structures to handle 
+flow cytometry data through the main steps of preprocessing: compensation, transformation, filtering.\\
+
+The aim is to merge both prada  and rflowcyt \cite{LeMeur2006} into one core package wich is compliant 
+with the data exchange standards that are currently developed in the community \cite{Spidlen2006}.
+
+Visualization as well as quality control will than be part of the utility packages that depend on the data structures defined in the flowCore package.
 
 
+\section{Data model}
+The package \Rpackage{flowCore} offers the possibility to store single measurement (FCS file) or combine several individual
+measurements in the confines of a single experiment and to include all the necessary metadata. Its object
+model tries to stay close to the familiar micro-array data structures (expressionSet) making use of already
+defined generic functions.\\
 
-\section{Methodology}
-\subsection{Reading data}
-We first load the libraries and read the data into R as FCS object 
-(rflowcyt data format). Note than this small example works for cytoFrame object. 
-<<load library>>=
-library("flowCore")
+\subsection{flowFrame}
+The objects of class \Robject{flowFrame} are the containers for storing individual 
+cytometry measurements originated from one FCS file. \\
+%%need description of the slots and maybe methods associated
+
+\subsection{flowSet}
+An flow cytometry experiment usually include several sample and several measurements. 
+A data structure is thus needed to store those collections of measurements.  
+The package \Rpackage{flowCore} stores the measurement and the associated data 
+information in objects of class \Robject{flowSet}. 
+A\Robject{flowSet} object contains two main slot exprs, an enviroment data astructure 
+that stores the flow cytometry measurements and the phenoData. The phenoData slot 
+contains all the relevant experiment-wide meta-data, \textit{e.g.} 
+phenotypic and experimental information relevant to the management and/or the analysis of the data.\\
+
+\section{Preprocessing Methods}
+\subsection{Compensation}
+Fluorescence compensation is the process by which the amounts of spectral overlap are 
+estimated and subtracted from the total detected signals to yield an estimate of the 
+actual amount of each dye \cite{Herzenberg2006}. Single-laser, two-color FACS experiments 
+in the mid-1970s showed that fluorescence compensation is important. 
+It is now recognized as an obligate step in most FACS analyses.
+%%definition: Compensation vs spillover
+
+\subsection{Transformation}
+While analyzing flow cytometry data, various parameter transformations are performed 
+to provide user-friendly visualization and/or to perform statistical analyses and interpret the data. 
+Following the standard \cite{Spidlen2006} 8 transformations are pre-defined: linear, quadratic, natural logarithm, 
+logarithm (with a specified base), hyperlog, bi-exponential, logicle, and split-scale.\\ 
+
+%%Can we define other?   
+%%can be applied when reading in the data.
+
+\subsection{Filter}
+The role of filtering strategies are to identify and characterize diffrent cells population in sample.
+%% Filtering vs Gating
+%%Byron's vignette?
+%%several approach from basic to DAG ...\\
+
+\section{Case study}
+\subsection{dataset}
+Our experiment is composed of 5 96-well plates\\
+%%Perry can we use that example or do you prefere an other one? 
+%% Can you add a paragraph describing the experiment?
+
+First we load the library and read in some experimental data files.
+<<loadlib, echo=TRUE, results= hide>>=
+library(flowCore)
 @ 
-<<load data,echo=FALSE,results=hide>>=
-fcs.loc <- system.file("extdata", package="flowCore")
+
+<<readData, echo=TRUE, results=hide>>=
+fcs.loc <- system.file("extdata/compdata/data", package="flowCore")
 file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
-b08 <- read.FCS(file.location[1],transformation="scale")
-e07 <- read.FCS(file.location[2],transformation="scale")
-f06 <- read.FCS(file.location[3],transformation="scale")
-@
-\begin{verbatim}
-> fcs.loc <- system.file("extdata", package="flowCore")
-> file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
-> b08 = read.FCS(file.location[1])
-> e07 = read.FCS(file.location[2])
-> f06 = read.FCS(file.location[3])
-\end{verbatim}
-
-<<showB08,eval=FALSE,echo=FALSE>>=
-show(b08)
-@
- 
-We can plot the raw data for the FSC-H and SSC-H parameters.
-<<plotRaw1,eval=TRUE, echo=FALSE,fig=TRUE, prefix=FALSE,include=FALSE>>=
-plot(b08,plotParameters=c(1,2))
-@
-<<plotRaw2,eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE,include=FALSE>>=
-plot(b08,plotParameters=c(3,4))
+experiment <- read.flowSet(file.location, transformation = "linearize")
+experiment
 @ 
-\begin{verbatim}
-> plot(b08,plotParameters=c(1,2))
-> plot(b08,plotParameters=c(3,4))
-> plot(e07,plotParameters=c(1,2))
-> plot(f06,plotParameters=c(1,2))
-\end{verbatim}
-
-\begin{figure}
-\centering
-\subfigure{\includegraphics[width=0.4\textwidth]{plotRaw1} A}
-\subfigure{\includegraphics[width=0.4\textwidth]{plotRaw2} B}
-\caption{
-  \label{fig:Fig01}{Example of smooth scatter plot.(A) FSC-H
-    \textit{vs.} SSC-H (B) FL2-H \textit{vs.} FL3-H}} 
-\end{figure}
-
-
-\subsection{Transformation data}
-While analyzing flow cytometry data, various parameter transformations are performed to provide user-friendly visualization and/or to perform statistical analyses and interpret the data. Following the standard 8 transformations are pre-defined: linear, quadratic, natural logarithm, logarithm (with a specified base), hyperlog, bi-exponential, logicle, and split-scale.
-
-As example we performed two different tramsformations on "FSC-H" channel of sample b08: a linear tranformation and a log base 2 transformation. 
-
-A linear transformation is like parameter= a*parameter +b
-<<linearTransform,echo=FALSE,results=hide>>=
-linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
-data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
+\subsection{Quality Assessment}
+Quickly look at the range of the intensities between samples 
+other statistics sur as ... cf Janet paper.
+<<summaryRange>>=
+rang <- round(fsApply(experiment, each_col, range), 2)
+rownames(rang) <- paste(rep(dir(fcs.loc), each=2), c("lower","upper") ,sep="")
+rang
 @ 
-\begin{verbatim}
->linear <- linearTransform(transformationId="linear-transformation",a=2, b=0)
->data08Transform <- transform(b08,`FSC-H`=linear(`FSC-H`))
-\end{verbatim}
 
-<<plotTransfo1,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
-plot(data08Transform,plotParameters=c(1,2))
-@
-
-A log transformation is of type: parameter=log(parameter,logbase) * r/d
-<<logTransform,eval=FALSE,echo=FALSE,results=hide>>=
-logTransform <- logTransform(transformationId="Log-Transformation",logbase=2,r=1,d=1)
-data08LogTransform <- transform(b08,`FSC-H`=logTransform(`FSC-H`))
+\subsection{Preprocessing}
+<<compensationMatrix, echo=FALSE, results= hide>>=
+comp.loc <- system.file("extdata/compdata", package="flowCore")
+comp.location <- paste(comp.loc, dir(comp.loc), sep="/")
+comp.mat <- as.matrix(read.table(comp.location[1], header=TRUE, skip=2, check.names = FALSE))
 @ 
-\begin{verbatim}
->logTransform <- logTransformation(transformationId="Log-Transformation", r=1, d=1,logbase=2)
->data08LogTransform <- transformb08,`FSC-H`=logTransform(`FSC-H`))
-\end{verbatim}
 
-<<ResultTransfoLinear>>=
-b08@exprs[1:5]
-#Linear transformation
-data08Transform@exprs[1:5]
-##Log base 2 transformation
-##data08LogTransform@exprs[1:5]
-@
- 
-<<plotTransfo2,eval=FALSE, echo=FALSE,fig=TRUE,prefix=FALSE,include=FALSE>>=
-##we should find a way to specified if an parameters has been transformed 
-## either in the title or via the label of the axis 
-plot(data08LogTransform,plotParameters=c("FSC-H","SSC-H"),main="Log2 transformed data")
-@
-
-\subsection{Filtering data (gating)}
-\subsubsection{Rectangular gate}
-We will define rectangular gates and apply them to filter the bO8 data.
-Figure \ref{fig:Fig02} presents the results of such filtering. 
-The plot in Figure \ref{fig:Fig02}A shows the result of 
-filtering out the data points that are below 0.2 in the FSC-H channel.
-Figure \ref{fig:Fig02}B shows the result of 
-filtering out the debris that are between 0.2 and 0.8 in the FSC-H channel and 
-and 0 and 0.8 in the SSC-H channel.
-
-<<define and apply rangeGate1,eval=TRUE, echo=FALSE,results=hide>>=
-rangeGate <- rectangleGate(filterId="rangeGate","FSC-H"=c(.2,Inf))
-b08rangeGate <- filter(b08,rangeGate)
+Compensation is ....
+<<compensateExp, echo=TRUE>>=
+expCompensate <- compensate(experiment,comp.mat)
 @ 
-<<plotTofilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y="FSC-H", pch="*",main="B08, with debris")
-@
-<<plotfiltered, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08[b08rangeGate],y="FSC-H", pch="*",main="B08, lower debris removed")
+
+Transformation
+<<scaleScatter, echo=TRUE>>=
+scaleTrans <- scaleTransform("scatter-scale", a=0,  b=1023)
+expCompensate <- transform(expCompensate,`FSC-H`= scaleTrans(`FSC-H`), `SSC-H`= scaleTrans(`SSC-H`))
+@ 
+
+Filter to leave out debris:
+<<rectangleFilter, echo=TRUE>>=
+filterDebris <- rectangleGate("FSC-H"=c(0.2, 1), "SSC-H"=c(0.04, 1))
+expResult <- fsApply(expCompensate, function(x) filter(x, filterDebris))
+
+cell <- Subset(expCompensate[[1]],expResult[[1]])
+@ 
+
+<<plotWithDebris, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
+print(plot(expCompensate[[1]], xlim=c(0, 1), ylim=c(0, 1), 
+main="File1 (compensated, scaled)"))
+@ 
+
+<<plotCell,echo=False, fig=TRUE, prefix=FALSE, include=FALSE>>=
+print(plot(cell, xlim=c(0, 1), ylim=c(0, 1), 
+     main="File1 (compensated, scaled, debris removed)"))
 @ 
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.4\textwidth]{plotTofilter} A}
-\subfigure{\includegraphics[width=0.4\textwidth]{plotfiltered} B} 
+\subfigure{\includegraphics[width=40mm]{plotWithDebris} A}
+\subfigure{\includegraphics[width=40mm]{plotCell} B}
 \caption{
-  \label{fig:Fig02}{Example of the effect of filtering out low intensities debris with a rectangular gate.}} 
+  \label{fig:Fig01}{Example of smooth scatter plot of FSC-H
+    \textit{vs.} SSC-H data (A) before and (B) after a applying a rectangle 
+on the  measurements (compensated and scaled) extracted from File1}} 
 \end{figure}
 
-<<define and apply ploygoneGate2,eval=TRUE, echo=FALSE,results=hide>>=
-rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(0.2,0.8),"SSC-H"=c(0,0.8))
-b08rectGate <- filter(b08,rectGate)
-b08Filtered <- b08[b08rectGate,]
-@ 
-<<plot3, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=c("FL1-H","FL2-H"),pch="*",main="B08 - Nondebris")
-@
-<<plot4, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08Filtered,y=c("FL1-H","FL2-H"),pch="*",main="B08 - Nondebris")
-@
- 
-\begin{figure}
-\centering
-\subfigure{\includegraphics[width=0.4\textwidth]{plot3} A}
-\subfigure{\includegraphics[width=0.4\textwidth]{plot4} B} 
-\caption{
-  \label{fig:Fig03}{Second example of the effect of filtering out low intensities debris with a rectangular gate.}} 
-\end{figure}
 
-\subsubsection{polygon gate}
-%%We will define a rectangular gate and apply the filter it to the bO8 data.
-<<define and apply rectangleGate,eval=TRUE,echo=FALSE>>=
-##sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
-##sqrfilter <- new("polygonGate",filterId="nonDebris",
-##            parameters=c("FSC-H","SSC-H"),boundaries= sqrcut)
-sqrfilter <- polygonGate(filterId="nonDebris","FSC-H"=c(0.3,0.3,0.6,0.6),"SSC-H"=c(0.05,0.3,0.3,.05))
-b08sqrfilter <- filter(b08,sqrfilter)
-@ 
+\section{Discussion and Conclusion}
+%% Explain the usefullness of a commun data structure maybe in comparaison with the ExpressionSet developed for
+%% microarray - count how manay package in BioC depend on the  ExpressionSet data structure?
+%%flowViz
+%%flowQ etc
 
-<<plotRectanglefilter, eval=TRUE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08[b08sqrfilter],pch="*")
-@ 
-
-
-<<define and apply polygonGate,eval=FALSE,echo=FALSE>>=
-triangleCut <- matrix(c(0.3,0.4,0.6,0.3,0.4,0.3),ncol=2,nrow=3)
-colnames(triangleCut) <- c("FSC-H","SSC-H")
-trianglefilter <- polygonGate(filterId="nonDebris",boundaries= triangleCut)
-b08Trgfilter <- filter(b08,trianglefilter)
-@ 
-
-<<plotTrianglefilter, eval=FALSE, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(x=b08,y=b08Trgfilter,filter=trianglefilter,colSubSet="red",pch="*")
-@ 
-
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotRectanglefilter} A}
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotTrianglefilter} B} 
-%%\caption{
-%%  \label{fig:Fig03}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
-
-\clearpage
-\section{Case studies}
-\subsection{BD}
-
-<<rawdata1, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,plotParameters=c("FSC-H","SSC-H"),main="B08")
-@
-<<rawdata2, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>= 
-plot(e07,plotParameters=c("FSC-H","SSC-H"),main="E07")
-@
-<<rawdata3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(f06,plotParameters=c("FSC-H","SSC-H"),main="F06")
-@ 
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata1}}
-%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata2}} 
-%%\subfigure{\includegraphics[width=0.4\textwidth]{rawdata3}} 
-%%\caption{
-%%  \label{fig:Fig04}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
-
-The first filter is a serie of rectangle gates to filter out debris
-
-<<SelectNonDebris,eval=TRUE,echo=FALSE,results=hide>>=
-filter1 <- rectangleGate(filterId="nonDebris","FSC-H"=c(0.2,0.8),"SSC-H"=c(0,0.8))
-b08.result1 <-  filter(b08,filter1)
-##e07.result1 <- filter(e07,filter1)
-##f06.result1 <- filter(f06,filter1)
-summary(b08.result1)
-##tab <- c("B08"=sum(b08.result1@subSet),"E07"=sum(e07.result1@subSet),"F06"=sum(f06.result1@subSet))
-@ 
-<<plotResFilter1, echo=FALSE, eval=FALSE,  fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result1,main="B08 nonDebris",pch="*")
-@ 
-<<plotResFilter2, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(e07,y=e07.result1,main="E07 nonDebris",pch="*")
-@ 
-<<plotResFilter3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(f06,y=f06.result1,main="F06 nonDebris",pch="*")
-@ 
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter1}}
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter2}} 
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotResFilter3}} 
-%%\caption{
-%%  \label{fig:Fig05}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
-
-The second gate gets the live cells
-
-<<FilterLiveCell,eval=TRUE,echo=FALSE,results=hide>>=
-##filter2 <- norm2Filter(filterId="Live Cells",scale.factor=2,method="covMcd",parameters=c("FSC-H","SSC-H"))
-filter2 <- norm2Filter("FSC-H","SSC-H",filterId="Live Cells",scale.factor=2,method="covMcd")
-b08.result2 <-  filter(b08, filter2 %subset% b08.result1) 
-
-##e07.result2 <- filter(e07,filter2,parent=e07.result1)
-##f06.result2 <- filter(f06,filter2,parent=f06.result1)
-
-summary(b08.result2)
-##tab <- rbind(tab,c(sum(b08.result2@subSet),sum(e07.result2@subSet),sum(f06.result2@subSet)))
-
-@ 
-
-<<plotLivingCell1, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result2,parent=b08.result1,xlim=c(0,1024),ylim=c(0,1024),main="B08",pch="*")
-@ 
-<<plotLivingCell2, echo=FALSE, eval=FALSE,  fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(e07,y=e07.result2,parent=e07.result1,xlim=c(0,1024),ylim=c(0,1024),main="E07",pch="*")
-@ 
-<<plotLivingCell3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(f06,y=f06.result2,parent=f06.result1, xlim=c(0,1024),ylim=c(0,1024),main="F06",pch="*")
-@ 
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell1}}
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell2}} 
-%%\subfigure{\includegraphics[width=0.4\textwidth]{plotLivingCell3}} 
-%%\caption{
-%%  \label{fig:Fig06}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
-
-The third-fifth gates get the positive cells for the marker in FL1-H. 
-This is a really interesting example because it illustrates that there
-are two subpopulations. Naturally we would like to automatically find them
-In this case we want to now what percent the positive population in FL1-H 
-is of the total population.
-
-<<FL1-H, echo=FALSE, eval=FALSE,fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),ylim=c(0,1024),xlim=c(0,1024))
-@ 
-%%\begin{figure}
-%%\centering
-%%\includegraphics{FL1-H}
-%%\end{figure}
-
-<<FL1Filter,eval=TRUE,echo=FALSE,results=hide>>=
-filter3 <- rectangleGate(filterId="FL1-H+","FL1-H"=c(400,Inf))
-b08.result3 <- filter(b08,filter3 %subset%b08.result2)
-
-filter4 <- norm2Filter("FSC-H","FL1-H",filterId="FL1-H+",scale.factor=2,method="covMcd")
-b08.result4 <- filter(b08,filter4 %subset% b08.result2)
-
-##b08.result5 <- applyFilter(filter4,b08,b08.result2@subSet-b08.result4@subSet)
-
-##ans <- c(sum(b08.result3@subSet)/sum(b08.result2@subSet),
-##sum(b08.result4@subSet)/(sum(b08.result4@subSet)+sum(b08.result5@subSet)))
-@
-
-<<FL1Filtered1, echo=FALSE, eval=FALSE,  fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result3,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,1024),pch="*")
-@ 
-<<FL1Filtered2, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result4,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,1024),pch="*")
-@ 
-<<FL1Filtered3, echo=FALSE, eval=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-plot(b08,y=b08.result5,parent=b08.result2,plotParameters=c("FSC-H","FL1-H"),
-          xlim=c(0,1024),ylim=c(0,1024),pch="*")
-@
-
-%%\begin{figure}
-%%\centering
-%%\subfigure{\includegraphics[width=40mm]{FL1Filtered1}}
-%%\subfigure{\includegraphics[width=40mm]{FL1Filtered2}} 
-%%\subfigure{\includegraphics[width=40mm]{FL1Filtered3}} 
-%%\caption{
-%%  \label{fig:Fig07}{Example of the effect of filtering with a
-%%    polygon gate.}} 
-%%\end{figure}
-
+\section*{Acknowledgements}
+We would like to thank R. Gentleman RR. Brinkman
+%%or should they be Authors
 
 \clearpage
 \bibliographystyle{plainnat} 
