@@ -203,6 +203,12 @@ setClass("kmeansFilter",
 ## ---------------------------------------------------------------------------
 setClass("sampleFilter",representation("filter",size="numeric"))
 
+## ===========================================================================
+## multiFilter 
+## ---------------------------------------------------------------------------
+setClass("multiFilter",representation("filter",populations="character",filters="list"))
+
+
 ## =================================================================
 ## filterTree
 ## ----------------------------------------------------------------
@@ -252,6 +258,9 @@ setClass("filterResult",
 	prototype=list(frameId=character(0),filterDetails=list()))
 setClass("logicalFilterResult",representation("filterResult",subSet="logical"))
 setClass("multipleFilterResult",representation("filterResult",subSet="factor"))
+#A special case of multipleFilterResult that arises when there are overlapping sets
+setClass("manyFilterResult",representation("filterResult",subSet="logical"))
+
 setClass("randomFilterResult",representation("filterResult",subSet="numeric"))
 
 
