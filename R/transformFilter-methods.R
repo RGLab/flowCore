@@ -1,7 +1,7 @@
 ## Constructors
 setMethod("%on%",signature("filter","transformList"),function(e1,e2) {
 	new("transformFilter",
-		filterId=paste(e1@filterId,"on transformed values of",paste(colnames(e2),sep=",")),
+		filterId=paste(e1@filterId,"on transformed values of",paste(colnames(e2),collapse=",")),
 		transforms=e2,
 		filter=e1,parameters=e1@parameters)
 })
