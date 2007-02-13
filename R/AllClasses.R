@@ -97,7 +97,7 @@ setClass("filter",
              if(!is.character(object@filterId) ||
                 length(object@filterId)!=1)
                msg <- "\nslot 'filterId' must be character vector of length 1"
-             if(!is.character(object@parameters))
+             if(!is.character(object@parameters))#why is the sig for parameters "ANY" but we test for character?
              msg <- "\nslot 'parameters' must be  vector"
 # Not sure what this test was supposed to do, but it's really annoying
 #             test <- matrix(1:length(object@parameters),
