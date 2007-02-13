@@ -40,7 +40,8 @@ setMethod("filter",signature=signature(x="flowSet",filter="filter"),function(x,f
 setMethod("%in%",signature(x="flowFrame",table="rectangleGate"),function(x,table) {
 	e = if(length(table@parameters)==1) as.matrix(exprs(x)[,table@parameters]) else exprs(x)[,table@parameters]
 	apply(sapply(seq(along=table@parameters),function(i) {
-		!is.na(cut(e[,i],c(table@min[i],table@max[i]),labels=FALSE))
+		!is.na(cut(e[,i],c(table@min[i],table@max[i]),labels=FALSE,
+                           right=FALSE))
 	}),1,all)
 })
 setMethod("show",signature(object="rectangleGate"),function(object) {
