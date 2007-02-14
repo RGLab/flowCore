@@ -19,7 +19,6 @@ setMethod("exprs", signature="flowFrame",
           definition=function(object)
             object@exprs
           )
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -30,7 +29,7 @@ setReplaceMethod("exprs", signature=c("flowFrame", "matrix"),
                    object@exprs <- value
                    return(object)
                  })
-## ==========================================================================
+
 
 ## ==========================================================================
 ## accessor method for slot parameters
@@ -39,11 +38,10 @@ setMethod("parameters", signature="flowFrame",
           definition=function(object)
             object@parameters
           )
-## ==========================================================================
 
 
 ## ==========================================================================
-## accessor methods for slot description
+## accessor methods for items in the description slot
 ## would not be logical that if missing retrieve all keyword
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("keyword",signature("flowFrame","character"),function(object,keyword) {
@@ -61,23 +59,35 @@ setMethod("keyword",signature("flowFrame","list"),function(object,keyword) {
 		else NA
 	})
 })
+
+
+## ==========================================================================
+## accessor methods for slot description
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("description",signature("flowFrame"),function(object) object@description)
-## ==========================================================================
 
 
 ## ==========================================================================
-## accessor method for slot colnames
+## accessor method for colnames of exprs slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames", signature="flowFrame",
           definition=function(x, do.NULL="missing", prefix="missing")
           colnames(exprs(x))
           )
 
+
+## ==========================================================================
+## accessor method for feature names
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("featureNames", signature="flowFrame",
           definition=function(object)
           object@parameters$desc
           )
 
+
+## ==========================================================================
+## accessor method for names
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("names", signature="flowFrame",
           definition=function(x) {
             cn <- colnames(x)
@@ -92,18 +102,15 @@ setMethod("names", signature="flowFrame",
             cn
           })
 
-## ==========================================================================
-
 
 ## ==========================================================================
-## replace method for slot colnames
+## replace method for colnames of exprs slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setReplaceMethod("colnames", signature=c("flowFrame", "ANY"),
                  definition=function(x, value) {
                    colnames(x@exprs) <- value
                    return(x)
                  })
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -128,19 +135,17 @@ setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
 		geneplotter:::smoothScatter(exprs(x)[,y],...)
 	}
 })
-## ==========================================================================
 
 
 ## ==========================================================================
-## the $-operator
+## the $-operator (subsetting with '$')
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 "$.flowFrame" <- function(x, val)
     x[,val]
-## ==========================================================================
 
 
 ## ==========================================================================
-## subsetting method
+## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("[", signature="flowFrame",
           definition=function(x, i, j, ..., drop=FALSE) {
@@ -168,7 +173,6 @@ setMethod("[", signature=signature("flowFrame","filter"),
             else
               x[result,j,...,drop=drop]
           })
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -178,7 +182,6 @@ setMethod("nrow", signature=signature("flowFrame"),
           definition=function(x)
             return(nrow(x@exprs))
           )
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -188,7 +191,6 @@ setMethod("ncol", signature=signature("flowFrame"),
           definition=function(x)
             return(ncol(x@exprs))
           )
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -204,11 +206,10 @@ setMethod("show",signature=signature("flowFrame"),
             cat(msg)
             return(msg)
           })
-## ==========================================================================
 
 
 ## ==========================================================================
-## Subset method for flowFrame: Why is this Subset with capital 's' ???
+## Subset methods for flowFrame: Why is this Subset with capital 's' ???
 ## Why do we need the 'select' parameter? Wouldn't this be equivalent:
 ## Subset(x[,c(1,3)], subset)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -228,13 +229,12 @@ setMethod("Subset",signature("flowFrame","logical"),
 
 
 ## ==========================================================================
-## split method for flowFrame
+## split methods for flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("split", signature("flowFrame","filter"),
           definition=function(x,f,drop=FALSE,...)
           split(x,filter(x,f),drop,...)
           )
-
 #We actually filter on filterResults and multipleFilterResults
 setMethod("split", signature("flowFrame","logicalFilterResult"),
           definition=function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
@@ -244,18 +244,24 @@ setMethod("split", signature("flowFrame","logicalFilterResult"),
                       names=c(paste(population,"+",sep=""),
                         paste(population,"-",sep="")))
           })
-
 setMethod("split", signature("flowFrame","multipleFilterResult"),function(x,f,drop=FALSE,prefix=NULL,...) {
 	nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
 	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })
 
 
+## ==========================================================================
+## summary method for flowFrame
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary", signature("flowFrame"), 
     function(object, ...) 
         apply(exprs(object), 2, summary)
  )
 
+
+## ==========================================================================
+## wrappers for apply (over exprs slot)
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("each_row",signature("flowFrame"),function(x,FUN,...) {
 	apply(exprs(x),1,FUN,...)
 })

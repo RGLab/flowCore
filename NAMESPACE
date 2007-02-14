@@ -25,6 +25,8 @@ exportMethods("initialize","description","phenoData","phenoData<-",
               "filterDetails<-","plot", "coerce","spillover",
               "compensate","fsApply","sampleNames", "summary","each_row","each_col")
 
+S3method("$", "flowFrame")
+
 export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
 export("read.FCS","read.flowSet",

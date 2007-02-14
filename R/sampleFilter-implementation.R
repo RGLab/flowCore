@@ -1,4 +1,6 @@
+## ==========================================================================
 ## Constructors
+## ---------------------------------------------------------------------------
 sampleFilter = function(filterId="sample",size) {
 	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
 }
@@ -8,6 +10,11 @@ setMethod("%in%",signature("flowFrame","sampleFilter"),function(x,table) {
 	l[sample(length(l),n,replace=FALSE)] = TRUE
 	l
 })
+
+
+## ==========================================================================
+## show method
+## ---------------------------------------------------------------------------
 setMethod("show",signature("sampleFilter"),function(object) {
 	msg = paste("A filter named '",object@filterId,"' returning objects with ",object@size," rows",sep="")
 	cat(msg)
