@@ -1,13 +1,17 @@
+## ==========================================================================
 ## read in flowSets, based on the prada function readCytoSet. Most of the actual
 ## flowSet construction has been moved to the coercion of lists to flowSets. This
 ## is to facilitate the construction of flowSets from within the R environment (e.g.
 ## the flowFrames are actually retrieved from the network or a database.)
-read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,sep="\t",...) {
+## ---------------------------------------------------------------------------
+read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,
+  sep="\t",...) {
 	#A frame of phenoData information
 	phenoFrame = NULL
 	if(!missing(phenoData)) {
 		if(is.character(phenoData) && length(phenoData) == 1)
-			phenoFrame = read.phenoData(file.path(path,phenoData),header=TRUE,as.is=TRUE,sep=sep,...)
+			phenoFrame = read.phenoData(file.path(path,phenoData),
+                          header=TRUE,as.is=TRUE,sep=sep,...)
 		else if(is(phenoData,"AnnotatedDataFrame"))
 			phenoFrame = phenoData
 	}

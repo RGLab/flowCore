@@ -14,15 +14,15 @@ setAs("environment","flowSet",function(from) {
     if(!all(apply(colNames,2,"==",colNames[,1])))
       stop("Column names for all frames do not match.")
     new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
-                                                        data=data.frame(name=I(frameList),row.names=frameList),varMetadata=data.frame(labelDescription="Name",row.names="name")))
-},function(from,value) {
+        data=data.frame(name=I(frameList),row.names=frameList),
+        varMetadata=data.frame(labelDescription="Name",row.names="name")))
+  },function(from,value) {
     if(!canCoerce(value,"AnnotatedDataFrame"))
       stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
     from            = as(from,"flowSet")
     phenoData(from) = as(value,"AnnotatedDataFrame")
     from
-})
-## ==========================================================================
+  })
                                         
 
 ## ==========================================================================
@@ -37,7 +37,6 @@ setAs("list","flowSet",function(from) {
 	multiassign(from,env=env)
 	as(env,"flowSet") <- value
 })
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -55,7 +54,6 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	object@phenoData = value
 	object
 })
-## ==========================================================================
 
 
 ## ==========================================================================
@@ -63,7 +61,6 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
           x@colnames)
-## ==========================================================================
 
 ## ==========================================================================
 ## replace method for slot colnames
@@ -72,18 +69,16 @@ setReplaceMethod("colnames","flowSet",function(x,value) {
 	x@colnames = value
 	x
 })
-## ==========================================================================
 
 
 ## ==========================================================================
 ## accessor method for length of flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
-## ==========================================================================
 
 
 ## ==========================================================================
-## subsetting method
+## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 	if(missing(drop)) drop = FALSE
@@ -116,8 +111,6 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 	fr
 })
 
-## ==========================================================================
-
 
 ## ==========================================================================
 ## apply method for flowSet
@@ -145,6 +138,10 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 	res
 })
 
+
+## ==========================================================================
+## Subset method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
 	if(missing(select))
 		fsApply(x,Subset,subset,...)
@@ -152,6 +149,10 @@ setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
 		fsApply(x,Subset,subset,select,...)
 })
 
+
+## ==========================================================================
+## split method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
 	#Split always returns a list
 	fsApply(x,function(y) {
@@ -161,12 +162,20 @@ setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=
 	},simplify=FALSE)
 })
 
+
+## ==========================================================================
+## keyword method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
 	do.call("data.frame",c(lapply(keyword,function(k) {
 		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
 	}),list(row.names=sampleNames(object))))
 })
 
+
+## ==========================================================================
+## keyword method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("rbind2",signature("flowSet","missing"),function(x,y) x)
 setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
 	env = new.env(hash=TRUE,parent=emptyenv())
@@ -192,7 +201,10 @@ setMethod("show","flowSet",function(object) {
 	cat(paste(object@colnames,sep=","))
 	cat("\n")
 })
-## ==========================================================================
 
+
+## ==========================================================================
+## sampleNames method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("sampleNames", "flowSet", function(object) 
        sampleNames(phenoData(object)))

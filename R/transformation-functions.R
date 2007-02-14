@@ -11,6 +11,7 @@ linearTransform <- function(transformationId,a=1,b=0){
     })
 }
 
+
 ## ==========================================================================
 ## Quadratic transformation function
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -26,6 +27,7 @@ quadraticTransform <- function(transformationId,a,b,c){
     })
 }
 
+
 ## ==========================================================================
 ## Natural logarithm transformation function
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,6 +40,7 @@ lnTransform <- function(transformationId,r,d){
      x<-log(x)*(r/d)
  	})
 }
+
 
 ## ==========================================================================
 ## Logarithm transformation function
@@ -56,6 +59,7 @@ logTransform <- function(transformationId,logbase=10,r,d){
     })
 }
 
+
 ## ==========================================================================
 ## General biexponential transformation function
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,14 +70,20 @@ biexponentialTransform<- function(transformationId,a=.5,b=1,c=.5,d=1,f=0,w=0,
     })
 }
 
+
+## ==========================================================================
+## Logicle transformation function
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 logicleTransform <- function(w=0,r=262144,d=5,...) {
   if(w>d) stop("Negative range decades must be smaller than total number of decades")
   w = w*log(10)
   d = d*log(10)
-  p = if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),c(.Machine$double.eps,2*(w+d)))$root
+  p = if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
+           c(.Machine$double.eps,2*(w+d)))$root
   ##new("biexponentialTransformation",a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
  biexponentialTransform(a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
 }
+
 
 ## ===========================================================================
 ## Truncation Transformation
@@ -94,6 +104,7 @@ scaleTransform <- function(transformationId,a,b){
      	x=(x-a)/(b-a)
     })
 }
+
 
 ## ===========================================================================
 ## Hyperbolic Arcsin Transformation

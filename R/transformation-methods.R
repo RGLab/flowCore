@@ -1,6 +1,5 @@
-## NLM Jan 17
 ## ==========================================================================
-## Transformation function for flowFrame
+## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
@@ -31,13 +30,9 @@ setMethod("transform",
                   parameters=parameters(x),#[,params$name],
                   description=description(x))
           })
-## ==========================================================================
-## Transform function for flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
 	fsApply(`_data`,transform,...)
 })
-
 setMethod("transform",signature(`_data`="missing"),function(...) {
 	funs = list(...)
 	io   = names(funs)
@@ -46,13 +41,22 @@ setMethod("transform",signature(`_data`="missing"),function(...) {
 		stop("All transforms must be functions")
 	if(!all(sapply(io,is.character)))
 		stop("All transforms must be named")
-	new("transformList",transforms=lapply(seq(along=funs),function(i) new("transformMap",input=io[i],output=io[i],f=funs[[i]])))
+	new("transformList",transforms=lapply(seq(along=funs),function(i)
+                              new("transformMap",input=io[i],output=io[i],f=funs[[i]])))
 })
 
+
+## ==========================================================================
+## colnames method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames",signature("transformList"),function(x, do.NULL=TRUE, prefix="col") {
 	unique(sapply(x@transforms,slot,"input"))
 })
 
+
+## ==========================================================================
+## %on% operators
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
 	x = exprs(e2)
 	for(y in e1@transforms){
@@ -63,7 +67,11 @@ setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
 })
 setMethod("%on%",signature("transformList","flowSet"),function(e1,e2) fsApply(e2,"%on%",e1=e1))
 
-#So that we can get parameters back OUT of a transform
+
+## ==========================================================================
+## summary method
+## So that we can get parameters back OUT of a transform
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",signature("transform"),function(object,..) {
 	e = environment(object)
 	x = ls(env=e)

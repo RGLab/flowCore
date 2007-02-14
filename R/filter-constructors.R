@@ -18,10 +18,11 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
-      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) c("min"=x[1],"max"=x[2]))
-	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),min=.gate[1,],max=.gate[2,])
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x)
+                        c("min"=x[1],"max"=x[2]))
+	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),
+            min=.gate[1,],max=.gate[2,])
 }
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 ## ==========================================================================
@@ -29,10 +30,11 @@ rectangleGate <- function(filterId="rectangleGate", .gate,...) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
     if(missing(boundaries) || !is.matrix(boundaries))
-      boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries, function(x) x)
-    new("polygonGate",filterId=filterId, parameters=colnames(boundaries),boundaries=boundaries)
+      boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries,
+                           function(x) x)
+    new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
+        boundaries=boundaries)
 }
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 ## ==========================================================================
@@ -43,9 +45,9 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
          
-    new("polytopeGate", filterId=filterId, parameters=colnames(.gate), boundaries=.gate)
+    new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
+        boundaries=.gate)
 }
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 ## ==========================================================================
@@ -55,14 +57,16 @@ ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       
-    new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate), focus=.gate, distance=distance)
+    new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
+        focus=.gate, distance=distance)
 }
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 ## ==========================================================================
 ## Norm2Filter contructors
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",n=50000,...) {
+norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
+                        n=50000,...) {
 	if(missing(y)) {
 		if(length(x)==1)
 			stop("You must specify two parameters for a norm2 gate.")
@@ -72,11 +76,13 @@ norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
 		x=x[1]
 	} else {
 		if(length(x)>1 || length(y)>1)
-			warning("Only the first two parameters from 'x' and 'y' will be used.")
+			warning("Only the first two parameters from 'x' and ",
+                                "'y' will be used.")
 			x = x[1]
 			y = y[1]
 	}
-	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,filterId=filterId,n=50000,...)
+	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
+            filterId=filterId,n=50000,...)
 }
 
 

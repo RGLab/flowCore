@@ -5,13 +5,12 @@ require("Biobase")
 ##      coordinates of the corners.
 
 ## ===========================================================================
-##  ~cytoFrame/FCS no gating slot / no well Slot?
+##  flowFrame
 ## ---------------------------------------------------------------------------
-## A container for flow cytometry measurements with slots exprs, description
-## and well. Exprs contains measurement values, description contains 
-## information from file headers of FCS file and well contains well position
-## on microtiter plate from experiment.  
-## 
+## A container for flow cytometry measurements with slots exprs, parameters
+## and description. exprs contains measurement values, description contains 
+## information from file headers of FCS file and parameters contains information
+## about the different FCS measurement parameters (i.e. channels)
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
          representation(exprs="matrix",
@@ -30,57 +29,49 @@ setClass("flowFrame",
                msg <- "\nslot 'description' must be a list"
          })
 
+
 ## ===========================================================================
-##  ~cytoSet
+##  flowSet
 ## ---------------------------------------------------------------------------
 ## A collection of several cytoFrames making up one experiment. Slots 
 ## frames, phenoData, colnames. Frames contains the cytoFrame objects,
 ## phenoData the experiment meta data and colnames the channel names. 
 ## ---------------------------------------------------------------------------
 setClass("flowSet",                   
-  representation(frames="environment",
-                 phenoData="AnnotatedDataFrame",
-                 colnames="character"),
-  prototype=list(frames=new.env(),
-                 phenoData=new("AnnotatedDataFrame",
-                   data=data.frame(),
-                   varMetadata=data.frame()),
-                 colnames=character(0)),
-  validity=function(object){
-    nc <- length(colnames(object))
-	# Why do we do this? It seems like new() should already check this against the representation().
-	# replicating it here seems superfluorous.
-#	if(!(is(object@phenoData, "AnnotatedDataFrame") && 
-#		is(object@colnames, "character") &&
-#		is(object@frames, "environment"))) {
-#			warning("An element of this object is of the wrong type.")
-#			return(FALSE)
-#		}
-
-	#Make sure that all of our samples list
-	name.check = is.na(match(sampleNames(object),ls(object@frames,all.names=TRUE)))
-	if(any(name.check)) {
-		name.list = paste(sampleNames(object)[name.check],sep=",")
-		warning(paste("These objects are not in the data environment:",name.list))
-		return(FALSE)
-	}
+         representation(frames="environment",
+                        phenoData="AnnotatedDataFrame",
+                        colnames="character"),
+         prototype=list(frames=new.env(),
+           phenoData=new("AnnotatedDataFrame",
+             data=data.frame(),
+             varMetadata=data.frame()),
+           colnames=character(0)),
+         validity=function(object){
+           nc <- length(colnames(object))
+           ## Make sure that all of our samples list
+           name.check = is.na(match(sampleNames(object),ls(object@frames,all.names=TRUE)))
+           if(any(name.check)) {
+             name.list = paste(sampleNames(object)[name.check],sep=",")
+             warning(paste("These objects are not in the data environment:",name.list))
+             return(FALSE)
+           }
 	
-	#Ensure that all frames match our colnames
-	if(!all(sapply(sampleNames(object),function(i) {
-		x = get(i,env=object@frames)
-		if(identical(object@colnames, colnames(x)))  TRUE else { 
-			warning(paste(i,"failing colnames check: ",paste(object@colnames,sep=","),"vs",paste(colnames(x),sep=",")))
-			FALSE 
-		}
-	}))) {
-		warning("Some items identified in the data environment either have the wrong dimension or type.")
-		return(FALSE)
-	}
-	return(TRUE)
-  })
-
-
-
+           ##Ensure that all frames match our colnames
+           if(!all(sapply(sampleNames(object),function(i) {
+             x = get(i,env=object@frames)
+             if(identical(object@colnames, colnames(x))){
+               TRUE
+             }else{ 
+               warning(paste(i, "failing colnames check: ", paste(object@colnames, sep=","),
+                             "vs", paste(colnames(x), sep=",")))
+               FALSE 
+             }
+           }))){
+             warning("Some items identified in the data environment either have the wrong dimension or type.")
+             return(FALSE)
+           }
+           return(TRUE)
+         })
 
 
 ## ===========================================================================
@@ -105,12 +96,6 @@ setClass("filter",
 #             colnames(test) <- object@parameters
              return(msg)
          })
-## ===========================================================================
-## filterSet
-## ---------------------------------------------------------------------------
-## An object describing a set of individual gating functions to subset
-## data, possibly in several dimensions.
-## ---------------------------------------------------------------------------
 
 
 ## ===========================================================================
@@ -124,6 +109,7 @@ setClass("rectangleGate",
            min=0,max=Inf)
          )
 
+
 ## ===========================================================================
 ## Polygon gate
 ## ---------------------------------------------------------------------------
@@ -134,7 +120,7 @@ setClass("polygonGate",
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) || nrow(object@boundaries)<2)
-               msg <- "\nslot 'boundaries' must be character vector longer than 2"
+               msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
              return(msg)
          })
 
@@ -143,15 +129,14 @@ setClass("polygonGate",
 ## Polytope gate
 ## ---------------------------------------------------------------------------
 setClass("polytopeGate",
-         contains="filter",
          representation(boundaries="matrix"),
+         contains="filter",
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=2)), 
-
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) ||
                 nrow(object@boundaries)<2)
-               msg <- "\nslot 'boundaries' must be character vector longer then 2"
+               msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
              return(msg)
          })
 
@@ -175,38 +160,56 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
-## mode gates are rectangle gates that automatically select their dominant region.
-setClass("modeGate",representation(bw="ANY",n="numeric"),prototype=list(bw="nrd0",n=512))
 
 ## ===========================================================================
-## norm2Filter (adapted from prada)
+## mode gate
+## ---------------------------------------------------------------------------
+## rectangle gates that automatically select their dominant region.
+## ---------------------------------------------------------------------------
+setClass("modeGate",
+         representation(bw="ANY",n="numeric"),
+         contains="filter",
+         prototype=list(bw="nrd0",n=512))
+
+
+## ===========================================================================
+## norm2Filter
+## ---------------------------------------------------------------------------
+## the slot method holds the method argument to fitNorm2
+## the slot scale.factor holds the scalefac argument to fitNorm2
+## transformation holds a list of length giving transformations, if applicable that are
+## applied to the data before gating
 ## ---------------------------------------------------------------------------
 setClass("norm2Filter",
-         ## the slot method holds the method argument to fitNorm2
-         ## the slot scale.factor holds the scalefac argument to fitNorm2
-         ## transformation holds a list of length giving transformations, if applicable that are
-         ## applied to the data before gating
          representation(method="character",
                         scale.factor="numeric",
                         transformation="list",
-						n="numeric"),
+                        n="numeric"),
          contains="filter")
+
 
 ## ===========================================================================
 ## kmeansFilter 
 ## ---------------------------------------------------------------------------
 setClass("kmeansFilter",
-	representation("filter",populations="character"))
+         representation(populations="character"),
+         contains="filter")
+
 
 ## ===========================================================================
 ## sampleFilter 
 ## ---------------------------------------------------------------------------
-setClass("sampleFilter",representation("filter",size="numeric"))
+setClass("sampleFilter",
+         representation(size="numeric"),
+         contains="filter")
+
 
 ## ===========================================================================
 ## multiFilter 
 ## ---------------------------------------------------------------------------
-setClass("multiFilter",representation("filter",populations="character",filters="list"))
+setClass("multiFilter",
+         representation(populations="character",filters="list"),
+         contains="filter")
 
 
 ## =================================================================
@@ -227,9 +230,30 @@ setClass("filterTree",
          }
          )
 
-setClass("setOperationFilter",representation("filter",filters="list"))
+
+## ===========================================================================
+## setOperationFilter
+## ---------------------------------------------------------------------------
+setClass("setOperationFilter",
+         representation(filters="list"),
+         contains="filter")
+
+
+## ===========================================================================
+## unionFilter 
+## ---------------------------------------------------------------------------
 setClass("unionFilter",representation("setOperationFilter"))
+
+
+## ===========================================================================
+## intersectFilter 
+## ---------------------------------------------------------------------------
 setClass("intersectFilter",representation("setOperationFilter"))
+
+
+## ===========================================================================
+## complementFilter 
+## ---------------------------------------------------------------------------
 setClass("complementFilter",representation("setOperationFilter"),
 	validity=function(object) { 
 		if(length(object@filters) != 1) {
@@ -238,6 +262,11 @@ setClass("complementFilter",representation("setOperationFilter"),
 		}
 		TRUE
 	})
+
+
+## ===========================================================================
+## subsetFilter 
+## ---------------------------------------------------------------------------
 setClass("subsetFilter",representation("setOperationFilter"),
 	validity=function(object) {
 		if(length(object@filters) != 2) {
@@ -247,6 +276,7 @@ setClass("subsetFilter",representation("setOperationFilter"),
 		TRUE
 	})
 
+
 ## ===========================================================================
 ## filterResult
 ## ---------------------------------------------------------------------------
@@ -254,26 +284,76 @@ setClass("subsetFilter",representation("setOperationFilter"),
 ## to flow cytometry data with slots 
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
-	representation("filter",frameId="character",filterDetails="list"),
-	prototype=list(frameId=character(0),filterDetails=list()))
-setClass("logicalFilterResult",representation("filterResult",subSet="logical"))
-setClass("multipleFilterResult",representation("filterResult",subSet="factor"))
-#A special case of multipleFilterResult that arises when there are overlapping sets
-setClass("manyFilterResult",representation("filterResult",subSet="logical"))
-
-setClass("randomFilterResult",representation("filterResult",subSet="numeric"))
+         representation(frameId="character", filterDetails="list"),
+         contains="filter",
+         prototype=list(frameId=character(0), filterDetails=list()))
 
 
-## Describing transforms
+## ===========================================================================
+## logicalFilterResult
+## ---------------------------------------------------------------------------
+setClass("logicalFilterResult",
+         representation(subSet="logical"),
+         contains="filterResult")
 
-# Parameterize transforms so that we can describe them.
-setClass("transform",representation("function"))
 
-# I want to be able to include transforms within a filter. First we need to know which parameters should
-# be input filters
-setClass("transformMap",representation(output="character",input="character",f="function"))
-#A list of transformMaps
-setClass("transformList",representation(transforms="list"))
-setClass("transformFilter",representation("filter",transforms="transformList",filter="filter"))
+## ===========================================================================
+## multipleFilterResult
+## ---------------------------------------------------------------------------
+setClass("multipleFilterResult",
+         representation(subSet="factor"),
+         contains="filterResult")
+
+
+## ===========================================================================
+## manyFilterResult
+## ---------------------------------------------------------------------------
+## A special case of multipleFilterResult that arises when there are
+## overlapping sets
+## ---------------------------------------------------------------------------
+setClass("manyFilterResult",
+         representation(subSet="logical"),
+         contains="filterResult")
+
+## ===========================================================================
+## randomFilterResult
+## ---------------------------------------------------------------------------
+setClass("randomFilterResult",
+         representation(subSet="numeric"),
+         contains="filterResult")
+
+
+## ===========================================================================
+## transform
+## ---------------------------------------------------------------------------
+## Parameterize transforms so that we can describe them.
+## ---------------------------------------------------------------------------
+setClass("transform", representation("function"))
+
+
+## ===========================================================================
+## transformMap
+## ---------------------------------------------------------------------------
+## I want to be able to include transforms within a filter. First we need to
+## know which parameters should be input filters
+## ---------------------------------------------------------------------------
+setClass("transformMap",
+         representation(output="character", input="character", f="function"))
+
+
+## ===========================================================================
+## transformList
+## ---------------------------------------------------------------------------
+## A list of transformMaps
+## ---------------------------------------------------------------------------
+setClass("transformList", representation(transforms="list"))
+
+
+## ===========================================================================
+## transformFilter
+## ---------------------------------------------------------------------------
+setClass("transformFilter",
+         representation(transforms="transformList", filter="filter"),
+         contains="filter")
 
 

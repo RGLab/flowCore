@@ -1,3 +1,6 @@
+## ==========================================================================
+## function to print filter summary
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 print.filterSummary <- function(x,...) {
 	if(length(x$name) == 1) {
 		with(x,cat(sprintf("%s: %d of %d (%.2f%%)\n",name,true,n,100*p)))
@@ -7,8 +10,9 @@ print.filterSummary <- function(x,...) {
 	}
 }
 
+
 ## ==========================================================================
-## fitNorm2 copied from prada 
+## fitNorm2
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 fitNorm2 <- function(x, y=NA, scalefac=1, method="covMcd", noise,
                      gateName="fitNorm") {
@@ -80,7 +84,6 @@ fitNorm2 <- function(x, y=NA, scalefac=1, method="covMcd", noise,
                         data=xorig, gate=gate)))
   
 }
-## ==========================================================================
 
 
 

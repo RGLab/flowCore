@@ -6,6 +6,9 @@
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
+## ==========================================================================
+## main wrapper to read FCS files
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.names=FALSE,column.pattern=NULL)
 {
   stopifnot(is.character(filename), length(filename)==1, filename!="")
@@ -46,14 +49,24 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
   return(new("flowFrame", exprs=mat, description= description, parameters=params))
 }
 
+
+## ==========================================================================
+## create AnnotatedDataFrame describing the flow parameters (channels)
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 makeFCSparameters <- function(cn,txt) {
 	npar = length(cn)
 	id   = paste("$P",1:npar,sep="")
 	new("AnnotatedDataFrame",
-		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),range=as.numeric(txt[paste(id,"R",sep="")])),
-		varMetadata=data.frame(row.names=I(c("name","desc","range")),labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
+		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),
+                  range=as.numeric(txt[paste(id,"R",sep="")])),
+		varMetadata=data.frame(row.names=I(c("name","desc","range")),
+                  labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
 }
 
+
+## ==========================================================================
+## match FCS parameters
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSgetPar <- function(x, pnam) {
   stopifnot(is.character(x), is.character(pnam)) 
   i <- match(pnam, names(x))
@@ -62,6 +75,10 @@ readFCSgetPar <- function(x, pnam) {
   return(x[i])
 }
 
+
+## ==========================================================================
+## parse FCS file header
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSheader <- function(con) {
   seek(con, 0)
   version <- readChar(con, 6)
@@ -83,6 +100,10 @@ readFCSheader <- function(con) {
   return(ioffs)
 }
 
+
+## ==========================================================================
+## parse FCS file text section
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCStext <- function(con, offsets, debug) {
   seek(con, offsets["textstart"])
   txt <- readChar(con, offsets["textend"]-offsets["textstart"]+1)
@@ -96,6 +117,10 @@ readFCStext <- function(con, offsets, debug) {
   return(rv)
 }
 
+
+## ==========================================================================
+## read FCS file data section
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.names) {
   endian <- switch(readFCSgetPar(x, "$BYTEORD"),
     "4,3,2,1" = "big",
