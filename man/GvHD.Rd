@@ -1,0 +1,43 @@
+\name{GvHD}
+\alias{GvHD}
+\docType{data}
+\title{Extract of a Graft versus Host Disease monitoring experiment
+  (Rizzieri et al., 2007)}
+\description{
+  A flow cytometry high throughput screening was used to identify
+  biomarkers that would predict the development of GvHD. The GvHD dataset
+  is an extract of a collection of weekly peripheral blood samples
+  obtained from patients following allogenic blood and marrow
+  transplant. Samples were taken at various time points before and after
+  graft.  
+}
+\usage{data(GvHD)}
+\format{
+  The format is an object of class \code{flowSet} composed of 35
+  \code{flowFrames}.
+  Each \code{flowFrame} correponds to one sample at one time point.
+  The \code{phenodata} lists:
+  \item{Patient}{The patient Id code }
+  \item{Visit}{The number of visits to the hospital}
+  \item{Days}{The number of days since the graft. Negative values
+    correpond to days before the graft.}
+  \item{Grade}{Grade of the cancer}
+}
+\details{
+  This GvHD dataset represents the measurements of one biomarker
+  (leukocyte) for 5 patients over 7 visits  (7 time points). The blood
+  samples were labeled with four different fluorescent probes to
+  identify the  biomarker and the fluorescent intensity was determined
+  for at least ten thousand cells per sample.
+}
+\source{
+  Complete dataset available at
+  \url{http://www.ficcs.org/software.html#Data_Files}, the Flow Informatics and Computational
+  Cytometry Society website (FICCS)  
+}
+\references{
+  Rizzieri DA et al. J Clin Oncol. 2007 Jan 16; [Epub ahead of print]
+  PMID: 17228020
+}
+
+\keyword{datasets}
