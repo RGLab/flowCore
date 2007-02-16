@@ -174,7 +174,7 @@ setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
 
 
 ## ==========================================================================
-## keyword method for flowSet
+## rbind method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("rbind2",signature("flowSet","missing"),function(x,y) x)
 setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
