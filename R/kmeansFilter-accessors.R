@@ -1,27 +1,14 @@
 ## ==========================================================================
-## Constructors
-## ---------------------------------------------------------------------------
-kmeansFilter = function(filterId="kmeans",...) {
-	l = length(list(...))
-	if(l>1)
-		stop("k-means filters only operate on a single parameter.")
-	x = ..1
-	if(is.list(x)) {
-		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
-	} else
-		new("kmeansFilter",parameters=names(list(...))[1],populations=x,filterId=filterId)
-}
-
-
-## ==========================================================================
 ## Filtering Methods -- we are not a logical filter so we return a vector
 ## of indices indicating a population.
 ## ---------------------------------------------------------------------------
-setMethod("summarizeFilter",signature("filterResult","kmeansFilter"),function(result,filter) {
+setMethod("summarizeFilter",signature("filterResult","kmeansFilter"),
+          function(result,filter) {
 	ret = callNextMethod()
 	ret$populations = filter@populations
 	ret
 })
+
 setMethod("%in%",signature("flowFrame","kmeansFilter"),function(x,table) {
 	##We accomplish the actual filtering via K-means
 	param  = table@parameters[1]
@@ -30,7 +17,8 @@ setMethod("%in%",signature("flowFrame","kmeansFilter"),function(x,table) {
 	km     = kmeans(values,centers=quantile(values,(1:npop)/(npop+1)))
 	#Ensure that the populations are sorted according to their center,
 	#which matches the assumption of the population vector.
-	structure(as.integer(order(km$centers)[km$cluster]),class="factor",levels=table@populations)
+	structure(as.integer(order(km$centers)[km$cluster]),class="factor",
+                  levels=table@populations)
 })
 
 

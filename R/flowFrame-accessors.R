@@ -13,17 +13,13 @@ setMethod("identifier", signature="flowFrame",
 
 
 ## ==========================================================================
-## accessor method for slot exprs
+## accessor and replace methods for slot exprs
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("exprs", signature="flowFrame",
           definition=function(object)
             object@exprs
           )
 
-
-## ==========================================================================
-## replace method for slot exprs
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setReplaceMethod("exprs", signature=c("flowFrame", "matrix"),
                  definition=function(object, value) {
                    object@exprs <- value
@@ -68,12 +64,18 @@ setMethod("description",signature("flowFrame"),function(object) object@descripti
 
 
 ## ==========================================================================
-## accessor method for colnames of exprs slot
+## accessor and replace methods for colnames of exprs slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames", signature="flowFrame",
           definition=function(x, do.NULL="missing", prefix="missing")
           colnames(exprs(x))
           )
+
+setReplaceMethod("colnames", signature=c("flowFrame", "ANY"),
+                 definition=function(x, value) {
+                   colnames(x@exprs) <- value
+                   return(x)
+                 })
 
 
 ## ==========================================================================
@@ -101,16 +103,6 @@ setMethod("names", signature="flowFrame",
             }
             cn
           })
-
-
-## ==========================================================================
-## replace method for colnames of exprs slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setReplaceMethod("colnames", signature=c("flowFrame", "ANY"),
-                 definition=function(x, value) {
-                   colnames(x@exprs) <- value
-                   return(x)
-                 })
 
 
 ## ==========================================================================
@@ -244,9 +236,10 @@ setMethod("split", signature("flowFrame","logicalFilterResult"),
                       names=c(paste(population,"+",sep=""),
                         paste(population,"-",sep="")))
           })
-setMethod("split", signature("flowFrame","multipleFilterResult"),function(x,f,drop=FALSE,prefix=NULL,...) {
-	nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
-	structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
+setMethod("split", signature("flowFrame","multipleFilterResult"),
+          function(x,f,drop=FALSE,prefix=NULL,...) {
+            nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
+            structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })
 
 
@@ -268,3 +261,76 @@ setMethod("each_row",signature("flowFrame"),function(x,FUN,...) {
 setMethod("each_col",signature("flowFrame"),function(x,FUN,...) {
 	apply(exprs(x),2,FUN,...)
 })
+
+
+## ===========================================================================
+## spillover method
+## ---------------------------------------------------------------------------
+setMethod("spillover","flowFrame",function(x) {
+	## Flow frames have a SPILL keyword that is often
+	## used to store the spillover matrix. Attempt to
+	## extract it.
+	present <- keyword(x,"spillover")
+        if(is.na(present)) stop("No spillover matrix store in that flowFrame") 
+})
+
+
+## ===========================================================================
+## compensate method
+## ---------------------------------------------------------------------------
+setMethod("compensate",signature("flowFrame","matrix"),function(x,spillover) {
+	## Make sure we're normalized to [0,1] and then invert
+	cols = colnames(spillover)
+	e    = exprs(x)
+	e[,cols] = e[,cols]%*%solve(spillover/max(spillover))
+	exprs(x) = e
+	x
+})
+
+
+## ==========================================================================
+## transform method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("transform",
+          signature=signature(`_data`="flowFrame"),
+          definition=function(`_data`, ...) {
+              e <- substitute(list(...))
+              x = `_data`
+              transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
+              ##Add any new parameter values
+              if(ncol(transformed) > ncol(x@exprs)) {
+              	cnames = c(colnames(x),colnames(transformed)[-c(1:ncol(x@exprs))])
+              }
+              else {
+              	cnames = colnames(x)
+              }
+              ##param.names <- colnames(transformed)
+              ##newParams <- is.na(match(param.names,`_data`@parameters$name))
+              ##params      = parameters(`_data`)$name
+              ##if(any(newParams)) {
+              ##    params <- cbind(params,
+              ##                    data.frame(name=param.names))
+                  ##params = cbind(params,
+                  ##    data.frame(name=param.names[newParams]))
+              ##}
+              #colnames(transformed) <- parameters(`_data`)$name
+              colnames(transformed) = cnames
+              new("flowFrame",
+                  exprs=transformed, 
+                  parameters=parameters(x),#[,params$name],
+                  description=description(x))
+          })
+
+
+## ==========================================================================
+## filter method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("filter", signature(x="flowFrame", filter="filter"),
+          function(x, filter) {
+            result <- as(x %in% filter, "filterResult")
+            result@filterId <- filter@filterId
+            result@parameters <- filter@parameters
+            filterDetails(result, result@filterId) <- filter
+            result@frameId <- identifier(x)
+            result
+          })

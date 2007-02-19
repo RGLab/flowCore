@@ -1,20 +1,45 @@
 ## ==========================================================================
-## We can convert a factor, logical or a numeric into a filterResult by
-## selecting a specific filterResult type. This is done through the standard
-## R coercion techniques.
-## --------------------------------------------------------------------------
-setAs("factor", "filterResult",function(from)
-      new("multipleFilterResult",parameters=character(0),filterId="",subSet=from))
-setAs("logical","filterResult",function(from)
-      new("logicalFilterResult",parameters=character(0),filterId="",subSet=from))
-setAs("numeric","filterResult",function(from)
-      new("randomFilterResult",parameters=character(0),filterId="",subSet=from))
-setAs("filterResult","logical",function(from)
-      stop("Unable to convert to a logical vector"))
-setAs("logicalFilterResult","logical",function(from)
-      from@subSet)
-setAs("randomFilterResult","logical",function(from)
-      runif(length(from@subSet))<from@subSet)
+## Add or Replacement method to complete or replace the results
+## coming out of a filtering operation
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("filterDetails",signature("filterResult","missing"),function(result,filterId) {
+	result@filterDetails
+})
+setMethod("filterDetails",signature("filterResult","ANY"),function(result,filterId) {
+	result@filterDetails[[filterId]]
+})
+
+setReplaceMethod("filterDetails",signature("filterResult","character",value="ANY"),
+                 function(result,filterId,...,value) {
+	result@filterDetails[[filterId]] = value
+	result
+})
+setReplaceMethod("filterDetails",signature("filterResult","character",value="filter"),
+                 function(result,filterId,...,value) {
+	filterDetails(result,filterId) = summarizeFilter(result,value)
+	result
+})
+setReplaceMethod("filterDetails",signature("filterResult","character",
+                                           value="setOperationFilter"),
+                 function(result,filterId,...,value) {
+	#Set operation filters also record all the data for their operations
+	for(i in value@filters) {
+		filterDetails(result,i@filterId) = i
+	}
+	#Record ourselves for posterity
+	filterDetails(result,filterId) = summarizeFilter(result,value)
+	result
+})
+
+
+
+## ==========================================================================
+## Summarize a filtering operation
+## 
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("summarizeFilter",signature("filterResult","filter"),function(result,filter) {
+	list(filter=filter)
+})
 
 
 ## ==========================================================================
@@ -47,4 +72,17 @@ setMethod("==",signature("filterResult","flowFrame"),
 setMethod("identifier", signature="filterResult",
           definition=function(object) object@frameId)
 
+
+## ==========================================================================
+## --------------------------------------------------------------------------
+setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
+	frameId = identifier(x)
+        print(class(frameId))
+	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
+		warning("Frame identifiers do not match. It is possible that this ",
+                        "filter is not compatible with this frame.")
+	if(nrow(x) != length(table@subSet))
+		stop("Number of rows in frame do not match those expected by this filter.")
+	table@subSet
+})
 
