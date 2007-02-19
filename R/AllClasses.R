@@ -1,16 +1,13 @@
-require("Biobase")
+## Class definitions and contructors if available
 
-##  Classes definition - last changes Oct 27, 2006
-##  pdh: redefined RectangleGate so that it correctly uses min and max instead of
-##      coordinates of the corners.
 
 ## ===========================================================================
 ##  flowFrame
 ## ---------------------------------------------------------------------------
 ## A container for flow cytometry measurements with slots exprs, parameters
 ## and description. exprs contains measurement values, description contains 
-## information from file headers of FCS file and parameters contains information
-## about the different FCS measurement parameters (i.e. channels)
+## information from file headers of FCS file and parameters contains
+## information about the different FCS measurement parameters (i.e. channels)
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
          representation(exprs="matrix",
@@ -19,7 +16,8 @@ setClass("flowFrame",
          prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
            parameters=new("AnnotatedDataFrame",
              data=data.frame(name=I(character(0))),
-             varMetadata=data.frame(labelDescription="Name in frame",row.names="name")),
+             varMetadata=data.frame(labelDescription="Name in frame",
+               row.names="name")),
            description=list(note="empty")),
          validity=function(object){
              msg <- TRUE
@@ -49,25 +47,28 @@ setClass("flowSet",
          validity=function(object){
            nc <- length(colnames(object))
            ## Make sure that all of our samples list
-           name.check = is.na(match(sampleNames(object),ls(object@frames,all.names=TRUE)))
+           name.check <- is.na(match(sampleNames(object),ls(object@frames,
+             all.names=TRUE)))
            if(any(name.check)) {
-             name.list = paste(sampleNames(object)[name.check],sep=",")
-             warning(paste("These objects are not in the data environment:",name.list))
+             name.list <- paste(sampleNames(object)[name.check],sep=",")
+             warning(paste("These objects are not in the data environment:",
+                           name.list))
              return(FALSE)
            }
-	
            ##Ensure that all frames match our colnames
            if(!all(sapply(sampleNames(object),function(i) {
              x = get(i,env=object@frames)
              if(identical(object@colnames, colnames(x))){
                TRUE
              }else{ 
-               warning(paste(i, "failing colnames check: ", paste(object@colnames, sep=","),
+               warning(paste(i, "failing colnames check: ",
+                             paste(object@colnames, sep=","),
                              "vs", paste(colnames(x), sep=",")))
                FALSE 
              }
            }))){
-             warning("Some items identified in the data environment either have the wrong dimension or type.")
+             warning("Some items identified in the data environment either ",
+                     "have the wrong dimension or type.")
              return(FALSE)
            }
            return(TRUE)
@@ -109,6 +110,14 @@ setClass("rectangleGate",
            min=0,max=Inf)
          )
 
+rectangleGate <- function(filterId="rectangleGate", .gate,...) {
+    if(missing(.gate) || !is.matrix(.gate))
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x)
+                        c("min"=x[1],"max"=x[2]))
+	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),
+            min=.gate[1,],max=.gate[2,])
+}
+
 
 ## ===========================================================================
 ## Polygon gate
@@ -123,6 +132,18 @@ setClass("polygonGate",
                msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
              return(msg)
          })
+
+polygonGate <- function(filterId="polygonGate", boundaries,...) {
+    if(missing(boundaries)){
+      boundaries <- matrix(ncol=2, nrow=3)
+      colnames(boundaries) <- rep(NA,2)
+    }
+    if(!is.matrix(boundaries))
+        boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries,
+                           function(x) x)
+    new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
+        boundaries=boundaries)
+}
 
 
 ## ===========================================================================
@@ -139,6 +160,15 @@ setClass("polytopeGate",
                msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
              return(msg)
          })
+
+polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
+    if(missing(.gate) || !is.matrix(.gate))
+      ##nrowGate <- max(unlist(lapply(list(...),length)))
+      .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
+         
+    new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
+        boundaries=.gate)
+}
 
 
 ## ===========================================================================
@@ -160,6 +190,14 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
+    if(missing(.gate) || !is.matrix(.gate))
+      .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
+      
+    new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
+        focus=.gate, distance=distance)
+}
+
 
 ## ===========================================================================
 ## mode gate
@@ -177,8 +215,8 @@ setClass("modeGate",
 ## ---------------------------------------------------------------------------
 ## the slot method holds the method argument to fitNorm2
 ## the slot scale.factor holds the scalefac argument to fitNorm2
-## transformation holds a list of length giving transformations, if applicable that are
-## applied to the data before gating
+## transformation holds a list of length giving transformations, if applicable
+## that are applied to the data before gating
 ## ---------------------------------------------------------------------------
 setClass("norm2Filter",
          representation(method="character",
@@ -186,6 +224,26 @@ setClass("norm2Filter",
                         transformation="list",
                         n="numeric"),
          contains="filter")
+
+norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
+                        n=50000,...) {
+	if(missing(y)) {
+		if(length(x)==1)
+			stop("You must specify two parameters for a norm2 gate.")
+		if(length(x)>2)
+			warning("Only the first two parameters will be used.")
+		y=x[2]
+		x=x[1]
+	} else {
+		if(length(x)>1 || length(y)>1)
+			warning("Only the first two parameters from 'x' and ",
+                                "'y' will be used.")
+			x = x[1]
+			y = y[1]
+	}
+	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
+            filterId=filterId,n=50000,...)
+}
 
 
 ## ===========================================================================
@@ -195,6 +253,17 @@ setClass("kmeansFilter",
          representation(populations="character"),
          contains="filter")
 
+kmeansFilter = function(filterId="kmeans",...) {
+	l = length(list(...))
+	if(l>1)
+		stop("k-means filters only operate on a single parameter.")
+	x = ..1
+	if(is.list(x)) {
+		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
+	} else
+		new("kmeansFilter",parameters=names(list(...))[1],populations=x,filterId=filterId)
+}
+
 
 ## ===========================================================================
 ## sampleFilter 
@@ -202,6 +271,10 @@ setClass("kmeansFilter",
 setClass("sampleFilter",
          representation(size="numeric"),
          contains="filter")
+
+sampleFilter = function(filterId="sample",size) {
+	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
+}
 
 
 ## ===========================================================================
@@ -329,6 +402,98 @@ setClass("randomFilterResult",
 ## Parameterize transforms so that we can describe them.
 ## ---------------------------------------------------------------------------
 setClass("transform", representation("function"))
+
+## Linear transformation function
+linearTransform <- function(transformationId,a=1,b=0){
+    if(!is.double(a)) 
+      stop("a must be numeric")
+    if(!is.double(b))
+       stop("b must be numeric")
+    new("transform",.Data=function(x){    
+        x <- a*x+b
+    })
+}
+
+## Quadratic transformation function
+quadraticTransform <- function(transformationId,a,b,c){
+  if(!is.double(a)) 
+      stop("a must be numeric")
+    if(!is.double(b))
+       stop("b must be numeric")
+  if(!is.double(c))
+       stop("c must be numeric")
+    new("transform",.Data=function(x){
+        x <- a*x^2 + b*x + c
+    })
+}
+
+## Natural logarithm transformation function
+lnTransform <- function(transformationId,r,d){
+    if(!is.double(r) || r <= 0)
+       stop("r must be numeric and positive")
+    if(!is.double(d) || d <=0)
+       stop("d must be numeric")
+    new("transform",.Data=function(x){
+     x<-log(x)*(r/d)
+ 	})
+}
+
+## Logarithm transformation function
+logTransform <- function(transformationId,logbase=10,r,d){
+     if(!is.double(r) || r <= 0)
+       stop("r must be numeric and positive")
+    if(!is.double(d) || d <=0)
+       stop("d must be numeric")
+      if(!is.double(r) || r <=0)
+       stop("r must be numeric and positive")
+    if(!is.double(logbase) || logbase <= 1)
+       stop("logabse must be a pnumeric greater than 1")
+    new("transform",.Data=function(x){
+        x <- log(x,logbase)*(r/d)
+    })
+}
+
+
+## General biexponential transformation function
+biexponentialTransform<- function(transformationId,a=.5,b=1,c=.5,d=1,f=0,w=0,
+           tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
+    new("transform",.Data=function(x){
+        x <- .Call(biexponential_transform,x,a,b,c,d,f,w,tol,maxit)
+    })
+}
+
+## Logicle transformation function
+logicleTransform <- function(w=0,r=262144,d=5,...) {
+  if(w>d) stop("Negative range decades must be smaller than total number of decades")
+  w = w*log(10)
+  d = d*log(10)
+  p = if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
+           c(.Machine$double.eps,2*(w+d)))$root
+  ##new("biexponentialTransformation",a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
+  new("transform",.Data=function(x)
+    biexponentialTransform(a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
+}
+
+## Truncation Transformation
+truncateTransform <- function(transformationId,a){
+    new("transform",.Data=function(x){
+        x[x<a] <- a
+        x
+    })
+}
+
+## Scale Transformation
+scaleTransform <- function(transformationId,a,b){
+    new("transform",.Data=function(x){
+     	x=(x-a)/(b-a)
+    })
+}
+
+## Hyperbolic Arcsin Transformation
+arcsinhTransform <- function(transformationId,a,b,c=1) {
+	new("transform",.Data=function(x) asinh(a+b*x)+log(c))
+}
+
 
 
 ## ===========================================================================

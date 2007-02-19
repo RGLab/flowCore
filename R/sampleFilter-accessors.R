@@ -1,9 +1,6 @@
 ## ==========================================================================
-## Constructors
+## %in% method
 ## ---------------------------------------------------------------------------
-sampleFilter = function(filterId="sample",size) {
-	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
-}
 setMethod("%in%",signature("flowFrame","sampleFilter"),function(x,table) {
 	n = if(table@size > nrow(x)) nrow(x) else table@size
 	l = rep(FALSE,nrow(x))

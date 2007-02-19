@@ -1,45 +1,4 @@
 ## ==========================================================================
-## Coerce method: Convert an environment to a flowSet.
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setAs("environment","flowSet",function(from) {
-    frameList  = ls(env=from)
-    isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
-    if(!all(isFrame))
-      warning("Some symbols are not flowFrames. They will be ignored but left intact.")
-    ##If specified, remove extraneous symbols from the environment before continuing
-    frameList = frameList[isFrame]
-    
-    ##Check the column names
-    colNames = sapply(frameList,function(f) colnames(from[[f]]))
-    if(!all(apply(colNames,2,"==",colNames[,1])))
-      stop("Column names for all frames do not match.")
-    new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
-        data=data.frame(name=I(frameList),row.names=frameList),
-        varMetadata=data.frame(labelDescription="Name",row.names="name")))
-  },function(from,value) {
-    if(!canCoerce(value,"AnnotatedDataFrame"))
-      stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
-    from            = as(from,"flowSet")
-    phenoData(from) = as(value,"AnnotatedDataFrame")
-    from
-  })
-                                        
-
-## ==========================================================================
-## Coerce method: Convert a list to a flowSet by creating an environment and converting THAT
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setAs("list","flowSet",function(from) {
-    env = new.env(hash=TRUE,parent=emptyenv())
-    multiassign(from,env=env)
-	as(env,"flowSet")
-    },function(from,value) {
-	env = new.env(hash=TRUE,parent=emptyenv())
-	multiassign(from,env=env)
-	as(env,"flowSet") <- value
-})
-
-
-## ==========================================================================
 ## Allow for the extraction and replacement of phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("phenoData","flowSet",function(object) object@phenoData)
@@ -57,14 +16,10 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 
 
 ## ==========================================================================
-## accessor method for slot colnames
+## accessor and replace methods for slot colnames
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
           x@colnames)
-
-## ==========================================================================
-## replace method for slot colnames
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setReplaceMethod("colnames","flowSet",function(x,value) {
 	x@colnames = value
 	x
@@ -102,7 +57,8 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 		else
 			for(nm in copy) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
 	}
-	new("flowSet",frames = fr,phenoData=phenoData(x)[i,],colnames=if(missing(j)) x@colnames else x@colnames[j])
+	new("flowSet",frames = fr,phenoData=phenoData(x)[i,],colnames=if(missing(j))
+            x@colnames else x@colnames[j])
 })
 setMethod("[[","flowSet",function(x,i,j,...) {
 	if(length(i)!=1)
@@ -115,13 +71,15 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 ## ==========================================================================
 ## apply method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) {
+setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
+                                                        use.exprs=FALSE) {
 	if(missing(FUN))
 		stop("fsApply function missing")
 	FUN = match.fun(FUN)
 	if(!is.function(FUN))
 		stop("This is not a function!")
-	# row.names and sampleNames had damn well better match, use this to give us access to the phenoData
+	## row.names and sampleNames had damn well better match, use this to
+        ## give us access to the phenoData
 	res = structure(lapply(sampleNames(x),function(n) {
 		y = as(x[[n]],"flowFrame")
 		FUN(if(use.exprs) exprs(y) else y,...)
@@ -195,9 +153,9 @@ setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
 ## show method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show","flowSet",function(object) {
-	cat("A flowSet with ",length(object)," experiments.\n\n")
+	cat("A flowSet with",length(object),"experiments.\n\n")
 	show(phenoData(object))
-	cat("\nColumn names:\n")
+	cat("  \n  column names:\n  ")
 	cat(paste(object@colnames,sep=","))
 	cat("\n")
 })
@@ -208,3 +166,80 @@ setMethod("show","flowSet",function(object) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("sampleNames", "flowSet", function(object) 
        sampleNames(phenoData(object)))
+
+
+## ===========================================================================
+## spillover method
+## ---------------------------------------------------------------------------
+setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",
+                                         ssc="SSC-A",method="median") {
+	if(is.null(unstained)) {
+		"is.null(unstained)"
+	} else {
+		## We often only want spillover for a subset of the columns 
+		cols = if(is.null(patt)) colnames(x) else grep(patt,colnames(x)
+                  ,value=TRUE)
+		## Ignore the forward and sidescatter channels if they managed to get included
+		if(!is.na(match(fsc,cols))) cols = cols[-match(fsc,cols)] 
+		if(!is.na(match(ssc,cols))) cols = cols[-match(ssc,cols)]
+		## There has got to be a better way of doing this...
+		stains = phenoData(x)$name
+		stains = stains[-match(unstained,stains)]
+		
+		## Grab the baseline from the unstained values
+		baseline = apply(exprs(x[[unstained]])[x[[unstained]] %in%
+                  norm2Filter(fsc,ssc,scale.factor=1.5),cols],2,method)
+		
+		## Now do the same thing to all the stains and sweep out the baseline
+                ## to figure out the motion on all of the channels.
+		inten = sweep(sapply(stains,function(s)
+			apply(exprs(x[[s]])[x[[s]] %in%
+                                            norm2Filter(fsc,ssc,scale.factor=1.5),cols],
+                              2,method)),2,baseline)
+		## We assume that the highest intensity channel in each column is the signal
+                ## channel. If something weird happens here, you probably screwed up your comp
+                ## controls (or you're using an awful channel like PacO in which case the mean
+                ## is probably the recommended statistic).
+		colnames(inten) = cols[apply(inten,2,which.max)]
+		#Now normalize row-wise to figure out the % spillover and ensure that
+                ## any negative values are set to 0 since negative compensation is even more
+                ## insane than negative fluoresence.
+		inten = apply(inten,2,function(x) ifelse(x<0,0,x/max(x)))		
+		t(inten[,match(cols,colnames(inten))])
+	}
+})
+
+
+## ===========================================================================
+## compensate methods
+## ---------------------------------------------------------------------------
+setMethod("compensate",signature("flowSet","matrix"),
+          function(x,spillover) fsApply(x,compensate,spillover))
+
+
+## ==========================================================================
+## Transformation methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
+	fsApply(`_data`,transform,...)
+})
+setMethod("transform",signature(`_data`="missing"),function(...) {
+	funs = list(...)
+	io   = names(funs)
+	#Consistency check
+	if(!all(sapply(funs,is.function)))
+		stop("All transforms must be functions")
+	if(!all(sapply(io,is.character)))
+		stop("All transforms must be named")
+	new("transformList",transforms=lapply(seq(along=funs),function(i)
+                              new("transformMap",input=io[i],output=io[i],f=funs[[i]])))
+})
+
+
+## ==========================================================================
+## filter method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("filter",signature=signature(x="flowSet",filter="filter"),
+          function(x,filter) {
+            fsApply(x,function(x) filter(x,filter))
+})
