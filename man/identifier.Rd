@@ -21,7 +21,7 @@ identifier(object)
   twice is very small.
 
   Note that if no GUID has been recorded along with the FCS file, the
-  name of the file is reurn.
+  name of the file is returned.
 }
 
 \value{Character vector representing the GUID or the name of the file.

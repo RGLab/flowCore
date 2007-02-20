@@ -36,7 +36,7 @@ filter(x,filter,...)
 \examples{
  samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
  rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
- dataSubset <- filter(samp,rectGate)
+ summary(filter(samp,rectGate))
 
 }
 \keyword{methods}  
