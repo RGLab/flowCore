@@ -9,13 +9,13 @@
 \section{Slots}{
 	 \describe{
     \item{\code{frameId}:}{Object of class \code{"character"}
-      referencing the \code{flowFrame} object filtered}
+      referencing the \code{flowFrame} object filtered. Used for sanity checking.}
     \item{\code{filterDetails}:}{Object of class \code{"list"}
       describing the filter applied}
     \item{\code{filterId}:}{Object of class \code{"character"}
-      refereceng the filter applied}
+      referencing the filter applied}
     \item{\code{parameters}:}{Object of class \code{"ANY"} describing
-      the parametersused to filter the \code{flowFrame} }
+      the parameters used to filter the \code{flowFrame} }
   }
 }
 \section{Extends}{
@@ -25,7 +25,7 @@ Class \code{"\linkS4class{filter}"}, directly.
 No methods defined with class "filterResult" in the signature.
 }
 
-\author{B. Ellis N. LeMeur}
+\author{B. Ellis, N. LeMeur}
 
 \seealso{
   \code{\link{filter}},

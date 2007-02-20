@@ -24,9 +24,6 @@
 \alias{plot,flowFrame,missing-method}
 \alias{plot,flowFrame,character-method}
 \alias{$.flowFrame}
-\alias{gate,flowFrame-method}
-\alias{gate<-,flowFrame,gate-method}
-\alias{gate<-,flowFrame,gateSet-method}
 \alias{filter,flowFrame}
 \alias{compensate,flowFrame,matrix-method}
 \alias{spillover,flowFrame-method}
@@ -50,9 +47,10 @@
 Objects can be created using\cr
 \code{  new('flowFrame,}\cr
 \code{    exprs       = ...., # Object of class matrix}\cr
-\code{    description = ....  # Object of class character}\cr
+\code{    parameters  = ...., # Object of class AnnotatedDataFrame}
+\code{    description = ....  # Object of class list}\cr
 \code{  )}\cr
-or the function \code{\link[prada]{readFCS}}.}
+or the function \code{\link[flowCore]{read.FCS}}.}
 
 \section{Slots}{\describe{
 \item{\code{exprs}:}{Object of class \code{matrix} containing
@@ -60,8 +58,10 @@ or the function \code{\link[prada]{readFCS}}.}
       different channels. The \code{colnames} attribute of the matrix is
       supposed to hold the names or identifiers for the channels. The
       \code{rownames} attribute would usually not be set.}
-\item{\code{description}:}{A named character vector
-  containing the experiment description as key-value pairs.}
+\item{\code{parameters}:}{An \code{AnnotatedDataFrame} containing information about each column of the 
+flowFrame. This will generally be filled in by \code{read.FCS} or similar functions using data from the
+\code{description} slot that describes the parameters.}
+\item{\code{description}:}{A named vector containing the experiment description as key-value pairs.}
 }}
 
 \section{Methods}{\describe{
@@ -75,10 +75,7 @@ or the function \code{\link[prada]{readFCS}}.}
 \item{transform}{apply a transformation fucntion on a \code{flowSet}
   object.}
 \item{show}{display summary.}
-\item{plot}{scatterplot for \code{flowFrame} objects. The additional
-argument \code{gate} can be used to plot subsets of the data defined by
-either an object of class \code{\link[prada]{gate}} or by a character
-vector giving the name of one of the gates in the list.}
+\item{plot}{scatterplot for \code{flowFrame} objects.}
 \item{ncol,nrow}{extract the dimensions of the data matrix.}
 }}
 
@@ -96,22 +93,6 @@ using the object system for handling of flow-cytometry data.
 \seealso{}
 
 \examples{
-\dontrun{
-intens <- matrix(runif(100), ncol=4)
-colnames(intens) <- c("FL1-H", "FL2-H", "FL3-H", "FL4-H")
-
-a <- new("flowFrame",
-          exprs=intens,
-          description=c(name="example data", date=date()))
-
-description(a)
-dim(exprs(a))           
-
-a[1:3, -4]
-
-plot(a)
-
-}
 }
 
 \keyword{classes}

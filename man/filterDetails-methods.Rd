@@ -9,16 +9,18 @@
 \alias{filterDetails<-, filterResult, character,filter-method}
 \alias{filterDetails<-, filterResult, character,ANY-method}
 
-\title{ Methods for Function filterDetails in Package flowCore}
+\title{Obtain details about a filter operation}
 \description{
-  Methods for function \code{filterDetails} in Package flowCore
+A filtering operation captures details about its metadata and stores it in a \code{filterDetails} slot that is accessed using the
+\code{filterDetails} method. Each set of metadata is indexed by the \code{filterId} of the filter allowing for all the metadata in
+a complex filtering operation to be recovered after the final filtering. 
 }
 \section{Methods}{
 \describe{
 
-\item{result = "filterResult", filterId = "missing"}{ ~~describe this method here }
+\item{result = "filterResult", filterId = "missing"}{When no particular \code{filterId} is specified all the details are returned}
 
-\item{result = "filterResult", filterId = "ANY"}{ ~~describe this method here }
+\item{result = "filterResult", filterId = "ANY"}{You can also obtain a particular subset of details}
 }}
 \keyword{methods}
 

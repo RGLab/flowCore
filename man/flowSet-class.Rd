@@ -46,7 +46,7 @@ Objects can be created using the function
 \item{\code{frames}:}{An \code{\link[base:environment]{environment}}
 containing one or more \code{\link[flowFrame-class]{flowFrame}} objects.}
 \item{\code{phenoData}:}{A
-\code{\link[Biobase:phenoData-class]{phenoData}}. Each row
+\code{\link[Biobase:AnnotatedDataFrame-class]{phenoData}}. Each row
 corresponds to one of the flowFrames in the \code{frames} slot.
 It is mandatory that the pData has column named \code{name}}
 \item{\code{colnames}:}{A \code{character} object with the
