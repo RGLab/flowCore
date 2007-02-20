@@ -9,6 +9,12 @@ setAs("logical","filterResult",function(from)
       new("logicalFilterResult",parameters=character(0),filterId="",subSet=from))
 setAs("numeric","filterResult",function(from)
       new("randomFilterResult",parameters=character(0),filterId="",subSet=from))
+
+## ==========================================================================
+## We can also convert some filterResult types directly to logical types,
+## though in general it is not possible. We provide the means for logical 
+## and random filter types. 
+## --------------------------------------------------------------------------
 setAs("filterResult","logical",function(from)
       stop("Unable to convert to a logical vector"))
 setAs("logicalFilterResult","logical",function(from)
