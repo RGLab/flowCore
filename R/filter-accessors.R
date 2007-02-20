@@ -28,7 +28,8 @@ setMethod("show",signature("filter"),function(object)
 
 ## Most filters define only a single population
 ## setMethod("length","filter",function(x) 1)
-
+setMethod("identifier", signature="filter",
+          definition=function(object) object@filterId)
 
 
 ## ==========================================================================

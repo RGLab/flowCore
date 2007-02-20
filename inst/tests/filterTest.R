@@ -30,6 +30,7 @@ sum(f06 %in% filter1)
 
 filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
 b08.result2 = filter(b08,filter2 %subset% b08.result1)
+filterDetails(b08.result2)
 summary(b08.result2)
 sum(b08 %in% (filter2 %subset% b08.result1))
 # [1] 6496
