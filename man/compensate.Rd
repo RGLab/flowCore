@@ -30,8 +30,9 @@ compensate(x,spillover)
 
 
 \value{
-  Object of class \code{\link[flowCore]{flowFrame} or \code{\link[flowCore]{flowSet}}.}
-}  
+  Object of class \code{\link[flowCore]{flowFrame}} or \code{\link[flowCore]{flowSet}}.
+}
+  
 
 \seealso{
   \code{\link[flowCore]{spillover}}
@@ -48,7 +49,6 @@ compensate(x,spillover)
  comp.mat <-read.table(file.location[1],header=TRUE,skip=2)
 
  comp.samp <- compensate(samp,comp.mat)
-
 
  }
 }
