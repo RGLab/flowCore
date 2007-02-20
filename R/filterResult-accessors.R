@@ -19,12 +19,11 @@ setReplaceMethod("filterDetails",signature("filterResult","character",value="fil
 	filterDetails(result,filterId) = summarizeFilter(result,value)
 	result
 })
-setReplaceMethod("filterDetails",signature("filterResult","character",
-                                           value="setOperationFilter"),
+setReplaceMethod("filterDetails",signature("filterResult","character",value="setOperationFilter"),
                  function(result,filterId,...,value) {
-	#Set operation filters also record all the data for their operations
-	for(i in value@filters) {
-		filterDetails(result,i@filterId) = i
+	details = attr(result@subSet,'filterDetails')
+	for(i in names(details)) {
+		filterDetails(result,i) = details[[i]]
 	}
 	#Record ourselves for posterity
 	filterDetails(result,filterId) = summarizeFilter(result,value)
@@ -77,7 +76,6 @@ setMethod("identifier", signature="filterResult",
 ## --------------------------------------------------------------------------
 setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
 	frameId = identifier(x)
-        print(class(frameId))
 	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
 		warning("Frame identifiers do not match. It is possible that this ",
                         "filter is not compatible with this frame.")

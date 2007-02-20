@@ -6,22 +6,29 @@
 ## ---------------------------------------------------------------------------
 setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 	y = filter(x,table@filters[[2]])
-	if(length(y) == 1) {
-		y = as(y,"logical")
-		n = which(y)
-		y[n[!(x[n,] %in% table@filters[[1]])]] = FALSE
-		y
-	} else if(length(y) > 1){
-		res = rep(NA,nrow(x))
-		for(i in seq(along=y)) {
-			z = as(y[[i]],"logical")
-			n = which(z)
-			z[n[!(x[n,] %in% table@filters[[1]])]] = FALSE
-			res[z] = i
+	z = if(length(y) == 1) {
+			w = as(y,"logical")
+			n = which(w)
+			r = filter(x[n,],table@filters[[1]])
+			filterDetails(y,identifier(table@filters[[1]])) = summarizeFilter(r,table@filters[[1]])
+			w[n[!as(r,"logical")]] = FALSE
+			w
+		} else {
+			res = rep(NA,nrow(x))
+			ll  = paste(identifier(table@filters[[1]]),"in",names(y))
+			for(i in seq(along=y)) {
+				w = as(y[[i]],"logical")
+				n = which(w)
+				r = filter(x[n,],table@filters[[1]])
+				filterDetails(y,ll[i]) = summarizeFilter(r,table@filters[[1]])
+				w[n[!as(r,"logical")]] = FALSE
+				res[z] = i
+			}
+			structure(as.integer(res),levels=ll)
 		}
-		structure(as.integer(res),levels=paste(identifier(table@filters[[1]]),
-                                            "in",names(y)))
-	}
+	#We need to track our filterDetails to a higher level for summarizeFilter.
+	attr(z,'filterDetails') = filterDetails(y)
+	z
 })
 
 
