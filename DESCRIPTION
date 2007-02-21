@@ -6,5 +6,5 @@ Description: Provides S4 data structures and basic functions to deal with flow c
 Maintainer: Nolwenn Le Meur <nlemeur@fhcrc.org>
 Depends: R (>= 2.4.0), Biobase, methods, colorspace, rrcov
 Imports: Biobase, methods, geneplotter, graphics, graph, MASS, utils
-License: Artistic
+License: The Artistic License, Version 2.0
 biocViews:  Infrastructure, Flowcytometry, CellBasedAssays
