@@ -46,10 +46,11 @@ fluorochrome as well as an unstained FCS file you can use the \code{\link[flowCo
 \author{B. Ellis, N. Le Meur}
 \examples{
 samp     <- read.flowSet(path=system.file("extdata","compdata","data",package="flowCore"))
-comp.mat <- read.table(system.file("extdata","compdata","compmatrix"),header=TRUE,skip=2)
+ cfile = system.file("extdata","compdata","compmatrix", package="flowCore")
+comp.mat <- read.table(cfile, header=TRUE, skip=2)
 comp.mat
 summary(samp)
-samp     <- compensate(samp)
+samp <- compensate(samp)
 summary(samp)
 }
 \keyword{methods}  
