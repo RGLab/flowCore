@@ -270,8 +270,9 @@ setMethod("spillover","flowFrame",function(x) {
 	## Flow frames have a SPILL keyword that is often
 	## used to store the spillover matrix. Attempt to
 	## extract it.
-	present <- keyword(x,"spillover")
-        if(is.na(present)) stop("No spillover matrix store in that flowFrame") 
+	present <- unlist(keyword(x,"spillover"))
+        if(is.null(present)) stop("No spillover matrix stored in that flowFrame")
+        else present
 })
 
 
