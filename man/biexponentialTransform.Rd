@@ -30,7 +30,7 @@ biexponentialTransform(transformationId, a = 0.5, b = 1, c = 0.5, d = 1, f = 0, 
 \author{ B. Ellis }
 \seealso{ \code{\link{transform}} }
 \examples{
-
+\dontrun{
 # Construct some "flow-like" data which tends to be hetereoscedastic.
 before = sapply(10^sample(c(1,2,4),1000),function(i) rnorm(i,i*1.2))
 
@@ -45,7 +45,7 @@ opar = par(mfcol=c(3,1))
 plot(density(before),main="Original")
 plot(density(after.1),main="Standard Transform")
 plot(density(after.2),main="Shifted Zero Point")
-
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

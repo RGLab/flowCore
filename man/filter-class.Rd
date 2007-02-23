@@ -43,10 +43,9 @@ more specific filter.
   typically be equivalent to using an \code{&} operation to compose the
   two filters, though summary methods will use subset semantics when
   calculating proportions. Additionally, when the filter is data driven,
-  such as \filter{norm2Filter}, the subset semantics are applied to the
+  such as \code{norm2Filter}, the subset semantics are applied to the
   data used to fit the filter possibly resulting in quite different, and
   usually more desirable, results.}
-}
 \item{\code{\%on\%}}{Used in conjunction with a
   \code{\link{transformList}} to create a \code{transformFilter}. This
   filter is similar to the subset filter in that the filtering operation
@@ -54,12 +53,13 @@ more specific filter.
 \item{\code{filter}}{A more formal version of \code{\%in\%}, this method
   returns a \code{\link{filterResult}} object that can be used in
   subsequent filter operations as well as providing more metadata about
-  the results of the filtering operation}}
+  the results of the filtering operation}
 \item{\code{summarizeFilter}}{When implementing a new filter this method
   is used to update the \code{filterDetails} slot of a
   \code{filterResult}. It is optional and typically only needs to be
   implemented for data-driven filters.}
-
+}
+}
 
 \details{}
 

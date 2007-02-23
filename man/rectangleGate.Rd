@@ -53,6 +53,10 @@ m <- matrix(c(1,50,50,800),ncol=2)
 colnames(m) <- c("FSC-H","SSC-H")
 rectangleGate(filterId="rectangleGate",m)
 
+## PolygonGate
+sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
+colnames(sqrcut) <- c("FSC-H","SSC-H")
+polygonGate(filterId="nonDebris", boundaries= sqrcut)
 }
 \keyword{methods}
 

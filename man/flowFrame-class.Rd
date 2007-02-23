@@ -69,14 +69,15 @@ or the function \code{\link[flowCore]{read.FCS}}.}
   the FCS file.}
 }}
 
-\section{Methods}{\describe{
+\section{Methods}{
+  \describe{
 \item{[}{subsetting. Returns an object of class \code{flowFrame}.
   The subsetting is applied to the \code{exprs} slot, while the
   \code{description} slot is unchanged.}
 \item{$}{subsetting by channel name.}
 \item{exprs, exprs<-}{extract or replace the intensities.}
 \item{description}{extract the description.}
-\items{parameters}{extract parameters. Returns object of class
+\item{parameters}{extract parameters and returns object of class
   \code{AnnotatedDataFrame}}
 \item{compensate}{apply a compensation matrix on a \code{flowFrame}
   object.}
