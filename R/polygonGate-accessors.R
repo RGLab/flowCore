@@ -35,7 +35,7 @@ setMethod("%in%",signature(x="flowFrame",table="polygonGate"),function(x,table) 
                            range(table@boundaries[,1]),labels=FALSE, right=FALSE))
 	else if(ndim==2) {
                
-	 	as.logical(inPolygon(exprs(x)[,table@parameters],
+	 	as.logical(flowCore:::inPolygon(exprs(x)[,table@parameters],
                                  table@boundaries))
             
 	} else 
