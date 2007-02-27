@@ -18,7 +18,7 @@ inpolygon <- function(points, vertices){
     vertices <- rbind(vertices, vertices[1,])
 
   ## call C function
-  .Call("inpolygon", points, vertices, package="flowCore")
+  .Call("inPolygon", points, vertices, package="flowCore")
 }
 
 
@@ -35,7 +35,7 @@ setMethod("%in%",signature(x="flowFrame",table="polygonGate"),function(x,table) 
                            range(table@boundaries[,1]),labels=FALSE, right=FALSE))
 	else if(ndim==2) {
                
-	 	as.logical(flowCore:::inPolygon(exprs(x)[,table@parameters],
+	 	as.logical(flowCore:::inpolygon(exprs(x)[,table@parameters],
                                  table@boundaries))
             
 	} else 
