@@ -16,7 +16,7 @@
 \alias{\%in\%, flowFrame,sampleFilter-method}
 \alias{\%in\%, flowFrame,transformFilter-method}
 
-\title{ ~~ Methods for Function \%in\% in Package `flowCore' ~~}
+\title{ Methods for Function \%in\% in Package `flowCore'}
 \description{
 Membership methods must be defined for every object of type \code{filter} with respect to a \code{flowFrame} object.
 The operation is considered to be general and may return a \code{logical}, \code{numeric} or \code{factor} vector that

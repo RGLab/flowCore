@@ -35,7 +35,7 @@ quantitative cell-based assays}
 \section{Creating Objects}{
 Objects can be created using the function
 \code{\link[flowCore]{read.flowSet}} or via\cr
-\code{  new('flowSet,}\cr
+\code{  new('flowSet',}\cr
 \code{    frames = ....,   # environment with flowFrames}\cr
 \code{    phenoData = .... # object of class AnnotatedDataFrame}\cr
 \code{    colnames = ....  # object of class character}\cr
