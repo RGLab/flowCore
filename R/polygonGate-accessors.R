@@ -2,7 +2,7 @@
 ## R wrapper for C function inPolygon
 ## checks for input arguments and makes sure that the polygon is closed
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-inPolygon <- function(points, vertices){
+inpolygon <- function(points, vertices){
   ## check validity of arguments
   dp <- dim(points)
   if(!is.matrix(points) || dp[1]<1 | dp[2]!=2)
@@ -18,7 +18,7 @@ inPolygon <- function(points, vertices){
     vertices <- rbind(vertices, vertices[1,])
 
   ## call C function
-  .Call("inPolygon", points, vertices, package="flowCore")
+  .Call("inpolygon", points, vertices, package="flowCore")
 }
 
 
