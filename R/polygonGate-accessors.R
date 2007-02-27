@@ -1,4 +1,30 @@
 ## ==========================================================================
+## R wrapper for C function inPolygon
+## checks for input arguments and makes sure that the polygon is closed
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+inPolygon <- function(points, vertices){
+  ## check validity of arguments
+  dp <- dim(points)
+  if(!is.matrix(points) || dp[1]<1 | dp[2]!=2)
+    stop("Argument 'points' must be numeric matrix of two columns and at least one row ",
+         "specifiying points on a two-dimensional plane")
+  dv <- dim(vertices)
+  if(!is.matrix(vertices) || dv[1]<2 | dv[2]!=2)
+    stop("Argument 'vertices' must be numeric matrix of two columns and at least two rows",
+         " specifying vertices of a polygon on a two-dimensional plane")
+  
+  ## the polygon must be closed
+  if(!all(vertices[1,] == vertices[dv[1],]))
+    vertices <- rbind(vertices, vertices[1,])
+
+  ## call C function
+  .Call("inPolygon", points, vertices, package="flowCore")
+}
+
+
+
+
+## ==========================================================================
 ## filter flowFrame object using polygonGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%in%",signature(x="flowFrame",table="polygonGate"),function(x,table) {
@@ -9,7 +35,7 @@ setMethod("%in%",signature(x="flowFrame",table="polygonGate"),function(x,table) 
                            range(table@boundaries[,1]),labels=FALSE, right=FALSE))
 	else if(ndim==2) {
                
-	 	as.logical(.Call(inPolygon,exprs(x)[,table@parameters],
+	 	as.logical(inPolygon(exprs(x)[,table@parameters],
                                  table@boundaries))
             
 	} else 
