@@ -33,6 +33,7 @@ double max(double val1, double val2){
 }
 
 
+
 void inPolygon_c(double *data, int nrd, 
             double *vertices, int nrv, int *res) {
 
@@ -41,38 +42,37 @@ void inPolygon_c(double *data, int nrd,
   double p1x, p2x, p1y, p2y;
 
   for(i=0; i<nrd; i++){ /* iterate over rows (points) */
-      p1x=vertices[0];
-      p1y=vertices[nrv];
-      counter=0;
-      for(j=1; j<nrv; j++){
-	  p2x = vertices[j];
-	  p2y = vertices[j+nrv];
-	  if(data[i+nrd] >= min(p1y, p2y)){
-	      if(data[i+nrd] <= max(p1y, p2y)){ 
-		  if(data[i] <= max(p1x, p2x)){
-		      if(p1y != p2y){
-			  xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
-			  if (p1x == p2x || data[i] <= xinters){
-			      counter++;
-			  } /* if */
-		      } /* if */
-		  } /* if */
+    p1x=vertices[0];
+    p1y=vertices[nrv];
+    counter=0;
+    for(j=1; j < nrv+1; j++){   //Vincent Plagnol's fix: note the nrv+1: otherwise one misses a vertice
+      if (j == nrv) {p2x = vertices[0];p2y = vertices[0+nrv];}
+      else {p2x = vertices[j]; p2y = vertices[j+nrv];}    //the last vertice must "loop around"
+
+      if(data[i+nrd] >= min(p1y, p2y)){
+	if(data[i+nrd] < max(p1y, p2y)){           //Vincent Plagnol's fix: inequality should, I think, be strict
+	  if(data[i] <= max(p1x, p2x)){
+	    if(p1y != p2y){
+	      xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
+	      if (p1x == p2x || data[i] <= xinters){
+		counter++;
 	      } /* if */
+	    } /* if */
 	  } /* if */
-	  p1x=p2x;
-	  p1y=p2y;
-      } /* for j */
-      if(counter % 2 == 0){
-	  res[i]=0;
+	} /* if */
       } /* if */
-      else{
-	  res[i]=1;
-      } /* else */
+      p1x=p2x;
+      p1y=p2y;
+    } /* for j */
+    if(counter % 2 == 0){
+      res[i]=0;
+    } /* if */
+    else{
+      res[i]=1;
+    } /* else */
   } /* for i */
 } /* function */
 
-
- 
 
 
 /*-----------------------------------------------------------------
@@ -93,7 +93,7 @@ SEXP inPolygon(SEXP _data, SEXP _vertices)
   int nrv;  /* dimensions of vertices  */
  
 
-  /* check input argument data */
+  /* check input argument _data */
   PROTECT(dimData = getAttrib(_data, R_DimSymbol));
   if(((!isReal(_data)) & !isInteger(_data)) | isNull(dimData) | (LENGTH(dimData)!=2)| (INTEGER(dimData)[1]!=2))
      error("Invalid argument 'data': must be a real matrix with two columns.");
@@ -102,13 +102,14 @@ SEXP inPolygon(SEXP _data, SEXP _vertices)
   UNPROTECT(1);          
   /* done with dimData */
 
+  /* check input argument _vertices */
   PROTECT(dimVert = getAttrib(_vertices, R_DimSymbol));
    if((!isReal(_vertices)) | isNull(dimVert) | (LENGTH(dimVert)!=2) | (INTEGER(dimVert)[1]!=2))
       error("Invalid argument 'vertices': must be a real matrix with two columns."); 
   vertices   = REAL(_vertices);
   nrv  = INTEGER(dimVert)[0];
   UNPROTECT(1);          
-  /* done with dimCutpts */
+  /* done with vertices */
 
  
   /* allocate memory for return values */
