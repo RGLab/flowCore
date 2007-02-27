@@ -29,9 +29,9 @@ No methods defined with class "filterResult" in the signature.
 
 \seealso{
   \code{\link{filter}},
-  \code{\linkS4class{logicalFilterResult-class}},
-  \code{\linkS4class{multipleFilterResult-class}},
-  \code{\linkS4class{randomFilterResult-class}}
+  \code{"\linkS4class{logicalFilterResult}"},
+  \code{"\linkS4class{multipleFilterResult}"},
+  \code{"\linkS4class{randomFilterResult}"}
 }
 \examples{
 showClass("filterResult")

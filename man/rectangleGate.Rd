@@ -6,6 +6,7 @@
 \alias{polygonGate}
 \alias{polytopeGate}
 \alias{polytopeGate-class}
+\alias{polytopeGate-class}
 \alias{summary, rectangleGate-method}
 
 
@@ -18,7 +19,6 @@
 rectangleGate( filterId = "rectangleGate", .gate, \dots)
 polygonGate(filterId = "polygonGate", boundaries, \dots)
 polytopeGate(filterId = "polytopeGate", .gate, \dots)
-kmeansFilter(filterId = "kmeans",\dots)
 }
 
 \arguments{

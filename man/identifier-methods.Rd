@@ -11,4 +11,4 @@
 \item{}{ ~~describe this method here }
 }}
 \keyword{methods}
-\keyword{ ~~ other possible keyword(s)}
+

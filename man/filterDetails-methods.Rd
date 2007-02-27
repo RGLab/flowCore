@@ -4,7 +4,7 @@
 \alias{filterDetails}
 \alias{filterDetails,filterResult,missing-method}
 \alias{filterDetails,filterResult,ANY-method}
-\alias{filterDetails<-,}
+\alias{filterDetails<-}
 \alias{filterDetails<-, filterResult,character,setOperationFilter-method}
 \alias{filterDetails<-, filterResult, character,filter-method}
 \alias{filterDetails<-, filterResult, character,ANY-method}

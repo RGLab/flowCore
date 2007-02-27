@@ -20,13 +20,11 @@ biexponentialTransform(transformationId, a = 0.5, b = 1, c = 0.5, d = 1, f = 0, 
   \item{tol}{ A tolerance to pass to the inversion routine (\code{\link{uniroot}} usually) }
   \item{maxit}{ A maximum number of iterations to use, also passed to \code{\link{uniroot}} }
 }
-\details{
-	
-}
+
 \value{
 	Returns values giving the inverse of the biexponential within a certain tolerance. This function should be used with care as numerical inversion routines often have problems with the inversion process due to the large range of values that are essentially 0. Do not be surprised if you end up with population splitting about \code{w} and other odd artifacts.
 }
-\references{ ~put references to the literature/web site here ~ }
+
 \author{ B. Ellis }
 \seealso{ \code{\link{transform}} }
 \examples{
