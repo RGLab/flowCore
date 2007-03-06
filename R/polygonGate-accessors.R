@@ -17,6 +17,11 @@ inpolygon <- function(points, vertices){
   if(!all(vertices[1,] == vertices[dv[1],]))
     vertices <- rbind(vertices, vertices[1,])
 
+  ## the C function expects numerics and not integers
+  ## this is just an ugly patch for now, should change
+  ## things in the C code
+  points <- apply(points, 2, as.numeric)
+
   ## call C function
   .Call("inPolygon", points, vertices, package="flowCore")
 }
