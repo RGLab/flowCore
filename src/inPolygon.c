@@ -15,7 +15,7 @@ internal c function for calculation of pAUCs
 -----------------------------------------------------------------*/
 
 double min(double val1, double val2){
-    if(val1 < val2){
+    if(val1 <= val2){
 	return(val1);
     }
     else{
@@ -24,7 +24,7 @@ double min(double val1, double val2){
 }
 
 double max(double val1, double val2){
-    if(val1 > val2){
+    if(val1 >= val2){
 	return(val1);
     }
     else{
@@ -41,37 +41,48 @@ void inPolygon_c(double *data, int nrd,
   double xinters;
   double p1x, p2x, p1y, p2y;
 
-  for(i=0; i<nrd; i++){ /* iterate over rows (points) */
+  for(i=0; i<nrd; i++){//iterate over points
     p1x=vertices[0];
     p1y=vertices[nrv];
     counter=0;
-    for(j=1; j < nrv+1; j++){   //Vincent Plagnol's fix: note the nrv+1: otherwise one misses a vertice
-      if (j == nrv) {p2x = vertices[0];p2y = vertices[0+nrv];}
-      else {p2x = vertices[j]; p2y = vertices[j+nrv];}    //the last vertice must "loop around"
-
-      if(data[i+nrd] >= min(p1y, p2y)){
-	if(data[i+nrd] < max(p1y, p2y)){           //Vincent Plagnol's fix: inequality should, I think, be strict
-	  if(data[i] <= max(p1x, p2x)){
-	    if(p1y != p2y){
-	      xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
-	      if (p1x == p2x || data[i] <= xinters){
-		counter++;
-	      } /* if */
-	    } /* if */
-	  } /* if */
-	} /* if */
-      } /* if */
+    for(j=1; j < nrv+1; j++){// iterate over vertices 
+      /*p1x,p1y and p2x,p2y are the endpoints of the current vertex*/
+      if (j == nrv){//the last vertice must "loop around"
+	p2x = vertices[0];
+	p2y = vertices[0+nrv];
+      }//if
+      else{
+	p2x = vertices[j]; 
+	p2y = vertices[j+nrv];
+      }//else
+      /*if horizontal ray is in range of vertex find the x coordinate where
+	ray and vertex intersect*/
+      if(data[i+nrd] >= min(p1y, p2y) && data[i+nrd] < max(p1y, p2y) &&
+         data[i] <= max(p1x, p2x)){
+	xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
+	/*if intersection x coordinate == point x coordinate it lies on the
+	  boundary of the polygon, which means "in"*/
+	if(xinters==data[i]){
+	  counter=1;
+	  break;
+	}//if
+	/*count how many vertices are passed by the ray*/
+	if (xinters > data[i]){
+	  counter++;
+	}//if
+      }//if
       p1x=p2x;
       p1y=p2y;
-    } /* for j */
+    }//for j
+    /*uneven number of vertices passed means "in"*/
     if(counter % 2 == 0){
       res[i]=0;
-    } /* if */
+    }//if
     else{
       res[i]=1;
-    } /* else */
-  } /* for i */
-} /* function */
+    }//else
+  }//for i
+}//function
 
 
 
@@ -97,7 +108,7 @@ SEXP inPolygon(SEXP _data, SEXP _vertices)
   PROTECT(dimData = getAttrib(_data, R_DimSymbol));
   if(((!isReal(_data)) & !isInteger(_data)) | isNull(dimData) | (LENGTH(dimData)!=2)| (INTEGER(dimData)[1]!=2))
      error("Invalid argument 'data': must be a real matrix with two columns.");
-  data   = REAL(_data);
+  data   = REAL(AS_NUMERIC(_data));
   nrd = INTEGER(dimData)[0];
   UNPROTECT(1);          
   /* done with dimData */
@@ -106,7 +117,7 @@ SEXP inPolygon(SEXP _data, SEXP _vertices)
   PROTECT(dimVert = getAttrib(_vertices, R_DimSymbol));
    if((!isReal(_vertices)) | isNull(dimVert) | (LENGTH(dimVert)!=2) | (INTEGER(dimVert)[1]!=2))
       error("Invalid argument 'vertices': must be a real matrix with two columns."); 
-  vertices   = REAL(_vertices);
+  vertices   = REAL(AS_NUMERIC(_vertices));
   nrv  = INTEGER(dimVert)[0];
   UNPROTECT(1);          
   /* done with vertices */
