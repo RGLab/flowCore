@@ -5,9 +5,9 @@
 \alias{filterDetails,filterResult,missing-method}
 \alias{filterDetails,filterResult,ANY-method}
 \alias{filterDetails<-}
-\alias{filterDetails<-, filterResult,character,setOperationFilter-method}
-\alias{filterDetails<-, filterResult, character,filter-method}
-\alias{filterDetails<-, filterResult, character,ANY-method}
+\alias{filterDetails<-,filterResult,character,setOperationFilter-method}
+\alias{filterDetails<-,filterResult,character,filter-method}
+\alias{filterDetails<-,filterResult,character,ANY-method}
 
 \title{Obtain details about a filter operation}
 \description{

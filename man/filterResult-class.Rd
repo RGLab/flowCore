@@ -1,6 +1,7 @@
 \name{filterResult-class}
 \docType{class}
 \alias{filterResult-class}
+\alias{==,filterResult,flowFrame-method}
 
 \title{Class "filterResult" }
 \description{Container to store the result of applying a \code{filter} on a
@@ -15,20 +16,20 @@
     \item{\code{filterId}:}{Object of class \code{"character"}
       referencing the filter applied}
     \item{\code{parameters}:}{Object of class \code{"ANY"} describing
-      the parameters used to filter the \code{flowFrame} }
+      the parameters used to filter the \code{flowFrame}}
   }
 }
 \section{Extends}{
 Class \code{"\linkS4class{filter}"}, directly.
 }
 \section{Methods}{
-No methods defined with class "filterResult" in the signature.
+  \item{==}{add description here}
 }
 
 \author{B. Ellis, N. LeMeur}
 
 \seealso{
-  \code{\link{filter}},
+  \code{\link[flowCore]{filter}},
   \code{"\linkS4class{logicalFilterResult}"},
   \code{"\linkS4class{multipleFilterResult}"},
   \code{"\linkS4class{randomFilterResult}"}

@@ -7,9 +7,9 @@
 \alias{polytopeGate}
 \alias{polytopeGate-class}
 \alias{polytopeGate-class}
-\alias{summary, rectangleGate-method}
-
-
+\alias{summary,rectangleGate-method}
+\alias{show,rectangleGate-method}
+\alias{show,polygonGate-method}
    
 \title{Define filter boundaries}
 \description{
@@ -29,15 +29,24 @@ polytopeGate(filterId = "polytopeGate", .gate, \dots)
   
 }
 \details{
-	This function is designed to be useful in both direct and programmatic usage. In the first case, simply describe 
-	the limits on the desired parameter directly as in the first example. To use this function programmatically, you
-	may either construct a list using the same format that the direct description or you may construct a matrix with
-	\code{n} columns and \code{2} rows. The first row corresponds to the minimal value for each parameter while the 
-	second row corresponds to the maximal value for each parameter. The names of the parameters are taken from the 
-	column names as in the third example.
+  This function is designed to be useful in both direct and programmatic usage.
+  
+  For rectangle gate in n dimensions, if n=1 the gate correspond to a
+  range gate. If n=2, the gate is a rectangle gate. To use this function
+  programmatically, you may either construct a list
+  or you may construct a matrix with  \code{n} columns and \code{2}
+  rows.   The first row corresponds to the minimal value for each parameter
+  while the  second row corresponds to the maximal value for each
+  parameter.  The names of the parameters are taken from the 
+  column names as in the third example.
+
+  For polygone gate, the boundaries are specified as vertices in 2 dimensions.
+  
+ 
 }
 \value{
-	Returns a \code{\link{rectangleGate}} object for use in filtering \code{\link{flowFrame}}s or 
+	Returns a \code{\link{rectangleGate}} or
+	\code{\link{polygonGate}} object for use in filtering \code{\link{flowFrame}}s or 
 	other flow cytometry objects.
 }
 \author{ B. Ellis N. Le Meur}

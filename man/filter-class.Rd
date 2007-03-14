@@ -4,12 +4,13 @@
 \alias{filtergate,filter-class}
 \alias{rectangleGate,filter-class}
 \alias{polygonGate,filter-class}
-\alias{polytopeGate,}
 \alias{ellipsoidGate,filter-class}
 \alias{norm2Filter,filter-class}
 \alias{decisionTreeGate,filter-class}
 \alias{booleanGate,filter-class}
-\alias{filter, filter-method}
+\alias{filter,filter-method}
+
+
 \title{A class for representing filtering operations to be applied to flow data.}
 \description{
 The \code{filter} class is the virtual base class for all filter/gating objects
@@ -47,11 +48,11 @@ more specific filter.
   data used to fit the filter possibly resulting in quite different, and
   usually more desirable, results.}
 \item{\code{\%on\%}}{Used in conjunction with a
-  \code{\link{transformList}} to create a \code{transformFilter}. This
+  \code{\link[flowCore]{transformList}} to create a \code{transformFilter}. This
   filter is similar to the subset filter in that the filtering operation
   takes place on transformed values rather than the original values.}
 \item{\code{filter}}{A more formal version of \code{\%in\%}, this method
-  returns a \code{\link{filterResult}} object that can be used in
+  returns a \code{\link[flowCore]{filterResult}} object that can be used in
   subsequent filter operations as well as providing more metadata about
   the results of the filtering operation}
 \item{\code{summarizeFilter}}{When implementing a new filter this method
@@ -63,7 +64,7 @@ more specific filter.
 
 \details{}
 
-\seealso{\code{\link{transform}},\code{\link{filter}}}
+\seealso{\code{\link[flowCore]{transform}},\code{\link[flowCore]{filter}}}
 
 \author{B. Ellis, P.D. Haaland and N. Le Meur}
 

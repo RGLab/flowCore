@@ -2,11 +2,11 @@
 \docType{class}
 \alias{flowFrame-class}
 \alias{flowFrame}
-\alias{[,flowFrame,ANY}
-\alias{[,flowFrame,filter}
-\alias{[,flowFrame,filterResult-class}
-\alias{[,flowFrame,ANY}
-\alias{Subset,flowFrame,ANY}
+\alias{[,flowFrame,ANY-method}
+\alias{[,flowFrame,filter-method}
+\alias{[,flowFrame,filterResult-method}
+\alias{==,flowFrame,filterResult-method}
+\alias{Subset,flowFrame,ANY-method}
 \alias{Subset,flowFrame,logical-method}
 \alias{Subset,flowFrame,filter-metho}
 \alias{description,flowFrame-method}
@@ -28,8 +28,10 @@
 \alias{compensate,flowFrame,matrix-method}
 \alias{spillover,flowFrame-method}
 \alias{transform,flowFrame-method}
-\alias{split, flowFrame,logicalFilterResult}
-\alias{split, flowFrame,multipleFilterResult}
+\alias{split,flowFrame-method}
+\alias{split,flowFrame,filter-method}
+\alias{split,flowFrame,logicalFilterResult-method}
+\alias{split,flowFrame,multipleFilterResult-method}
 \alias{ncol,flowFrame-method}
 \alias{nrow,flowFrame-method}
 \alias{identifier,flowFrame-method}
@@ -38,6 +40,7 @@
 \alias{each_row,flowFrame-method}
 \alias{each_col,flowFrame-method}
 
+  
 \title{'flowFrame': a class for storing observed quantitative
   properties for a population of cells from a FACS run
 }
@@ -105,6 +108,7 @@
     \item{names}{add description here}
     \item{summary}{add description here}
     \item{Subset}{add description here}
+    \item{==}{add description here}
   }
 }
 
