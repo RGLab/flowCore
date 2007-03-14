@@ -4,7 +4,10 @@
 \alias{filter,flowFrame,rectangleGate}
 \alias{filter,flowFrame,polygonGate}
 \alias{filter,flowFrame,norm2Filter}
-\alias{filter,flowSet, filter-method}
+\alias{filter,flowSet,filter-method}
+\alias{|,filter,filter-method}
+\alias{!,filter-method}
+\alias{&,filter,filter-method}
 \alias{summary,filter-method}
 \alias{show,filter-method}
 \alias{length,filter-method}

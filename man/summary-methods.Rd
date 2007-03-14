@@ -1,6 +1,8 @@
 \name{summary-methods}
 \docType{methods}
 \alias{summary-methods}
+\alias{summary}
+
 \title{ ~~ Methods for Function summary in Package `.GlobalEnv' ~~}
 \description{
  ~~ Methods for function \code{summary} in Package `.GlobalEnv' ~~

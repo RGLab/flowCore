@@ -1,6 +1,7 @@
 \name{identifier}
 \alias{identifier}
-\alias{identifier,filterResult}
+\alias{identifier,filterResult-method}
+\alias{identifier,filter-method}
 
 \title{Retrieve the GUID of a flowFrame}
 \description{Retrieve the GUID or globally unique identifier of a

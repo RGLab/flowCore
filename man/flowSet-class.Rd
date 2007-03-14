@@ -3,6 +3,7 @@
 \alias{flowSet}
 \alias{flowSet-class}
 \alias{[,flowSet-method}
+\alias{[,flowSet,ANY-method}
 \alias{[[,flowSet-method}
 \alias{[[<-,flowSet-method}
 \alias{Subset,flowSet,ANY}
@@ -14,15 +15,15 @@
 \alias{colnames<-,flowSet-method}
 \alias{sampleNames,flowSet-method}
 \alias{phenoData,flowSet-method}
-\alias{phenoData<-,flowSet,ANY}
+\alias{phenoData<-,flowSet,ANY-method}
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
 \alias{spillover,flowSet-method}
 \alias{transform,flowSet-method}
-\alias{split, flowSet,ANY}
-\alias{rbind2, flowSet,missing}
-\alias{rbind2, flowSet,flowSet-method}
+\alias{split,flowSet,ANY-method}
+\alias{rbind2,flowSet,missing}
+\alias{rbind2,flowSet,flowSet-method}
 
 
 \title{'flowSet': a class for storing flow cytometry raw data from
@@ -119,10 +120,6 @@ of a \code{flowSet} \code{x}, use
 \code{\link[flowCore]{flowFrame}}
 }
 
-\examples{
 
-}
-
-}
 \keyword{classes}
 

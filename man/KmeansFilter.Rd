@@ -2,8 +2,8 @@
 \docType{class}
 \alias{kmeansFilter}
 \alias{kmeansFilter-class}
-\alias{kmeansFilter, length-methods}
-
+\alias{length,kmeansFilter-method}
+\alias{show,kmeansFilter-method}
 
 \title{Define kmeans filter boundaries}
 \description{

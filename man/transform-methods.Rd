@@ -1,6 +1,8 @@
 \name{transform-methods}
 \docType{methods}
 \alias{transform-methods}
+\alias{transform}
+
 \title{ ~~ Methods for Function transform in Package `.GlobalEnv' ~~}
 \description{
  ~~ Methods for function \code{transform} in Package `.GlobalEnv' ~~

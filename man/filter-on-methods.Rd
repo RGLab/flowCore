@@ -2,9 +2,9 @@
 \docType{methods}
 \alias{\%on\%-methods}
 \alias{\%on\%}
-\alias{\%on\%, filter,transformList}
-\alias{\%on\%, transformList,flowFrame}
-\alias{\%on\%, transformList, flowSet}
+\alias{\%on\%,filter,transformList-method}
+\alias{\%on\%,transformList,flowFrame-method}
+\alias{\%on\%,transformList,flowSet-method}
 
 
 \title{Methods for Function \%on\% in Package `flowCore'}
