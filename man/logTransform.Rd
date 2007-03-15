@@ -1,58 +1,39 @@
 \name{logTransform}
 \alias{logTransform}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
-\description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\title{Create the definition of a log transformation function (base specified by user) to be applied on a data set }
+\description{Create the definition of the log Transformation that will be
+  applied on some parameter via the \code{transform} method. 
+  The definition of this function is currently  x<-log(x,logbase)*(r/d).
+  The transformation would normally be used to convert to a linear valued parameter
+  to the natural logarithm scale.
+  Typically r and d are both equal to 1.0. Both must be positive.
+  logbase = 10 corresponds to base 10 logarithm.
 }
 \usage{
-logTransform(transformationId, logbase = 10, r, d)
+logTransform(transformationId, logbase=10, r=1, d=1)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{transformationId}{ ~~Describe \code{transformationId} here~~ }
-  \item{logbase}{ ~~Describe \code{logbase} here~~ }
-  \item{r}{ ~~Describe \code{r} here~~ }
-  \item{d}{ ~~Describe \code{d} here~~ }
+  \item{transformationId}{character string to identify the transformation}
+  \item{logbase}{positive double that correponds to the base of the logarithm. }
+  \item{r}{positive double that correponds to a scale factor. }
+  \item{d}{positive double that correponds to a scale factor}
 }
-\details{
-  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  ...
+  Returns an object of class \code{transform}.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ 
 
- ~Make other sections like Warning with \section{Warning }{....} ~
-}
-\seealso{ ~~objects to See Also as \code{\link{help}}, ~~~ }
+\author{B. Ellis}
+
+\seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(transformationId,logbase=10,r,d){
-     if(!is.double(r) || r <= 0)
-       stop("r must be numeric and positive")
-    if(!is.double(d) || d <=0)
-       stop("d must be numeric")
-      if(!is.double(r) || r <=0)
-       stop("r must be numeric and positive")
-    if(!is.double(logbase) || logbase <= 1)
-       stop("logabse must be a pnumeric greater than 1")
-    new("transform",.Data=function(x){
-        x <- log(x,logbase)*(r/d)
-    })
-  }
+\dontrun{samp <- read.FCS(system.file("extdata",
+   "0877408774.B08", package="flowCore"))
+  logTrans <- lnTransform(transformationId="ln-transformation", logbase=10, r=1, d=1)
+  dataTransform <- transform(samp,`FLH-1`=logTrans(`FLH-1`))
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}
+
+\keyword{ methods }

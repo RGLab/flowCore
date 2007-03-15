@@ -411,7 +411,7 @@ linearTransform <- function(transformationId,a=1,b=0){
 }
 
 ## Quadratic transformation function
-quadraticTransform <- function(transformationId,a,b,c){
+quadraticTransform <- function(transformationId,a=1,b=1,c=0){
   if(!is.double(a)) 
       stop("a must be numeric")
     if(!is.double(b))
@@ -424,7 +424,7 @@ quadraticTransform <- function(transformationId,a,b,c){
 }
 
 ## Natural logarithm transformation function
-lnTransform <- function(transformationId,r,d){
+lnTransform <- function(transformationId,r=1,d=1){
     if(!is.double(r) || r <= 0)
        stop("r must be numeric and positive")
     if(!is.double(d) || d <=0)
@@ -435,7 +435,7 @@ lnTransform <- function(transformationId,r,d){
 }
 
 ## Logarithm transformation function
-logTransform <- function(transformationId,logbase=10,r,d){
+logTransform <- function(transformationId,logbase=10,r=1,d=1){
      if(!is.double(r) || r <= 0)
        stop("r must be numeric and positive")
     if(!is.double(d) || d <=0)
@@ -471,7 +471,7 @@ logicleTransform <- function(w=0,r=262144,d=5,...) {
 }
 
 ## Truncation Transformation
-truncateTransform <- function(transformationId,a){
+truncateTransform <- function(transformationId,a=1){
     new("transform",.Data=function(x){
         x[x<a] <- a
         x
@@ -479,14 +479,14 @@ truncateTransform <- function(transformationId,a){
 }
 
 ## Scale Transformation
-scaleTransform <- function(transformationId,a,b){
+scaleTransform <- function(transformationId,a=1,b=10^4){
     new("transform",.Data=function(x){
      	x=(x-a)/(b-a)
     })
 }
 
 ## Hyperbolic Arcsin Transformation
-arcsinhTransform <- function(transformationId,a,b,c=1) {
+arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
 	new("transform",.Data=function(x) asinh(a+b*x)+log(c))
 }
 
