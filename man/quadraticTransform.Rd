@@ -1,56 +1,35 @@
 \name{quadraticTransform}
 \alias{quadraticTransform}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
-\description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\title{Create the definition of a quadratic transformation function to be applied on a data set }
+\description{Create the definition of the quadratic Transformation that will be
+  applied on some parameter via the \code{transform} method. 
+  The definition of this function is currently  x <- a*x\^2 + b*x + c
 }
 \usage{
-quadraticTransform(transformationId, a, b, c)
+quadraticTransform(transformationId, a = 1, b = 1, c = 0)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{transformationId}{ ~~Describe \code{transformationId} here~~ }
-  \item{a}{ ~~Describe \code{a} here~~ }
-  \item{b}{ ~~Describe \code{b} here~~ }
-  \item{c}{ ~~Describe \code{c} here~~ }
-}
-\details{
-  ~~ If necessary, more details than the description above ~~
+  \item{transformationId}{character string to identify the transformation }
+  \item{a}{double that correponds to the quadratic coefficient in the equation}
+  \item{b}{double that correponds to the linear coefficient in the equation}
+  \item{c}{double that correponds to the intercept in the equation}
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  ...
+  Returns an object of class \code{transform}.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ 
 
- ~Make other sections like Warning with \section{Warning }{....} ~
-}
-\seealso{ ~~objects to See Also as \code{\link{help}}, ~~~ }
+\author{ N. Le Meur }
+
+\seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(transformationId,a,b,c){
-  if(!is.double(a)) 
-      stop("a must be numeric")
-    if(!is.double(b))
-       stop("b must be numeric")
-  if(!is.double(c))
-       stop("c must be numeric")
-    new("transform",.Data=function(x){
-        x <- a*x^2 + b*x + c
-    })
-  }
+\dontrun{samp <- read.FCS(system.file("extdata",
+   "0877408774.B08", package="flowCore"))
+  quadTrans <- quadraticTransform(transformationId="Quadratic-transformation", a=1, b=1, c=0)
+  dataTransform <- transform(samp,`FSC-H`=quadTrans(`FSC-H`))
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+}
+
+\keyword{methods}

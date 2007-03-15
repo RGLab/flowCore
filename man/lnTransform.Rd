@@ -1,51 +1,37 @@
 \name{lnTransform}
 \alias{lnTransform}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
-\description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\title{Create the definition of a ln transformation function (natural logarthim) to be applied on a data set }
+\description{Create the definition of the ln Transformation that will be
+  applied on some parameter via the \code{transform} method. 
+  The definition of this function is currently  x<-log(x)*(r/d).
+  The transformation would normally be used to convert to a linear valued parameter
+  to the natural logarithm scale.
+  Typically r and d are both equal to 1.0. Both must be positive.
 }
 \usage{
-lnTransform(transformationId, r, d)
+lnTransform(transformationId, r=1, d=1)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{transformationId}{ ~~Describe \code{transformationId} here~~ }
-  \item{r}{ ~~Describe \code{r} here~~ }
-  \item{d}{ ~~Describe \code{d} here~~ }
+  \item{transformationId}{character string to identify the transformation}
+  \item{r}{positive double that correponds to a scale factor. }
+  \item{d}{positive double that correponds to a scale factor}
 }
-\details{
-  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  ...
+  Returns an object of class \code{transform}.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ 
 
- ~Make other sections like Warning with \section{Warning }{....} ~
-}
-\seealso{ ~~objects to See Also as \code{\link{help}}, ~~~ }
+\author{B. Ellis}
+
+\seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(transformationId,r,d){
-    if(!is.double(r) || r <= 0)
-       stop("r must be numeric and positive")
-    if(!is.double(d) || d <=0)
-       stop("d must be numeric")
-    new("transform",.Data=function(x){
-     x<-log(x)*(r/d)
- 	})
-  }
+\dontrun{samp <- read.FCS(system.file("extdata",
+   "0877408774.B08", package="flowCore"))
+  lnTrans <- lnTransform(transformationId="ln-transformation", r=1, d=1)
+  dataTransform <- transform(samp,`FLH-1`=lnTrans(`FLH-1`))
 }
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}
+
+\keyword{ methods }
