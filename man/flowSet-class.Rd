@@ -47,13 +47,14 @@ Objects can be created using the function
 \item{\code{frames}:}{An \code{\link[base:environment]{environment}}
 containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects.}
 \item{\code{phenoData}:}{A
-\code{\link[Biobase:AnnotatedDataFrame]{AnnotatedDataFrame}}. Each row
-corresponds to one of the flowFrames in the \code{frames} slot.
-It is mandatory that the pData has column named \code{name}}
+  \code{\link[Biobase:AnnotatedDataFrame]{AnnotatedDataFrame}}. Each row
+  corresponds to one of the flowFrames in the \code{frames} slot.  The
+  \code{sampleNames} of \code{phenoData} (see below) must match the
+  names of the flowFrames in the \code{frames} environment.
+}
 \item{\code{colnames}:}{A \code{character} object with the
-(common) column names of all the data matrices in the flowFrames.}
+  (common) column names of all the data matrices in the flowFrames.}
 }}
-
 \section{Methods}{\describe{
 \item{[, [[}{subsetting. If \code{x} is \code{flowSet}, then \code{x[i]}
   returns a \code{flowSet} object, and \code{x[[i]]} a \code{flowFrame}
