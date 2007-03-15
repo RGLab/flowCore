@@ -19,6 +19,7 @@ if(!isGeneric("hist"))
 if(!isGeneric("lines"))
   setGeneric("lines",          useAsDefault=lines)
 
+setGeneric("draw",function(x,data,...) standardGeneric("draw"))
 
 ## ===========================================================================
 ## Generics for our operators

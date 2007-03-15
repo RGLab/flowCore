@@ -194,18 +194,6 @@ ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
         focus=.gate, distance=distance)
 }
 
-
-## ===========================================================================
-## mode gate
-## ---------------------------------------------------------------------------
-## rectangle gates that automatically select their dominant region.
-## ---------------------------------------------------------------------------
-setClass("modeGate",
-         representation(bw="ANY",n="numeric"),
-         contains="filter",
-         prototype=list(bw="nrd0",n=512))
-
-
 ## ===========================================================================
 ## norm2Filter
 ## ---------------------------------------------------------------------------
@@ -279,6 +267,25 @@ sampleFilter = function(filterId="sample",size) {
 setClass("multiFilter",
          representation(populations="character",filters="list"),
          contains="filter")
+
+
+
+## =================================================================
+## filterCollection
+## ----------------------------------------------------------------
+## A collection of Filters organized as a DAG. The DAG specifies the
+## Filters and the Populations. The Populations are names only because
+## they get created only when a FilterTree is applied to a dataset.
+## -----------------------------------------------------------------
+setClass("filterCollection",representation("environment"))
+
+## ===========================================================================
+## promisedFilter 
+## ---------------------------------------------------------------------------
+## A reference to a filter in an environment.
+## ---------------------------------------------------------------------------
+setClass("promisedFilter",representation("filter",name="character",where="environment"))
+
 
 
 ## =================================================================

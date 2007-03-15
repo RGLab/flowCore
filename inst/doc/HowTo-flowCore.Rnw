@@ -46,7 +46,7 @@ We illustrate their use with X case studies.\\
 
 
 \section{Introduction}
-Traditionnally, flow cytometry has been a tube-based technique limited to small-scale laboratory and clinical studies. 
+Traditionally, flow cytometry has been a tube-based technique limited to small-scale laboratory and clinical studies. 
 High throughput methods for flow cytometry have recently been developed for drug discovery and advanced research methods 
 \cite{Gasparetto2004, Young2004}. As an example, the flow cytometry high content screening (FC-HCS) can process up 
 to a thousand samples daily at a single workstation, and the results have been equivalent or superior to traditional 

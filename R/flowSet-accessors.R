@@ -7,8 +7,8 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	#Sanity checking
 	if(nrow(current) != nrow(value))
 		stop("phenoData must have the same number of rows as flow files")
-	#If the row.names have changed (not just reordered we should remap them)
-	if(!all(sampleNames(current)==sampleNames(value)))
+	#Make sure all of the original frames appear in the new one.
+	if(!all(sampleNames(current)%in%sampleNames(value)))
 		stop("The sample names no longer match.")
 	object@phenoData = value
 	object
@@ -43,9 +43,10 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 		colnames(x) = colnames(x)[j]
 	orig= x@frames
 	fr  = new.env(hash=TRUE,parent=emptyenv())
-	if(missing(i))
+	if(missing(i)) {
 		for(nm in ls(orig)) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
-	else {
+		pd = phenoData(x)
+	} else {
 		if(is.numeric(i) || is.logical(i)) {
 			copy = phenoData(x)$name[i]
 		} else {
@@ -56,9 +57,11 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 			for(nm in copy) fr[[nm]] = orig[[nm]][,,...,drop=drop]
 		else
 			for(nm in copy) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
+		pd = phenoData(x)[i,]
 	}
-	new("flowSet",frames = fr,phenoData=phenoData(x)[i,],colnames=if(missing(j))
-            x@colnames else x@colnames[j])
+	fr = as(fr,"flowSet")
+	phenoData(fr) = pd
+	fr
 })
 setMethod("[[","flowSet",function(x,i,j,...) {
 	if(length(i)!=1)
@@ -87,8 +90,7 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 	if(simplify) {
 		if(all(sapply(res,is,"flowFrame"))) {
 			res = as(res,"flowSet")
-			if(all(sampleNames(res) == sampleNames(x)))
-				phenoData(res) = phenoData(x)
+			phenoData(res) = phenoData(x)[sampleNames(x),]
 		} else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
 			res = do.call(rbind,res)
 		}
@@ -101,12 +103,27 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 ## Subset method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
-	if(missing(select))
-		fsApply(x,Subset,subset,...)
-	else
-		fsApply(x,Subset,subset,select,...)
+	y = if(missing(select))
+			fsApply(x,Subset,subset,...)
+		else
+			fsApply(x,Subset,subset,select,...)
+	phenoData(y) = phenoData(x)
+	y
 })
 
+
+setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
+	if(length(x) != length(subset))
+		stop("You must supply a list of the same length as the flowSet.")
+	res = as(structure(
+		if(missing(select))
+			lapply(1:length(subset),function(i) Subset(x[[i]],subset[[i]],...))
+		else
+			lapply(1:length(subset),function(i) Subset(x[[i]],subset[[i]],select,...)),
+		names=sampleNames(x)),"flowSet")
+	phenoData(res) = phenoData(x)
+	res
+})
 
 ## ==========================================================================
 ## split method for flowSet
@@ -174,38 +191,40 @@ setMethod("sampleNames", "flowSet", function(object)
 setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",
                                          ssc="SSC-A",method="median") {
 	if(is.null(unstained)) {
-		"is.null(unstained)"
+		stop("Sorry, we don't yet support unstained cells blended with stained cells")
 	} else {
 		## We often only want spillover for a subset of the columns 
-		cols = if(is.null(patt)) colnames(x) else grep(patt,colnames(x)
-                  ,value=TRUE)
-		## Ignore the forward and sidescatter channels if they managed to get included
-		if(!is.na(match(fsc,cols))) cols = cols[-match(fsc,cols)] 
-		if(!is.na(match(ssc,cols))) cols = cols[-match(ssc,cols)]
+		allcols = colnames(x)
+		cols    = if(is.null(patt)) allcols else grep(patt,allcols,value=TRUE)
+		
+		
+		if(is.numeric(fsc)) fsc = allcols[fsc]
+		if(is.numeric(ssc)) ssc = allcols[ssc]
+
+		
+
+		if(is.na(match(fsc,allcols)))
+			stop("Could not find forward scatter parameter. Please set the fsc parameter")
+		if(is.na(match(ssc,allcols)))
+			stop("Could not find side scatter parameter. Please set the ssc parameter")
+		#Ignore these guys if they somehow got into cols.
+		cols = cols[-match(c(fsc,ssc),cols)]
+
 		## There has got to be a better way of doing this...
-		stains = phenoData(x)$name
-		stains = stains[-match(unstained,stains)]
-		
-		## Grab the baseline from the unstained values
-		baseline = apply(exprs(x[[unstained]])[x[[unstained]] %in%
-                  norm2Filter(fsc,ssc,scale.factor=1.5),cols],2,method)
-		
-		## Now do the same thing to all the stains and sweep out the baseline
-                ## to figure out the motion on all of the channels.
-		inten = sweep(sapply(stains,function(s)
-			apply(exprs(x[[s]])[x[[s]] %in%
-                                            norm2Filter(fsc,ssc,scale.factor=1.5),cols],
-                              2,method)),2,baseline)
-		## We assume that the highest intensity channel in each column is the signal
-                ## channel. If something weird happens here, you probably screwed up your comp
-                ## controls (or you're using an awful channel like PacO in which case the mean
-                ## is probably the recommended statistic).
-		colnames(inten) = cols[apply(inten,2,which.max)]
-		#Now normalize row-wise to figure out the % spillover and ensure that
-                ## any negative values are set to 0 since negative compensation is even more
-                ## insane than negative fluoresence.
-		inten = apply(inten,2,function(x) ifelse(x<0,0,x/max(x)))		
-		t(inten[,match(cols,colnames(inten))])
+		if(!is.numeric(unstained)) {
+			unstained = match(unstained,sampleNames(x))
+			if(is.na(unstained))
+				stop("Baseline not in this set.")
+		}
+		#Check to see if the unstained sample is in the list of stains. If not, we need
+		#to add it, making it the first row and adjust the unstained index accordingly.
+		#If it is there we adjust to the appropriate index.
+		n2f   = norm2Filter(fsc,ssc,scale.factor=1.5)
+		inten = fsApply(Subset(x,n2f),each_col,method)[,cols]
+		inten = pmax(sweep(inten[-unstained,],2,inten[unstained,]),0)
+		inten = sweep(inten,1,apply(inten,1,max),"/")
+		row.names(inten) = colnames(inten)[apply(inten,1,which.max)]
+		inten[colnames(inten),]
 	}
 })
 
