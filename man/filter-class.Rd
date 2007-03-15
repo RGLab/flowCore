@@ -39,12 +39,12 @@ more specific filter.
   the usual boolean operations returning a \code{filter} class of a type
   appropriate for handling the operation. These methods attempt to guess
   an appropriate \code{filterId} for the new \code{filter}}
-\item{\code{\%subset\%}, \code{\%&\%}}{Defines a filter as being a
+\item{\code{\%subset\%}, \code{\%\&\%}}{Defines a filter as being a
   subset of another filter. For deterministic filters the results will
-  typically be equivalent to using an \code{&} operation to compose the
+  typically be equivalent to using an \code{\&} operation to compose the
   two filters, though summary methods will use subset semantics when
   calculating proportions. Additionally, when the filter is data driven,
-  such as \code{norm2Filter}, the subset semantics are applied to the
+  such as \code{\link{norm2Filter}}, the subset semantics are applied to the
   data used to fit the filter possibly resulting in quite different, and
   usually more desirable, results.}
 \item{\code{\%on\%}}{Used in conjunction with a

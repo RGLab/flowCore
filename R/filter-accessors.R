@@ -81,3 +81,26 @@ setMethod("!",signature("filter"),function(e1)
 ## ==========================================================================
 ## --------------------------------------------------------------------------
 setMethod("%&%",signature("ANY","ANY"),function(e1,e2) e1 %subset% e2)
+
+## ==========================================================================
+## Plotting method for filters lets us get a basic plot of the data and a 
+## filter. Uses the draw method to actually display the filter on some data.
+## --------------------------------------------------------------------------
+setMethod("plot",signature(x="flowFrame",y="filter"),function(x,y,z=NULL,results=NULL,...) {
+	if(is.null(z))	z = parameters(y)
+	if(length(z)>2) {
+		warning("Only plotting the first two parameters.")
+		z = z[1:2]
+	}
+	#First we plot the actual data.
+	plot(x,z,...)
+	#Then draw the filter on top of it which takes the form (filter,data,params,results (if any))
+	draw(y,x,z,results,...)
+})
+
+setMethod("draw",signature("filter","flowFrame"),function(x,data,params=NULL,results=NULL) {
+	if(is.null(params)) parameters=x@params
+	if(length(params)>2) {
+		params = params[1:2]
+	}
+})

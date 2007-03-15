@@ -132,6 +132,7 @@ setMethod("plot",signature(x="flowFrame",y="character"),function(x,y,...) {
 })
 
 
+
 ## ==========================================================================
 ## the $-operator (subsetting with '$')
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
