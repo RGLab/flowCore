@@ -41,15 +41,14 @@ setMethod("parameters", signature="flowFrame",
 
 ## ==========================================================================
 ## accessor methods for items in the description slot
-## would not be logical that if missing retrieve all keyword
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("keyword",signature("flowFrame","character"),function(object,keyword) {
+setMethod("keyword",signature("flowFrame","character"), function(object,keyword) {
 	structure(object@description[keyword],names=keyword)
 })
-setMethod("keyword",signature("flowFrame","function"),function(object,keyword) {
+setMethod("keyword",signature("flowFrame","function"), function(object,keyword) {
 	keyword(object,object@description)
 })
-setMethod("keyword",signature("flowFrame","list"),function(object,keyword) {
+setMethod("keyword",signature("flowFrame","list"), function(object,keyword) {
 	sapply(keyword,function(k) {
 		if(is.character(k))
 			object@description[k]
@@ -58,7 +57,9 @@ setMethod("keyword",signature("flowFrame","list"),function(object,keyword) {
 		else NA
 	})
 })
-
+setMethod("keyword",signature("flowFrame","missing"), function(object) {
+    object@description
+})
 
 ## ==========================================================================
 ## accessor methods for slot description
@@ -274,7 +275,7 @@ setMethod("spillover","flowFrame",function(x) {
 	## Flow frames have a SPILL keyword that is often
 	## used to store the spillover matrix. Attempt to
 	## extract it.
-	present <- unlist(keyword(x,"spillover"))
+	present <- unlist(keyword(x, c("spillover", "SPILL")))
         if(is.null(present)) stop("No spillover matrix stored in that flowFrame")
         else present
 })
