@@ -8,6 +8,8 @@
 \alias{|,filter,filter-method}
 \alias{!,filter-method}
 \alias{&,filter,filter-method}
+\alias{\%subset\%,filter,filter-method}
+\alias{draw,filter,flowFrame-method}
 \alias{summary,filter-method}
 \alias{show,filter-method}
 \alias{length,filter-method}

@@ -85,8 +85,8 @@ An flow cytometry experiment usually include several sample and several measurem
 A data structure is thus needed to store those collections of measurements.  
 The package \Rpackage{flowCore} stores the measurement and the associated data 
 information in objects of class \Robject{flowSet}. 
-A\Robject{flowSet} object contains two main slot exprs, an enviroment data astructure 
-that stores the flow cytometry measurements and the phenoData. The phenoData slot 
+A \Robject{flowSet} object contains two main slots \Robject{exprs}, an environment data structure 
+that stores the flow cytometry measurements and the \Robject{phenoData}. The \Robject{phenoData} slot 
 contains all the relevant experiment-wide meta-data, \textit{e.g.} 
 phenotypic and experimental information relevant to the management and/or the analysis of the data.\\
 

@@ -277,14 +277,16 @@ setClass("multiFilter",
 ## Filters and the Populations. The Populations are names only because
 ## they get created only when a FilterTree is applied to a dataset.
 ## -----------------------------------------------------------------
-setClass("filterCollection",representation("environment"))
+## Environment can't be extended
+## setClass("filterCollection",representation("environment"))
 
+setClass("filterCollection",representation("list"))
 ## ===========================================================================
 ## promisedFilter 
 ## ---------------------------------------------------------------------------
 ## A reference to a filter in an environment.
 ## ---------------------------------------------------------------------------
-setClass("promisedFilter",representation("filter",name="character",where="environment"))
+setClass("promisedFilter",representation("filter",name="character"))
 
 
 

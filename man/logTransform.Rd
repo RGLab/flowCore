@@ -31,7 +31,7 @@ logTransform(transformationId, logbase=10, r=1, d=1)
 \examples{
 \dontrun{samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
-  logTrans <- lnTransform(transformationId="ln-transformation", logbase=10, r=1, d=1)
+  logTrans <- logTransform(transformationId="ln-transformation", logbase=10, r=1, d=1)
   dataTransform <- transform(samp,`FLH-1`=logTrans(`FLH-1`))
 }
 }

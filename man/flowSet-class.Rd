@@ -19,12 +19,12 @@
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
-\alias{spillover,flowSet-method}
+%%\alias{spillover,flowSet-method}
 \alias{transform,flowSet-method}
 \alias{split,flowSet,ANY-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
-
+\alias{Subset,flowSet,list-method}
 
 \title{'flowSet': a class for storing flow cytometry raw data from
 quantitative cell-based assays}

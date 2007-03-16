@@ -1,24 +1,8 @@
 ##  Generic methods definition - last changes NLM January 17, 2006
-##      add parameters
 
 ## ===========================================================================
 ## These are already defined as generic functions:
 ## ---------------------------------------------------------------------------
-if(!isGeneric("colnames<-"))
-  setGeneric("colnames<-",    function(x, value) standardGeneric("colnames<-"))
-
-if(!isGeneric("colnames"))
-  setGeneric("colnames",      function(x, do.NULL=TRUE, prefix="col") standardGeneric("colnames"))
-
-if(!isGeneric("plot"))
-  setGeneric("plot",          useAsDefault=plot)
-
-if(!isGeneric("hist"))
-  setGeneric("hist",          useAsDefault=hist)
-
-if(!isGeneric("lines"))
-  setGeneric("lines",          useAsDefault=lines)
-
 setGeneric("draw",function(x,data,...) standardGeneric("draw"))
 
 ## ===========================================================================
@@ -32,6 +16,12 @@ setGeneric("%on%",function(e1,e2) standardGeneric("%on%"))
 
 
 ## ===========================================================================
+## Generic for ncol
+## ---------------------------------------------------------------------------
+##if(!isGeneric("ncol"))
+##  setGeneric("ncol", function(x) standardGeneric("ncol"))
+
+## ===========================================================================
 ## Generic for keyword
 ## ---------------------------------------------------------------------------
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
@@ -41,20 +31,6 @@ setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
 ## Generic to access parameters in a flowframe
 ## ---------------------------------------------------------------------------
 setGeneric("parameters",function(object) standardGeneric("parameters"))
-
-
-## ===========================================================================
-## Generic for nrow
-## ---------------------------------------------------------------------------
-if(!isGeneric("nrow"))
-  setGeneric("nrow", function(x) standardGeneric("nrow"))
-
-
-## ===========================================================================
-## Generic for ncol
-## ---------------------------------------------------------------------------
-if(!isGeneric("ncol"))
-  setGeneric("ncol", function(x) standardGeneric("ncol"))
 
 
 ## ===========================================================================
@@ -74,7 +50,6 @@ setGeneric("identifier",function(object) standardGeneric("identifier"))
 ## ---------------------------------------------------------------------------
 setGeneric("split")
 setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
-
 
 
 ## ===========================================================================
