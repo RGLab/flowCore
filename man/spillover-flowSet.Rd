@@ -35,7 +35,7 @@ of the sample, giving the spillover in terms of a proportion of the primary
 channel intensity.
 }
 \value{A matrix for each of the parameters}
-\references{C. B. Bagwell & E. G. Adams (1993). Fluorescence spectral overlap compensation 
+\references{C. B. Bagwell \& E. G. Adams (1993). Fluorescence spectral overlap compensation 
 for any number of flow cytometry parameters. in: Annals of the New York Academy of Sciences, 
 677:167-184.}
 \author{B. Ellis}
