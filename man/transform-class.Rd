@@ -1,6 +1,7 @@
 \name{transform-class}
 \docType{class}
 \alias{transform}
+\alias{transform,missing-method}
 \alias{transform-class}
 \alias{summary,transform-method}
 

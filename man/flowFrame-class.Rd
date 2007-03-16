@@ -23,6 +23,7 @@
 \alias{show,flowFrame-method}
 \alias{plot,flowFrame,missing-method}
 \alias{plot,flowFrame,character-method}
+\alias{plot,flowFrame,filter-method}
 \alias{$.flowFrame}
 \alias{filter,flowFrame}
 \alias{compensate,flowFrame,matrix-method}

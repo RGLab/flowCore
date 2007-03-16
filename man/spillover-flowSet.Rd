@@ -1,6 +1,7 @@
 \name{spillover}
 \alias{spillover}
 \alias{spillover,flowSet-method}
+
 \title{Compute a spillover matrix from a flowSet}
 \description{
 	Spillover information for a particular experiment is often 
