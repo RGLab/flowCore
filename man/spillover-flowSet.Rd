@@ -1,6 +1,7 @@
 \name{spillover}
-\alias{spillover}{flowSet}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{spillover}
+\alias{spillover,flowSet-method}
+
 \title{Compute a spillover matrix from a flowSet}
 \description{
 	Spillover information for a particular experiment is often 
@@ -9,10 +10,10 @@ a single color that can then be used to determine a spillover
 matrix for use with \code{\link{compensate}}. 
 }
 \usage{
-spillover(x, unstained = NULL, patt = NULL, fsc = "FSC-A", 
+\S4method{spillover}{flowSet}(x, unstained = NULL, patt = NULL, fsc = "FSC-A", 
         ssc = "SSC-A", method = "median")
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{A flowSet of compensation beads or cells }
   \item{unstained}{The name of index of the unstained negative 
@@ -35,17 +36,9 @@ of the sample, giving the spillover in terms of a proportion of the primary
 channel intensity.
 }
 \value{A matrix for each of the parameters}
-\references{ ~put references to the literature/web site here ~ }
+\references{ }
 \author{B. Ellis}
 \seealso{\code{\link{compensate}}}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function(x,...) standardGeneric("spillover")
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
 \keyword{methods}  

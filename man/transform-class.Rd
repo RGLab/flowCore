@@ -1,5 +1,6 @@
 \name{transform-class}
 \docType{class}
+\alias{transform}
 \alias{transform-class}
 \alias{summary,transform-method}
 

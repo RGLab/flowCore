@@ -458,7 +458,7 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
 
 
 ## General biexponential transformation function
-biexponentialTransform<- function(transformationId,a=.5,b=1,c=.5,d=1,f=0,w=0,
+biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
            tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
     new("transform",.Data=function(x){
         x <- .Call(biexponential_transform,x,a,b,c,d,f,w,tol,maxit)
@@ -466,17 +466,14 @@ biexponentialTransform<- function(transformationId,a=.5,b=1,c=.5,d=1,f=0,w=0,
 }
 
 ## Logicle transformation function
-logicleTransform <- function(w=0,r=262144,d=5,...) {
-  if(w>d) stop("Negative range decades must be smaller than total number of decades")
-  w = w*log(10)
-  d = d*log(10)
-  p = if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
-           c(.Machine$double.eps,2*(w+d)))$root
-  ##new("biexponentialTransformation",a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...)
-  new("transform",.Data=function(x)
-    biexponentialTransform(a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
+logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
+    if(w>d) stop("Negative range decades must be smaller than total number of decades")
+    w = w*log(10)
+    d = d*log(10)
+    if(w==0) p = 1 else uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
+    new("transform",.Data=function(x)
+        biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
 }
-
 ## Truncation Transformation
 truncateTransform <- function(transformationId,a=1){
     new("transform",.Data=function(x){

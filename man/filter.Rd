@@ -25,8 +25,6 @@ filter(x,filter,...)
   \item{...}{optional argument}
 }
 
-\details{
-}
 
 \value{Object of class \code{\link[flowCore]{filterResult}}
 }  
