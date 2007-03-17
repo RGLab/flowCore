@@ -108,8 +108,9 @@ setClass("rectangleGate",
 
 rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
-      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x)
-                        c("min"=x[1],"max"=x[2]))
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
+			x = sort(x);c("min"=x[1],"max"=x[2])
+		})
 	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),
             min=.gate[1,],max=.gate[2,])
 }
