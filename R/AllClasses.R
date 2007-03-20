@@ -494,7 +494,7 @@ scaleTransform <- function(transformationId,a=1,b=10^4){
 
 ## Hyperbolic Arcsin Transformation
 arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
-	new("transform",.Data=function(x) asinh(a+b*x)+log(c))
+	new("transform",.Data=function(x) asinh(a+b*x)+c)
 }
 
 
