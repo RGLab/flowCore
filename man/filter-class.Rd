@@ -62,7 +62,9 @@ more specific filter.
 }
 }
 
-\details{}
+\details{
+
+}
 
 \seealso{\code{\link[flowCore]{transform}},\code{\link[flowCore]{filter}}}
 

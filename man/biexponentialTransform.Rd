@@ -3,9 +3,10 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Compute a transform using the 'biexponential' function}
 \description{
-  The 'biexponential' is an over-parameterized inverse of the hyperbolic
-  sine.
-  The function to be inverted taxes the form biexp(x) = a*exp(b*(x-w))-c*exp(-d*(x-w))+f with default parameters selected to correspond to the hyperbolic sine.
+  The 'biexponential' is an over-parameterized inverse of the hyperbolic sine.
+  The function to be inverted takes the form 
+	biexp(x) = a*exp(b*(x-w))-c*exp(-d*(x-w))+f with default parameters 
+	selected to correspond to the hyperbolic sine.
 }
 \usage{
 biexponentialTransform(transformationId, a = 0.5, b = 1, c = 0.5, d = 1, f = 0, w = 0, tol = .Machine$double.eps^0.25, maxit = as.integer(5000))

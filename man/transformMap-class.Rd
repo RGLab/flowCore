@@ -2,33 +2,26 @@
 \docType{class}
 \alias{transformMap-class}
 
-\title{Class "transformMap" ~~~ }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\title{A class for mapping transforms between parameters}
+\description{
+This class provides a mapping between parameters and transformed parameters via a 
+function.
+}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("transformMap", ...)}.
-	 ~~ describe objects here ~~ 
+Objects of this type are not usually created by the user, except perhaps in special
+circumstances. They are generally automatically created by the inline 
+\code{\link{transform}} process during the creation of a \code{\link{transformFilter}}
 }
 \section{Slots}{
 	 \describe{
-    \item{\code{output}:}{Object of class \code{"character"} ~~ }
-    \item{\code{input}:}{Object of class \code{"character"} ~~ }
-    \item{\code{f}:}{Object of class \code{"function"} ~~ }
+    \item{\code{output}:}{Name of the transformed parameter}
+    \item{\code{input}:}{Name of the parameter to transform}
+    \item{\code{f}:}{Function used to accomplish the transform}
   }
 }
-\section{Methods}{
-No methods defined with class "transformMap" in the signature.
-}
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-	~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-	or \code{\linkS4class{CLASSNAME}} for links to other classes
-}
+\author{ B. Ellis }
+\seealso{\code{\link[flowCore]{transform}}}
 \examples{
-showClass("transformMap")
+new("transformMap",input="FSC-H",output="FSC-H",f=log)
 }
 \keyword{classes}
