@@ -37,11 +37,11 @@ ellipsoidGate(filterId = "ellipsoidGate", .gate, distance, \dots)
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 ##Create directly. Most likely from a command line
-##ellipsoidGate(filterId= "rectangleGateI", "FSC-H"= c(300, 200),
+##ellipsoidGate(filterId= "ellipsoidGateI", "FSC-H"= c(300, 200),
 ##"SSC-H"= c(500, 200), distance=400)
 
 #To facilitate programmatic construction we also have the following
-##ellipsoidGate(filterId = "rectangleGateII", list("FSC-H"= c(300, 200),
+##ellipsoidGate(filterId = "ellipsoidGateII", list("FSC-H"= c(300, 200),
 ##"SSC-H" = c(300, 200)), distance=400)
 
 ##m <- matrix(c(300, 200, 500, 200),ncol = 2)
