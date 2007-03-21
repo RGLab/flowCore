@@ -474,9 +474,9 @@ logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
     w = w*log(10)
     d = d*log(10)
     if(w==0) p = 1 else uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
-    new("transform",.Data=function(x)
-        biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
+    new("transform",.Data=biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
 }
+
 ## Truncation Transformation
 truncateTransform <- function(transformationId,a=1){
     new("transform",.Data=function(x){
