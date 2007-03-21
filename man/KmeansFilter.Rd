@@ -5,7 +5,7 @@
 \alias{length,kmeansFilter-method}
 \alias{show,kmeansFilter-method}
 
-\title{Define kmeans filter boundaries}
+\title{A multiple population filter determined by kmeans}
 \description{
   A convenience method to facilitate the construction of  kmeans \code{\link{filter}} objects
 }

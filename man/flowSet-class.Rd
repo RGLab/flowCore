@@ -41,6 +41,12 @@ Objects can be created using the function
 \code{    phenoData = .... # object of class AnnotatedDataFrame}\cr
 \code{    colnames = ....  # object of class character}\cr
 \code{  )}\cr
+
+Alternatively, \code{flowSet}s can be coerced from \code{list} and
+\code{environment} objects.
+
+\code{as(list("A"=frameA,"B"=frameB),"flowSet")}
+
 }
 
 \section{Slots}{\describe{
@@ -59,7 +65,7 @@ containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects
 \item{[, [[}{subsetting. If \code{x} is \code{flowSet}, then \code{x[i]}
   returns a \code{flowSet} object, and \code{x[[i]]} a \code{flowFrame}
   object. The semantics is similar to the behavior of the subsetting operators for lists.}
-\item{fsApply}{apply fucntion on a \code{flowSet} object.}
+\item{fsApply}{\code{apply} function on a \code{flowSet} object. Similar to \code{sapply}.}
 \item{compensate}{apply a compensation matrix on a \code{flowSet} object.}
 \item{transform}{apply a transformation function on a \code{flowSet}
   object.}
@@ -78,7 +84,7 @@ containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects
 \item{split}{split all \code{flowFrame} objects according to a filter or
   gate. Returns a list of \code{flowFrames}}
 \item{rbind2}{combine two \code{flowSet} objects}
-\item{Subset}{add description here}
+\item{Subset}{Returns a \code{flowSet} of \code{flowFrames} that have been subset according to a filter.}
 }}
 
 \section{Important note on storage and performance}{
