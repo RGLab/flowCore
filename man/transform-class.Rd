@@ -5,12 +5,12 @@
 \alias{transform-class}
 \alias{summary,transform-method}
 
-\title{'Transform': a class for transforming flow-cytometry data by
+\title{'transform': a class for transforming flow-cytometry data by
   applying scale factors.}
-\description{	 ~~ A concise (1-5 lines) description of what the class is.}
-\section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("transform", ...)}.
-	 ~~ describe objects here ~~ 
+\description{
+	Transform objects are simply functions that have been extended to allow
+for specialized dispatch. All of the ``...Transform'' constructors return 
+functions of this type for use in one of the transformation modalities.
 }
 \section{Slots}{
 	 \describe{
@@ -23,11 +23,9 @@ Objects can be created by calls of the form \code{new("transform", ...)}.
 
 \author{N LeMeur}
 
-\seealso{
-	~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-	or \code{\linkS4class{CLASSNAME}} for links to other classes
-}
+\seealso{\code{\link[flowCore]{transform}}}
+
 \examples{
-showClass("transform")
+cosTransform = function(transformId,a=1,b=1) new("transform",.Data=function(x) cos(a*x+b))
 }
 \keyword{classes}
