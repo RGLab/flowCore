@@ -27,8 +27,10 @@ Class \code{"\linkS4class{filter}"}, directly.
 \author{ B. Ellis }
 \seealso{\code{\linkS4class{filter}}, \code{\linkS4class{transform}}, \code{transform}}
 \examples{
+\dontrun{
 samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
 # Gate this object after log transforming the forward and side scatter variables
 filter(samp,norm2Filter("FSC-H","SSC-H",scale.factor=2) \%on\% transform("FSC-H"=log,"SSC-H"=log))
+}
 }
 \keyword{classes}
