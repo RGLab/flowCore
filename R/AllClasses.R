@@ -291,25 +291,6 @@ setClass("promisedFilter",representation("filter",name="character"))
 
 
 
-## =================================================================
-## filterTree
-## ----------------------------------------------------------------
-## A collection of Filters organized as a DAG. The DAG specifies the
-## Filters and the Populations. The Populations are names only because
-## they get created only when a FilterTree is applied to a dataset.
-## -----------------------------------------------------------------
-setClass("filterTree",
-         representation(tree="graphNEL",
-                        filterSet="list"),
-         validity=function(object){
-           msg = TRUE
-           if(length(edges(tree)) != length(filterSet))
-             msg = "\nOne filter must be supplied for each edge."
-           return(msg)
-         }
-         )
-
-
 ## ===========================================================================
 ## setOperationFilter
 ## ---------------------------------------------------------------------------

@@ -24,10 +24,8 @@ transformed values specified in the list.
 }
 \author{B. Ellis}
 \examples{
-\dontrun{
 samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
-plot(transform("FSC-H"=log) %on% samp)
-}
+plot(transform("FSC-H"=log) \%on\% samp)
 }
 \keyword{methods}
 
