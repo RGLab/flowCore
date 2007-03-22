@@ -310,16 +310,7 @@ setMethod("transform",
               else {
               	cnames = colnames(x)
               }
-              ##param.names <- colnames(transformed)
-              ##newParams <- is.na(match(param.names,`_data`@parameters$name))
-              ##params      = parameters(`_data`)$name
-              ##if(any(newParams)) {
-              ##    params <- cbind(params,
-              ##                    data.frame(name=param.names))
-                  ##params = cbind(params,
-                  ##    data.frame(name=param.names[newParams]))
-              ##}
-              #colnames(transformed) <- parameters(`_data`)$name
+              
               colnames(transformed) = cnames
               new("flowFrame",
                   exprs=transformed, 

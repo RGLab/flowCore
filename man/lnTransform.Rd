@@ -27,11 +27,13 @@ lnTransform(transformationId, r=1, d=1)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
-   "0877408774.B08", package="flowCore"))
+  data(GvHD)
   lnTrans <- lnTransform(transformationId="ln-transformation", r=1, d=1)
-  dataTransform <- transform(samp,`FLH-1`=lnTrans(`FLH-1`))
-}
-}
+  ln1 <- transform(GvHD,`FSC-H`=lnTrans(`FSC-H`))
 
-\keyword{ methods }
+opar = par(mfcol=c(2, 1))
+plot(density(exprs(GvHD[[1]])[ ,1]), main="Original")
+plot(density(exprs(ln1[[1]])[ ,1]), main="Ln Transform")
+
+}
+\keyword{methods}

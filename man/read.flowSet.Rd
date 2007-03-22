@@ -4,7 +4,7 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.flowSet(files=NULL,path=".",pattern=NULL,phenoData,descriptions,sep="\t",\dots)
+   read.flowSet(files=NULL, path=".",pattern=NULL,phenoData,descriptions,sep="\t",\dots)
 }
 
 \arguments{
