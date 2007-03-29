@@ -26,11 +26,10 @@ scaleTransform(transformationId, a, b)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   scaleTrans <- scaleTransform(transformationId="Truncate-transformation", a=1, b=10^4)
-  dataTransform <- transform(samp,`FLH-1`=scaleTrans(`FLH-1`))
-}
+  dataTransform <- transform(samp,`FSC-H`=scaleTrans(`FSC-H`))
 }
 
 \keyword{ methods }

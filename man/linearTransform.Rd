@@ -23,11 +23,10 @@ linearTransform(transformationId, a = 1, b = 0)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   linearTrans <- linearTransform(transformationId="Linear-transformation", a=2, b=0)
   dataTransform <- transform(samp,`FSC-H`=linearTrans(`FSC-H`))
-}
 
 }
 

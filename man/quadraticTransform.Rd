@@ -24,11 +24,10 @@ quadraticTransform(transformationId, a = 1, b = 1, c = 0)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   quadTrans <- quadraticTransform(transformationId="Quadratic-transformation", a=1, b=1, c=0)
   dataTransform <- transform(samp,`FSC-H`=quadTrans(`FSC-H`))
-}
 
 }
 
