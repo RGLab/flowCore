@@ -28,13 +28,12 @@ and compensated data. CytometryA, 96(6):541-51.}
 
 \seealso{\code{\link[flowCore]{biexponential}} }
 \examples{
-\dontrun{
-# Construct some "flow-like" data which tends to be hetereoscedastic.
-before = sapply(10^sample(c(1,2,4),1000),function(i) rnorm(i,i*1.2))
-
-#Just use the standard arguments
-logicle  = LogicleTransform(w=10)
-after.1 = logicle(before)
+\dontrun{data(GvHD)
+samp <- read.FCS(system.file("extdata",
+  "0877408774.B08", package="flowCore"))
+samp <- GvHD[1] 
+logicle  <- logicleTransform(w=2)
+after <- transform(samp, `FSC-H`=logicle(`FSC-H`))
 }
   }
 }

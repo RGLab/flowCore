@@ -29,11 +29,10 @@ logTransform(transformationId, logbase=10, r=1, d=1)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   logTrans <- logTransform(transformationId="ln-transformation", logbase=10, r=1, d=1)
-  dataTransform <- transform(samp,`FLH-1`=logTrans(`FLH-1`))
-}
+  dataTransform <- transform(samp,`FSC-H`=logTrans(`FSC-H`))
 }
 
 \keyword{ methods }

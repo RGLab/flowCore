@@ -25,11 +25,11 @@ truncateTransform(transformationId, a=1)
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{
-\dontrun{samp <- read.FCS(system.file("extdata",
+samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
-  truncateTrans <- truncateTransform(transformationId="Truncate-transformation", a=a, b=0)
-  dataTransform <- transform(samp,`FLH-1`=truncateTrans(`FLH-1`))
-}
+  truncateTrans <- truncateTransform(transformationId="Truncate-transformation", a=5)
+  dataTransform <- transform(samp,`FSC-H`=truncateTrans(`FSC-H`))
+
 }
 
 \keyword{methods }
