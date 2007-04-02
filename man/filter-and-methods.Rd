@@ -1,7 +1,7 @@
 \name{filter-and-methods}
 \docType{methods}
 \alias{\%\&\%-method}
-\alias{\%\&\%,ANY}
+\alias{\%\&\%}
 \alias{\%\&\%,ANY-method}
 \alias{\%subset\%,ANY-method}
 \alias{\%subset\%}
@@ -14,8 +14,8 @@ with subset semantics. For deterministic filters, such as rectangle, ellipse, an
 result will be exactly equivalent to the usual intersection obtained with the \code{\&} boolean operator.
 
 However, the left hand filter is actually evaluated using the subset of events specified by the right hand filter. This
-will affect data-driven filters such as \code{\link{norm2Filter}} as well as the calculation of summary statistics returned
-by \code{\link{summary}} when applied to \code{\link{filterResult}}
+will affect data-driven filters such as \code{\link[flowCore]{norm2Filter}} as well as the calculation of summary statistics returned
+by \code{\link[flowCore]{summary}} when applied to \code{\link[flowCore]{filterResult}}
 }
 
 \author{B. Ellis}

@@ -26,7 +26,7 @@ functions of this type for use in one of the transformation modalities.
 \seealso{\code{\link[flowCore]{transform}}}
 
 \examples{
-cosTransform = function(transformId,a=1,b=1)
-new("transform",.Data=function(x) cos(a*x+b))
+##cosTransform = function(transformId,a=1,b=1)
+##new("transform",.Data=function(x) cos(a*x+b))
 }
 \keyword{classes}

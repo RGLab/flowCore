@@ -388,7 +388,7 @@ setClass("randomFilterResult",
 ## ---------------------------------------------------------------------------
 ## Parameterize transforms so that we can describe them.
 ## ---------------------------------------------------------------------------
-setClass("transform", representation("function"))
+setClass("transform", representation(transformationId="character", "function"))
 
 ## Linear transformation function
 linearTransform <- function(transformationId,a=1,b=0){

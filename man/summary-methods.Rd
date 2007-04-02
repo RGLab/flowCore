@@ -2,6 +2,7 @@
 \docType{methods}
 \alias{summary-methods}
 \alias{summary}
+\alias{summary, subsetFilter-method}
 
 \title{ ~~ Methods for Function summary in Package `.GlobalEnv' ~~}
 \description{

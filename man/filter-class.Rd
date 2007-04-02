@@ -44,7 +44,7 @@ more specific filter.
   typically be equivalent to using an \code{\&} operation to compose the
   two filters, though summary methods will use subset semantics when
   calculating proportions. Additionally, when the filter is data driven,
-  such as \code{\link{norm2Filter}}, the subset semantics are applied to the
+  such as \code{\link[flowCore]{norm2Filter}}, the subset semantics are applied to the
   data used to fit the filter possibly resulting in quite different, and
   usually more desirable, results.}
 \item{\code{\%on\%}}{Used in conjunction with a
