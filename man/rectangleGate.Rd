@@ -52,6 +52,8 @@ polytopeGate(filterId = "polytopeGate", .gate, \dots)
 \author{ B. Ellis N. Le Meur}
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
+data(GvHD)
+
 #Create directly. Most likely from a command line
 rectangleGate(filterId="rectangleGateI","FSC-H"=c(1,50),"SSC-H"=c(50,800))
 
@@ -60,12 +62,16 @@ rectangleGate(filterId="rectangleGateII",list("FSC-H"=c(1,50),"SSC-H"=c(50,800))
 
 m <- matrix(c(1,50,50,800),ncol=2)
 colnames(m) <- c("FSC-H","SSC-H")
-rectangleGate(filterId="rectangleGate",m)
+rect <- rectangleGate(filterId="rectangleGate", m)
+pop1 <- filter(GvHD,rect)
+sub <- Subset(GvHD, pop1)
+
 
 ## PolygonGate
 sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
 colnames(sqrcut) <- c("FSC-H","SSC-H")
 polygonGate(filterId="nonDebris", boundaries= sqrcut)
+
 }
 \keyword{methods}
 

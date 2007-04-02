@@ -10,7 +10,7 @@ function.
 \section{Objects from the Class}{
 Objects of this type are not usually created by the user, except perhaps in special
 circumstances. They are generally automatically created by the inline 
-\code{\link{transform}} process during the creation of a \code{\link{transformFilter}}
+\code{\link[flowCore]{transform}} process during the creation of a \code{\link[flowCore]{transformFilter}}
 }
 \section{Slots}{
 	 \describe{

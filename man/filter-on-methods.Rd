@@ -5,15 +5,6 @@
 \alias{\%on\%,filter,transformList-method}
 \alias{\%on\%,transformList,flowFrame-method}
 \alias{\%on\%,transformList,flowSet-method}
-\title{Working with transformed data}
-
-\description{
-
-flowCore provides two methods of working with transformed channels, both of which employ \code{\link{transform}} to construct
-the appropriate transform.
-
-
-}
 
 
 \title{Methods for Function \%on\% in Package `flowCore'}

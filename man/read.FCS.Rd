@@ -33,10 +33,14 @@ For specifications of FCS 3.0 see
 \url{../doc/fcs3.html} in the \code{doc} directory of the package.
 }
 
-\value{An object of class \code{\link[flowCore]{flowFrame}}.}
+\value{An object of class \code{\link[flowCore]{flowFrame}} that
+  contains the data in the \code{exprs} slot, the parameters monitored
+  in the \code{parameters} slot and the keywords and value saved in the
+  header of the FCS file.}
 
 \author{F. Hahne, N.Le Meur}
 
+\seealso{\code{link[flowCore]{read.flowSet}}}
 
 \examples{
 samp <- read.FCS(system.file("extdata",

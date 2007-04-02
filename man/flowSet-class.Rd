@@ -127,6 +127,10 @@ of a \code{flowSet} \code{x}, use
 \code{\link[flowCore]{flowFrame}}
 }
 
-
+\examples{
+data(GvHD)
+GvHD
+phenoData(GvHD)
+}
 \keyword{classes}
 

@@ -33,10 +33,11 @@ or a matrix depending on options and the type of objects returned.
 \examples{
 fcs.loc <- system.file("extdata",package="flowCore")
 file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
-
 samp <- read.flowSet(file.location[1:3]) 
+
 #Get summary information about each sample.
 fsApply(samp,summary)
+
 #Obtain the median of each parameter in each frame.
 fsApply(samp,each_col,median)
 
