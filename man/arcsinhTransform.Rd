@@ -26,7 +26,9 @@ arcsinhTransform(transformationId, a=1, b=1, c=0)
 
 \author{B. Ellis}
 
-\seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
+\seealso{ \code{\link{transform-class}},
+  \code{\link{transform}}, \code{asinh}
+}
 \examples{
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))

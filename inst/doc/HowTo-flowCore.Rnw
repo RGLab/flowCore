@@ -30,7 +30,7 @@
 
 
 
-\title{flowCore: data structures for flow cytometry data}
+\title{flowCore: data structures pacakge for flow cytometry data}
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
@@ -77,17 +77,25 @@ defined generic functions.\\
 
 \subsection{flowFrame}
 The objects of class \Robject{flowFrame} are the containers for storing individual 
-cytometry measurements originated from one FCS file. \\
+cytometry measurements originated from one FCS file. The information available are:\\
 %%need description of the slots and maybe methods associated
+\begin{itemize}
+\item exprs, containing the measured intensities. Rows correspond to cells, columns to the
+      different channels. 
+\item parameters, containing information about each column of the  flowFrame. This will generally
+      be filled in by \Rfunction{read.FCS} or similar functions using data from
+      the \Robject{description} slot that describes the parameters.
+\item description is list containing the meta data included in the FCS file.
+\end{itemize}
 
 \subsection{flowSet}
 An flow cytometry experiment usually include several sample and several measurements. 
 A data structure is thus needed to store those collections of measurements.  
 The package \Rpackage{flowCore} stores the measurement and the associated data 
-information in objects of class \Robject{flowSet}. 
-A \Robject{flowSet} object contains two main slots \Robject{exprs}, an environment data structure 
-that stores the flow cytometry measurements and the \Robject{phenoData}. The \Robject{phenoData} slot 
-contains all the relevant experiment-wide meta-data, \textit{e.g.} 
+information in objects of class \Robject{flowSet}, a collection of \Robject{flowFrame}. 
+A \Robject{flowSet} object contains two main slots \Robject{frames}, an environment data structure 
+that stores the flow cytometry measurements as \Robject{flowFrame} and the \Robject{phenoData}. 
+The \Robject{phenoData} slot contains all the relevant experiment-wide meta-data, \textit{e.g.} 
 phenotypic and experimental information relevant to the management and/or the analysis of the data.\\
 
 \section{Preprocessing Methods}
@@ -102,14 +110,23 @@ It is now recognized as an obligate step in most FACS analyses.
 \subsection{Transformation}
 While analyzing flow cytometry data, various parameter transformations are performed 
 to provide user-friendly visualization and/or to perform statistical analyses and interpret the data. 
-Following the standard \cite{Spidlen2006} 8 transformations are pre-defined: linear, quadratic, natural logarithm, 
-logarithm (with a specified base), hyperlog, bi-exponential, logicle, and split-scale.\\ 
+The proposed standard \cite{Spidlen2006} defined 8 transformations communly used: linear, quadratic, natural logarithm, 
+logarithm (with a specified base), hyperlog, bi-exponential, logicle, split-scale. All of them are 
+implemented in \Rpackage{flowcore} and a few other have been added. Each transformation has specific properties:\\ 
 
-%%Can we define other?   
-%%can be applied when reading in the data.
+%%could be a table
+\begin{itemize}
+\item linear
+\item logarithm
+\item biexponential
+\item logicle transformation help to visualize cells with minimal fluorescence 
+  (cells usually pilled up on the axis with logarithmic displays) \citep{Herzenberg2006}
+\item arcsinh 
+\end{itemize}
+
 
 \subsection{Filter}
-The role of filtering strategies are to identify and characterize diffrent cells population in sample.
+The role of filtering strategies are to identify and characterize different cells population in sample.
 %% Filtering vs Gating
 %%Byron's vignette?
 %%several approach from basic to DAG ...\\
@@ -167,7 +184,7 @@ cell <- Subset(expCompensate[[1]],expResult[[1]])
 @ 
 
 <<plotWithDebris, echo=FALSE, fig=TRUE, prefix=FALSE, include=FALSE>>=
-print(plot(expCompensate[[1]], xlim=c(0, 1), ylim=c(0, 1), 
+print(plot(expCompensate[[1]],  xlim=c(0, 1), ylim=c(0, 1), 
 main="File1 (compensated, scaled)"))
 @ 
 

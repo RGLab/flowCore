@@ -23,7 +23,7 @@ lnTransform(transformationId, r=1, d=1)
   Returns an object of class \code{transform}.
 }
 
-\author{B. Ellis}
+\author{B. Ellis and N. LeMeur}
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{

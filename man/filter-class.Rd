@@ -68,6 +68,6 @@ more specific filter.
 
 \seealso{\code{\link[flowCore]{transform}},\code{\link[flowCore]{filter}}}
 
-\author{B. Ellis, P.D. Haaland and N. Le Meur}
+\author{B. Ellis, P.D. Haaland and N. LeMeur}
 
 \keyword{classes}

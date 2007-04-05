@@ -33,20 +33,20 @@ ellipsoidGate(filterId = "ellipsoidGate", .gate, distance, \dots)
 	Returns a \code{\link{ellipsoidGate}} object for use in filtering \code{\link{flowFrame}}s or 
 	other flow cytometry objects.
 }
-\author{ B. Ellis N. Le Meur}
+\author{ B. Ellis, N. LeMeur}
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 ##Create directly. Most likely from a command line
-##ellipsoidGate(filterId= "ellipsoidGateI", "FSC-H"= c(300, 200),
-##"SSC-H"= c(500, 200), distance=400)
+ellipsoidGate(filterId= "ellipsoidGateI", "FSC-H"= c(300, 200),
+"SSC-H"= c(500, 200), distance=400)
 
 #To facilitate programmatic construction we also have the following
-##ellipsoidGate(filterId = "ellipsoidGateII", list("FSC-H"= c(300, 200),
-##"SSC-H" = c(300, 200)), distance=400)
+ellipsoidGate(filterId = "ellipsoidGateII", list("FSC-H"= c(300, 200),
+"SSC-H" = c(300, 200)), distance=400)
 
-##m <- matrix(c(300, 200, 500, 200),ncol = 2)
-##colnames(m) <- c("FSC-H", "SSC-H")
-##ellipsoidGate(filterId= "rectangleGate", m, distance=400)
+m <- matrix(c(300, 200, 500, 200),ncol = 2)
+colnames(m) <- c("FSC-H", "SSC-H")
+ellipsoidGate(filterId= "ellipsoidGateIII", m, distance=400)
 
 }
 \keyword{methods}

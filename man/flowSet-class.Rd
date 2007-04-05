@@ -19,7 +19,6 @@
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
-%%\alias{spillover,flowSet-method}
 \alias{transform,flowSet-method}
 \alias{split,flowSet,ANY-method}
 \alias{rbind2,flowSet,missing}
@@ -121,7 +120,7 @@ of a \code{flowSet} \code{x}, use
 \preformatted{y <- x[seq(along=x)]}
 }
 
-\author{F. Hahne, W. Huber}
+\author{F. Hahne, B. Ellis, P. Haaland and N. Le Meur}
 
 \seealso{
 \code{\link[flowCore]{flowFrame}}

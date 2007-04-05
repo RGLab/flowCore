@@ -25,7 +25,7 @@ logTransform(transformationId, logbase=10, r=1, d=1)
   Returns an object of class \code{transform}.
 }
 
-\author{B. Ellis}
+\author{B. Ellis, N. LeMeur}
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{

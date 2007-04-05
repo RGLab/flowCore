@@ -22,5 +22,6 @@ a complex filtering operation to be recovered after the final filtering.
 
 \item{result = "filterResult", filterId = "ANY"}{You can also obtain a particular subset of details}
 }}
+\author{B. Ellis, P.D. Haaland and N. LeMeur}
 \keyword{methods}
 

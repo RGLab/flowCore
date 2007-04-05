@@ -25,7 +25,7 @@ kmeansFilter(filterId = "kmeans",\dots)
 	Returns a \code{\link{kmeansFilter}} object for use in filtering \code{\link{flowFrame}}s or 
 	other flow cytometry objects.
 }
-\author{ B. Ellis N. Le Meur}
+\author{ B. Ellis and N. LeMeur}
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 

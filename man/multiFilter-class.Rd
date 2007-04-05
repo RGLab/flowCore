@@ -2,18 +2,24 @@
 \docType{class}
 \alias{multiFilter-class}
 
-\title{Class "multiFilter" ~~~ }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\title{Class to represent list of filter}
+\description{Class to represent list of filter}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("multiFilter", ...)}.
-	 ~~ describe objects here ~~ 
+	  
 }
 \section{Slots}{
 	 \describe{
-    \item{\code{populations}:}{Object of class \code{"character"} ~~ }
-    \item{\code{filters}:}{Object of class \code{"list"} ~~ }
-    \item{\code{filterId}:}{Object of class \code{"character"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"ANY"} ~~ }
+    \item{\code{populations}:}{A \code{"character"} vector to identify
+      the collection of filters.}
+    \item{\code{filters}:}{Object of class \code{"list"}. Each element
+      of the list corresponds to a filter}
+    \item{\code{filterId}:}{A character vector that identifies this
+  \code{filter}. This is typically user specified but can be
+  automatically deduced by certain filter operations, particularly
+  boolean and set operations.}
+    \item{\code{parameters}:}{A character vector that identifies the name of
+  the parameters that this filter operates upon.}
   }
 }
 \section{Extends}{
@@ -22,17 +28,19 @@ Class \code{"\linkS4class{filter}"}, directly.
 \section{Methods}{
 No methods defined with class "multiFilter" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
 
- ~Make other sections like Warning with \section{Warning }{....} ~
+\author{B. Ellis}
 
 \seealso{
-	~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-	or \code{\linkS4class{CLASSNAME}} for links to other classes
+  \code{\linkS4class{filter}}
 }
 \examples{
 showClass("multiFilter")
+
+R1 <- rectangleGate(filterId="rectangleGateI","FSC-H"=c(1,50),"SSC-H"=c(50,800))
+R2 <- rectangleGate(filterId="rectangleGateII",list("FSC-H"=c(1,50),"SSC-H"=c(50,800)))
+
+fil <- new("multiFilter",populations = "Pop1", filters=c(R1,R2),
+filterId = "filterSchemaI", parameters = unique(c(R1@parameters, R1@parameters)))
 }
 \keyword{classes}
