@@ -7,22 +7,22 @@
  \code{flowSet} object.
 }
 \usage{
-summary(x, ...)
+summary(object, ...)
 }
 
 \arguments{
-  \item{x}{object of \code{filterResult} class}
+  \item{object}{an object of class \code{filterSummary} class}
   \item{\dots}{optional arguments for the summary function}
 }
 
 \value{
- number and percentage of selected features (cells) in the population out of the number of
- features first recorded in the original dataset.
+a print function for a \code{filterSummary} which provides counts and percentages for a 
+filtering operation.
 }
 
 \author{B. Ellis}
 
-\seealso{\code{filterResults}}
+\seealso{\code{filterResult}}
 \examples{
 
 }
