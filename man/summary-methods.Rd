@@ -1,8 +1,7 @@
 \name{summary-methods}
 \docType{methods}
 \alias{summary-methods}
-\alias{summary}
-\alias{summary, subsetFilter-method}
+\alias{summary,subsetFilter-method}
 
 \title{ ~~ Methods for Function summary in Package `.GlobalEnv' ~~}
 \description{
@@ -14,4 +13,4 @@
 \item{}{ ~~describe this method here }
 }}
 \keyword{methods}
-\keyword{ ~~ other possible keyword(s)}
+

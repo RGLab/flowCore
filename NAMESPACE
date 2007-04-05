@@ -23,7 +23,8 @@ exportMethods("initialize","description","phenoData","phenoData<-",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
               "transform","split","Subset","filter","filterDetails",
               "filterDetails<-","plot", "coerce","spillover",
-              "compensate","fsApply","sampleNames", "summary","each_row","each_col","draw")
+              "compensate","fsApply","sampleNames", "summary","each_row","each_col" ##,"draw"
+              )
 
 S3method("$", "flowFrame")
 

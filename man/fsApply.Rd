@@ -13,7 +13,7 @@ or a matrix depending on options and the type of objects returned.
 }
 
 \usage{
-    fsApply(x, FUN,\dots, simplify=TRUE, use.exprs=FALSE )
+    fsApply(x, FUN,\dots, simplify=TRUE, use.exprs=FALSE)
 }
 
 \arguments{
@@ -30,6 +30,7 @@ or a matrix depending on options and the type of objects returned.
 \seealso{
   \code{\link{apply}}, \code{\link{sapply}}
 }
+\author{B. Ellis}
 \examples{
 fcs.loc <- system.file("extdata",package="flowCore")
 file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")

@@ -3,15 +3,12 @@
 
 \title{Compute a transform using the 'logicle' function}
 \description{
-  Logicle transformations create a subset of \code{biexponential}
-  transformation
-  logicle(x)= 
- 
+  Logicle transformation create a subset of \code{link[flowCore]biexponential}
 }
 \usage{
 logicleTransform(transformationId, w = 0, r = 262144, d = 5, ...)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{transformationId}{ A name to assign to the transformation. Used by the transform/filter integration routines. }
   \item{w}{positive number that corresponds to the width of the negative data range and the range of linearized
@@ -23,18 +20,17 @@ logicleTransform(transformationId, w = 0, r = 262144, d = 5, ...)
 }
 \references{Parks D.R., Roederer M., Moore W.A.(2006)  A new "Logicle" display
   method avoids deceptive effects of logarithmic scaling for low signals
-and compensated data. CytometryA, 96(6):541-51.}
-\author{ B. Ellis}
+  and compensated data. CytometryA, 96(6):541-51.}
+\author{ B. Ellis N. LeMeur}
 
 \seealso{\code{\link[flowCore]{biexponential}} }
 \examples{
-\dontrun{data(GvHD)
+data(GvHD)
 samp <- read.FCS(system.file("extdata",
   "0877408774.B08", package="flowCore"))
-samp <- GvHD[1] 
+samp <- GvHD[[1]] 
 logicle  <- logicleTransform(w=2)
 after <- transform(samp, `FSC-H`=logicle(`FSC-H`))
-}
   }
-}
-\keyword{methods}
+
+  \keyword{methods}

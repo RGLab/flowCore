@@ -1,8 +1,8 @@
 \name{filter-and-methods}
 \docType{methods}
-\alias{\%\&\%-method}
 \alias{\%\&\%}
-\alias{\%\&\%,ANY-method}
+\alias{\%\&\%-methods}
+\alias{\%\&\%,ANY,ANY-method}
 \alias{\%subset\%,ANY-method}
 \alias{\%subset\%}
 

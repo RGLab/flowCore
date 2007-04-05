@@ -1,7 +1,7 @@
 \name{norm2Filter-class}
 \docType{class}
 \alias{norm2Filter-class}
-
+\alias{norm2Filter}
 
 \title{Class "norm2Filter"}
 \description{Define a filter that fits a bivariate normal distribution into a data set of

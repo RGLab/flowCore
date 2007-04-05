@@ -17,7 +17,7 @@ keyword(object, keyword)
   \item{object}{Object of class \code{\link[flowCore]{flowFrame}}.}
   \item{keyword}{character vector or list of potential keywords. If missing the methods return all the keywords}
 }
-\author{N. Le Meur}
+\author{N. LeMeur}
 \examples{
  samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
  keyword(samp)

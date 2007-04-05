@@ -16,7 +16,15 @@ transformed values specified in the list.
 \author{B. Ellis}
 \examples{
 samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
-plot(transform("FSC-H"=log) \%on\% samp)
+plot(transform("FSC-H"=log, "SSC-H"=log) \%on\% samp)
+
+
+rectangle <- rectangleGate(filterId="rectangleGateI","FSC-H"=c(4.5, 5.5))
+sampFiltered <- filter(samp, rectangle \%on\% transform("FSC-H"=log, "SSC-H"=log))
+res <- Subset(samp, sampFiltered)
+
+plot(transform("FSC-H"=log, "SSC-H"=log) \%on\% res)
+
 }
 \keyword{methods}
 

@@ -122,7 +122,7 @@
   using the object system for handling of flow-cytometry data. 
 }
 
-\author{F. Hahne, W. Huber, B. Ellis}
+\author{F. Hahne, B. Ellis, P. Haaland and N. Le Meur}
 
 \keyword{classes}
 

@@ -1,4 +1,4 @@
-##  Generic methods definition - last changes NLM January 17, 2006
+##  Generic methods definition
 
 ## ===========================================================================
 ## These are already defined as generic functions:
@@ -61,22 +61,27 @@ setGeneric("filter", function(x, filter,...) standardGeneric("filter"),useAsDefa
 ## ===========================================================================
 ## Generics for accessing certain aspects of the filtering process.
 ## ---------------------------------------------------------------------------
-setGeneric("filterDetails<-",function(result,filterId,...,value)  standardGeneric("filterDetails<-"))
-setGeneric("filterDetails",function(result,filterId,...) standardGeneric("filterDetails"))
+setGeneric("filterDetails<-", function(result, filterId,...,value)  standardGeneric("filterDetails<-"))
+setGeneric("filterDetails", function(result, filterId,...) standardGeneric("filterDetails"))
 
 
 ## ===========================================================================
 ## Used to summarize the operation of a filter on a frame. Used for the implementation
 ## of filters, not for the use of filters.
 ## ---------------------------------------------------------------------------
-setGeneric("summarizeFilter",function(result,filter) standardGeneric("summarizeFilter"))
+setGeneric("summarizeFilter", function(result,filter) standardGeneric("summarizeFilter"))
 
+## ===========================================================================
+## Used to summarize the operation of a filter on a frame. Used for the implementation
+## of filters, not for the use of filters.
+## ---------------------------------------------------------------------------
+setGeneric("summary", function(object,...) standardGeneric("summary"))
 
 ## ===========================================================================
 ## Generics for spillover and compensate
 ## ---------------------------------------------------------------------------
-setGeneric("spillover",function(x,...) standardGeneric("spillover"))
-setGeneric("compensate",function(x,spillover) standardGeneric("compensate"))
+setGeneric("spillover", function(x,...) standardGeneric("spillover"))
+setGeneric("compensate", function(x,spillover) standardGeneric("compensate"))
 
 
 ## ===========================================================================

@@ -19,7 +19,7 @@ linearTransform(transformationId, a = 1, b = 0)
   Returns an object of class \code{transform}.
 }
 
-\author{ N. Le Meur }
+\author{ N. LeMeur }
 
 \seealso{ \code{\link{transform-class}}, \code{\link{transform}}}
 \examples{

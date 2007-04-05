@@ -82,7 +82,7 @@ setClass("flowSet",
 ## a functions that return logical vectors subsetting the data
 ## ---------------------------------------------------------------------------
 setClass("filter", 
-         representation("VIRTUAL",filterId="character",
+         representation("VIRTUAL", filterId="character",
                         parameters="ANY"),
          validity=function(object){
              msg <- TRUE
@@ -111,8 +111,8 @@ rectangleGate <- function(filterId="rectangleGate", .gate,...) {
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
 			x = sort(x);c("min"=x[1],"max"=x[2])
 		})
-	new("rectangleGate",filterId=filterId,parameters=colnames(.gate),
-            min=.gate[1,],max=.gate[2,])
+	new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
+            min=.gate[1,], max=.gate[2,])
 }
 
 
@@ -280,8 +280,7 @@ setClass("multiFilter",
 ## -----------------------------------------------------------------
 ## Environment can't be extended
 ## setClass("filterCollection",representation("environment"))
-
-setClass("filterCollection",representation("list"))
+setClass("filterCollection", representation("list"))
 ## ===========================================================================
 ## promisedFilter 
 ## ---------------------------------------------------------------------------
@@ -444,6 +443,7 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
 ## General biexponential transformation function
 biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
            tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
+    
     new("transform",.Data=function(x){
         x <- .Call(biexponential_transform,x,a,b,c,d,f,w,tol,maxit)
     })
@@ -454,7 +454,8 @@ logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
     if(w>d) stop("Negative range decades must be smaller than total number of decades")
     w = w*log(10)
     d = d*log(10)
-    if(w==0) p = 1 else uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
+    if(w==0) p = 1 else p = uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
+    print(p)
     new("transform",.Data=biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
 }
 

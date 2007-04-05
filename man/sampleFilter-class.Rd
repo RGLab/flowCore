@@ -3,17 +3,20 @@
 \alias{sampleFilter-class}
 \alias{show,sampleFilter-method}
 
-\title{Class "sampleFilter" ~~~ }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\title{Class "sampleFilter"}
+\description{Objects ...}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("sampleFilter", ...)}.
-	 ~~ describe objects here ~~ 
-}
+	 }
 \section{Slots}{
-	 \describe{
-    \item{\code{size}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{filterId}:}{Object of class \code{"character"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"ANY"} ~~ }
+  \describe{
+    \item{\code{size}:}{Object of class \code{"numeric"}}
+    \item{\code{filterId}:}{A character vector that identifies this
+      \code{filter}. This is typically user specified but can be
+      automatically deduced by certain filter operations, particularly
+      boolean and set operations.}
+    \item{\code{parameters}:}{A character vector that identifies the name of
+      the parameters that this filter operates upon.}
   }
 }
 \section{Extends}{
@@ -22,15 +25,10 @@ Class \code{"\linkS4class{filter}"}, directly.
 \section{Methods}{
   \item{show}{add description here}
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
 
- ~Make other sections like Warning with \section{Warning }{....} ~
+\author{B. Ellis}
 
-\seealso{
-	~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-	or \code{\linkS4class{CLASSNAME}} for links to other classes
+\seealso{ \code{\linkS4class{filter}} 
 }
 \examples{
 showClass("sampleFilter")
