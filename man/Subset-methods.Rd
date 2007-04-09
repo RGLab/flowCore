@@ -37,8 +37,8 @@ a \code{\link{flowSet}}.
 \author{B. Ellis}
 \seealso{\code{\link{split}},\code{\link{subset}}}
 \examples{
-sample = read.flowSet(path=system.file("extData",package="flowCore"),patt="0877408774")
-result = filter(sample,rectangleGate("FSC-H"=c(-Inf,1024)))
+sample <- read.flowSet(path=system.file("extdata", package="flowCore"), pattern="0877408774")
+result <- filter(sample, rectangleGate("FSC-H"=c(-Inf, 1024)))
 result
 Subset(sample,result)
 }
