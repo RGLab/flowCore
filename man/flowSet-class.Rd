@@ -48,7 +48,8 @@ Alternatively, \code{flowSet}s can be coerced from \code{list} and
 
 }
 
-\section{Slots}{\describe{
+\section{Slots}{
+  \describe{
 \item{\code{frames}:}{An \code{\link[base:environment]{environment}}
 containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects.}
 \item{\code{phenoData}:}{A
