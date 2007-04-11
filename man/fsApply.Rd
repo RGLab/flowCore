@@ -13,7 +13,7 @@ or a matrix depending on options and the type of objects returned.
 }
 
 \usage{
-    fsApply(x, FUN,\dots, simplify=TRUE, use.exprs=FALSE)
+    fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE)
 }
 
 \arguments{
@@ -23,7 +23,7 @@ or a matrix depending on options and the type of objects returned.
 	a \code{flowSet} object will be constructed. If all of the values are of the same type there will be
 	an attempt to construct a vector or matrix of the appropriate type (e.g. all numeric results will return a matrix).}
   \item{use.exprs}{logical (default: FALSE); should the \code{FUN} be applied on the
-    \code{\link[flowCore]{flowFrame}} object or the expression values}
+    \code{\link[flowCore]{flowFrame}} object or the expression values.}
   \item{\dots}{optional arguments to \code{FUN}.}
   
 }

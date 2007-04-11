@@ -23,7 +23,7 @@
 Class \code{"\linkS4class{filter}"}, directly.
 }
 \section{Methods}{
-  \item{==}{add description here}
+  \item{==}{test equality}
 }
 
 \author{B. Ellis, N. LeMeur}

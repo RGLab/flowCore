@@ -36,7 +36,7 @@ setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
-	if(missing(drop)) drop = FALSE
+    if(missing(drop)) drop = FALSE
 	if(missing(i) && missing(j)) 
 		return(x)
 	if(!missing(j))
@@ -59,7 +59,7 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 			for(nm in copy) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
 		pd = phenoData(x)[i,]
 	}
-	fr = as(fr,"flowSet")
+    	fr = as(fr,"flowSet")
 	phenoData(fr) = pd
 	fr
 })

@@ -4,14 +4,14 @@
 \alias{colnames,transformList-method}
 
 \title{Class "transformList"}
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{Class "transformList"}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("transformList", ...)}.
 	 ~~ describe objects here ~~ 
 }
 \section{Slots}{
 	 \describe{
-    \item{\code{transforms}:}{Object of class \code{"list"} ~~ }
+    \item{\code{transforms}:}{Object of class \code{"list"}}
   }
 }
 \section{Methods}{

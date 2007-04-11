@@ -106,10 +106,11 @@
     \item{featureNames}{extract parameter description.}
     \item{each\_row, each\_col}{apply function over rows or columns of the
       data matrix.}
-    \item{names}{add description here}
-    \item{summary}{add description here}
-    \item{Subset}{add description here}
-    \item{==}{add description here}
+    \item{names}{names of the monitored channels}
+    \item{summary}{Return descriptive statistical summary (min, max,
+      mean and quantile)  for each channel}
+    \item{Subset}{Subset a flowFrame}
+    \item{==}{Test equality between \code{flowFrame}}
   }
 }
 
