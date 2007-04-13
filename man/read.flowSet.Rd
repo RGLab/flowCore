@@ -4,7 +4,7 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.flowSet(files=NULL, path=".",pattern=NULL,phenoData,descriptions,sep="\t",\dots)
+   read.flowSet(files=NULL, path=".",pattern=NULL,phenoData,descriptions,name.keyword,sep="\t",\dots)
 }
 
 \arguments{
@@ -15,6 +15,7 @@
   \item{phenoData}{An object of class \code{phenoData},
     \code{character} or a list of values to be extracted from the \code{\link[flowCore]{flowFrame}} object.}
    \item{descriptions}{Character vector to annotate the object of class \code{\link{flowSet-class}{flowSet}}.}
+  \item{name.keyword}{An optional character vector that specifies which FCS keyword to use as the sample names.}
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.phenoData]{read.phenoData}}.}
   \item{\dots}{Further arguments that get passed on to \code{\link[flowCore]{read.FCS}}, see details.}

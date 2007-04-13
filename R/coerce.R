@@ -59,24 +59,13 @@ setAs("environment","flowSet",function(from) {
     new("flowSet",frames=from,colnames = colNames[,1],phenoData=new("AnnotatedDataFrame",
         data=data.frame(name=I(frameList),row.names=frameList),
         varMetadata=data.frame(labelDescription="Name",row.names="name")))
-  },function(from,value) {
-    if(!canCoerce(value,"AnnotatedDataFrame"))
-      stop("Must be able to coerce 'value' to an AnnotatedDataFrame for use as metadata for this set")
-    from            = as(from,"flowSet")
-    phenoData(from) = as(value,"AnnotatedDataFrame")
-    from
   })
-                                        
 
 ## ==========================================================================
 ## Coerce method: Convert a list to a flowSet by creating an environment and converting THAT
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs("list","flowSet",function(from) {
-    env = new.env(hash=TRUE,parent=emptyenv())
-    multiassign(from,env=env)
-	as(env,"flowSet")
-    },function(from,value) {
-	env = new.env(hash=TRUE,parent=emptyenv())
-	multiassign(from,env=env)
-	as(env,"flowSet") <- value
+	if(is.null(names(from)))
+		names(from) = paste("V",seq(1,length(from)),sep="")
+	as(l2e(from,new.env(hash=T,parent=emptyenv())),"flowSet")
 })
