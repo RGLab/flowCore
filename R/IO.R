@@ -20,9 +20,10 @@ read.FCS <- function(filename, transformation="linearize", debug=FALSE,alter.nam
       transformation <- FALSE
       scale <- TRUE
   }
-  else if (is.logical(transformation) && !transformation) {
+  else if (is.null(transformation) || is.logical(transformation) && !transformation) {
+	  transformation <- FALSE 
       scale <- FALSE
-  }
+  } 
   offsets <- readFCSheader(con)
   txt     <- readFCStext(con, offsets, debug)
   mat     <- readFCSdata(con, offsets, txt, transformation, debug, scale, alter.names)
@@ -213,7 +214,7 @@ readFCSdata <- function(con, offsets, x, transformation, debug, scale, alter.nam
 ## is to facilitate the construction of flowSets from within the R environment (e.g.
 ## the flowFrames are actually retrieved from the network or a database.)
 ## ---------------------------------------------------------------------------
-read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,
+read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,name.keyword,
   sep="\t",...) {
 	#A frame of phenoData information
 	phenoFrame = NULL
@@ -230,7 +231,7 @@ read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,
 			warning("Supplied file names will be ignored, ",
                                 "using phenoData names instead.")
 		file.names = sampleNames(phenoFrame)
-		files      = dir(files,path,full.names=TRUE)
+		files      = dir(path,paste(gsub("\\.","\\\\\\.",file.names),collapse="|"),full.names=TRUE)
 		if(length(files) == 0) 
 			stop(paste("Files given by phenoData not found in",path))
 	}
@@ -245,16 +246,17 @@ read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,
 			stop("'files' must be a character vector.")
 		file.names = basename(files) ## strip path from names
 	}
-	#Isn't reading a flowSet easy?
-	flowSet = if(!is.null(phenoFrame))
-		(as(structure(lapply(files,read.FCS,...),
-                              names=file.names),"flowSet") <- phenoFrame)
+	flowSet = lapply(files,read.FCS,...)
+	#Allows us to specify a particular keyword to use as our sampleNames
+	#rather than requiring the filename be used. This is handy when something
+	#like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
+	#a lot more insane now.
+	if(!missing(name.keyword))
+		names(flowSet) = sapply(flowSet,keyword,name.keyword)
 	else
-		as(structure(lapply(files,read.FCS,...),names=file.names),"flowSet")
-		
-	## If we have data, add it. Otherwise try to use the phenoData list
-        ## to do something reasonable.
-	if(is.null(phenoFrame) && !missing(phenoData)) {
+		names(flowSet) = file.names
+	flowSet = as(flowSet,"flowSet")
+	if(!is.null(phenoFrame)) { phenoData(flowSet) = phenoFrame } else if(!missing(phenoData)) {
 		#Collect the names for each field in the data frame
 		field.names = names(phenoData)
 		if(is.null(field.names))
@@ -275,7 +277,6 @@ read.flowSet = function(files=NULL,path=".",pattern=NULL,phenoData,descriptions,
 			varMetadata=data.frame(labelDescriptions=I(descriptions),
                           row.names=field.names))
 	}
-
 	flowSet
 }
 

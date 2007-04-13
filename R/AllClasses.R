@@ -18,15 +18,7 @@ setClass("flowFrame",
              data=data.frame(name=I(character(0))),
              varMetadata=data.frame(labelDescription="Name in frame",
                row.names="name")),
-           description=list(note="empty")),
-         validity=function(object){
-             msg <- TRUE
-             if(!is.matrix(object@exprs))
-               msg <- "\nslot 'exprs' must be matrix"
-             if(!is.list(object@description))
-               msg <- "\nslot 'description' must be a list"
-         })
-
+           description=list(note="empty")))
 
 ## ===========================================================================
 ##  flowSet
@@ -51,9 +43,7 @@ setClass("flowSet",
              all.names=TRUE)))
            if(any(name.check)) {
              name.list <- paste(sampleNames(object)[name.check],sep=",")
-             warning(paste("These objects are not in the data environment:",
-                           name.list))
-             return(FALSE)
+             return(paste("These objects are not in the data environment:",name.list))
            }
            ##Ensure that all frames match our colnames
            if(!all(sapply(sampleNames(object),function(i) {

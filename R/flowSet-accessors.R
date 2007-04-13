@@ -70,6 +70,8 @@ setMethod("[[","flowSet",function(x,i,j,...) {
 	fr
 })
 
+setMethod("$",c("flowSet","character"),function(x,name) x[[name]])
+
 
 ## ==========================================================================
 ## apply method for flowSet
@@ -113,13 +115,25 @@ setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
 
 
 setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
+	if(is.null(names(subset)))
+		stop("Filter list must have names to do something reasonable")
+	nn = names(subset)
+	sn = sampleNames(x)
+	unused    = nn[!(nn %in% sn)]
+	notfilter = sn[!(sn %in% nn)]
+	#Do some sanity checks
+	if(length(unused) > 0)
+		warning(paste("Some filters were not used: ",paste(unused,sep=","),collapse=""))
+	if(length(notfilter) > 0)
+		warning(paste("Some frames were not filtered: ",paste(notfilter,sep=","),collapse=""))	
 	if(length(x) != length(subset))
 		stop("You must supply a list of the same length as the flowSet.")
+	used = nn[nn %in% sn]
 	res = as(structure(
 		if(missing(select))
-			lapply(1:length(subset),function(i) Subset(x[[i]],subset[[i]],...))
+			lapply(used,function(i) Subset(x[[i]],subset[[i]],...))
 		else
-			lapply(1:length(subset),function(i) Subset(x[[i]],subset[[i]],select,...)),
+			lapply(used,function(i) Subset(x[[i]],subset[[i]],select,...)),
 		names=sampleNames(x)),"flowSet")
 	phenoData(res) = phenoData(x)
 	res
@@ -130,9 +144,11 @@ setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
 	#Split always returns a list
+	sample.name = sampleNames(x)
 	fsApply(x,function(y) {
 		l = split(y,f,drop,population,prefix,...)
-		names(l) = paste(names(l),"in",sample.name)
+		names(l) = paste(names(l),"in",sample.name[1])
+		sample.name <<- sample.name[-1]
 		l
 	},simplify=FALSE)
 })
@@ -261,4 +277,18 @@ setMethod("transform",signature(`_data`="missing"),function(...) {
 setMethod("filter",signature=signature(x="flowSet",filter="filter"),
           function(x,filter) {
             fsApply(x,function(x) filter(x,filter))
+})
+
+setMethod("filter",signature(x="flowSet",filter="list"),function(x,filter) {
+	if(is.null(names(filter)))
+		stop("Filter list must have names to do something reasonable")
+	nn = names(filter)
+	sn = sampleNames(x)
+	unused    = nn[!(nn %in% sn)]
+	notfilter = sn[!(sn %in% nn)]
+	#Do some sanity checks
+	if(length(unused) > 0)
+		warning(paste("Some filters were not used: ",paste(unused,sep=","),collapse=""))
+	if(length(notfilter) > 0)
+		warning(paste("Some frames were not filtered: ",paste(notfilter,sep=","),collapse=""))
 })
