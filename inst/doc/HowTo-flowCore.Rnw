@@ -31,7 +31,7 @@
 
 
 
-\title{flowCore: data structures pacakge for flow cytometry data}
+\title{flowCore: data structures package for flow cytometry data}
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
@@ -48,7 +48,7 @@ We illustrate their use with X case studies.\\
 \noindent \textbf{keywords} Flow cytometry, high throughtput, software, standard
 \end{abstract}
 
-<<echo=false,results=hide>>=
+<<loadPackage, echo=false,results=hide>>=
 library(flowCore)
 @
 
@@ -100,40 +100,40 @@ FCS files are read into the R environment via the \Rfunction{read.FCS} function 
 
 There are also several immediate processing options available in this function, the most important of which is the \Rfunction{transformation} parameter, which can either ``linearize'' (the default) or ``standardize'' our data. To see how this works, first we will examine an FCS file without any transformation at all:
 
-<<echo=true,results=verbatim>>=
+<<ReadFiles, echo=true, results=verbatim>>=
 file.name <- system.file("extdata","0877408774.B08", package="flowCore")
-x = read.FCS(file.name,transformation=FALSE)
+x <- read.FCS(file.name, transformation=FALSE)
 summary(x)
 @
 
 As we can see, in this case the values from each parameter seem to run from $0$ to $1023$ ($2^{10}-1$). However, inspection of the ``exponentiation'' keyword (\$P<n>E) reveals that some of the parameters (3 and 4) have been stored in the format of the form $a\times{10^{x/R}}$ where $a$ is given by the first element of the string. 
 
-<<echo=true,results=verbatim>>=
-keyword(x,c("$P1E","$P2E","$P3E","$P4E"))
+<<SearchKeywords, echo=true,results=verbatim>>=
+keyword(x,c("$P1E", "$P2E", "$P3E", "$P4E"))
 @
 
 The default ``linearize'' transformation option will convert these to, effectively, have a ``\$P<n>E'' of ``0,0'':
 
-<<echo=true,results=verbatim>>=
+<<PrintSummary, echo=true, results=verbatim>>=
 summary(read.FCS(file.name))
 @
 
 Finally, the ``scale'' option will both linearize values as well as ensure that output values are contained in $[0,1]$, which is the proposed method of data storage for the ACS1.0/FCS4.0 specification:
 
-<<echo=true,results=verbatim>>=
+<<PrintSummary2, echo=true,results=verbatim>>=
 summary(read.FCS(file.name,transformation="scale"))
 @
 
 Another parameter of interest is the \Rfunction{alter.names} parameter, which will convert the parameter names into more ``R friendly'' equivalents, usually by replacing ``-'' with ``.'':
 
-<<echo=true,results=verbatim>>=
+<<ReadFiles2, echo=true,results=verbatim>>=
 read.FCS(file.name,alter.names=TRUE)
 @
 
 Finally, when only a particular subset of parameters is desired the \Rfunction{column.pattern} parameter allows for the specification of a regular expression and only parameters that match the regular expression will be included in the frame. For example, to include on the the Height parameters:
 
-<<echo=true,results=verbatim>>=
-x = read.FCS(file.name,column.pattern="-H")
+<<RedFiles3, echo=true, results=verbatim>>=
+x <- read.FCS(file.name,column.pattern="-H")
 x
 @
 
@@ -143,20 +143,20 @@ x
 
 Much of the more sophisticated visualization of \Rclass{flowFrame} and \Rclass{flowSet} objects, including an interface to the \Rpackage{lattice} graphics system is implemented by the \Rpackage{flowViz} package, also included as part of Bioconductor. However, \Rpackage{flowCore} does implement some basic plotting facilities using the standard \Rfunction{plot} function. The basic plot provides a simple bivariate density plot of the first two parameters:
 
-<<fig=true,echo=true>>=
+<<Plot1, fig=true, echo=true>>=
 plot(x)
 @
 
 To control the parameters being plotted we can supply a \Robject{y} value in the form of a character vector:
 
-<<fig=true,echo=true>>=
-plot(x,c("FL1-H","FL2-H"))
+<<Plot2, fig=true, echo=true>>=
+plot(x,c("FL1-H", "FL2-H"))
 @
 
 However, if we only supply a single parameter we instead get a univariate histogram, which also accepts the usual histogram arguments:
 
-<<fig=true,echo=true>>=
-plot(x,"FL1-H",breaks=256)
+<<plot3, fig=true, echo=true>>=
+plot(x, "FL1-H", breaks=256)
 @
 
 \subsection{The \Rclass{flowSet} Class}
@@ -167,16 +167,16 @@ Most experiments consist of several \Rclass{flowFrame} objects, which are organi
 
 To facilitate the creation of \Rclass{flowSet} objects from a variety of sources, we provide a means to coerce \Rclass{list} and \Rclass{environment} objects to a \Rclass{flowSet} object using the usual coercion mechanisms. For example, if we have a directory containing FCS files we can read in a list of those files and create a \Rclass{flowSet} out of them:
 
-<<echo=true,results=verbatim>>=
-frames = lapply(dir(system.file("extdata","compdata","data",package="flowCore"),full.names=TRUE),read.FCS)
-as(frames,"flowSet")
+<<Frames, echo=true, results=verbatim>>=
+frames <- lapply(dir(system.file("extdata", "compdata", "data", package="flowCore"), full.names=TRUE), read.FCS)
+as(frames, "flowSet")
 @
 
 Note that the original list is unnamed and that the resulting sample names are not particularly meaningful. If the list is named, the list constructed is much more meaningful. One such approach is to employ the \Rfunction{keyword} method for \Rclass{flowFrame} objects to extract the ``SAMPLE ID'' keyword from each frame:
 
-<<echo=true,results=verbatim>>=
-names(frames) = sapply(frames,keyword,"SAMPLE ID")
-fs = as(frames,"flowSet")
+<<Frames, echo=true,results=verbatim>>=
+names(frames) <- sapply(frames, keyword, "SAMPLE ID")
+fs <- as(frames, "flowSet")
 fs
 @
 
@@ -184,8 +184,8 @@ fs
 
 Like most Bioconductor organizational classes, the \Rclass{flowSet} has an associated \Rclass{AnnotatedDataFrame} that provides metadata not contained within the \Rclass{flowFrame} objects themselves. This data frame is accessed and modified via the usual \Rfunction{phenoData} and \Rfunction{phenoData<-} methods. You can also generally treat the phenotypic data as a normal data frame to add new descriptive columns. For example, we might want to track the original filename of the frames from above in the phenotypic data for easier access:
 
-<<echo=true,results=verbatim>>=
-phenoData(fs)$Filename = fsApply(fs,keyword,"$FIL")
+<<metaData, echo=true, results=verbatim>>=
+phenoData(fs)$Filename <- fsApply(fs,keyword, "$FIL")
 pData(phenoData(fs))
 @
 
@@ -195,8 +195,8 @@ Note that we have used the \Rclass{flowSet}-specific iterator, \Rfunction{fsAppl
 
 Much of the functionality described above has been packaged into the \Rfunction{read.flowSet} convenience function. In it's simplest incarnation, this function takes a \Rfunction{path}, that defaults to the current working directory, and an optional \Rfunction{pattern} argument that allows only a subset of files contained within the working directory to be selected. For example, to read a \Rclass{flowSet} of the files read in by \Robject{frame} above:
 
-<<echo=true,results=verbatim>>=
-read.flowSet(path=system.file("extdata","compdata","data",package="flowCore"))
+<<ReadFlowSet, echo=true,results=verbatim>>=
+read.flowSet(path = system.file("extdata", "compdata", "data", package="flowCore"))
 @
 
 \Rfunction{read.flowSet} will pass on additional arguments meant for the underlying \Rfunction{read.FCS} function, such as \Rfunction{alter.names} and \Rfunction{column.pattern}, but also supports several other interesting arguments for conducting initial processing:
@@ -208,8 +208,8 @@ read.flowSet(path=system.file("extdata","compdata","data",package="flowCore"))
 
 To recreate the \Rclass{flowSet} that we created by hand from the last section we can use \Rfunction{read.flowSet}s advanced functionality:
 
-<<echo=true,results=verbatim>>=
-fs = read.flowSet(path=system.file("extdata","compdata","data",package="flowCore"),name.keyword="SAMPLE ID",phenoData=list(name="SAMPLE ID",Filename="$FIL"))
+<<ReadFowSet2, echo=true,results=verbatim>>=
+fs <- read.flowSet(path=system.file("extdata", "compdata", "data", package="flowCore"), name.keyword="SAMPLE ID", phenoData=list(name="SAMPLE ID", Filename="$FIL"))
 fs
 pData(phenoData(fs))
 @
@@ -223,14 +223,14 @@ The primary iterator method for a \Rclass{flowSet} is the \Rfunction{fsApply} me
 
 As an aid to this sort of operation we also introduce the \Rfunction{each\_row} and \Rfunction{each\_col} convenience functions that take the place of \Rfunction{apply} in the \Rfunction{fsApply} call. For example, if we wanted the median value of each parameter of each \Rclass{flowFrame} we might write:
 
-<<echo=true,results=verbatim>>=
-fsApply(fs,each_col,median)
+<<fsApply1, echo=true, results=verbatim>>=
+fsApply(fs, each_col, median)
 @
 
 which is equivalent to the less readable
 
-<<echo=true,results=verbatim>>=
-fsApply(fs,function(x) apply(x,2,median),use.exprs=TRUE)
+<<fsApply2, echo=true,results=verbatim>>=
+fsApply(fs,function(x) apply(x, 2, median), use.exprs=TRUE)
 @
 
 In this case, the \Robject{use.exprs} argument is not required in the first case because \Rfunction{each\_col} and \Rfunction{each\_row} are methods and have been defined to work on \Rclass{flowFrame} objects by first extracting the intensity data.
@@ -239,15 +239,20 @@ In this case, the \Robject{use.exprs} argument is not required in the first case
 
 \Rpackage{flowCore} features two methods of transforming parameters within a \Rclass{flowFrame}: inline and out-of-line. The inline method, discussed in the next section has been developed primarily to support filtering features and is strictly more limited than the out-of-line transformation method, which uses R's \Rfunction{transform} function to accomplish the filtering. Like the normal \Rfunction{transform} function, the \Rclass{flowFrame}is considered to be a data frame with columns named for parameters of the FCS file. For example, if we wished to plot our first \Rclass{flowFrame}'s first two fluorescence parameters on the log scale we might write:
 
-<<fig=true,echo=true>>=
-plot(transform(fs[[1]],`FL1-H`=log(`FL1-H`),`FL2-H`=log(`FL2-H`)),c("FL1-H","FL2-H"))
+<<Transfo1, fig=true, echo=true>>=
+plot(transform(fs[[1]], `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`)), c("FL1-H","FL2-H"))
 @
 
 Like the usual \Rfunction{transform} function, we can also create new parameters based on the old parameters, without destroying the old
 
-<<fig=true,echo=true>>=
-plot(transform(fs[[1]],log.FL1.H=log(`FL1-H`),log.FL2.H=log(`FL2-H`)),c("log.FL1.H","log.FL2.H"))
+<<Transfo2, fig=true, prefix=FALSE, include=FALSE, echo=true>>=
+plot(transform(fs[[1]], log.FL1.H=log(`FL1-H`), log.FL2.H=log(`FL2-H`)), c("log.FL1.H", "log.FL2.H"))
 @
+
+\begin{figure}
+\centering
+\includegraphic{Transfo2}
+\end{figure}
 
 \subsection{Standard Transforms}
 
@@ -258,24 +263,24 @@ Though any function can be used as a transform in both the out-of-line and inlin
 a & x < a \\
 x & x \geq a \\
 \end{array}\right.$ }
-\item[scaleTransform]{$f(x) = \frac{x-a}{b-a}$}
-\item[linearTransform]{ $f(x) = a+bx$ }
-\item[quadraticTransform]{ $f(x) = ax^2 + bx + c$ }
+\item[scaleTransform]{$ f(x) = \frac{x-a}{b-a}$}
+\item[linearTransform]{ $ f(x) = a+bx$ }
+\item[quadraticTransform]{ $ f(x) = ax^2 + bx + c$ }
 \item[lnTransform]{$ f(x) = \log\left(x\right)\frac{r}{d} $}
 \item[logTransform]{$ f(x) = \log_b\left(x\right)\frac{r}{d} $}
-\item[biexponentialTransform]{ $f^{-1}(x) = ae^{bx}-ce^{dx}+f$}
+\item[biexponentialTransform]{ $ f^{-1}(x) = ae^{bx}-ce^{dx}+f$}
 \item[logicleTransform]{ A special form of the biexponential transform with parameters selected by the data.}
-\item[arcsinhTransform]{ $f(x) = \asinh\left(a+bx\right)+c$}
+\item[arcsinhTransform]{ $ f(x) = asinh\left(a+bx\right)+c$}
 \end{description}
 
 To use a standard transform, first we create a transform function via the constructors supplied by \Rpackage{flowCore}:
 
-<<echo=true,results=verbatim>>=
-aTrans = truncateTransform("truncate at 1",a=1)
+<<Transfo3, echo=true>>=
+aTrans <- truncateTransform("truncate at 1", a=1)
 aTrans
 @
 which we can then use on the parameter of interest in the usual way
-<<echo=true,results=verbatim>>=
+<<Transfo4, echo=true,results=verbatim>>=
 transform(fs,`FL1-H`=aTrans(`FL1-H`))
 @
 
@@ -297,8 +302,8 @@ The simplest of these filters are the geometric filters, which correspond to tho
 
 These gates are all described in more or less the same manner:
 
-<<echo=true,results=verbatim>>=
-rectGate = rectangleGate(filterId="Fluorescence Region","FL1-H"=c(50,100),"FL2-H"=c(50,100))
+<<rectGate, echo=true, results=verbatim>>=
+rectGate <- rectangleGate(filterId="Fluorescence Region", "FL1-H"=c(50, 100), "FL2-H"=c(50, 100))
 @
 
 We also include some data-driven filters not usually found in flow cytometry software:
@@ -319,7 +324,7 @@ result
 
 As we can see, we have returned a \Rclass{filterResult} object, which is in turn a filter allowing for reuse in, for example, subsetting operations. To obtain count and proportion statistics, we take the summary of this \Rclass{filterResult}, which returns a list of summary values:
 
-<<echo=true,results=verbatim>>=
+<<Summary3, echo=true, results=verbatim>>=
 summary(result)
 summary(result)$n
 summary(result)$true
@@ -328,8 +333,8 @@ summary(result)$p
 
 A filter which contains multiple populations, such as the \Rclass{kmeansFilter}, can return a list of summary lists:
 
-<<echo=true,results=verbatim>>=
-summary(filter(fs[[1]],kmeansFilter("myKMeans","FSC-H"=c("Low","Medium","High"))))
+<<SummarFilter, echo=true, results=verbatim>>=
+summary(filter(fs[[1]], kmeansFilter("myKMeans","FSC-H"=c("Low", "Medium", "High"))))
 @
 
 A filter may also be applied to an entire \Rclass{flowSet}, in which case it returns a list of \Rclass{filterResult} objects:
@@ -342,30 +347,30 @@ filter(fs,rectGate)
 
 To subset or split a \Rclass{flowFrame} or \Rclass{flowSet}, we use the \Rfunction{Subset} and \Rfunction{split} methods respectively. The first, \Rfunction{Subset}, behaves similarly to the standard R \Rfunction{subset} function, which unfortunately could not used. For example, recall from our initial plots of this data that the morphology parameters, Forward Scatter and Side Scatter contain a large more-or-less ellipse shaped population. If we wished to deal only with that population, we might use \Rfunction{Subset} along with a \Rclass{norm2Filter} object as follows:
 
-<<echo=true,results=verbatim>>=
-morphGate = norm2Filter(filterId="MorphologyGate","FSC-H","SSC-H",scale=2)
-smaller = Subset(fs,morphGate)
+<<Norm2Filter, echo=true, results=verbatim>>=
+morphGate <- norm2Filter(filterId="MorphologyGate", "FSC-H", "SSC-H", scale=2)
+smaller <- Subset(fs, morphGate)
 fs[[1]]
 smaller[[1]]
 @
  
 Notice how the \Robject{smaller} \Rclass{flowFrame} objects contain fewer events. Now imagine we wanted to use a \Rclass{kmeansFilter} as before to split our first fluorescence parameter into three populations. To do this we employ the \Rfunction{split} function:
 
-<<echo=true,results=verbatim>>=
-split(smaller[[1]],kmeansFilter("myKMeans","FSC-H"=c("Low","Medium","High")))
+<<Split, echo=true, results=verbatim>>=
+split(smaller[[1]], kmeansFilter("myKMeans","FSC-H"=c("Low","Medium","High")))
 @
 
 or for an entire \Rclass{flowSet}
 
-<<echo=true,results=verbatim>>=
-split(smaller,kmeansFilter("myKMeans","FSC-H"=c("Low","Medium","High")))
+<<Split2, echo=true, results=verbatim>>=
+split(smaller, kmeansFilter("myKMeans", "FSC-H"=c("Low", "Medium", "High")))
 @
 
 \subsection{Combining Filters}
 
-Of course, most filtering operations consist of more than one gate. To combine gates and filters we use the standard R Boolean operators: \&, \| and ! to construct an intersection, union and complement respectively:
+Of course, most filtering operations consist of more than one gate. To combine gates and filters we use the standard R Boolean operators: \&, | and ! to construct an intersection, union and complement respectively:
 
-<<echo=true,results=verbatim>>=
+<<CombineFilter, echo=true, results=verbatim>>=
 
 rectGate & morphGate
 rectGate | morphGate
@@ -375,7 +380,7 @@ rectGate | morphGate
 
 we also introduce the notion of the subset operation, denoted by either \%subset\% or \%\&\%. This combination of two gates first performs a subsetting operation on the input \Rclass{flowFrame} using the right-hand filter and then applies the left-hand filter. For example,
 
-<<echo=true,results=verbatim>>=
+<<Summary5, echo=true, results=verbatim>>=
 summary(filter(smaller[[1]],rectGate %&% morphGate))
 @
 
@@ -385,22 +390,22 @@ first calculates a subset based on the \Robject{morphGate} filter and then appli
 
 Finally, it is sometimes desirable to construct a filter with respect to transformed parameters. To allow for this in our filtering constructs we introduce a special form of the \Rfunction{transform} method along with another filter combination operator \%on\%, which can be applied to both filters and \Rclass{flowFrame} or \Rclass{flowSet} objects. To specify our transform filter we must first construct a transform list using a simplified version of the \Rfunction{transform} function:
 
-<<echo=true,results=verbatim>>=
-tFilter = transform("FL1-H"=log,"FL2-H"=log)
+<<Transfo5, echo=true,results=verbatim>>=
+tFilter <- transform("FL1-H"=log,"FL2-H"=log)
 tFilter
 @
 
 Note that this version of the transform filter does not take parameters on the right-hand side--the functions can only take a single vector that is specified by the parameter on the left-hand side. In this case those parameters are ``FL1-H'' and ``FL2-H.'' The function also does not take a specific \Rclass{flowFrame} or \Rclass{flowSet} allowing us to use this with any appropriate data. We can then construct a filter with respect to the transform as follows:
 
-<<echo=true,results=verbatim>>=
-rect2 = rectangleGate(filterId="Another Rect","FL1-H"=c(1,2),"FL2-H"=c(2,3)) %on% tFilter
+<<TectGate3, echo=true, results=verbatim>>=
+rect2 <- rectangleGate(filterId="Another Rect", "FL1-H"=c(1,2), "FL2-H"=c(2,3)) %on% tFilter
 rect2
 @
 
 
 Additionally, we can use this construct directly on a \Rclass{flowFrame} or \Rclass{flowSet} by moving the transform to the left-hand side and placing the data on the right-hand side:
 
-<<fig=true,echo=true>>=
+<<Plot6, fig=true,echo=true>>=
 plot(tFilter %on% smaller[[1]],c("FL1-H","FL2-H"))
 @
 
