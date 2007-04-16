@@ -5,7 +5,7 @@
 \alias{filter,flowFrame,polygonGate}
 \alias{filter,flowFrame,norm2Filter}
 \alias{filter,flowSet,filter-method}
-\alias{filter,flowSet,list}
+\alias{filter,flowSet,list-method}
 \alias{|,filter,filter-method}
 \alias{!,filter-method}
 \alias{&,filter,filter-method}
