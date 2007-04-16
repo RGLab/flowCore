@@ -245,14 +245,11 @@ plot(transform(fs[[1]], `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`)), c("FL1-H","
 
 Like the usual \Rfunction{transform} function, we can also create new parameters based on the old parameters, without destroying the old
 
-<<Transfo2, fig=true, prefix=FALSE, include=FALSE, echo=true>>=
+<<Transfo2, fig=true, prefix=FALSE>>=
 plot(transform(fs[[1]], log.FL1.H=log(`FL1-H`), log.FL2.H=log(`FL2-H`)), c("log.FL1.H", "log.FL2.H"))
 @
 
-\begin{figure}
-\centering
-\includegraphic{Transfo2}
-\end{figure}
+
 
 \subsection{Standard Transforms}
 
