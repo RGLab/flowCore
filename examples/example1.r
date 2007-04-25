@@ -6,7 +6,7 @@ library(graph)
 library(prada)
 
 ## FOR DEVELOPMENT PURPOSES ONLY
-#library(flowcore)
+library(flowcore)
 source("R/AllClasses.R")
 source("R/AllGeneric.R")
 source("R/compensation-methods.R")
