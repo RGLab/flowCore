@@ -121,13 +121,8 @@ setClass("polygonGate",
          })
 
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
-    if(missing(boundaries)){
-      boundaries <- matrix(ncol=2, nrow=3)
-      colnames(boundaries) <- rep(NA,2)
-    }
-    if(!is.matrix(boundaries))
-        boundaries <- sapply(if(missing(boundaries)) list(...) else boundaries,
-                           function(x) x)
+	if(missing(boundaries) || !is.matrix(boundaries)) 
+		boundaries = as.matrix(if(missing(boundaries)) do.call("cbind",list(...)) else boundaries)
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
         boundaries=boundaries)
 }
