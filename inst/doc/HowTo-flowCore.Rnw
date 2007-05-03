@@ -96,7 +96,7 @@ Most vendor software also include some sort of unique identifier for the file it
 
 \subsubsection{Reading a \Robject{flowFrame}}
 
-FCS files are read into the R environment via the \Rfunction{read.FCS} function using the standard connection interface---allowing for the possibility of accessing FCS files hosted on a remote resource as well as those that have been compressed or even retrieved as a blob from a database interface. 
+FCS files are read into the R environment via the \Rfunction{read.FCS} function using the standard connection interface---allowing for the possibility of accessing FCS files hosted on a remote resource as well as those that have been compressed or even retrieved as a blob from a database interface. FCS files (version 2.0 and 3.0) and LMD (List Mode Data) extensions are currently supported.
 
 There are also several immediate processing options available in this function, the most important of which is the \Rfunction{transformation} parameter, which can either ``linearize'' (the default) or ``standardize'' our data. To see how this works, first we will examine an FCS file without any transformation at all:
 
@@ -297,7 +297,7 @@ The simplest of these filters are the geometric filters, which correspond to tho
 \item[ellipsoidGate]{Describes an ellipsoidal region in two or more dimensions}
 \end{description}
 
-These gates are all described in more or less the same manner:
+These gates are all described in more or less the same manner (see man pages for more details):
 
 <<rectGate, echo=true, results=verbatim>>=
 rectGate <- rectangleGate(filterId="Fluorescence Region", "FL1-H"=c(50, 100), "FL2-H"=c(50, 100))
