@@ -86,7 +86,7 @@ readFCSheader <- function(con) {
   if(!version %in% c("FCS2.0", "FCS3.0"))
     stop("This does not seem to be a valid FCS2.0 or FCS3.0 file")
 
-  version <-  substring(version,4,nchar(version))
+  version <-  substring(version, 4, nchar(version))
   tmp <- readChar(con, 4)
   stopifnot(tmp=="    ")
 
@@ -94,10 +94,11 @@ readFCSheader <- function(con) {
   for(i in 1:length(coffs))
     coffs[i] <- readChar(con=con, nchars=8)
  
-  ioffs <- c(as.double(version),as.integer(coffs))
+  ioffs <- c(as.double(version), as.integer(coffs))
   names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart", "dataend", "anastart", "anaend")
   ##stopifnot(all(!is.na(ioffs) | ioffs==""), !any(ioffs[1:5]==0))
-  stopifnot(all(!is.na(ioffs) | ioffs==""))
+  if(all(is.na(ioffs[2:5]) | ioffs[2:5]==""))
+    stop("Missing header information to start parsing the binary section of the file")
   return(ioffs)
 }
 
@@ -113,8 +114,8 @@ readFCStext <- function(con, offsets, debug) {
   sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
   ## if(length(sp)%%2!=0)
   ##  stop("In readFCStext: unexpected format of the text segment")
-  rv <- c(offsets["FCSversion"],sp[seq(2, length(sp), by=2)])
-  names(rv) <- c("FCSversion",sp[seq(1, length(sp)-1, by=2)])
+  rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
+  names(rv) <- c("FCSversion", sp[seq(1, length(sp)-1, by=2)])
   return(rv)
 }
 

@@ -22,10 +22,11 @@
 
 \details{
 The function \code{read.FCS} works with the output of the FACS machine
-software from a number of vendors. However, the FCS 3.0 standard
-includes some options that are not yet implemented in this function. If
-you need extensions, please let me know. The output of the function is
-an object of class \code{flowFrame}.
+software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data
+LMD). However, the FCS 3.0 standard includes some options that
+are not yet implemented in this function. If you need extensions,
+please let me know. The output of the function is an object of class
+\code{flowFrame}.
 
 
 For specifications of FCS 3.0 see
