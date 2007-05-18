@@ -18,7 +18,7 @@ exportClasses("flowFrame", "flowSet",
  			  "norm2Filter", "kmeansFilter", "transform","transformMap","transformList","transformFilter")
 
 exportMethods("initialize","description","phenoData","phenoData<-",
-              "featureNames","names","colnames","keyword",
+              "featureNames","names","colnames", "colnames<-", "keyword",
               "%in%","%subset%","%&%","%on%","summary","identifier",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
               "transform","split","Subset","filter","filterDetails",
@@ -30,7 +30,7 @@ S3method("$", "flowFrame")
 
 export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
-export("read.FCS","read.flowSet",
+export("read.FCS","read.flowSet", "read.FCSheader",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
        "arcsinhTransform", "biexponentialTransform","logicleTransform","truncateTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoidGate",

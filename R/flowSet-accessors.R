@@ -20,6 +20,7 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
           x@colnames)
+
 setReplaceMethod("colnames","flowSet",function(x,value) {
 	x@colnames = value
 	x
