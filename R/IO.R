@@ -6,23 +6,25 @@
 ## ==========================================================================
 ## Reading FCS file header and TEXT section only
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-read.FCSheader <- function(files, path=".", keyword=NULL)
-{
-  stopifnot(is.character(files), length(files)>=1, files!="")
+read.FCSheader <- function(files,
+                           path=".",
+                           keyword=NULL){
 
-  filenames <- files
-  
-  if(path != ".")
-    files = file.path(path, files)
-   
-  res <- lapply(files, header)
-
-  if (!is.null(keyword))
-    res <- lapply(res, function(x) x[keyword])
-
-  names(res) <- filenames
-  res
- 
+    stopifnot(is.character(files), length(files)>=1, files!="")
+    
+    filenames <- files
+    
+    if(path != ".")
+      files = file.path(path, files)
+    
+    res <- lapply(files, header)
+    
+    if (!is.null(keyword))
+      res <- lapply(res, function(x) x[keyword])
+    
+    names(res) <- filenames
+    res
+    
 }
 
 
@@ -39,7 +41,8 @@ header <- function(files){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 read.FCS <- function(filename,
                      transformation="linearize",
-                     nlines= NULL,
+                     nlines=NULL,
+                     which.lines=NULL,
                      sampling=FALSE,
                      debug=FALSE,
                      alter.names=FALSE,
@@ -47,6 +50,7 @@ read.FCS <- function(filename,
     
     stopifnot(is.character(filename), length(filename)==1, filename!="")
     con <- file(filename, open="rb")
+
     if(is.logical(transformation) && transformation || !is.null(transformation) && transformation == "linearize") {
         transformation <- TRUE
         scale <- FALSE
@@ -58,9 +62,10 @@ read.FCS <- function(filename,
         transformation <- FALSE 
         scale <- FALSE
     } 
+
     offsets <- readFCSheader(con)
     txt     <- readFCStext(con, offsets, debug)
-    mat     <- readFCSdata(con, offsets, txt, transformation, nlines, sampling, debug, scale, alter.names)
+    mat     <- readFCSdata(con, offsets, txt, transformation, nlines, which.lines, sampling, debug, scale, alter.names)
     params  <- makeFCSparameters(colnames(mat),txt)
     close(con)
     
@@ -72,7 +77,7 @@ read.FCS <- function(filename,
         params <- params[i,]
     }
     
-    if(is.null(nlines)){
+    if(is.null(nlines) && is.null(which.lines)){
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
           stop(paste("file", filename, "seems to corrupted."))
     }
@@ -85,6 +90,7 @@ read.FCS <- function(filename,
     
     description <- strsplit(txt,split=" ")
     names(description) <- names(txt)
+
     return(new("flowFrame", exprs=mat, description= description, parameters=params))
 }
 
@@ -93,13 +99,14 @@ read.FCS <- function(filename,
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 makeFCSparameters <- function(cn,txt) {
-	npar = length(cn)
-	id   = paste("$P",1:npar,sep="")
-	new("AnnotatedDataFrame",
-		data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),
-                  range=as.numeric(txt[paste(id,"R",sep="")])),
-		varMetadata=data.frame(row.names=I(c("name","desc","range")),
-                  labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
+
+    npar = length(cn)
+    id   = paste("$P",1:npar,sep="")
+    new("AnnotatedDataFrame",
+        data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),
+          range=as.numeric(txt[paste(id,"R",sep="")])),
+        varMetadata=data.frame(row.names=I(c("name","desc","range")),
+          labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
 }
 
 
@@ -107,11 +114,12 @@ makeFCSparameters <- function(cn,txt) {
 ## match FCS parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSgetPar <- function(x, pnam) {
-  stopifnot(is.character(x), is.character(pnam)) 
-  i <- match(pnam, names(x))
-  if(any(is.na(i)))
-    stop(paste("Parameter(s)", pnam, "not contained in 'x'"))
-  return(x[i])
+
+    stopifnot(is.character(x), is.character(pnam)) 
+    i <- match(pnam, names(x))
+    if(any(is.na(i)))
+      stop(paste("Parameter(s)", pnam, "not contained in 'x'"))
+    return(x[i])
 }
 
 
@@ -146,22 +154,23 @@ readFCSheader <- function(con) {
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCStext <- function(con, offsets, debug) {
-  seek(con, offsets["textstart"])
-  txt <- readChar(con, offsets["textend"]-offsets["textstart"]+1)
-  txt <- iconv(txt, "", "latin1", sub="byte")
-  delimiter <- substr(txt, 1, 1)
-  sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
-  
-  rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
-  names(rv) <- c("FCSversion", sp[seq(1, length(sp)-1, by=2)])
-  return(rv)
+
+    seek(con, offsets["textstart"])
+    txt <- readChar(con, offsets["textend"]-offsets["textstart"]+1)
+    txt <- iconv(txt, "", "latin1", sub="byte")
+    delimiter <- substr(txt, 1, 1)
+    sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
+    
+    rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
+    names(rv) <- c("FCSversion", sp[seq(1, length(sp)-1, by=2)])
+    return(rv)
 }
 
 
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSdata <- function(con, offsets, x, transformation, nlines, sampling, debug, scale, alter.names) {
+readFCSdata <- function(con, offsets, x, transformation, nlines, which.lines, sampling, debug, scale, alter.names) {
 
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
@@ -184,6 +193,7 @@ readFCSdata <- function(con, offsets, x, transformation, nlines, sampling, debug
     range    <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
+
     if(length(bitwidth)!=1)
       stop("Sorry, I am expecting the bitwidth to be the same for all parameters")
     
@@ -211,57 +221,61 @@ readFCSdata <- function(con, offsets, x, transformation, nlines, sampling, debug
     
     size <- bitwidth/8
     if (!size %in% c(1, 2, 4, 8))
-       stop(paste("Don't know how to deal with bitwidth", bitwidth))
-
+      stop(paste("Don't know how to deal with bitwidth", bitwidth))
+    
     ##Read all reports
-    if(is.null(nlines)){
-        dat <- c()
+    if(is.null(nlines) && is.null(which.lines)){
+        print("ok1")
         seek(con, offsets["datastart"])
         dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
                    size=size, signed=FALSE, endian=endian)
+    } 
+    ## Warnings on the combination of the parameters 
+    if((!is.null(nlines) && !is.null(which.lines)) && (nlines != length(which.lines))){
+        warning("The 'nlines' and 'which.lines' arguments din't have the same length. Only the 'nlines' argument is be used.")
+        which.lines <- NULL
     }
-    ##Read n lines with or without sampling 
-    if(length(nlines) == 1){
-        if(sampling == FALSE){
-            dat <- c()
-            offsets["dataend"] <-  offsets["datastart"] + nrpar * size * nlines
-            seek(con, offsets["datastart"])
-            dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
-                           size=size, signed=FALSE, endian=endian)
-        }
-        if(sampling == TRUE){
-             dat <- c()
-             idx <- sort(sample(1: nrowTotal, size=nlines))        
-             for (i in 1:length(idx)){
-                 startP <- offsets["datastart"] + (idx[i]-1) * nrpar * size
-                 endP   <-  startP + nrpar * size
-                 seek(con, startP)
-                 temp <- readBin(con, dattype, n = (endP - startP+1)/size,
-                   size=size, signed=FALSE, endian=endian) 
-                 dat <- c(dat, temp)                 
-             }
-         }
+
+    if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && sampling){
+        warning("The combination 'nlines', 'which.lines' and 'sampling' is inconsistent. Only the 'nlines' and 'sampling' arguments is be used.")
+        which.lines <- NULL
     }
-    ##Read a vector of lines without sampling
-    if(length(nlines) > 1){
-        if(sampling == FALSE){
-            dat <- c()
-            for (i in 1:length(nlines)){
-                startP <- offsets["datastart"] + (nlines[i]-1) * nrpar * size
-                endP   <- startP + nrpar * size
-                seek(con, startP)
-                temp <- readBin(con, dattype, n = (endP - startP + 1)/size,
-                                size=size, signed=FALSE, endian=endian)
-                dat <- c(dat, temp)
-            }
-        }
-        else{ stop("Error")}
-    }
+
+    if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && !sampling)
+        warning("Both 'nlines' and 'which.lines' arguments are specified. Since they have the same length and sampling=FALSE, only the 'which.lines' argument will be used.")
         
+    if(is.null(nlines) && sampling)
+      stop ("Sampling the record is not meaningful when reading all the records or specifying the one to be read.")
+
+    ##Read n lines with or without sampling 
+    if(!is.null(nlines) && sampling)
+      which.lines <- sort(sample(1: nrowTotal, size=nlines))       
+    
+    if(!is.null(which.lines)){
+        dat <- c()
+        for (i in 1:length(which.lines)){
+            startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
+            endP   <-  startP + nrpar * size
+            seek(con, startP)
+            temp <- readBin(con, dattype, n = (endP - startP+1)/size,
+                            size=size, signed=FALSE, endian=endian) 
+            dat <- c(dat, temp)                 
+        }
+    }
+    if(is.null(which.lines) && !is.null(nlines) && !sampling) { 
+        print("ok3")
+        offsets["dataend"] <-  offsets["datastart"] + nrpar * size * nlines
+        seek(con, offsets["datastart"])
+        dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+                       size=size, signed=FALSE, endian=endian)
+    }
+    
     stopifnot(length(dat)%%nrpar==0)
+
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
-    colnames(dat) <- if(alter.names) structure(make.names(cn),names=names(cn)) else cn
+    colnames(dat) <- if(alter.names)  structure(make.names(cn), names=names(cn))else cn
+   
     
     if(transformation) {
         ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
