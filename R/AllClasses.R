@@ -380,10 +380,12 @@ linearTransform <- function(transformationId,a=1,b=0){
       stop("a must be numeric")
     if(!is.double(b))
        stop("b must be numeric")
-    new("transform",.Data=function(x){    
+    t= new("transform", .Data=function(x){    
         x <- a*x+b
     })
-}
+    t@transformationId = transformationId
+    t
+  }
 
 ## Quadratic transformation function
 quadraticTransform <- function(transformationId,a=1,b=1,c=0){
@@ -393,9 +395,11 @@ quadraticTransform <- function(transformationId,a=1,b=1,c=0){
        stop("b must be numeric")
   if(!is.double(c))
        stop("c must be numeric")
-    new("transform",.Data=function(x){
+    t = new("transform",.Data=function(x){
         x <- a*x^2 + b*x + c
-    })
+      })
+  t@transformationId = transformationId
+  t
 }
 
 ## Natural logarithm transformation function
@@ -404,24 +408,29 @@ lnTransform <- function(transformationId,r=1,d=1){
        stop("r must be numeric and positive")
     if(!is.double(d) || d <=0)
        stop("d must be numeric")
-    new("transform",.Data=function(x){
-     x<-log(x)*(r/d)
- 	})
+    t= new("transform",.Data=function(x){
+      x<-log(x)*(r/d)
+    })
+    t@transformationId = transformationId
+    t
 }
 
 ## Logarithm transformation function
 logTransform <- function(transformationId,logbase=10,r=1,d=1){
-     if(!is.double(r) || r <= 0)
-       stop("r must be numeric and positive")
-    if(!is.double(d) || d <=0)
-       stop("d must be numeric")
-      if(!is.double(r) || r <=0)
-       stop("r must be numeric and positive")
-    if(!is.double(logbase) || logbase <= 1)
-       stop("logabse must be a pnumeric greater than 1")
-    new("transform",.Data=function(x){
-        x <- log(x,logbase)*(r/d)
-    })
+
+  if(!is.double(r) || r <= 0)
+    stop("r must be numeric and positive")
+  if(!is.double(d) || d <=0)
+    stop("d must be numeric")
+  if(!is.double(r) || r <=0)
+    stop("r must be numeric and positive")
+  if(!is.double(logbase) || logbase <= 1)
+    stop("logabse must be a pnumeric greater than 1")
+  t = new("transform",.Data=function(x){
+    x <- log(x,logbase)*(r/d)
+  })
+  t@transformationId = transformationId
+  t
 }
 
 
@@ -429,39 +438,48 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
 biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
            tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
     
-    new("transform",.Data=function(x){
-        x <- .Call(biexponential_transform,x,a,b,c,d,f,w,tol,maxit)
+    t = new("transform",.Data=function(x){
+        x <- .Call(biexponential_transform, x, a, b, c, d, f, w, tol, maxit)
     })
+    t@transformationId = transformationId
+    t
 }
 
 ## Logicle transformation function
 logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
-    if(w>d) stop("Negative range decades must be smaller than total number of decades")
+  if(w>d) stop("Negative range decades must be smaller than total number of decades")
     w = w*log(10)
     d = d*log(10)
     if(w==0) p = 1 else p = uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
-    print(p)
-    new("transform",.Data=biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
-}
+    t= new("transform",.Data=biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
+    t@transformationId = transformationId
+    t
+  }
 
 ## Truncation Transformation
 truncateTransform <- function(transformationId,a=1){
-    new("transform",.Data=function(x){
-        x[x<a] <- a
+  t= new("transform",.Data=function(x){
+      x[x<a] <- a
         x
-    })
+      })
+    t@transformationId = transformationId
+    t
 }
 
 ## Scale Transformation
 scaleTransform <- function(transformationId,a=1,b=10^4){
-    new("transform",.Data=function(x){
+    t = new("transform",.Data=function(x){
      	x=(x-a)/(b-a)
     })
+    t@transformationId = transformationId
+    t
 }
 
 ## Hyperbolic Arcsin Transformation
 arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
-	new("transform",.Data=function(x) asinh(a+b*x)+c)
+  t = new("transform",.Data=function(x) asinh(a+b*x)+c)
+  t@transformationId = transformationId
+  t
 }
 
 
