@@ -42,7 +42,7 @@ setGeneric("identifier",function(object) standardGeneric("identifier"))
 ## ===========================================================================
 ## Generic for transformation
 ## ---------------------------------------------------------------------------
-  setGeneric("transform")
+setGeneric("transform")
 
 
 ## ===========================================================================

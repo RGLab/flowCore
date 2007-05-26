@@ -225,28 +225,27 @@ readFCSdata <- function(con, offsets, x, transformation, nlines, which.lines, sa
     
     ##Read all reports
     if(is.null(nlines) && is.null(which.lines)){
-        print("ok1")
-        seek(con, offsets["datastart"])
-        dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
-                   size=size, signed=FALSE, endian=endian)
+      seek(con, offsets["datastart"])
+      dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+                     size=size, signed=FALSE, endian=endian)
     } 
     ## Warnings on the combination of the parameters 
     if((!is.null(nlines) && !is.null(which.lines)) && (nlines != length(which.lines))){
         warning("The 'nlines' and 'which.lines' arguments din't have the same length. Only the 'nlines' argument is be used.")
         which.lines <- NULL
-    }
-
+      }
+    
     if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && sampling){
-        warning("The combination 'nlines', 'which.lines' and 'sampling' is inconsistent. Only the 'nlines' and 'sampling' arguments is be used.")
-        which.lines <- NULL
+      warning("The combination 'nlines', 'which.lines' and 'sampling' is inconsistent. Only the 'nlines' and 'sampling' arguments is be used.")
+      which.lines <- NULL
     }
-
+    
     if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && !sampling)
-        warning("Both 'nlines' and 'which.lines' arguments are specified. Since they have the same length and sampling=FALSE, only the 'which.lines' argument will be used.")
-        
+      warning("Both 'nlines' and 'which.lines' arguments are specified. Since they have the same length and sampling=FALSE, only the 'which.lines' argument will be used.")
+    
     if(is.null(nlines) && sampling)
       stop ("Sampling the record is not meaningful when reading all the records or specifying the one to be read.")
-
+    
     ##Read n lines with or without sampling 
     if(!is.null(nlines) && sampling)
       which.lines <- sort(sample(1: nrowTotal, size=nlines))       
