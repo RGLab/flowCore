@@ -14,10 +14,10 @@ Objects can be created by calls of the form \code{new("multiFilter", ...)}.
       the collection of filters.}
     \item{\code{filters}:}{Object of class \code{"list"}. Each element
       of the list corresponds to a filter}
-    \item{\code{filterId}:}{A character vector that identifies this
-  \code{filter}. This is typically user specified but can be
-  automatically deduced by certain filter operations, particularly
-  boolean and set operations.}
+    \item{\code{filterId}:}{Object of class \code{"character"}
+      referencing the filter applied}
+    \item{\code{parentId}:}{Object of class \code{"character"}
+      referencing the filter previously applied}
     \item{\code{parameters}:}{A character vector that identifies the name of
   the parameters that this filter operates upon.}
   }

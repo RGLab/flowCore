@@ -32,7 +32,7 @@ export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
 export("read.FCS","read.flowSet", "read.FCSheader",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
-       "arcsinhTransform", "biexponentialTransform","logicleTransform","truncateTransform",
+       "arcsinhTransform", "splitScaleTransform","biexponentialTransform","logicleTransform","truncateTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoidGate",
        "norm2Filter","kmeansFilter","print.filterSummary")
        

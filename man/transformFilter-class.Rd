@@ -18,6 +18,8 @@ left hand side and a \code{\link[flowCore]{transformList}} on the right hand sid
     \item{\code{transforms}:}{A list of transforms to perform on the target \code{\link[flowCore]{flowFrame}}}
     \item{\code{filter}:}{The filter to be applied to the transformed frame}
     \item{\code{filterId}:}{The name of the filter (chosen automatically)}
+    \item{\code{parentId}:}{Object of class \code{"character"}
+      referencing the filter previously applied}
     \item{\code{parameters}:}{The parameters affected by this filter.}
   }
 }

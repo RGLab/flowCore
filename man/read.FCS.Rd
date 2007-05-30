@@ -3,8 +3,8 @@
 \title{Read an FCS file}
 \description{Read Data File Standard for Flow Cytometry}
 \usage{
-   read.FCS(filename, transformation = "linearize", nlines = NULL, which.lines=NULL,
-                     sampling = FALSE, debug = FALSE, alter.names = FALSE, column.pattern = NULL)
+   read.FCS(filename, transformation = "linearize", which.lines=NULL,
+                      debug = FALSE, alter.names = FALSE, column.pattern = NULL)
 }
 
 \arguments{
@@ -16,14 +16,8 @@
     as in the FCS4 specification. A logical can also be used: \code{TRUE} is
     equal to \code{linearize} and \code{FALSE} correponds to no
     transformation.}
-  \item{nlines}{Integer or numeric vector to specify the number of
+  \item{which.lines}{Numeric vector to specify the indices of the
     lines to be read. If NULL all the records are read.}
-   \item{which.lines}{Numeric vector to specify the indices of the
-    lines to be read. If NULL all the records are read.}
-  \item{sampling}{Logical that indicates if the number of lines
-    specified with the \code{nlines} argument have to be
-    sampled. \code{sampling} should be FALSE if \code{nlines} is a
-    numeric vector longer that 1.}
   \item{debug}{boolean indicating whether or not to print the
     debugging statements, default is TRUE}
   \item{alter.names}{boolean indicating whether or not we should rename
@@ -72,12 +66,14 @@ description(samp)[3:6]
 class(samp)
 
 subset <- read.FCS(system.file("extdata",
-   "0877408774.B08", package="flowCore"), nlines=10, sampling=FALSE, transformation="linearize")
+   "0877408774.B08", package="flowCore"), which.lines=c(2:5), transformation="linearize")
 subset@exprs
 
+theLines <- sample(1:800, 10)
 subset2 <- read.FCS(system.file("extdata",
-   "0877408774.B08", package="flowCore"), nlines=NULL, which.lines=c(2:5), sampling=FALSE, transformation="linearize")
+   "0877408774.B08", package="flowCore"), which.lines=theLines, transformation="linearize")
 subset2@exprs
+
 
 }
 
