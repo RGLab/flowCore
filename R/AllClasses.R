@@ -73,6 +73,7 @@ setClass("flowSet",
 ## ---------------------------------------------------------------------------
 setClass("filter", 
          representation("VIRTUAL", filterId="character",
+                        parentId="character",
                         parameters="ANY"),
          validity=function(object){
              msg <- TRUE
@@ -457,7 +458,7 @@ logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
   }
 
 ## Truncation Transformation
-truncateTransform <- function(transformationId,a=1){
+truncateTransform <- function(transformationId, a=1){
   t= new("transform",.Data=function(x){
       x[x<a] <- a
         x
@@ -473,6 +474,35 @@ scaleTransform <- function(transformationId,a=1,b=10^4){
     })
     t@transformationId = transformationId
     t
+}
+
+## Split-scale Transformation
+splitScaleTransform <- function(transformationId, maxValue=1023,
+                                transitionChannel=64, r=192){
+    
+    maxChannel = r + transitionChannel
+    b = transitionChannel/2
+    d= 2*log10(exp(1))*r/transitionChannel
+    logt = -2*log10(exp(1))*r/transitionChannel + log10(maxValue)
+    t = 10^logt
+    a = transitionChannel/(2*t)
+    logCT = (a*t+b)*d/r
+    c = 10^logCT/t
+    
+    tr = new("transform",.Data= function(x){
+        idx = which(x <= t)
+        idx2 = which(x > t)
+
+        if(length(idx2)>0){
+            x[idx2]= log10(c*x[idx2])*r/d
+        }
+        if(length(idx)>0){
+            x[idx] = a*x[idx]+b
+        }
+        x        
+    })
+    tr@transformationId = transformationId
+    tr
 }
 
 ## Hyperbolic Arcsin Transformation

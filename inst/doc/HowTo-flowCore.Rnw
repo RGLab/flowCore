@@ -82,23 +82,73 @@ Visualization as well as quality control will than be part of the utility packag
 
 \subsection{The \Rclass{flowFrame} Class}
 
-The basic unit of manipulation in \Rpackage{flowCore} is the \Rclass{flowFrame}, which corresponds roughly with a single ``FCS'' file exported from the flow cytometer's acquisition software. At the moment we support FCS file versions 1.0 through 3.0, and we expect to support FCS4/ACS1 as soon as the specification has been ratified. 
+The basic unit of manipulation in \Rpackage{flowCore} is the
+\Rclass{flowFrame}, which corresponds roughly with a single
+``FCS'' file exported from the flow cytometer's acquisition
+software. At the moment we support FCS file versions 1.0
+through 3.0, and we expect to support FCS4/ACS1 as soon as
+the specification has been ratified.
 
 \subsubsection{Data elements}
 
-The primary elements of the \Robject{flowFrame} are the \Robject{exprs} and \Robject{parameters} slots, which contain the event-level information and column metadata respectively. The event information, stored as a single matrix, is accessed and manipulated via the \Rfunction{exprs()} and \Rfunction{exprs<-} methods, allowing \Robject{flowFrame}s to be stitched together if necessary (for example, if the same tube has been collected in two acquisition files for memory reasons). 
+The primary elements of the \Robject{flowFrame} are the
+\Robject{exprs} and \Robject{parameters} slots, which
+contain the event-level information and column metadata
+respectively. The event information, stored as a single
+matrix, is accessed and manipulated via the
+\Rfunction{exprs()} and \Rfunction{exprs<-} methods,
+allowing \Robject{flowFrame}s to be stitched together if
+necessary (for example, if the same tube has been collected
+in two acquisition files for memory reasons).
 
-The \Robject{parameters} slot is an \Rclass{AnnotatedDataFrame} that contains information derived from an FCS file's ``\$P<n>'' keywords, which describe the detector and stain information. The entire list is available via the \Rfunction{parameter()} method, but more commonly this information is accessed through the \Rfunction{names}, \Rfunction{featureNames} and \Rfunction{colnames} methods. The \Rfunction{names} function returns a concatenated version of \Rfunction{names} and \Rfunction{featureNames} using a format similar to the one employed by most flow cytometry analysis software. The \Rfunction{colnames} method returns the detector names, often named for the fluorochrome detected, while the \Rfunction{featureNames} methods returns the description field of the parameters, which will typically be an identifier for the antibody. 
+The \Robject{parameters} slot is an
+\Rclass{AnnotatedDataFrame} that contains information
+derived from an FCS file's ``\$P<n>'' keywords, which
+describe the detector and stain information. The entire list
+is available via the \Rfunction{parameter()} method, but
+more commonly this information is accessed through the
+\Rfunction{names}, \Rfunction{featureNames} and
+\Rfunction{colnames} methods. The \Rfunction{names} function
+returns a concatenated version of \Rfunction{names} and
+\Rfunction{featureNames} using a format similar to the one
+employed by most flow cytometry analysis software. The
+\Rfunction{colnames} method returns the detector names,
+often named for the fluorochrome detected, while the
+\Rfunction{featureNames} methods returns the description
+field of the parameters, which will typically be an
+identifier for the antibody.
 
-The \Rfunction{keyword} method allows access to the raw FCS keywords, which are a mix of standard entries such as ``SAMPLE ID,'' vendor specific keywords and user-defined keywords that add more information about an experiment. In the case of plate-based experiments, there are also one or more keywords that identify the specific well on the plate. 
+The \Rfunction{keyword} method allows access to the raw FCS
+keywords, which are a mix of standard entries such as
+``SAMPLE ID,'' vendor specific keywords and user-defined
+keywords that add more information about an experiment. In
+the case of plate-based experiments, there are also one or
+more keywords that identify the specific well on the plate.
 
-Most vendor software also include some sort of unique identifier for the file itself. The specialized methods \Rfunction{identifier} attempts to locate an appropriate globally unique identifier that can be used to uniquely identify a frame. Failing that, this method will return the original file name offering some assurance that this frame is at least unique to a particular session.
+Most vendor software also include some sort of unique
+identifier for the file itself. The specialized methods
+\Rfunction{identifier} attempts to locate an appropriate
+globally unique identifier that can be used to uniquely
+identify a frame. Failing that, this method will return the
+original file name offering some assurance that this frame
+is at least unique to a particular session.
 
 \subsubsection{Reading a \Robject{flowFrame}}
 
-FCS files are read into the R environment via the \Rfunction{read.FCS} function using the standard connection interface---allowing for the possibility of accessing FCS files hosted on a remote resource as well as those that have been compressed or even retrieved as a blob from a database interface. FCS files (version 2.0 and 3.0) and LMD (List Mode Data) extensions are currently supported.
+FCS files are read into the R environment via the
+\Rfunction{read.FCS} function using the standard connection
+interface---allowing for the possibility of accessing FCS
+files hosted on a remote resource as well as those that have
+been compressed or even retrieved as a blob from a database
+interface. FCS files (version 2.0 and 3.0) and LMD (List
+Mode Data) extensions are currently supported.
 
-There are also several immediate processing options available in this function, the most important of which is the \Rfunction{transformation} parameter, which can either ``linearize'' (the default) or ``standardize'' our data. To see how this works, first we will examine an FCS file without any transformation at all:
+There are also several immediate processing options
+available in this function, the most important of which is
+the \Rfunction{transformation} parameter, which can either
+``linearize'' (the default) or ``standardize'' our data. To
+see how this works, first we will examine an FCS file
+without any transformation at all:
 
 <<ReadFiles, echo=true, results=verbatim>>=
 file.name <- system.file("extdata","0877408774.B08", package="flowCore")
@@ -106,7 +156,12 @@ x <- read.FCS(file.name, transformation=FALSE)
 summary(x)
 @
 
-As we can see, in this case the values from each parameter seem to run from $0$ to $1023$ ($2^{10}-1$). However, inspection of the ``exponentiation'' keyword (\$P<n>E) reveals that some of the parameters (3 and 4) have been stored in the format of the form $a\times{10^{x/R}}$ where $a$ is given by the first element of the string. 
+As we can see, in this case the values from each parameter
+seem to run from $0$ to $1023$ ($2^{10}-1$).  However,
+inspection of the ``exponentiation'' keyword (\$P<n>E)
+reveals that some of the parameters (3 and 4) have been
+stored in the format of the form $a\times{10^{x/R}}$ where
+$a$ is given by the first element of the string.
 
 <<SearchKeywords, echo=true,results=verbatim>>=
 keyword(x,c("$P1E", "$P2E", "$P3E", "$P4E"))
@@ -118,26 +173,44 @@ The default ``linearize'' transformation option will convert these to, effective
 summary(read.FCS(file.name))
 @
 
-Finally, the ``scale'' option will both linearize values as well as ensure that output values are contained in $[0,1]$, which is the proposed method of data storage for the ACS1.0/FCS4.0 specification:
+Finally, the ``scale'' option will both linearize values as
+well as ensure that output values are contained in $[0,1]$,
+which is the proposed method of data storage for the
+ACS1.0/FCS4.0 specification:
 
 <<PrintSummary2, echo=true,results=verbatim>>=
-summary(read.FCS(file.name,transformation="scale"))
+summary(read.FCS(file.name,transformation="scale")) 
 @
 
-Another parameter of interest is the \Rfunction{alter.names} parameter, which will convert the parameter names into more ``R friendly'' equivalents, usually by replacing ``-'' with ``.'':
+Another parameter of interest is the \Rfunction{alter.names}
+parameter, which will convert the parameter names into more
+``R friendly'' equivalents, usually by replacing ``-'' with
+``.'':
 
 <<ReadFiles2, echo=true,results=verbatim>>=
-read.FCS(file.name,alter.names=TRUE)
+read.FCS(file.name,alter.names=TRUE) 
 @
 
-Finally, when only a particular subset of parameters is desired the \Rfunction{column.pattern} parameter allows for the specification of a regular expression and only parameters that match the regular expression will be included in the frame. For example, to include on the the Height parameters:
+When only a particular subset of parameters is
+desired the \Rfunction{column.pattern} parameter allows for
+the specification of a regular expression and only
+parameters that match the regular expression will be
+included in the frame. For example, to include on the the
+Height parameters:
 
-<<RedFiles3, echo=true, results=verbatim>>=
-x <- read.FCS(file.name,column.pattern="-H")
-x
+<<RedFiles3, echo=true, results=verbatim>>= 
+x <- read.FCS(file.name, column.pattern="-H") 
+x 
 @
 
 \textit{Note that \Rfunction{column.pattern} is applied after \Rfunction{alter.names} if it is used.}
+
+Finally, only a sample of lines can be read in case you need a quick overview of a large serie of files. 
+<<RedFiles3, echo=true, results=verbatim>>= 
+lines <- sample(100:500, 50)
+y <- read.FCS(file.name, which.lines = lines) 
+y 
+@
 
 \subsubsection{Visualizing a \Rclass{flowFrame}}
 
@@ -153,7 +226,9 @@ To control the parameters being plotted we can supply a \Robject{y} value in the
 plot(x,c("FL1-H", "FL2-H"))
 @
 
-However, if we only supply a single parameter we instead get a univariate histogram, which also accepts the usual histogram arguments:
+However, if we only supply a single parameter we instead get
+a univariate histogram, which also accepts the usual
+histogram arguments:
 
 <<plot3, fig=true, echo=true>>=
 plot(x, "FL1-H", breaks=256)

@@ -33,7 +33,10 @@ functions of this type for use in one of the transformation modalities.
 \examples{
 
 cosTransform <- function(transformId, a=1, b=1){
-  new("transform",transformId, .Data = function(x) cos(a*x+b))}
+  t = new("transform", .Data = function(x) cos(a*x+b))
+  t@transformationId = transformId
+  t
+}
 
 cosT <- cosTransform(transformId="CosT",a=2,b=1)
 

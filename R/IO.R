@@ -41,9 +41,7 @@ header <- function(files){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 read.FCS <- function(filename,
                      transformation="linearize",
-                     nlines=NULL,
                      which.lines=NULL,
-                     sampling=FALSE,
                      debug=FALSE,
                      alter.names=FALSE,
                      column.pattern=NULL) {
@@ -65,7 +63,7 @@ read.FCS <- function(filename,
 
     offsets <- readFCSheader(con)
     txt     <- readFCStext(con, offsets, debug)
-    mat     <- readFCSdata(con, offsets, txt, transformation, nlines, which.lines, sampling, debug, scale, alter.names)
+    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines, debug, scale, alter.names)
     params  <- makeFCSparameters(colnames(mat),txt)
     close(con)
     
@@ -77,7 +75,7 @@ read.FCS <- function(filename,
         params <- params[i,]
     }
     
-    if(is.null(nlines) && is.null(which.lines)){
+    if(is.null(which.lines)){
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
           stop(paste("file", filename, "seems to corrupted."))
     }
@@ -170,7 +168,7 @@ readFCStext <- function(con, offsets, debug) {
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSdata <- function(con, offsets, x, transformation, nlines, which.lines, sampling, debug, scale, alter.names) {
+readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, scale, alter.names) {
 
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
@@ -224,33 +222,15 @@ readFCSdata <- function(con, offsets, x, transformation, nlines, which.lines, sa
       stop(paste("Don't know how to deal with bitwidth", bitwidth))
     
     ##Read all reports
-    if(is.null(nlines) && is.null(which.lines)){
+    if(is.null(which.lines)){
       seek(con, offsets["datastart"])
       dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
                      size=size, signed=FALSE, endian=endian)
     } 
-    ## Warnings on the combination of the parameters 
-    if((!is.null(nlines) && !is.null(which.lines)) && (nlines != length(which.lines))){
-        warning("The 'nlines' and 'which.lines' arguments din't have the same length. Only the 'nlines' argument is be used.")
-        which.lines <- NULL
-      }
-    
-    if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && sampling){
-      warning("The combination 'nlines', 'which.lines' and 'sampling' is inconsistent. Only the 'nlines' and 'sampling' arguments is be used.")
-      which.lines <- NULL
-    }
-    
-    if((!is.null(nlines) && !is.null(which.lines)) && (nlines == length(which.lines)) && !sampling)
-      warning("Both 'nlines' and 'which.lines' arguments are specified. Since they have the same length and sampling=FALSE, only the 'which.lines' argument will be used.")
-    
-    if(is.null(nlines) && sampling)
-      stop ("Sampling the record is not meaningful when reading all the records or specifying the one to be read.")
-    
+        
     ##Read n lines with or without sampling 
-    if(!is.null(nlines) && sampling)
-      which.lines <- sort(sample(1: nrowTotal, size=nlines))       
-    
     if(!is.null(which.lines)){
+        which.lines <- sort(which.lines)    
         dat <- c()
         for (i in 1:length(which.lines)){
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
@@ -261,14 +241,7 @@ readFCSdata <- function(con, offsets, x, transformation, nlines, which.lines, sa
             dat <- c(dat, temp)                 
         }
     }
-    if(is.null(which.lines) && !is.null(nlines) && !sampling) { 
-        print("ok3")
-        offsets["dataend"] <-  offsets["datastart"] + nrpar * size * nlines
-        seek(con, offsets["datastart"])
-        dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
-                       size=size, signed=FALSE, endian=endian)
-    }
-    
+        
     stopifnot(length(dat)%%nrpar==0)
 
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
