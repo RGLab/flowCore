@@ -97,13 +97,13 @@ setClass("rectangleGate",
            min=0,max=Inf)
          )
 
-rectangleGate <- function(filterId="rectangleGate", .gate,...) {
+rectangleGate <- function(filterId="rectangleGate", .gate,parentId="",...) {
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
 			x = sort(x);c("min"=x[1],"max"=x[2])
 		})
 	new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
-            min=.gate[1,], max=.gate[2,])
+            min=.gate[1,], max=.gate[2,],parentId=parentId)
 }
 
 
@@ -121,11 +121,11 @@ setClass("polygonGate",
              return(msg)
          })
 
-polygonGate <- function(filterId="polygonGate", boundaries,...) {
+polygonGate <- function(filterId="polygonGate", boundaries,parentId="",...) {
 	if(missing(boundaries) || !is.matrix(boundaries)) 
 		boundaries = as.matrix(if(missing(boundaries)) do.call("cbind",list(...)) else boundaries)
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
-        boundaries=boundaries)
+        boundaries=boundaries,parentId=parentId)
 }
 
 
@@ -144,13 +144,13 @@ setClass("polytopeGate",
              return(msg)
          })
 
-polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
+polytopeGate <- function(filterId="polytopeGate", .gate,parentId="", ...) {
     if(missing(.gate) || !is.matrix(.gate))
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
          
     new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
-        boundaries=.gate)
+        boundaries=.gate,parentId=parentId)
 }
 
 
@@ -173,12 +173,12 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
-ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,parentId="",...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       
     new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
-        focus=.gate, distance=distance)
+        focus=.gate, distance=distance,parentId=parentId)
 }
 
 ## ===========================================================================
@@ -197,7 +197,7 @@ setClass("norm2Filter",
          contains="filter")
 
 norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
-                        n=50000,...) {
+                        n=50000,parentId="",...) {
 	if(missing(y)) {
 		if(length(x)==1)
 			stop("You must specify two parameters for a norm2 gate.")
@@ -213,7 +213,7 @@ norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
 			y = y[1]
 	}
 	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
-            filterId=filterId,n=50000,...)
+            filterId=filterId,n=50000,parentId=parentId,...)
 }
 
 
@@ -224,15 +224,15 @@ setClass("kmeansFilter",
          representation(populations="character"),
          contains="filter")
 
-kmeansFilter = function(filterId="kmeans",...) {
+kmeansFilter = function(filterId="kmeans",parentId="",...) {
 	l = length(list(...))
 	if(l>1)
 		stop("k-means filters only operate on a single parameter.")
 	x = ..1
 	if(is.list(x)) {
-		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
+		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId,parentId=parentId)
 	} else
-		new("kmeansFilter",parameters=names(list(...))[1],populations=x,filterId=filterId)
+		new("kmeansFilter",parameters=names(list(...))[1],populations=x,filterId=filterId,parentId=parentId)
 }
 
 
@@ -243,8 +243,8 @@ setClass("sampleFilter",
          representation(size="numeric"),
          contains="filter")
 
-sampleFilter = function(filterId="sample",size) {
-	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
+sampleFilter = function(filterId="sample",size,parentId="") {
+	new("sampleFilter",parameters=character(0),filterId=filterId,size=size,parentId=parentId)
 }
 
 
