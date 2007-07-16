@@ -11,7 +11,10 @@ setMethod("colnames",signature("transformList"),function(x, do.NULL=TRUE, prefix
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
 	x = exprs(e2)
+        cN = colnames(x)
 	for(y in e1@transforms){
+                if( !(y@output %in% cN) )
+		    stop(y@output, "is not a variable in the flowFrame")
 		x[,y@input] = y@f(x[,y@output])
 	}
 	exprs(e2) = x
