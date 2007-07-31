@@ -18,7 +18,7 @@ kmeansFilter(filterId = "kmeans",\dots)
 }
 \details{
 	The one-dimensional k-means filter is a multiple population filter capable of operating on a 
-single parameter. It takes either a list containing a single element or a parameter argument associated
+single parameter. It takes a parameter argument associated
 with two or more populations. Populations are considered to be ordered such that the population with the 
 smallest mean intensity will be the first population in the list and the population with the highest mean
 intensity will be the last population listed.
@@ -31,10 +31,7 @@ intensity will be the last population listed.
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 \examples{
 a.1 = kmeansFilter("a","FSC-H"=c("Pop1","Pop2","Pop3"))
-#is equivalent to
-b.1 = kmeansFilter("b",list("FSC-H"=c("Pop1","Pop2","Pop3")))
 summary(filter(read.FCS(system.file("extdata","0877408774.B08", package="flowCore")),a.1))
-summary(filter(read.FCS(system.file("extdata","0877408774.B08", package="flowCore")),b.1))
 }
 \keyword{methods}
 

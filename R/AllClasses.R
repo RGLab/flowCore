@@ -80,9 +80,7 @@ setClass("filter",
              if(!is.character(object@filterId) ||
                 length(object@filterId)!=1)
                msg <- "\nslot 'filterId' must be character vector of length 1"
-             if(!is.character(object@parameters))#why is the sig for parameters "ANY" but we test for character?
-             msg <- "\nslot 'parameters' must be a character vector"
-            return(msg)
+             return(msg)
          })
 
 
@@ -121,7 +119,7 @@ setClass("polygonGate",
              return(msg)
          })
 
-polygonGate <- function(filterId="polygonGate", boundaries,parentId="",...) {
+polygonGate <- function(filterId="polygonGate", boundaries, parentId="",...) {
 	if(missing(boundaries) || !is.matrix(boundaries)) 
 		boundaries = as.matrix(if(missing(boundaries)) do.call("cbind",list(...)) else boundaries)
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
@@ -224,15 +222,16 @@ setClass("kmeansFilter",
          representation(populations="character"),
          contains="filter")
 
+## not sure why but the parameters in list format can not be read.
 kmeansFilter = function(filterId="kmeans",parentId="",...) {
 	l = length(list(...))
-	if(l>1)
-		stop("k-means filters only operate on a single parameter.")
+        if(l>1)
+          stop("k-means filters only operate on a single parameter.")
 	x = ..1
-	if(is.list(x)) {
-		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId,parentId=parentId)
-	} else
-		new("kmeansFilter",parameters=names(list(...))[1],populations=x,filterId=filterId,parentId=parentId)
+        if(is.list(x)) {
+            new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId,parentId=parentId)
+	} else{
+            new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId,parentId=parentId)}
 }
 
 
@@ -426,7 +425,8 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
   if(!is.double(r) || r <=0)
     stop("r must be numeric and positive")
   if(!is.double(logbase) || logbase <= 1)
-    stop("logabse must be a pnumeric greater than 1")
+    stop("logabse must be a pnumeric gre
+ater than 1")
   t = new("transform",.Data=function(x){
     x <- log(x,logbase)*(r/d)
   })
