@@ -60,11 +60,11 @@ rectangleGate(filterId="rectangleGateI","FSC-H"=c(1,50),"SSC-H"=c(50,800))
 #To facilitate programmatic construction we also have the following
 rectangleGate(filterId="rectangleGateII",list("FSC-H"=c(1,50),"SSC-H"=c(50,800)))
 
-m <- matrix(c(1,50,50,800),ncol=2)
+m <- matrix(c(50,100,50,700),ncol=2)
 colnames(m) <- c("FSC-H","SSC-H")
 rect <- rectangleGate(filterId="rectangleGate", m)
 pop1 <- filter(GvHD,rect)
-sub <- Subset(GvHD, pop1)
+sub3 <- Subset(GvHD, pop1)
 
 
 ## PolygonGate
