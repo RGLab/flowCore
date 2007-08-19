@@ -16,8 +16,6 @@ Objects can be created by calls of the form \code{new("multiFilter", ...)}.
       of the list corresponds to a filter}
     \item{\code{filterId}:}{Object of class \code{"character"}
       referencing the filter applied}
-    \item{\code{parentId}:}{Object of class \code{"character"}
-      referencing the filter previously applied}
     \item{\code{parameters}:}{A character vector that identifies the name of
   the parameters that this filter operates upon.}
   }

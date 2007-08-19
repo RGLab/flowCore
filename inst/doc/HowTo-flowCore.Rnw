@@ -85,7 +85,7 @@ Visualization as well as quality control will than be part of the utility packag
 The basic unit of manipulation in \Rpackage{flowCore} is the
 \Rclass{flowFrame}, which corresponds roughly with a single
 ``FCS'' file exported from the flow cytometer's acquisition
-software. At the moment we support FCS file versions 1.0
+software. At the moment we support FCS file versions 2.0
 through 3.0, and we expect to support FCS4/ACS1 as soon as
 the specification has been ratified.
 
@@ -146,7 +146,7 @@ Mode Data) extensions are currently supported.
 There are also several immediate processing options
 available in this function, the most important of which is
 the \Rfunction{transformation} parameter, which can either
-``linearize'' (the default) or ``standardize'' our data. To
+``linearize'' (the default) or ``scale'' our data. To
 see how this works, first we will examine an FCS file
 without any transformation at all:
 
@@ -195,8 +195,7 @@ When only a particular subset of parameters is
 desired the \Rfunction{column.pattern} parameter allows for
 the specification of a regular expression and only
 parameters that match the regular expression will be
-included in the frame. For example, to include on the the
-Height parameters:
+included in the frame. For example, to include on the Height parameters:
 
 <<RedFiles3, echo=true, results=verbatim>>= 
 x <- read.FCS(file.name, column.pattern="-H") 
@@ -292,7 +291,7 @@ pData(phenoData(fs))
 
 \subsubsection{Manipulating a \Rclass{flowSet}}
 
-You can extract a \Rclass{flowFrame} from a \Rclass{flowSet} object in the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction operators. On the other hand using he \Rfunction{[} extraction operator returns a new \Rclass{flowSet} by \textbf{copying} the environment. However, simply assigning the \Rclass{flowFrame} to a new variable will \textbf{not} copying the contained frames.
+You can extract a \Rclass{flowFrame} from a \Rclass{flowSet} object in the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction operators. On the other hand using he \Rfunction{[} extraction operator returns a new \Rclass{flowSet} by \textbf{copying} the environment. However, simply assigning the \Rclass{flowFrame} to a new variable will \textbf{not} copy the contained frames.
 
 The primary iterator method for a \Rclass{flowSet} is the \Rfunction{fsApply} method, which works more-or-less like \Rfunction{sapply} or \Rfunction{lapply} with two extra options. The first argument, \Robject{simplify}, which defaults to \Robject{TRUE}, instructs \Rfunction{fsApply} to attempt to simplify it's results much in the same way as \Rfunction{sapply}. The primary difference is that if all of the return values of the iterator are \Rclass{flowFrame} objects, \Rfunction{fsApply} will create a new \Rclass{flowSet} object to hold them. The second argument, \Robject{use.exprs}, which defaults to \Robject{FALSE} instructs \Rfunction{fsApply} to pass the expression matrix of each frame rather than the \Rclass{flowFrame} object itself. This allows functions to operate directly on the intensity information without first having to extract it. 
 

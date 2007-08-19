@@ -11,8 +11,8 @@
   \item{filename}{Character of length 1: filename}
   \item{transformation}{An character string that defines the
     type of transformation. Valid values are \code{linearize} (default) or
-    \code{standardize}.The  \code{linearize} tramsformation applies the appropriate power
-    transform to the data while the code{standardize} transformation scales all columns to [0,1]
+    \code{scale}.The  \code{linearize} tramsformation applies the appropriate power
+    transform to the data while the code{scale} transformation scales all columns to [0,1]
     as in the FCS4 specification. A logical can also be used: \code{TRUE} is
     equal to \code{linearize} and \code{FALSE} correponds to no
     transformation.}
@@ -42,10 +42,7 @@ The \code{nlines} and \code{sampling} arguments allow you to read a
   events recorded in the FCS file.
 
 The \code{which.lines} argument allows you to read a specific number of
-records. This argument can not be combine with \code{sampling} == TRUE.
-If combine with \code{nlines}, the \code{nlines} argument is used if the
-length of the \code{which.lines} vector differs from the number of lines
-to be read. Otherwise the \code{which.lines} is used.
+records. 
   
 }
 
@@ -73,7 +70,6 @@ theLines <- sample(1:800, 10)
 subset2 <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"), which.lines=theLines, transformation="linearize")
 subset2@exprs
-
 
 }
 
