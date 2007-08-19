@@ -19,6 +19,7 @@
 \alias{phenoData<-,flowSet,ANY-method}
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{varLabels,flowSet-method}
+\alias{varLabels<-,flowSet-method}
 \alias{varLabels<-,flowSet,ANY-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}

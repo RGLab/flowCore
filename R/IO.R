@@ -221,16 +221,22 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
     if (!size %in% c(1, 2, 4, 8))
       stop(paste("Don't know how to deal with bitwidth", bitwidth))
     
+    
+    nwhichLines = length(which.lines)
     ##Read all reports
-    if(is.null(which.lines)){
+    if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
+        if (nwhichLines >  nrowTotal){
+            cat("Warning: the number of lines specified (",nwhichLines,") is greater
+                 than the number of collected events (",nrowTotal,"). All the events have been read. \n")
+        }
       seek(con, offsets["datastart"])
       dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
                      size=size, signed=FALSE, endian=endian)
-    } 
-        
-    ##Read n lines with or without sampling 
-    if(!is.null(which.lines)){
-        which.lines <- sort(which.lines)    
+    }else {  ##Read n lines with or without sampling 
+        which.lines <- sort(which.lines)
+        outrange <- length(which(which.lines > nrowTotal))
+        if(outrange!=0)
+          stop("Some or all the line indices specified are greater that the number of collected events.\n")
         dat <- c()
         for (i in 1:length(which.lines)){
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
@@ -241,6 +247,7 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
             dat <- c(dat, temp)                 
         }
     }
+    
         
     stopifnot(length(dat)%%nrpar==0)
 

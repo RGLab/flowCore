@@ -11,8 +11,6 @@
     \item{\code{filterId}:}{Object of class \code{"character"} referencing the filter applied}
     \item{\code{parameters}:}{Object of class \code{"ANY"} describing
       the parameters used to filter the \code{flowFrame}}
-    \item{\code{parentId}:}{Object of class \code{"character"}
-      referencing the filter previously applied}
   }
 }
 \section{Extends}{

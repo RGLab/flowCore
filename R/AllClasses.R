@@ -73,7 +73,7 @@ setClass("flowSet",
 ## ---------------------------------------------------------------------------
 setClass("filter", 
          representation("VIRTUAL", filterId="character",
-                        parentId="character",
+                        ##parentId="character",
                         parameters="ANY"),
          validity=function(object){
              msg <- TRUE
@@ -95,13 +95,13 @@ setClass("rectangleGate",
            min=0,max=Inf)
          )
 
-rectangleGate <- function(filterId="rectangleGate", .gate,parentId="",...) {
+rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
 			x = sort(x);c("min"=x[1],"max"=x[2])
 		})
 	new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
-            min=.gate[1,], max=.gate[2,],parentId=parentId)
+            min=.gate[1,], max=.gate[2,])
 }
 
 
@@ -119,11 +119,11 @@ setClass("polygonGate",
              return(msg)
          })
 
-polygonGate <- function(filterId="polygonGate", boundaries, parentId="",...) {
+polygonGate <- function(filterId="polygonGate", boundaries,...) {
 	if(missing(boundaries) || !is.matrix(boundaries)) 
 		boundaries = as.matrix(if(missing(boundaries)) do.call("cbind",list(...)) else boundaries)
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
-        boundaries=boundaries,parentId=parentId)
+        boundaries=boundaries)
 }
 
 
@@ -142,13 +142,13 @@ setClass("polytopeGate",
              return(msg)
          })
 
-polytopeGate <- function(filterId="polytopeGate", .gate,parentId="", ...) {
+polytopeGate <- function(filterId="polytopeGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
          
     new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
-        boundaries=.gate,parentId=parentId)
+        boundaries=.gate)
 }
 
 
@@ -171,12 +171,12 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
-ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,parentId="",...) {
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
       
     new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
-        focus=.gate, distance=distance,parentId=parentId)
+        focus=.gate, distance=distance)
 }
 
 ## ===========================================================================
@@ -195,7 +195,7 @@ setClass("norm2Filter",
          contains="filter")
 
 norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
-                        n=50000,parentId="",...) {
+                        n=50000,...) {
 	if(missing(y)) {
 		if(length(x)==1)
 			stop("You must specify two parameters for a norm2 gate.")
@@ -211,7 +211,7 @@ norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
 			y = y[1]
 	}
 	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
-            filterId=filterId,n=50000,parentId=parentId,...)
+            filterId=filterId,n=50000,...)
 }
 
 
@@ -223,15 +223,15 @@ setClass("kmeansFilter",
          contains="filter")
 
 ## not sure why but the parameters in list format can not be read.
-kmeansFilter = function(filterId="kmeans",parentId="",...) {
+kmeansFilter = function(filterId="kmeans",...) {
 	l = length(list(...))
         if(l>1)
           stop("k-means filters only operate on a single parameter.")
 	x = ..1
         if(is.list(x)) {
-            new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId,parentId=parentId)
+            new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
 	} else{
-            new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId,parentId=parentId)}
+            new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId)}
 }
 
 
@@ -242,8 +242,8 @@ setClass("sampleFilter",
          representation(size="numeric"),
          contains="filter")
 
-sampleFilter = function(filterId="sample",size,parentId="") {
-	new("sampleFilter",parameters=character(0),filterId=filterId,size=size,parentId=parentId)
+sampleFilter = function(filterId="sample",size) {
+	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
 }
 
 
