@@ -8,8 +8,10 @@ importFrom("geneplotter", "smoothScatter","densCols")
 importFrom("graphics", "plot")
 
 
-importFrom("Biobase", "exprs", "exprs<-", "description", "description<-","phenoData","phenoData<-","multiassign",
-	"sampleNames","sampleNames<-","featureNames","featureNames<-")
+importFrom("Biobase", "exprs", "exprs<-", "description", "description<-",
+    "phenoData","phenoData<-","multiassign", "sampleNames","sampleNames<-",
+    "featureNames","featureNames<-", "varLabels", "varLabels<-")
+
 importClassesFrom("Biobase", "eSet")
 
 exportClasses("flowFrame", "flowSet",
@@ -23,8 +25,8 @@ exportMethods("initialize","description","phenoData","phenoData<-",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
               "transform","split","Subset","filter","filterDetails",
               "filterDetails<-","plot", "coerce","coerce<-","spillover",
-              "compensate","fsApply","sampleNames", "each_row","each_col" ##,"draw"
-              )
+              "compensate","fsApply","sampleNames", "each_row",
+              "each_col", "varLabels", "varLabels<-")
 
 S3method("$", "flowFrame")
 
