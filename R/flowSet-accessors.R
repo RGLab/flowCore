@@ -14,6 +14,20 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	object
 })
 
+setMethod("varLabels",
+          signature=signature(object="flowSet"),
+          function(object) varLabels(phenoData(object)))
+
+setReplaceMethod("varLabels",
+                 signature=signature(
+                   object="flowSet",
+                   value="ANY"),
+                 function(object, value) {
+                     pd <- phenoData(object)
+                     varLabels(pd) <- value
+                     object@phenoData <- pd
+                     object
+                 })
 
 ## ==========================================================================
 ## accessor and replace methods for slot colnames
