@@ -19,7 +19,7 @@ splitScaleTransform(transformationId, maxValue=1023, transitionChannel=64, r=192
     logarithmical transformation, e.g., 64}
   \item{r}{Range of the logarithm part of the display, ie. it may be
     expressed as the maxChannel - transitionChannel considering the
-    maxChannel as the maximum value to be obtained after the transformation.}) }
+    maxChannel as the maximum value to be obtained after the transformation.} 
 }
 
 \value{

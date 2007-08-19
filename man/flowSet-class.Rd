@@ -18,6 +18,8 @@
 \alias{phenoData,flowSet-method}
 \alias{phenoData<-,flowSet,ANY-method}
 \alias{phenoData<-,flowSet,phenoData-method}
+\alias{varLabels,flowSet-method}
+\alias{varLabels<-,flowSet,ANY-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
@@ -86,7 +88,9 @@ containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects
   gate. Returns a list of \code{flowFrames}}
 \item{rbind2}{combine two \code{flowSet} objects}
 \item{Subset}{Returns a \code{flowSet} of \code{flowFrames} that have been subset according to a filter.}
-}}
+}
+\item{varLabels}{ Methods to extract and set varLabels on \code{flowSets}.}
+}
 
 \section{Important note on storage and performance}{
 The bulk of the data in a \code{flowSet} object is stored in an
