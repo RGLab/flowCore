@@ -33,9 +33,9 @@ setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 
 
 ## ==========================================================================
-## summary method for subsetFiler
+## summary method for subsetFilter
 ## --------------------------------------------------------------------------
-setMethod("summary","subsetFilter",function(object,...) {
+setMethod("summary","subsetFilter",function(object,result,...) {
 	e1 = as(object@filters[[1]],"logical")
 	e2 = as(object@filters[[2]],"logical")
 	true = sum(e1&e2)

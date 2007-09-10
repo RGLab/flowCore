@@ -44,7 +44,7 @@ read.FCS <- function(filename,
                      which.lines=NULL,
                      debug=FALSE,
                      alter.names=FALSE,
-                     column.pattern=NULL) {
+                     column.pattern=NULL,decades=0) {
     
     stopifnot(is.character(filename), length(filename)==1, filename!="")
     con <- file(filename, open="rb")
@@ -53,17 +53,16 @@ read.FCS <- function(filename,
         transformation <- TRUE
         scale <- FALSE
     } else if ( !is.null(transformation) && transformation == "scale") {
-        transformation <- FALSE
+        transformation <- TRUE
         scale <- TRUE
-    }
-    else if (is.null(transformation) || is.logical(transformation) && !transformation) {
+    } else if (is.null(transformation) || is.logical(transformation) && !transformation) {
         transformation <- FALSE 
         scale <- FALSE
     } 
 
     offsets <- readFCSheader(con)
     txt     <- readFCStext(con, offsets, debug)
-    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines, debug, scale, alter.names)
+    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines, debug, scale, alter.names, decades)
     params  <- makeFCSparameters(colnames(mat),txt)
     close(con)
     
@@ -168,8 +167,7 @@ readFCStext <- function(con, offsets, debug) {
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, scale, alter.names) {
-
+readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, scale, alter.names, decades) {
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
@@ -247,9 +245,8 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
             dat <- c(dat, temp)                 
         }
     }
-    
-        
     stopifnot(length(dat)%%nrpar==0)
+
 
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
@@ -266,16 +263,17 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
         }
     }
     if(scale){
+		d = 10^decades	
         if(transformation) {
             ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
             ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
             for(i in 1:nrpar) {
-                dat[,i] = if(ampli[i,1] > 0) dat[,i]/(10^ampli[i,1]) else dat[,i]/(range[i]-1)
+                dat[,i] = if(ampli[i,1] > 0) d*((10^((dat[,i]/(range[i]-1))*ampli[i,1]))/10^ampli[i,1]) else d*(dat[,i]/(range[i]-1))
             }
         }
         else {
             for(i in 1:nrpar) {
-                dat[,i] = dat[,i]/(range[i]-1)
+                dat[,i] = d*(dat[,i]/(range[i]-1))
             }
         }
     }

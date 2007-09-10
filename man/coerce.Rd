@@ -13,6 +13,21 @@
 \alias{coerce,environment,flowSet-method}
 \alias{coerce,list,flowSet-method}
 \alias{coerce,intersectFilter,logical-method}
+\alias{coerce,filter,call-method}
+\alias{coerce,subsetFilter,call-method}
+\alias{coerce,intersectFiler,call-method}
+\alias{coerce,unionFilter,call-method}
+\alias{coerce,complementFilter,call-method}
+\alias{coerce,filterReference,concreteFilter-method}
+\alias{coerce,filterReference,call-method}
+\alias{coerce,formula,filter}
+\alias{coerce,character,filter}
+\alias{coerce,name,filter}
+\alias{coerce,call,filter}
+\alias{coerce,filterSet,list}
+\alias{coerce,list,filterSet}
+\alias{coerce,flowSet,flowFrame}
+\alias{coerce,flowFrame,filterSet}
 
 \title{Force an Object to Belong to a Class}
 \description{ These functions manage the relations that allow coercing an object

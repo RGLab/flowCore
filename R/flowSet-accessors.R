@@ -187,13 +187,17 @@ setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
 	env = new.env(hash=TRUE,parent=emptyenv())
 	lx  = sampleNames(x)
 	ly  = sampleNames(y)
-	if(lx %in% ly)
+	if(any(lx %in% ly))
 		stop("These flowSets contain overlapping samples.")
 	for(i in lx) assign(i,x[[i]],env=env)
 	for(i in ly) assign(i,y[[i]],env=env)
 	fs            = as(env,"flowSet")
-	phenoData(fs) = rbind2(phenoData(x),phenoData(y))
+	pData(phenoData(fs)) = rbind(pData(phenoData(x)),pData(phenoData(y)))
 	fs
+})
+
+setMethod("rbind2",signature("flowSet","flowFrame"),function(x,y) {
+	##Should be able to find a flowFrame
 })
 
 

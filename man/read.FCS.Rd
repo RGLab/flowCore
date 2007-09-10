@@ -4,7 +4,7 @@
 \description{Read Data File Standard for Flow Cytometry}
 \usage{
    read.FCS(filename, transformation = "linearize", which.lines=NULL,
-                      debug = FALSE, alter.names = FALSE, column.pattern = NULL)
+                      debug = FALSE, alter.names = FALSE, column.pattern = NULL, decades=0)
 }
 
 \arguments{
@@ -12,8 +12,8 @@
   \item{transformation}{An character string that defines the
     type of transformation. Valid values are \code{linearize} (default) or
     \code{scale}.The  \code{linearize} tramsformation applies the appropriate power
-    transform to the data while the code{scale} transformation scales all columns to [0,1]
-    as in the FCS4 specification. A logical can also be used: \code{TRUE} is
+    transform to the data while the code{scale} transformation scales all columns to $[0,10^decades]$.
+    defaulting to decades=0 as in the FCS4 specification. A logical can also be used: \code{TRUE} is
     equal to \code{linearize} and \code{FALSE} correponds to no
     transformation.}
   \item{which.lines}{Numeric vector to specify the indices of the
@@ -23,6 +23,7 @@
   \item{alter.names}{boolean indicating whether or not we should rename
     the columns to valid R names using \code{\link{make.names}}. The default is FALSE.}
   \item{column.pattern}{An optional regular expression defining parameters we should keep when loading the file. The default is NULL. }
+  \item{decades}{When scaling is activated, the number of decades to use for the output.}
 }
 
 \details{

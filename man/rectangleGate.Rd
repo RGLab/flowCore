@@ -10,6 +10,7 @@
 \alias{summary,rectangleGate-method}
 \alias{show,rectangleGate-method}
 \alias{show,polygonGate-method}
+\alias{*,rectangleGate,rectangleGate-method}
    
 \title{Define filter boundaries}
 \description{
@@ -40,6 +41,9 @@ polytopeGate(filterId = "polytopeGate", .gate, \dots)
   parameter.  The names of the parameters are taken from the 
   column names as in the third example.
 
+  Rectangle gate objects can also be multiplied together using the \code{*} operator,
+  provided that both gate have orthogonal axes. 
+
   For polygone gate, the boundaries are specified as vertices in 2 dimensions.
   
  
@@ -66,11 +70,17 @@ rect <- rectangleGate(filterId="rectangleGate", m)
 pop1 <- filter(GvHD,rect)
 sub3 <- Subset(GvHD, pop1)
 
+## Multiply rectangle gates
+rectangleGate(filterId="FSC-",`FSC-H'=c(-Inf,50)) * rectangleGate(filterId="SSC+",`SSC-H'=c(50,Inf))
+
 
 ## PolygonGate
 sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
 colnames(sqrcut) <- c("FSC-H","SSC-H")
 polygonGate(filterId="nonDebris", boundaries= sqrcut)
+
+
+
 
 }
 \keyword{methods}

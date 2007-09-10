@@ -51,15 +51,13 @@ setClass("flowSet",
              if(identical(object@colnames, colnames(x))){
                TRUE
              }else{ 
-               warning(paste(i, "failing colnames check: ",
+               return(paste(i, "failing colnames check: ",
                              paste(object@colnames, sep=","),
                              "vs", paste(colnames(x), sep=",")))
-               FALSE 
              }
            }))){
-             warning("Some items identified in the data environment either ",
+             return("Some items identified in the data environment either ",
                      "have the wrong dimension or type.")
-             return(FALSE)
            }
            return(TRUE)
          })
@@ -72,17 +70,15 @@ setClass("flowSet",
 ## a functions that return logical vectors subsetting the data
 ## ---------------------------------------------------------------------------
 setClass("filter", 
-         representation("VIRTUAL", filterId="character",
-                        ##parentId="character",
-                        parameters="ANY"),
-         validity=function(object){
-             msg <- TRUE
-             if(!is.character(object@filterId) ||
-                length(object@filterId)!=1)
-               msg <- "\nslot 'filterId' must be character vector of length 1"
-             return(msg)
-         })
-
+         representation("VIRTUAL",filterId="character"),prototype=prototype(filterId=""),
+			validity=function(object) {
+							if(length(object@filterId) != 1)
+								"'filterId' must have a length of one."
+							else
+								TRUE
+						})
+setClass("concreteFilter","filter")
+setClass("parameterFilter",representation(parameters="character"),contains="concreteFilter",prototype=prototype(parameters=""))
 
 ## ===========================================================================
 ## Rectangular gate
@@ -90,7 +86,7 @@ setClass("filter",
 setClass("rectangleGate",
           representation(min="numeric",
                         max="numeric"),
-         contains="filter",
+         contains="parameterFilter",
          prototype=list(filterId="Rectangle Gate",
            min=0,max=Inf)
          )
@@ -110,7 +106,7 @@ rectangleGate <- function(filterId="rectangleGate", .gate,...) {
 ## ---------------------------------------------------------------------------
 setClass("polygonGate",
          representation(boundaries="matrix"),
-         contains="filter",
+         contains="parameterFilter",
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=3)),
          validity=function(object){
              msg <- TRUE
@@ -132,7 +128,7 @@ polygonGate <- function(filterId="polygonGate", boundaries,...) {
 ## ---------------------------------------------------------------------------
 setClass("polytopeGate",
          representation(boundaries="matrix"),
-         contains="filter",
+         contains="parameterFilter",
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=2)), 
          validity=function(object){
              msg <- TRUE
@@ -142,7 +138,7 @@ setClass("polytopeGate",
              return(msg)
          })
 
-polytopeGate <- function(filterId="polytopeGate", .gate,...) {
+polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
     if(missing(.gate) || !is.matrix(.gate))
       ##nrowGate <- max(unlist(lapply(list(...),length)))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
@@ -158,7 +154,7 @@ polytopeGate <- function(filterId="polytopeGate", .gate,...) {
 setClass("ellipsoidGate",
          representation(focus="matrix",
                         distance="numeric"),
-         contains="filter",
+         contains="parameterFilter",
          prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2),distance=1),
          validity=function(object){
              msg <- TRUE
@@ -192,7 +188,7 @@ setClass("norm2Filter",
                         scale.factor="numeric",
                         transformation="list",
                         n="numeric"),
-         contains="filter")
+         contains="parameterFilter")
 
 norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
                         n=50000,...) {
@@ -220,18 +216,19 @@ norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
 ## ---------------------------------------------------------------------------
 setClass("kmeansFilter",
          representation(populations="character"),
-         contains="filter")
+         contains="parameterFilter")
 
 ## not sure why but the parameters in list format can not be read.
 kmeansFilter = function(filterId="kmeans",...) {
 	l = length(list(...))
-        if(l>1)
-          stop("k-means filters only operate on a single parameter.")
+	if(l>1)
+	stop("k-means filters only operate on a single parameter.")
 	x = ..1
-        if(is.list(x)) {
-            new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
-	} else{
-            new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId)}
+	if(is.list(x)) {
+		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
+	} else {
+		new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId)
+	}
 }
 
 
@@ -240,47 +237,45 @@ kmeansFilter = function(filterId="kmeans",...) {
 ## ---------------------------------------------------------------------------
 setClass("sampleFilter",
          representation(size="numeric"),
-         contains="filter")
+         contains="concreteFilter")
 
-sampleFilter = function(filterId="sample",size) {
-	new("sampleFilter",parameters=character(0),filterId=filterId,size=size)
+sampleFilter = function(filterId="sample",size) new("sampleFilter",filterId=filterId,size=size)
+
+
+## ===========================================================================
+## expressionFilter 
+## Let's us encapsulate an expression as a gate
+## ---------------------------------------------------------------------------
+setClass("expressionFilter",
+         representation(expr="call",args="list"),
+         contains="concreteFilter")
+expressionFilter = function(expr,...,filterId) {
+	expr = substitute(expr)
+	if(missing(filterId)) filterId = deparse(expr)
+	new("expressionFilter",filterId=filterId,expr=expr,args=list(...))
 }
 
 
 ## ===========================================================================
-## multiFilter 
+## filterSet 
 ## ---------------------------------------------------------------------------
-setClass("multiFilter",
-         representation(populations="character",filters="list"),
-         contains="filter")
-
-
-
-## =================================================================
-## filterCollection
-## ----------------------------------------------------------------
-## A collection of Filters organized as a DAG. The DAG specifies the
-## Filters and the Populations. The Populations are names only because
-## they get created only when a FilterTree is applied to a dataset.
-## -----------------------------------------------------------------
-## Environment can't be extended
-## setClass("filterCollection",representation("environment"))
-setClass("filterCollection", representation("list"))
-## ===========================================================================
-## promisedFilter 
-## ---------------------------------------------------------------------------
-## A reference to a filter in an environment.
-## ---------------------------------------------------------------------------
-setClass("promisedFilter",representation("filter",name="character"))
-
-
+setClass("filterSet",representation(env="environment"),prototype=prototype(env=new.env(hash=TRUE,parent=emptyenv())))
+filterSet = function(...) {
+	filters = list(...)
+	if(length(filters) == 0)
+		new("filterSet",env=new.env(parent=emptyenv()))
+	else
+		as(filters,"filterSet")
+}
+#References a filter (contained within a filterSet)
+setClass("filterReference",representation(name="character",env="environment"),contains="filter")
 
 ## ===========================================================================
 ## setOperationFilter
 ## ---------------------------------------------------------------------------
 setClass("setOperationFilter",
          representation(filters="list"),
-         contains="filter")
+         contains="concreteFilter")
 
 
 ## ===========================================================================
@@ -329,7 +324,7 @@ setClass("subsetFilter",representation("setOperationFilter"),
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
          representation(frameId="character", filterDetails="list"),
-         contains="filter",
+         contains="concreteFilter",
          prototype=list(frameId=character(0), filterDetails=list()))
 
 
@@ -357,7 +352,7 @@ setClass("multipleFilterResult",
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
          representation(subSet="logical"),
-         contains="filterResult")
+         contains="filterResult",validity = function(object) if(!is.matrix(object@subSet)) "subSet must be a matrix" else TRUE)
 
 ## ===========================================================================
 ## randomFilterResult
@@ -366,6 +361,9 @@ setClass("randomFilterResult",
          representation(subSet="numeric"),
          contains="filterResult")
 
+#
+# filterSummary now becomes a legitimate class.
+setClass("filterSummary",representation(name="character",true="numeric",count="numeric",p="numeric"))
 
 ## ===========================================================================
 ## transform
@@ -425,8 +423,7 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
   if(!is.double(r) || r <=0)
     stop("r must be numeric and positive")
   if(!is.double(logbase) || logbase <= 1)
-    stop("logabse must be a pnumeric gre
-ater than 1")
+    stop("logabse must be a pnumeric greater than 1")
   t = new("transform",.Data=function(x){
     x <- log(x,logbase)*(r/d)
   })
@@ -512,7 +509,15 @@ arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
   t
 }
 
-
+## ===========================================================================
+## parameterTransform
+## ---------------------------------------------------------------------------
+## A class that only applied a parameter transform to a subset of the
+## parameters during an %on% operation.
+## ---------------------------------------------------------------------------
+setClass("parameterTransform",representation(parameters="character"),contains="transform")
+parameterTransform = function(FUN,params)
+	new("parameterTransform",.Data=as.function(FUN),parameters=as.character(params))
 
 ## ===========================================================================
 ## transformMap
@@ -537,6 +542,5 @@ setClass("transformList", representation(transforms="list"))
 ## ---------------------------------------------------------------------------
 setClass("transformFilter",
          representation(transforms="transformList", filter="filter"),
-         contains="filter")
-
+         contains="concreteFilter")
 

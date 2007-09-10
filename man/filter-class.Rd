@@ -9,6 +9,10 @@
 \alias{decisionTreeGate,filter-class}
 \alias{booleanGate,filter-class}
 \alias{filter,filter-method}
+\alias{|,filter,filter-method}
+\alias{!,filter-method}
+\alias{|,filter,list-method}
+\alias{|,list,filter-method}
 
 
 \title{A class for representing filtering operations to be applied to flow data.}
@@ -23,8 +27,6 @@ more specific filter.
   \code{filter}. This is typically user specified but can be
   automatically deduced by certain filter operations, particularly
   boolean and set operations.}
-\item{\code{parameters}:}{A character vector that identifies the name of
-  the parameters that this filter operates upon.}
 }}
 
 \section{Methods}{\describe{

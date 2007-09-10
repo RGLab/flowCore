@@ -246,7 +246,8 @@ setMethod("split", signature("flowFrame","multipleFilterResult"),
             nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
             structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
 })
-
+setMethod("split",signature("flowFrame","ANY"),function(x,f,drop=FALSE,prefix=NULL,...) 
+	stop("invalid type for flowFrame split"))
 
 ## ==========================================================================
 ## summary method for flowFrame
@@ -326,8 +327,23 @@ setMethod("filter", signature(x="flowFrame", filter="filter"),
           function(x, filter) {
             result <- as(x %in% filter, "filterResult")
             result@filterId <- filter@filterId
-            result@parameters <- filter@parameters
             filterDetails(result, result@filterId) <- filter
             result@frameId <- identifier(x)
             result
           })
+
+setMethod("filter",signature(x="flowFrame",filter="filterSet"),function(x,filter) {
+	# A list of filter names sorted by dependency
+	fl = sort(filter)
+	# A place to evaluate filters
+	e  = new.env()
+	assign(".__frame",x,env=e)
+	# Evaluate each 
+	r = lapply(as(filter,"list")[fl],function(f) {
+		eval(as.call(c(as.symbol("filter"),as.symbol(".__frame"),f)),e)		
+	})
+	if(all(sapply(r,is,"logicalFilterResult"))) {
+		#Combine into a many filter result
+	} else 
+		r
+})

@@ -4,6 +4,8 @@
 \alias{\%in\%}
 \alias{\%in\%,ANY,filterResult-method}
 \alias{\%in\%,ANY,multipleFilterResult-method}
+\alias{\%in\%,ANY,manyFilterResult-method}
+\alias{\%in\%,ANY,filterReference-method}
 \alias{\%in\%,flowFrame,rectangleGate-method}
 \alias{\%in\%,flowFrame,polygonGate-method}
 \alias{\%in\%,flowFrame,ellipsoidGate-method}
@@ -16,6 +18,7 @@
 \alias{\%in\%,flowFrame,kmeansFilter-method}
 \alias{\%in\%,flowFrame,sampleFilter-method}
 \alias{\%in\%,flowFrame,transformFilter-method}
+\alias{\%in\%,flowFrame,expressionFilter-method}
 
 \title{ Methods for Function \%in\% in Package `flowCore'}
 \description{

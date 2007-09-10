@@ -14,6 +14,8 @@ setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
 setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 setGeneric("%on%",function(e1,e2) standardGeneric("%on%"))
 
+## Generic for sorting (already S3 generic...)
+setGeneric("sort",function(x,decreasing=FALSE,...) standardGeneric("sort"))
 
 ## ===========================================================================
 ## Generic for ncol
@@ -37,6 +39,7 @@ setGeneric("parameters",function(object) standardGeneric("parameters"))
 ## Generic for identifier
 ## ---------------------------------------------------------------------------
 setGeneric("identifier",function(object) standardGeneric("identifier"))
+setGeneric("identifier<-",function(object,value) standardGeneric("identifier<-"))
 
 
 ## ===========================================================================
@@ -56,7 +59,7 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## Generic for filter
 ## ---------------------------------------------------------------------------
 setGeneric("filter", function(x, filter,...) standardGeneric("filter"),useAsDefault=FALSE)
-
+setGeneric("filterReference",function(from,name) standardGeneric("filterReference"))
 
 ## ===========================================================================
 ## Generics for accessing certain aspects of the filtering process.
