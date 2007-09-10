@@ -41,3 +41,8 @@ setMethod("summary",signature(object="rectangleGate"),function(object,...) {
                   names=object@parameters)
 })
 
+# Compose two rectangle gates together into a higher dimensional cube.
+setMethod("*",signature(e1="rectangleGate",e2="rectangleGate"),function(e1,e2) {
+	if(any(parameters(e1) %in% parameters(e2))) stop("Rectangle gate parameters overlap.")
+	new("rectangleGate",parameters=c(parameters(e1),parameters(e2)),min=c(e1@min,e2@min),max=c(e1@max,e2@max))
+})

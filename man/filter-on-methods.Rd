@@ -3,8 +3,13 @@
 \alias{\%on\%-methods}
 \alias{\%on\%}
 \alias{\%on\%,filter,transformList-method}
+\alias{\%on\%,filter,transform-method}
+\alias{\%on\%,filter,parameterTransform-method}
+\alias{\%on\%,parameterTransform,flowFrame-method}
+\alias{\%on\%,transform,flowFrame-method}
 \alias{\%on\%,transformList,flowFrame-method}
 \alias{\%on\%,transformList,flowSet-method}
+\alias{\%on\%,ANY,flowSet-method}
 
 
 \title{Methods for Function \%on\% in Package `flowCore'}

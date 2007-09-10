@@ -31,13 +31,17 @@ setReplaceMethod("filterDetails",signature("filterResult","character",value="set
 })
 
 
-
 ## ==========================================================================
 ## Summarize a filtering operation
 ## 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summarizeFilter",signature("filterResult","filter"),function(result,filter) {
 	list(filter=filter)
+})
+setMethod("summarizeFilter",signature("filterResult","parameterFilter"),function(result,filter) {
+	ret = callNextMethod()
+	ret$parameters = parameters(filter)
+	ret
 })
 
 
@@ -74,13 +78,18 @@ setMethod("identifier", signature="filterResult",
 
 ## ==========================================================================
 ## --------------------------------------------------------------------------
-setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
-	frameId = identifier(x)
-	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
-		warning("Frame identifiers do not match. It is possible that this ",
-                        "filter is not compatible with this frame.")
-	if(nrow(x) != length(table@subSet))
-		stop("Number of rows in frame do not match those expected by this filter.")
-	table@subSet
+# Redundant?
+# setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
+# 	frameId = identifier(x)
+# 	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
+# 		warning("Frame identifiers do not match. It is possible that this ",
+#                         "filter is not compatible with this frame.")
+# 	if(nrow(x) != length(table@subSet))
+# 		stop("Number of rows in frame do not match those expected by this filter.")
+# 	as(table,"logical")
+# })
+setMethod("[[",signature("filterResult"),function(x,i,j,drop=FALSE) {
+	if((is.character(i) && i != x@filterId) || (as.numeric(i) > 1))
+		stop("filter index out of bounds")
+	x
 })
-

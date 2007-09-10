@@ -1,7 +1,6 @@
 useDynLib("flowCore",biexponential_transform, inPolygon)
 
 import("methods")
-importClassesFrom("graph","graphNEL")
 importFrom("utils", "getFromNamespace", "assignInNamespace")
 importFrom("MASS", "cov.rob")
 importFrom("geneplotter", "smoothScatter","densCols")
@@ -14,27 +13,29 @@ importFrom("Biobase", "exprs", "exprs<-", "description", "description<-",
 
 importClassesFrom("Biobase", "eSet")
 
-exportClasses("flowFrame", "flowSet",
-              "filter", "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate","sampleFilter","multiFilter",
-              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","setOperationFilter", 
- 			  "norm2Filter", "kmeansFilter", "transform","transformMap","transformList","transformFilter")
+exportClasses("flowFrame", "flowSet","filterSet",
+              "filter", "concreteFilter", "parameterFilter","filterReference",
+			  "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate","sampleFilter",
+              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult",
+			  "setOperationFilter","subsetFilter","intersectFilter","complementFilter","unionFilter",
+ 			  "norm2Filter", "kmeansFilter", "expressionFilter", "transform","transformMap","transformList","transformFilter")
 
 exportMethods("initialize","description","phenoData","phenoData<-",
               "featureNames","names","colnames", "colnames<-", "keyword",
-              "%in%","%subset%","%&%","%on%","summary","identifier",
+              "%in%","%subset%","%on%","summary","identifier","identifier<-",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
-              "transform","split","Subset","filter","filterDetails",
+              "transform","split","Subset","filter","filterDetails","filterReference",
               "filterDetails<-","plot", "coerce","coerce<-","spillover",
               "compensate","fsApply","sampleNames", "each_row",
-              "each_col", "varLabels", "varLabels<-")
+              "each_col", "varLabels", "varLabels<-","sort")
 
 S3method("$", "flowFrame")
 
 export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
-export("read.FCS","read.flowSet", "read.FCSheader",
+export("read.FCS","read.flowSet", "read.FCSheader","filterSet","filterReference",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
        "arcsinhTransform", "splitScaleTransform","biexponentialTransform","logicleTransform","truncateTransform",
-       "rectangleGate","polygonGate","polytopeGate","ellipsoidGate",
-       "norm2Filter","kmeansFilter","print.filterSummary")
+       "rectangleGate","polygonGate","polytopeGate","ellipsoidGate","sampleFilter","expressionFilter",
+       "norm2Filter","kmeansFilter","print.filterSummary","%&%")
        

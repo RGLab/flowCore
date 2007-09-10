@@ -15,8 +15,6 @@ Objects can be created by calls of the form \code{new("sampleFilter", ...)}.
       \code{filter}. This is typically user specified but can be
       automatically deduced by certain filter operations, particularly
       boolean and set operations.}
-    \item{\code{parameters}:}{A character vector that identifies the name of
-      the parameters that this filter operates upon.}
   }
 }
 \section{Extends}{

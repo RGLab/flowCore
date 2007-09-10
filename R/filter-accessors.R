@@ -9,28 +9,29 @@
 ## ==========================================================================
 ## accessor method for slot parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("parameters", signature="filter",
-          definition=function(object)
-            object@parameters
-          )
-
+setMethod("parameters",signature("filter"),function(object) character(0))
+setMethod("parameters",signature("parameterFilter"),function(object) object@parameters)
+setMethod("parameters",signature("setOperationFilter"),function(object) unique(unlist(lapply(object@filters,parameters))))
 
 ## ==========================================================================
 ## summary method for filters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("summary",signature("filter"),function(object,...) {
-	l = as(object,"logical")
-	true = sum(l)
-	count= length(l)
-	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),
-                       name=object@filterId),class="filterSummary")
+setMethod("summary",signature("filter"),function(object,result,...) {
+	l = if(missing(result)) as(object,"logical") else as(result,"logical")
+	true=sum(l)
+	count=length(l)
+	new("filterSummary",name=identifier(object),true=true,count=count,p=c/l)
 })
 
+# setMethod("summary",signature("filter"),function(object,result,...) {
+# 	l = if(missing(result)) as(object,"logical") else as(result,"logical")
+# 	true = sum(l)
+# 	count= length(l)
+# 	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),
+#                        name=identifier(object)),class="filterSummary")
+# })
 
-## ==========================================================================
-## Summarize the filter applied to a dataset (***To be complete***)
-## 
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 ## Printing out a filter should give us something at least mildly sensible.
 setMethod("show",signature("filter"),function(object) 
 	cat(paste("A filter named '",object@filterId,"'\n",sep="")))
@@ -39,6 +40,10 @@ setMethod("show",signature("filter"),function(object)
 ## setMethod("length","filter",function(x) 1)
 setMethod("identifier", signature="filter",
           definition=function(object) object@filterId)
+setReplaceMethod("identifier",signature("filter","character"),function(object,value) {
+	object@filterId = value
+	object
+})
 
 
 ## ==========================================================================
@@ -48,8 +53,20 @@ setMethod("identifier", signature="filter",
 ## --------------------------------------------------------------------------
 setMethod("%subset%",signature("filter","filter"),
           function(e1,e2) {
-            new("subsetFilter",parameters=unique(c(e1@parameters,e2@parameters)),
-                filters=list(e1,e2),filterId=paste(e1@filterId,"in",e2@filterId))
+            new("subsetFilter",
+                filters=list(e1,e2),filterId=paste(identifier(e1),"in",identifier(e2)))
+})
+setMethod("%subset%",signature("list","filter"),function(e1,e2) lapply(e1,"%subset%",e2=e2))
+setMethod("%subset%",signature("filterSet","filter"),function(e1,e2) {
+	#Make a copy of the filterSet, preserving R semantics
+	x = as(as(e1,"list"),"filterSet")
+	n = names(e1)
+	x[[""]] = e2
+	target = as.symbol(identifier(e2))
+	for(i in n) {
+		x[[""]] = substitute(~ a %subset% b,list(a=as.symbol(i),b=target))
+	}
+	x
 })
 
 ## ==========================================================================
@@ -59,10 +76,11 @@ setMethod("%subset%",signature("filter","filter"),
 ## --------------------------------------------------------------------------
 setMethod("|",signature("filter","filter"),
           function(e1,e2) {
-            new("unionFilter",parameters=unique(c(e1@parameters,e2@parameters)),
-                filters=list(e1,e2),filterId=paste(e1@filterId,"or",e2@filterId))
+            new("unionFilter",
+                filters=list(e1,e2),filterId=paste(identifier(e1),"or",identifier(e2)))
           })
-
+setMethod("|",signature("list","filter"),function(e1,e2) lapply(e1,"|",e2=e2))
+setMethod("|",signature("filter","list"),function(e1,e2) lapply(e2,"|",e1=e1))
 
 ## ==========================================================================
 ## The & operator returns an object representing the intersection of two
@@ -72,9 +90,11 @@ setMethod("|",signature("filter","filter"),
 ## --------------------------------------------------------------------------
 setMethod("&",signature("filter","filter"),
           function(e1,e2) {
-            new("intersectFilter",parameters=unique(c(e1@parameters,e2@parameters)),
-                filters=list(e1,e2),filterId=paste(e1@filterId,"and",e2@filterId))
+            new("intersectFilter",
+                filters=list(e1,e2),filterId=paste(identifier(e1),"and",identifier(e2)))
           })
+setMethod("&",signature("list","filter"),function(e1,e2) lapply(e1,"&",e2=e2))
+setMethod("&",signature("filter","list"),function(e1,e2) lapply(e2,"&",e1=e1))
 
 
 
@@ -82,14 +102,15 @@ setMethod("&",signature("filter","filter"),
 ## The ! operator returns an object that simply takes the complement of the
 ## filter it returns.
 ## --------------------------------------------------------------------------
-setMethod("!",signature("filter"),function(e1) 
-	new("complementFilter",parameters=e1@parameters,filters=list(e1),
-            filterId=paste("not",e1@filterId)))
+setMethod("!",signature("filter"),function(x) {
+	new("complementFilter",filters=list(x),
+            filterId=paste("not",identifier(x)))
+})
 
 
 ## ==========================================================================
 ## --------------------------------------------------------------------------
-setMethod("%&%",signature("ANY","ANY"),function(e1,e2) e1 %subset% e2)
+"%&%" = function(e1,e2) e1 %subset% e2
 
 ## ==========================================================================
 ## Plotting method for filters lets us get a basic plot of the data and a 

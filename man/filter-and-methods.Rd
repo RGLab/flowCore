@@ -5,17 +5,23 @@
 \alias{\%&\%,ANY-method}
 \alias{\%subset\%,ANY-method}
 \alias{\%subset\%}
+\alias{&,filter,filter-method}
+\alias{&,filter,list-method}
+\alias{&,list,filter-method}
+\alias{\%subset\%,filter,filter-method}
+\alias{\%subset\%,list,filter-method}
 
-\title{Take the intersection of two filters with subset semantics}
+\title{Take the intersection of two filters}
 \description{
 
-The \code{\%subset\%} operator and its alias \code{\%&\%} are used to construct an intersection filter
-with subset semantics. For deterministic filters, such as rectangle, ellipse, and polygonal gates, the 
-result will be exactly equivalent to the usual intersection obtained with the \code{&} boolean operator.
+There are two notions of intersection in \code{flowCore}. First, there is the usual intersection boolean operator
+\code{&} that has been overridden to allow the intersection of two filters or of a filter and a list for convenience. There
+is also the \code{\%&\%} or \code{\%subset\%} operator that takes an intersection, but with subset semantics rather than simple
+intersection semantics. In other words, when taking a subset, calculations from \code{\link[flowCore]{summary}} and other methods are taken
+with respect to the right hand filter. This primarily affects percentage calculations, which are ordinarily calculated with respect
+to the entire population as well as data-driven gating procedures which will operate only on elements contained by the right hand filter.
+This becomes especially important when using filters such as \code{\link[flowCore]{norm2Filter}}
 
-However, the left hand filter is actually evaluated using the subset of events specified by the right hand filter. This
-will affect data-driven filters such as \code{\link[flowCore]{norm2Filter}} as well as the calculation of summary statistics returned
-by \code{\link[flowCore]{summary}} when applied to \code{\link[flowCore]{filterResult}}
 }
 
 \author{B. Ellis}
