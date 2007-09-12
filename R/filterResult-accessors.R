@@ -44,14 +44,21 @@ setMethod("summarizeFilter",signature("filterResult","parameterFilter"),function
 	ret
 })
 
+setMethod("summary",signature("filterResult"),function(object,...)
+	summary(filterDetails(object,object@filterId)$filter,object,...))
+
 
 ## ==========================================================================
 ## --------------------------------------------------------------------------
-setMethod("%in%",signature("ANY","filterResult"),function(x,table) {
-	if(x != table) stop("filterResult doesn't match left-hand side.")
+setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
+	frameId = identifier(x)
+	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
+		warning("Frame identifiers do not match. It is possible that this ",
+                        "filter is not compatible with this frame.")
+	if(nrow(x) != length(table@subSet))
+		stop("Number of rows in frame do not match those expected by this filter.")
 	as(table,"logical")
 })
-
 
 ## ==========================================================================
 ## Allow us to compare filterResults and flowFrames. This lets us check
@@ -76,18 +83,6 @@ setMethod("identifier", signature="filterResult",
           definition=function(object) object@frameId)
 
 
-## ==========================================================================
-## --------------------------------------------------------------------------
-# Redundant?
-# setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
-# 	frameId = identifier(x)
-# 	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
-# 		warning("Frame identifiers do not match. It is possible that this ",
-#                         "filter is not compatible with this frame.")
-# 	if(nrow(x) != length(table@subSet))
-# 		stop("Number of rows in frame do not match those expected by this filter.")
-# 	as(table,"logical")
-# })
 setMethod("[[",signature("filterResult"),function(x,i,j,drop=FALSE) {
 	if((is.character(i) && i != x@filterId) || (as.numeric(i) > 1))
 		stop("filter index out of bounds")
