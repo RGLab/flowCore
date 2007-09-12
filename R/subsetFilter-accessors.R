@@ -11,24 +11,34 @@ setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 			n = which(w)
 			r = filter(x[n,],table@filters[[1]])
 			filterDetails(y,identifier(table@filters[[1]])) = summarizeFilter(r,table@filters[[1]])
+			attr(w,'subsetCount') = sum(w)
 			w[n[!as(r,"logical")]] = FALSE
 			w
 		} else {
 			res = rep(NA,nrow(x))
 			ll  = paste(identifier(table@filters[[1]]),"in",names(y))
+			count  = rep(0,length(y))
 			for(i in seq(along=y)) {
 				w = as(y[[i]],"logical")
+				count[i] = sum(w)
 				n = which(w)
 				r = filter(x[n,],table@filters[[1]])
 				filterDetails(y,ll[i]) = summarizeFilter(r,table@filters[[1]])
 				w[n[!as(r,"logical")]] = FALSE
 				res[z] = i
 			}
-			structure(as.integer(res),levels=ll)
+			w = structure(as.integer(res),levels=ll)
+			attr(w,'subsetCount') = count
 		}
 	#We need to track our filterDetails to a higher level for summarizeFilter.
 	attr(z,'filterDetails') = filterDetails(y)
 	z
+})
+
+setMethod("summarizeFilter",signature("filterResult","subsetFilter"),function(result,filter) {
+	ret = callNextMethod()
+	ret$subsetCount = attr(result@subSet,'subsetCount')
+	ret
 })
 
 
@@ -36,10 +46,15 @@ setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
 ## summary method for subsetFilter
 ## --------------------------------------------------------------------------
 setMethod("summary","subsetFilter",function(object,result,...) {
-	e1 = as(object@filters[[1]],"logical")
-	e2 = as(object@filters[[2]],"logical")
-	true = sum(e1&e2)
-	count= sum(e2)
-	structure(list(true=true,false=count-true,n=count,p=true/count,q=1-(true/count),
-                       name=object@filterId),class="filterSummary")	
+	if(missing(result)) {
+		e1 = as(object@filters[[1]],"logical")
+		e2 = as(object@filters[[2]],"logical")
+		true = sum(e1&e2)
+		count= sum(e2)		
+		new("filterSummary",name=identifier(object),true=true,count=count,p=true/count)			
+	} else {
+		true = sum(as(result,"logical"))
+		count = filterDetails(result,result@filterId)$subsetCount
+		new("filterSummary",name=identifier(result),true=true,count=count,p=true/count)			
+	}
 })

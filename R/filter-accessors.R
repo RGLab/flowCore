@@ -17,11 +17,15 @@ setMethod("parameters",signature("setOperationFilter"),function(object) unique(u
 ## summary method for filters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",signature("filter"),function(object,result,...) {
-	l = if(missing(result)) as(object,"logical") else as(result,"logical")
+	if(missing(result))
+		stop("Only resolved filters may be summarized")
+	else
+		l = as(result,"logical")
 	true=sum(l)
 	count=length(l)
-	new("filterSummary",name=identifier(object),true=true,count=count,p=c/l)
+	new("filterSummary",name=identifier(object),true=true,count=count,p=true/count)
 })
+
 
 # setMethod("summary",signature("filter"),function(object,result,...) {
 # 	l = if(missing(result)) as(object,"logical") else as(result,"logical")

@@ -32,15 +32,6 @@ setMethod("show",signature(object="rectangleGate"),function(object) {
 })
 
 
-## ==========================================================================
-## summary method for rectangleGates
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("summary",signature(object="rectangleGate"),function(object,...) {
-	structure(sapply(seq(along=object@parameters),
-                         function(i) c(min=object@min[i],max=object@max[i])),
-                  names=object@parameters)
-})
-
 # Compose two rectangle gates together into a higher dimensional cube.
 setMethod("*",signature(e1="rectangleGate",e2="rectangleGate"),function(e1,e2) {
 	if(any(parameters(e1) %in% parameters(e2))) stop("Rectangle gate parameters overlap.")
