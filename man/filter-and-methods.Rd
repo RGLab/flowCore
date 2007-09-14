@@ -1,5 +1,7 @@
 \name{filter-and-methods}
 \docType{methods}
+\alias{intersectFilter-method}
+\alias{subsetFilter-method}
 \alias{\%&\%}
 \alias{\%&\%-methods}
 \alias{\%&\%,ANY-method}
@@ -10,6 +12,7 @@
 \alias{&,list,filter-method}
 \alias{\%subset\%,filter,filter-method}
 \alias{\%subset\%,list,filter-method}
+\alias{coerce,intersectFilter,call-method}
 
 \title{Take the intersection of two filters}
 \description{

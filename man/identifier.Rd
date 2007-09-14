@@ -3,6 +3,7 @@
 \alias{identifier-methods}
 \alias{identifier,filterResult-method}
 \alias{identifier,filter-method}
+\alias{identifier<-}
 
 \title{Retrieve the GUID of a Object}
 \description{Retrieve the GUID or globally unique identifier of a

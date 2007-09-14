@@ -20,14 +20,14 @@
 \alias{coerce,complementFilter,call-method}
 \alias{coerce,filterReference,concreteFilter-method}
 \alias{coerce,filterReference,call-method}
-\alias{coerce,formula,filter}
-\alias{coerce,character,filter}
-\alias{coerce,name,filter}
-\alias{coerce,call,filter}
-\alias{coerce,filterSet,list}
-\alias{coerce,list,filterSet}
-\alias{coerce,flowSet,flowFrame}
-\alias{coerce,flowFrame,filterSet}
+\alias{coerce,formula,filter-method}
+\alias{coerce,character,filter-method}
+\alias{coerce,name,filter-method}
+\alias{coerce,call,filter-method}
+\alias{coerce,filterSet,list-method}
+\alias{coerce,list,filterSet-method}
+\alias{coerce,flowSet,flowFrame-method}
+\alias{coerce,flowFrame,filterSet-method}
 
 \title{Force an Object to Belong to a Class}
 \description{ These functions manage the relations that allow coercing an object

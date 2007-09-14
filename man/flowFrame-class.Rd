@@ -8,7 +8,6 @@
 \alias{==,flowFrame,filterResult-method}
 \alias{Subset,flowFrame,ANY-method}
 \alias{Subset,flowFrame,logical-method}
-\alias{Subset,flowFrame,filter-metho}
 \alias{description,flowFrame-method}
 \alias{description<-,flowFrame,character-method}
 \alias{exprs,flowFrame-method}
@@ -29,10 +28,11 @@
 \alias{compensate,flowFrame,matrix-method}
 \alias{spillover,flowFrame-method}
 \alias{transform,flowFrame-method}
-\alias{split,flowFrame-method}
-\alias{split,flowFrame,filter-method}
-\alias{split,flowFrame,logicalFilterResult-method}
-\alias{split,flowFrame,multipleFilterResult-method}
+\alias{split,flowFrame,ANY,ANY-method}
+\alias{split,flowFrame,ANY-method}
+\alias{split,flowFrame,filter,ANY-method}
+\alias{split,flowFrame,logicalFilterResult,ANY-method}
+\alias{split,flowFrame,multipleFilterResult,ANY-method}
 \alias{ncol,flowFrame-method}
 \alias{nrow,flowFrame-method}
 \alias{identifier,flowFrame-method}
