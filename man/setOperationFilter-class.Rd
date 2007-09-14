@@ -1,6 +1,10 @@
 \name{setOperationFilter-class}
 \docType{class}
 \alias{setOperationFilter-class}
+\alias{complementFilter-class}
+\alias{unionFilter-class}
+\alias{intersectFilter-class}
+\alias{subsetFilter-class}
 
 \title{Class "setOperationFilter"}
 \description{}

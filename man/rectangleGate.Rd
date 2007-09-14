@@ -71,7 +71,7 @@ pop1 <- filter(GvHD,rect)
 sub3 <- Subset(GvHD, pop1)
 
 ## Multiply rectangle gates
-rectangleGate(filterId="FSC-",`FSC-H'=c(-Inf,50)) * rectangleGate(filterId="SSC+",`SSC-H'=c(50,Inf))
+rectangleGate(filterId="FSC-",`FSC-H`=c(-Inf,50)) * rectangleGate(filterId="SSC+",`SSC-H`=c(50,Inf))
 
 
 ## PolygonGate

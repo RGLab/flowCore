@@ -6,6 +6,7 @@
 \alias{[,flowSet,ANY-method}
 \alias{$,flowSet,character-method}
 \alias{[[,flowSet-method}
+\alias{[[,flowSet,ANY-method}
 \alias{[[<-,flowSet-method}
 \alias{Subset,flowSet,ANY}
 \alias{fsApply,flowSet-method}
@@ -25,9 +26,11 @@
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
 \alias{split,flowSet,ANY-method}
+\alias{split,flowSet,ANY,ANY-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
 \alias{Subset,flowSet,list-method}
+
 
 \title{'flowSet': a class for storing flow cytometry raw data from
 quantitative cell-based assays}

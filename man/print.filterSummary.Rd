@@ -4,6 +4,14 @@
 \alias{summary}
 \alias{summary-methods}
 \alias{summary,subsetFilter-method}
+\alias{show,filterSummary-method}
+\alias{print,filterSummary-method}
+\alias{length,filterSummary-method}
+\alias{names,filterSummary-method}
+\alias{coerce,filterSummary,data.frame-method}
+\alias{[[,filterSummary,numeric-method}
+\alias{[[,filterSummary,character-method}
+\alias{$,filterSummary,ANY-method}
 
 \title{Summarize the results after applying a filter}
 

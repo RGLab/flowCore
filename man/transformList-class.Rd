@@ -2,12 +2,13 @@
 \docType{class}
 \alias{transformList-class}
 \alias{colnames,transformList-method}
+\alias{c,transformList-method}
 
 \title{Class "transformList"}
 \description{Class "transformList"}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("transformList", ...)}.
-	 ~~ describe objects here ~~ 
+	 
 }
 \section{Slots}{
 	 \describe{

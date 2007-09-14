@@ -1,6 +1,7 @@
 \name{logicalFilterResult-class}
 \docType{class}
 \alias{logicalFilterResult-class}
+\alias{summary,logicalFilterResult-method}
 
 \title{Class "logicalFilterResult"}
 \description{Container to store the result of applying a \code{filter} on a

@@ -1,12 +1,23 @@
 \name{filterSet-class}
 \docType{class}
 \alias{filterSet-class}
+\alias{filterSet}
 \alias{filterReference,filterSet,character-method}
 \alias{identifier,filterSet-method}
 \alias{identifier,filterSet,character-method}
 \alias{names,filterSet-method}
 \alias{show,filterSet-method}
 \alias{sort,filterSet-method}
+\alias{\%subset\%,filterSet,filter-method}
+\alias{[,filterSet,character-method}
+\alias{[[,filterSet,character-method}
+\alias{[[<-,filterSet,NULL,ANY,filter-method}
+\alias{[[<-,filterSet,NULL,ANY,formula-method}
+\alias{[[<-,filterSet,character,ANY,formula-method}
+\alias{[[<-,filterSet,character,ANY,filter-method}
+\alias{[[<-,filterSet,missing,ANY,filter}
+\alias{[[<-,filterSet,ANY,ANY,filterReference-method}
+\alias{[[<-,filterSet,missing,ANY,filter-method}
 
 \title{Class filterSet}
 \description{A container for a collection of related filters. }
@@ -22,7 +33,7 @@ coerced to and from \code{list} objects using the \code{as} function.
   }
 }
 \section{Methods}{
-  \items{names}{An unsorted list of the names of the filters contained within the set.}
+  \item{names}{An unsorted list of the names of the filters contained within the set.}
   \item{sort}{Returns a topological sort of the names of the filters contained within the 
 set. Primarily used by internal functions (such as \code{\link{filter}}), this method is 
 also useful for planning gating strategy layouts and the like.}

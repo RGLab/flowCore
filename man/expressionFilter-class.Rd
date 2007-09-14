@@ -1,6 +1,9 @@
 \name{expressionFilter-class}
 \docType{class}
 \alias{expressionFilter-class}
+\alias{expressionFilter}
+\alias{show,expressionFilter-method}
+
 
 \title{Class "expressionFilter"}
 \description{A class which holds an arbitrary expression to be used as a filter.}

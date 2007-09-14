@@ -14,7 +14,6 @@
 \alias{|,filter,list-method}
 \alias{|,list,filter-method}
 
-
 \title{A class for representing filtering operations to be applied to flow data.}
 \description{
 The \code{filter} class is the virtual base class for all filter/gating objects

@@ -4,15 +4,21 @@
 \alias{filter,flowFrame,rectangleGate}
 \alias{filter,flowFrame,polygonGate}
 \alias{filter,flowFrame,norm2Filter}
+\alias{filter,flowFrame,filterSet-method}
 \alias{filter,flowSet,filter-method}
 \alias{filter,flowSet,list-method}
 \alias{draw,filter,flowFrame-method}
 \alias{summary,filter-method}
 \alias{show,filter-method}
 \alias{length,filter-method}
-
+\alias{formula,filter-method}
+\alias{character,filter-method}
+\alias{name,filter-method}
+\alias{call,filter-method}
+\alias{identifier<-,filter,character-method}
 
 \title{Filter FCS files}
+
 \description{
 This function links filter descriptions to a particular set of flow cytometry data allowing for the lightweight calculation
 of summary statistics common to flow cytometry analysis.
