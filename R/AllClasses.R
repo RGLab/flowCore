@@ -61,7 +61,13 @@ setClass("flowSet",
            }
            return(TRUE)
          })
-
+flowSet = function(...,phenoData) {
+	x = list(...)
+	if(length(x) == 1 && is.list(x[[1]])) x = x[[1]]
+	f = as(x,"flowSet")
+	if(!missing(phenoData)) phenoData(f) = phenoData
+	f
+}
 
 ## ===========================================================================
 ## Virtual filter/subsetting?
@@ -351,9 +357,16 @@ setClass("multipleFilterResult",
 ## overlapping sets
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
-         representation(subSet="logical"),
-         contains="filterResult",validity = function(object) if(!is.matrix(object@subSet)) "subSet must be a matrix" else TRUE)
-
+         representation(subSet="matrix",dependency="ANY"),
+         contains="filterResult")
+manyFilterResult = function(filters,frameId,dependency=NULL) {
+	q = new("manyFilterResult",
+		filterDetails = sapply(filters,slot,"filterDetails"),
+		subSet=do.call("cbind",lapply(filters,as,"logical")),
+		dependency=dependency)
+	colnames(q@subSet) = sapply(filters,slot,"filterId")
+	q
+}
 ## ===========================================================================
 ## randomFilterResult
 ## ---------------------------------------------------------------------------

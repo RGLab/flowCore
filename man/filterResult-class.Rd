@@ -5,11 +5,6 @@
 \alias{summary,filterResult-method}
 \alias{show,filterResult-method}
 \alias{[[,filterResult,ANY-method}
-\alias{[[,manyFilterResult,ANY-method}
-\alias{[[,multipleFilterResult,ANY-method}
-\alias{summary,manyFilterResult-method}
-\alias{names,manyFilterResult-method}
-\alias{length,manyFilterResult-method}
 
 
 \title{Class "filterResult" }

@@ -51,12 +51,6 @@ setMethod("summary",signature("filterResult"),function(object,...)
 ## ==========================================================================
 ## --------------------------------------------------------------------------
 setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
-	frameId = identifier(x)
-	if(all(!is.na(c(frameId,table@frameId))) && frameId != table@frameId)
-		warning("Frame identifiers do not match. It is possible that this ",
-                        "filter is not compatible with this frame.")
-	if(nrow(x) != length(table@subSet))
-		stop("Number of rows in frame do not match those expected by this filter.")
 	as(table,"logical")
 })
 
@@ -68,19 +62,18 @@ setMethod("%in%",c("flowFrame","filterResult"),function(x,table) {
 setMethod("==",signature("flowFrame","filterResult"),
           definition=function(e1,e2) {
             i1 = identifer(e1)
-            i2 = identifier(e2)
+            i2 = e2@frameId
             (length(i1) == 0 || length(i2) == 0 || i1 == i2)
           })
 #Does S4 do this for us automagically? I don't know!
 setMethod("==",signature("filterResult","flowFrame"),
           definition=function(e1,e2) e2==e1)
 
-
 ## ==========================================================================
 ## identifier method for filterResult
 ## --------------------------------------------------------------------------
 setMethod("identifier", signature="filterResult",
-          definition=function(object) object@frameId)
+          definition=function(object) object@filterId)
 
 
 setMethod("[[",signature("filterResult"),function(x,i,j,drop=FALSE) {

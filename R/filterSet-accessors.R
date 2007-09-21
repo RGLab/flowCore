@@ -93,7 +93,7 @@ setMethod("sort",signature("filterSet"),function(x,decreasing=FALSE,dependencies
 		}
 	}
 	# Parent Set Size
-	P = apply(D,2,sum) 
+	P = colSums(D)
 	O = NULL 
 	G = n[P>0]
 	while(length(G) > 0) {
@@ -108,6 +108,8 @@ setMethod("sort",signature("filterSet"),function(x,decreasing=FALSE,dependencies
 		if(length(G)>0 && length(O2)==0)
 			stop(paste("Circular reference detected in filterSet in one or more of:",paste(G,sep=",")))
 	}
+	#Add in the leaves
+	O = c(O,n[P==0])
 	if(decreasing)
 		O = rev(O)
 	if(dependencies)

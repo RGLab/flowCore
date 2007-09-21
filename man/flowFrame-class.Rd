@@ -33,6 +33,7 @@
 \alias{split,flowFrame,filter,ANY-method}
 \alias{split,flowFrame,logicalFilterResult,ANY-method}
 \alias{split,flowFrame,multipleFilterResult,ANY-method}
+\alias{split,flowFrame,manyFilterResult,ANY-method}
 \alias{ncol,flowFrame-method}
 \alias{nrow,flowFrame-method}
 \alias{identifier,flowFrame-method}
@@ -100,7 +101,8 @@
     \item{spillover}{extract spillover matrix from description slot if
       present}
     \item{split}{split \code{flowFrame} object according to a filter or
-      gate.}
+      gate. For most types of filters, an optional \code{flowSet=TRUE} parameter
+      will create a \code{flowSet} rather than a simple list.}
     \item{identifier}{extract GUID. Returns file name if not available. See
       \code{\link[flowCore]{identifier}} for details.}
     \item{featureNames}{extract parameter description.}

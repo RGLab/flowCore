@@ -54,7 +54,7 @@ setMethod("summary","subsetFilter",function(object,result,...) {
 		new("filterSummary",name=identifier(object),true=true,count=count,p=true/count)			
 	} else {
 		true = sum(as(result,"logical"))
-		count = filterDetails(result,result@filterId)$subsetCount
-		new("filterSummary",name=identifier(result),true=true,count=count,p=true/count)			
+		count = filterDetails(result,identifier(object))$subsetCount
+		new("filterSummary",name=identifier(object),true=true,count=count,p=true/count)			
 	}
 })

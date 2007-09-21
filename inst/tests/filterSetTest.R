@@ -18,15 +18,29 @@ fs[[""]] = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
 filter1 = rectangleGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
 filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
 
+format(filter1)
+
+
 as("filter1","filter")
 as(as.name("filter1"),"filter")
 as(~ filter1 %subset% filter2,"filter")
 
-fs[["Combined"]] = ~ filter1 %subset% `Live Cells`
+fs[["Combined"]] = ~ `Live Cells` %subset% filter1
 as(fs,"list")
+fs
+sort(fs,dependencies=TRUE)
 f = filter(b08,fs)
 f
-summary(f)
+as.data.frame(f)
+f@subSet[1:10,]
+colSums(f@subSet)
+summary(f[[1]])
+summary(f[[2]])
+summary(f[[3]])
+rownames(f@dependency)[rowSums(f@dependency)==0]
+
+split(b08,f,flowSet=TRUE)
+split(b08,f,drop=TRUE,flowSet=TRUE)
 
 
 
