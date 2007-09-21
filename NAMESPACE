@@ -16,7 +16,7 @@ importClassesFrom("Biobase", "eSet")
 exportClasses("flowFrame", "flowSet","filterSet",
               "filter", "concreteFilter", "parameterFilter","filterReference",
 			  "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate","sampleFilter",
-              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult",
+              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","manyFilterResult",
 			  "setOperationFilter","subsetFilter","intersectFilter","complementFilter","unionFilter",
  			  "norm2Filter", "kmeansFilter", "expressionFilter", "transform","transformMap","transformList","transformFilter")
 
@@ -33,9 +33,9 @@ S3method("$", "flowFrame")
 
 export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
-export("read.FCS","read.flowSet", "read.FCSheader","filterSet","filterReference",
+export("read.FCS","read.flowSet", "read.FCSheader","filterSet","filterReference","manyFilterResult","flowSet",
 	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
        "arcsinhTransform", "splitScaleTransform","biexponentialTransform","logicleTransform","truncateTransform",
        "rectangleGate","polygonGate","polytopeGate","ellipsoidGate","sampleFilter","expressionFilter",
-       "norm2Filter","kmeansFilter","print.filterSummary","%&%")
+       "norm2Filter","kmeansFilter","print.filterSummary","%&%","as.data.frame.manyFilterResult")
        

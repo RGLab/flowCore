@@ -234,17 +234,30 @@ setMethod("split", signature("flowFrame","filter"),
           )
 #We actually filter on filterResults and multipleFilterResults
 setMethod("split", signature("flowFrame","logicalFilterResult"),
-          definition=function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
+          definition=function(x,f,drop=FALSE,population=NULL,prefix=NULL,flowSet=FALSE,...) {
 	        if(is.null(population)) population=f@filterId
 			if(!is.null(prefix)) paste(prefix,population,sep="")
-            structure(list(x[f@subSet,],x[!f@subSet,]),
+            out = structure(list(x[f@subSet,],x[!f@subSet,]),
                       names=c(paste(population,"+",sep=""),
                         paste(population,"-",sep="")))
+			if(length(flowSet) > 0 && flowSet) flowSet(out) else out
           })
 setMethod("split", signature("flowFrame","multipleFilterResult"),
-          function(x,f,drop=FALSE,prefix=NULL,...) {
+          function(x,f,drop=FALSE,prefix=NULL,flowSet=FALSE,...) {
             nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
-            structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
+            out = structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
+			if(length(flowSet) > 0 && flowSet) flowSet(out) else out
+})
+setMethod("split",signature("flowFrame","manyFilterResult"),function(x,f,drop=FALSE,prefix=NULL,flowSet=FALSE,...) {
+	#If drop is TRUE then only use results without children
+	nn  = if(drop) rownames(f@dependency)[rowSums(f@dependency)==0] else	names(f)
+	out = structure(lapply(nn,function(i) x[f[[i]],]),names=if(is.null(prefix)) nn else paste(prefix,nn,sep=""))
+	if(length(flowSet) > 0 && flowSet) {
+		print(data.frame(name=nn,as.data.frame(f)[nn,],row.names=nn))
+		flowSet(out,phenoData=new("AnnotatedDataFrame",
+			data=data.frame(name=I(nn),as.data.frame(f)[nn,],row.names=nn),
+			varMetadata=data.frame(labelDescription=I(c("Name","Filter")),row.names=c("name","filter"))))
+	} else out
 })
 setMethod("split",signature("flowFrame","ANY"),function(x,f,drop=FALSE,prefix=NULL,...) 
 	stop("invalid type for flowFrame split"))
@@ -326,24 +339,35 @@ setMethod("transform",
 setMethod("filter", signature(x="flowFrame", filter="filter"),
           function(x, filter) {
             result <- as(x %in% filter, "filterResult")
-            result@filterId <- filter@filterId
-            filterDetails(result, result@filterId) <- filter
+			identifier(result) = identifier(filter)
+            filterDetails(result, identifier(filter)) <- filter
             result@frameId <- identifier(x)
             result
           })
 
 setMethod("filter",signature(x="flowFrame",filter="filterSet"),function(x,filter) {
 	# A list of filter names sorted by dependency
-	fl = sort(filter)
-	# A place to evaluate filters
-	e  = new.env()
-	assign(".__frame",x,env=e)
-	# Evaluate each 
-	r = lapply(as(filter,"list")[fl],function(f) {
-		eval(as.call(c(as.symbol("filter"),as.symbol(".__frame"),f)),e)		
+	fl = sort(filter,dependencies=TRUE)
+	e  = filterSet()
+	m  = as(filter,"list")
+	print(m)
+	r  = lapply(fl,function(n) {
+		e[[n]] = eval(m[[n]])
+		filter(x,e[n])
 	})
+	# A place to evaluate filters
+#	e  = new.env()
+#	assign(".__frame",x,env=e)
+	# Evaluate each 
+#	r = lapply(as(filter,"list")[fl],function(f) {
+#		if(is(f,"formula")) f = eval(as.call(c(as.symbol("as"),f,"filter")),e)
+#		print(f)
+#		eval(as.call(c(as.symbol("filter"),as.symbol(".__frame"),f)),e)		
+#	})
+	print(r)
 	if(all(sapply(r,is,"logicalFilterResult"))) {
 		#Combine into a many filter result
+		manyFilterResult(r,frameId=identifier(x),attr(fl,'AdjM'))
 	} else 
 		r
 })

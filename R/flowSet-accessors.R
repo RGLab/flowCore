@@ -157,11 +157,11 @@ setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
 ## ==========================================================================
 ## split method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,...) {
+setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,flowSet=FALSE,...) {
 	#Split always returns a list
 	sample.name = sampleNames(x)
 	fsApply(x,function(y) {
-		l = split(y,f,drop,population,prefix,...)
+		l = split(y,f,drop,population,prefix,flowSet=flowSet,...)
 		names(l) = paste(names(l),"in",sample.name[1])
 		sample.name <<- sample.name[-1]
 		l

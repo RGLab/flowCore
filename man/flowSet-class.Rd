@@ -1,6 +1,5 @@
 \name{flowSet-class}
 \docType{class}
-\alias{flowSet}
 \alias{flowSet-class}
 \alias{[,flowSet-method}
 \alias{[,flowSet,ANY-method}

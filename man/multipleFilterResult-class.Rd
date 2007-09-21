@@ -4,6 +4,7 @@
 \alias{length,multipleFilterResult-method}
 \alias{names,multipleFilterResult-method}
 \alias{[[,multipleFilterResult-method}
+\alias{[[,multipleFilterResult,ANY-method}
 \alias{summary,multipleFilterResult-method}
 
 \title{Class "multipleFilterResult"}
