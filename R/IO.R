@@ -153,8 +153,11 @@ readFCSheader <- function(con) {
 readFCStext <- function(con, offsets, debug) {
 
     seek(con, offsets["textstart"])
-    txt <- readChar(con, offsets["textend"]-offsets["textstart"]+1)
-    txt <- iconv(txt, "", "latin1", sub="byte")
+	#Certain software (e.g. FlowJo 8 on OS X) likes to put characters into
+	#files that readChar can't read, yet readBin, rawToChar and iconv can 
+	#handle just fine.
+    txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
+    txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
     delimiter <- substr(txt, 1, 1)
     sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
     
