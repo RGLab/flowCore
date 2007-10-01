@@ -6,6 +6,7 @@
 \alias{filter,flowFrame,norm2Filter}
 \alias{filter,flowFrame,filterSet-method}
 \alias{filter,flowSet,filter-method}
+\alias{filter,flowSet,filterSet-method}
 \alias{filter,flowSet,list-method}
 \alias{draw,filter,flowFrame-method}
 \alias{summary,filter-method}

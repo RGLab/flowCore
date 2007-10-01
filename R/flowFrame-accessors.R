@@ -259,6 +259,8 @@ setMethod("split",signature("flowFrame","manyFilterResult"),function(x,f,drop=FA
 			varMetadata=data.frame(labelDescription=I(c("Name","Filter")),row.names=c("name","filter"))))
 	} else out
 })
+setMethod("split",signature("flowFrame","filterSet"),function(x,f,drop=FALSE,...) 
+	split(x,filter(x,f),drop,...))
 setMethod("split",signature("flowFrame","ANY"),function(x,f,drop=FALSE,prefix=NULL,...) 
 	stop("invalid type for flowFrame split"))
 
@@ -350,7 +352,6 @@ setMethod("filter",signature(x="flowFrame",filter="filterSet"),function(x,filter
 	fl = sort(filter,dependencies=TRUE)
 	e  = filterSet()
 	m  = as(filter,"list")
-	print(m)
 	r  = lapply(fl,function(n) {
 		e[[n]] = eval(m[[n]])
 		filter(x,e[n])
@@ -364,7 +365,6 @@ setMethod("filter",signature(x="flowFrame",filter="filterSet"),function(x,filter
 #		print(f)
 #		eval(as.call(c(as.symbol("filter"),as.symbol(".__frame"),f)),e)		
 #	})
-	print(r)
 	if(all(sapply(r,is,"logicalFilterResult"))) {
 		#Combine into a many filter result
 		manyFilterResult(r,frameId=identifier(x),attr(fl,'AdjM'))

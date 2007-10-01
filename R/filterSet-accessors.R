@@ -10,10 +10,11 @@ setReplaceMethod("[[",signature(x="filterSet",i="ANY",value="filterReference"),f
 	x
 })
 setReplaceMethod("[[",signature(x="filterSet",i="NULL",value="formula"),function(x,i,j,...,value) {
-	if(length(value) < 3)
-		stop("Formula must have a lefthand side.")
-	a = value[[2]]
-	x[[as.character(a)]] = value
+	if(length(value) == 3) {
+		a = value[[2]]
+		x[[as.character(a)]] = value
+	} else
+		x[[""]] = value
 	x
 })
 setReplaceMethod("[[",signature(x="filterSet",i="character",value="formula"),function(x,i,j,...,value) {

@@ -297,6 +297,7 @@ setMethod("filter",signature=signature(x="flowSet",filter="filter"),
           function(x,filter) {
             fsApply(x,function(x) filter(x,filter))
 })
+setMethod("filter",signature(x="flowSet",filter="filterSet"),function(x,filter) fsApply(x,function(x) filter(x,filter)))
 
 setMethod("filter",signature(x="flowSet",filter="list"),function(x,filter) {
 	if(is.null(names(filter)))

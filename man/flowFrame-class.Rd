@@ -31,6 +31,7 @@
 \alias{split,flowFrame,ANY,ANY-method}
 \alias{split,flowFrame,ANY-method}
 \alias{split,flowFrame,filter,ANY-method}
+\alias{split,flowFrame,filterSet,ANY-method}
 \alias{split,flowFrame,logicalFilterResult,ANY-method}
 \alias{split,flowFrame,multipleFilterResult,ANY-method}
 \alias{split,flowFrame,manyFilterResult,ANY-method}

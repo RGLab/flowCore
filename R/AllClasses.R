@@ -268,6 +268,8 @@ expressionFilter = function(expr,...,filterId) {
 setClass("filterSet",representation(env="environment"),prototype=prototype(env=new.env(hash=TRUE,parent=emptyenv())))
 filterSet = function(...) {
 	filters = list(...)
+	#Allow the list(x,y,z) format as well.
+	if(length(filters)==1 && is.list(filters[[1]])) filters = filters[[1]]
 	if(length(filters) == 0)
 		new("filterSet",env=new.env(parent=emptyenv()))
 	else
