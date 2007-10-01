@@ -44,7 +44,7 @@ setAs("complementFilter","logical",function(from)
 ## Allows for the resolution of filterReferences and formulas
 setAs("filterReference","concreteFilter",function(from) {
 	x = from@env[[from@name]]
-	if(is.null(x)) stop("Unable to resolve filter reference")
+	if(is.null(x)) stop(paste("Unable to resolve filter reference:",from@name))
 	x
 })
 setAs("formula","filter",function(from) {
@@ -108,9 +108,10 @@ setAs("list","filterSet",function(from) {
 	fs = filterSet()
 	e  = new.env()
 	n    = names(from)
+	if(is.null(n) || length(n)==0) n = rep("",length(from))
 	for(i in 1:length(from)) {
 		filter = from[[i]]
-		name   = if(nzchar(n[i])) n[i] else NULL
+		name   = if(!is.null(n[i]) && nzchar(n[i])) n[i] else NULL
 		fs[[name]] = eval(filter,e)
 	}
 	fs
