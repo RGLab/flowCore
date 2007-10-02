@@ -12,7 +12,9 @@ setMethod("%in%",signature("flowFrame",table="norm2Filter"),function(x,table) {
 		stop("Method must be either 'covMcd' or 'cov.rob'")
 	cov = switch(table@method,
 		covMcd = {
-			if(nrow(y)>table@n) covMcd(y[sample(nrow(y),table@n),]) else covMcd(y)
+                  ## covMcd will be deprecated, need to use CovMcd which produces S4 output
+			tmp <- if(nrow(y)>table@n) CovMcd(y[sample(nrow(y),table@n),]) else CovMcd(y)
+                        list(center=tmp@center, cov=tmp@cov)
 		},
 		cov.rob={cov.rob(y)},
 		stop("How did you get here?")
