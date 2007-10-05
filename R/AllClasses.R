@@ -472,11 +472,11 @@ logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
 ## Truncation Transformation
 truncateTransform <- function(transformationId, a=1){
   t= new("transform",.Data=function(x){
-      x[x<a] <- a
-        x
-      })
-    t@transformationId = transformationId
-    t
+    x[x<=a] <- a
+    x
+  })
+  t@transformationId = transformationId
+  t
 }
 
 ## Scale Transformation
