@@ -169,6 +169,29 @@ setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=
 })
 
 
+setMethod("split",signature("flowSet","list"),
+          function(x,f,drop=FALSE,population=NULL,
+                   prefix=NULL,flowSet=FALSE,...)
+      {
+          sample.name = sampleNames(x)
+          lf <- length(f)
+          lx <- length(x)
+          if(lf!=lx)
+              stop("list of filter results must be same length as flowSet")
+          if(!all(sapply(f, is, "filterResult")))
+              stop("list must be list of filter results")
+          res <- vector(mode="list", length=lf)
+          for(i in 1:lf){
+              l <- split(x[[i]], f[[i]], drop, population,
+                                prefix, flowSet=flowSet,...)
+              names(l) <- paste(names(l),"in",sample.name[i])
+              res[[i]] <- l
+          }
+          res
+      })
+
+
+
 ## ==========================================================================
 ## keyword method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
