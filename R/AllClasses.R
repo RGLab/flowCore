@@ -1,4 +1,10 @@
-## Class definitions and contructors if available
+## =========================================================================##
+## =========================================================================##
+##              Class definitions and contructors if available              ##
+## =========================================================================##
+## =========================================================================##
+
+
 
 
 ## ===========================================================================
@@ -7,18 +13,20 @@
 ## A container for flow cytometry measurements with slots exprs, parameters
 ## and description. exprs contains measurement values, description contains 
 ## information from file headers of FCS file and parameters contains
-## information about the different FCS measurement parameters (i.e. channels)
+## information about the FCS measurement parameters (i.e. channels) available
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
          representation(exprs="matrix",
                         parameters="AnnotatedDataFrame",
                         description="list"),
          prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
-           parameters=new("AnnotatedDataFrame",
-             data=data.frame(name=I(character(0))),
-             varMetadata=data.frame(labelDescription="Name in frame",
-               row.names="name")),
-           description=list(note="empty")))
+         parameters=new("AnnotatedDataFrame",
+         data=data.frame(name=I(character(0))),
+         varMetadata=data.frame(labelDescription="Name in frame",
+         row.names="name")),
+         description=list(note="empty")))
+
+
 
 ## ===========================================================================
 ##  flowSet
@@ -32,83 +40,101 @@ setClass("flowSet",
                         phenoData="AnnotatedDataFrame",
                         colnames="character"),
          prototype=list(frames=new.env(hash=TRUE, parent=emptyenv()),
-           phenoData=new("AnnotatedDataFrame",
-             data=data.frame(),
-             varMetadata=data.frame()),
-           colnames=character(0)),
+         phenoData=new("AnnotatedDataFrame",
+         data=data.frame(),
+         varMetadata=data.frame()),
+         colnames=character(0)),
          validity=function(object){
-           nc <- length(colnames(object))
-           ## Make sure that all of our samples list
-           name.check <- is.na(match(sampleNames(object),ls(object@frames,
-             all.names=TRUE)))
-           if(any(name.check)) {
-             name.list <- paste(sampleNames(object)[name.check],sep=",")
-             return(paste("These objects are not in the data environment:",name.list))
-           }
-           ##Ensure that all frames match our colnames
-           if(!all(sapply(sampleNames(object),function(i) {
-             x = get(i,env=object@frames)
-             if(identical(object@colnames, colnames(x))){
-               TRUE
-             }else{ 
-               return(paste(i, "failing colnames check: ",
-                             paste(object@colnames, sep=","),
-                             "vs", paste(colnames(x), sep=",")))
+             nc <- length(colnames(object))
+             ## Make sure that all of our samples list
+             name.check <- is.na(match(sampleNames(object),ls(object@frames,
+                                                              all.names=TRUE)))
+             if(any(name.check)) {
+                 name.list <- paste(sampleNames(object)[name.check],sep=",")
+                 return(paste("These objects are not in the data environment:",name.list))
              }
-           }))){
-             return("Some items identified in the data environment either ",
-                     "have the wrong dimension or type.")
-           }
-           return(TRUE)
+             ##Ensure that all frames match our colnames
+             if(!all(sapply(sampleNames(object),function(i) {
+                 x = get(i,env=object@frames)
+                 if(identical(object@colnames, colnames(x))){
+                     TRUE
+                 }else{ 
+                     return(paste(i, "failing colnames check: ",
+                                  paste(object@colnames, sep=","),
+                                  "vs", paste(colnames(x), sep=",")))
+                 }
+             }))){
+                 return("Some items identified in the data environment either ",
+                        "have the wrong dimension or type.")
+             }
+             return(TRUE)
          })
+
+## constructor
 flowSet = function(...,phenoData) {
-	x = list(...)
-	if(length(x) == 1 && is.list(x[[1]])) x = x[[1]]
-	f = as(x,"flowSet")
-	if(!missing(phenoData)) phenoData(f) = phenoData
-	f
+    x = list(...)
+    if(length(x) == 1 && is.list(x[[1]])) x = x[[1]]
+    f = as(x,"flowSet")
+    if(!missing(phenoData)) phenoData(f) = phenoData
+    f
 }
 
+
+
 ## ===========================================================================
-## Virtual filter/subsetting?
+## Virtual filter and derived concreteFilter and parameterFilter
 ## ---------------------------------------------------------------------------
-## An object describing a selection applied to a data matrix. Consist of
-## a functions that return logical vectors subsetting the data
+## A class describing a selection applied to a data matrix. Consist of
+## a filterId and the names of the parameters to operate on (for parameter
+## filters only). Specific filters all inherit from either of these two
+## classes
 ## ---------------------------------------------------------------------------
 setClass("filter", 
-         representation("VIRTUAL",filterId="character"),prototype=prototype(filterId=""),
-			validity=function(object) {
-							if(length(object@filterId) != 1)
-								"'filterId' must have a length of one."
-							else
-								TRUE
-						})
-setClass("concreteFilter","filter")
-setClass("parameterFilter",representation(parameters="character"),contains="concreteFilter",prototype=prototype(parameters=""))
+         representation("VIRTUAL", filterId="character"),
+         prototype=prototype(filterId=""),
+         validity=function(object) {
+             if(length(object@filterId) != 1)
+                 "'filterId' must have a length of one."
+             else
+                 TRUE
+         })
+setClass("concreteFilter", "filter")
+setClass("parameterFilter", representation(parameters="character"),
+         contains="concreteFilter", prototype=prototype(parameters=""))
+
+
 
 ## ===========================================================================
 ## Rectangular gate
 ## ---------------------------------------------------------------------------
+## A class describing a 2D rectangular region in the parameter space. Slots
+## min and max hold the boundaries in the two dimensions
+## ---------------------------------------------------------------------------
 setClass("rectangleGate",
-          representation(min="numeric",
+         representation(min="numeric",
                         max="numeric"),
          contains="parameterFilter",
          prototype=list(filterId="Rectangle Gate",
-           min=0,max=Inf)
+         min=0,max=Inf)
          )
 
+## constructor
 rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
-			x = sort(x);c("min"=x[1],"max"=x[2])
+            x = sort(x);c("min"=x[1],"max"=x[2])
 		})
-	new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
-            min=.gate[1,], max=.gate[2,])
+    new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
+        min=.gate[1,], max=.gate[2,])
 }
+
 
 
 ## ===========================================================================
 ## Polygon gate
+## ---------------------------------------------------------------------------
+## A class describing a 2D polygonal region in the parameter space. Slot
+## boundary holds the vertices of the polygon in a 2 colum matrix
 ## ---------------------------------------------------------------------------
 setClass("polygonGate",
          representation(boundaries="matrix"),
@@ -117,20 +143,26 @@ setClass("polygonGate",
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) || nrow(object@boundaries)<2)
-               msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
+                 msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
              return(msg)
          })
 
+## constructor
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
-	if(missing(boundaries) || !is.matrix(boundaries)) 
-		boundaries = as.matrix(if(missing(boundaries)) do.call("cbind",list(...)) else boundaries)
+    if(missing(boundaries) || !is.matrix(boundaries)) 
+        boundaries = {as.matrix(if(missing(boundaries)) do.call("cbind",list(...))
+        else boundaries)}
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
         boundaries=boundaries)
 }
 
 
+
 ## ===========================================================================
 ## Polytope gate
+## ---------------------------------------------------------------------------
+## A class describing a 2D polytope region in the parameter space. Slot
+## boundary holds the vertices of the polygon in a 2 colum matrix
 ## ---------------------------------------------------------------------------
 setClass("polytopeGate",
          representation(boundaries="matrix"),
@@ -144,18 +176,22 @@ setClass("polytopeGate",
              return(msg)
          })
 
+## constructor
 polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
     if(missing(.gate) || !is.matrix(.gate))
-      ##nrowGate <- max(unlist(lapply(list(...),length)))
-      .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
-         
+        .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
     new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
         boundaries=.gate)
 }
 
 
+
 ## ===========================================================================
 ## Ellipsoid gate
+## ---------------------------------------------------------------------------
+## A class describing a 2D polytope region in the parameter space. Slots
+## focus and distance hold the xy position of the centroid and the distance
+## respectively.
 ## ---------------------------------------------------------------------------
 setClass("ellipsoidGate",
          representation(focus="matrix",
@@ -181,13 +217,17 @@ ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
         focus=.gate, distance=distance)
 }
 
+
+
 ## ===========================================================================
 ## norm2Filter
 ## ---------------------------------------------------------------------------
-## the slot method holds the method argument to fitNorm2
-## the slot scale.factor holds the scalefac argument to fitNorm2
+## A class to describe the fit of a bivariate normal distribution.
+## Slot method holds the method argument to fitNorm2,
+## slot scale.factor holds the scalefac argument to fitNorm2,
 ## transformation holds a list of length giving transformations, if applicable
-## that are applied to the data before gating
+## that are applied to the data before gating. n is the number of points used
+## in the subsampling step.
 ## ---------------------------------------------------------------------------
 setClass("norm2Filter",
          representation(method="character",
@@ -196,24 +236,26 @@ setClass("norm2Filter",
                         n="numeric"),
          contains="parameterFilter")
 
-norm2Filter <- function(x,y,method="covMcd",scale.factor=1,filterId="norm2Gate",
-                        n=50000,...) {
-	if(missing(y)) {
-		if(length(x)==1)
-			stop("You must specify two parameters for a norm2 gate.")
-		if(length(x)>2)
-			warning("Only the first two parameters will be used.")
-		y=x[2]
-		x=x[1]
-	} else {
-		if(length(x)>1 || length(y)>1)
-			warning("Only the first two parameters from 'x' and ",
-                                "'y' will be used.")
-			x = x[1]
-			y = y[1]
-	}
-	new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
-            filterId=filterId,n=50000,...)
+## constructor
+norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
+                        filterId="norm2Gate", n=50000,...)
+{
+    if(missing(y)) {
+        if(length(x)==1)
+            stop("You must specify two parameters for a norm2 gate.")
+        if(length(x)>2)
+            warning("Only the first two parameters will be used.")
+        y=x[2]
+        x=x[1]
+    } else {
+        if(length(x)>1 || length(y)>1)
+            warning("Only the first two parameters from 'x' and ",
+                    "'y' will be used.")
+        x = x[1]
+        y = y[1]
+    }
+    new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
+        filterId=filterId,n=n,...)
 }
 
 
@@ -224,19 +266,63 @@ setClass("kmeansFilter",
          representation(populations="character"),
          contains="parameterFilter")
 
+## contructor
 ## not sure why but the parameters in list format can not be read.
-kmeansFilter = function(filterId="kmeans",...) {
-	l = length(list(...))
-	if(l>1)
+kmeansFilter = function(filterId="kmeans",...)
+{
+    l = length(list(...))
+    if(l>1)
 	stop("k-means filters only operate on a single parameter.")
-	x = ..1
-	if(is.list(x)) {
-		new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],filterId=filterId)
-	} else {
-		new("kmeansFilter",parameters=names(list(...))[1],populations=x, filterId=filterId)
-	}
+    x = ..1
+    if(is.list(x)) {
+        new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],
+            filterId=filterId)
+    } else {
+        new("kmeansFilter",parameters=names(list(...))[1],populations=x,
+            filterId=filterId)
+    }
 }
 
+
+
+## ===========================================================================
+## curv2Filter
+## this filter can hold parameters to find siginficant high density regions
+## in two dimensions based on Matt Wand's feature software
+## ---------------------------------------------------------------------------
+setClass("curv2Filter",
+         representation(bwFac="numeric",
+                        gridsize="numeric"),
+         contains="parameterFilter")
+
+##constructor
+curv2Filter <-
+    function(x, y, filterId="curv2Filter", bwFac=1.2,
+             gridsize=rep(151,2), ...)
+{
+    if(!is.numeric(bwFac) || length(bwFac)!=1)
+        stop("'bwFac must be numeric skalar")
+    if(!is.numeric(gridsize) || length(gridsize)!=2)
+        stop("'gridsize must be numeric skalar")
+    if(missing(y)) {
+        if(length(x)==1)
+            stop("You must specify two parameters for a curv2 filter.")
+        if(length(x)>2)
+            warning("Only the first two parameters will be used.")
+        y=x[2]
+        x=x[1]
+    } else {
+        if(length(x)>1 || length(y)>1)
+            warning("Only the first two parameters from 'x' and ",
+                    "'y' will be used.")
+        x = x[1]
+        y = y[1]
+    }
+    new("curv2Filter",parameters=c(x,y), bwFac=bwFac, gridsize=gridsize,
+        filterId=filterId, ...)
+}
+
+   
 
 ## ===========================================================================
 ## sampleFilter 
@@ -379,6 +465,8 @@ setClass("randomFilterResult",
 #
 # filterSummary now becomes a legitimate class.
 setClass("filterSummary",representation(name="character",true="numeric",count="numeric",p="numeric"))
+
+
 
 ## ===========================================================================
 ## transform
