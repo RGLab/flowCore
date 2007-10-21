@@ -8,34 +8,42 @@ importFrom("graphics", "plot")
 
 
 importFrom("Biobase", "exprs", "exprs<-", "description", "description<-",
-    "phenoData","phenoData<-","multiassign", "sampleNames","sampleNames<-",
-    "featureNames","featureNames<-", "varLabels", "varLabels<-")
+           "phenoData","phenoData<-","multiassign", "sampleNames",
+           "sampleNames<-", "featureNames","featureNames<-", "varLabels",
+           "varLabels<-")
 
 importClassesFrom("Biobase", "eSet")
 
 exportClasses("flowFrame", "flowSet","filterSet",
               "filter", "concreteFilter", "parameterFilter","filterReference",
-			  "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate","sampleFilter",
-              "filterResult", "randomFilterResult", "logicalFilterResult","multipleFilterResult","manyFilterResult",
-			  "setOperationFilter","subsetFilter","intersectFilter","complementFilter","unionFilter",
- 			  "norm2Filter", "kmeansFilter", "expressionFilter", "transform","transformMap","transformList","transformFilter")
+              "rectangleGate", "polygonGate", "polytopeGate","ellipsoidGate",
+              "sampleFilter", "filterResult", "randomFilterResult",
+              "logicalFilterResult","multipleFilterResult","manyFilterResult",
+              "setOperationFilter", "subsetFilter", "intersectFilter",
+              "complementFilter","unionFilter", "norm2Filter", "kmeansFilter",
+              "expressionFilter", "transform","transformMap","transformList",
+              "transformFilter", "curv2Filter")
 
 exportMethods("initialize","description","phenoData","phenoData<-",
               "featureNames","names","colnames", "colnames<-", "keyword",
               "%in%","%subset%","%on%","summary","identifier","identifier<-",
               "exprs", "exprs<-", "parameters", "show","nrow","ncol",
-              "transform","split","Subset","filter","filterDetails","filterReference",
-              "filterDetails<-","plot", "coerce","coerce<-","spillover",
-              "compensate","fsApply","sampleNames", "each_row",
-              "each_col", "varLabels", "varLabels<-","sort")
+              "transform","split","Subset","filter","filterDetails",
+              "filterReference", "filterDetails<-","plot", "coerce",
+              "coerce<-","spillover", "compensate","fsApply","sampleNames",
+              "each_row", "each_col", "varLabels", "varLabels<-","sort")
 
 S3method("$", "flowFrame")
 
 export("%in%") #We define a generic. Is this necessary? I'm thinking not...
 
-export("read.FCS","read.flowSet", "read.FCSheader","filterSet","filterReference","manyFilterResult","flowSet",
-	"linearTransform","quadraticTransform", "lnTransform", "logTransform","scaleTransform",
-       "arcsinhTransform", "splitScaleTransform","biexponentialTransform","logicleTransform","truncateTransform",
-       "rectangleGate","polygonGate","polytopeGate","ellipsoidGate","sampleFilter","expressionFilter",
-       "norm2Filter","kmeansFilter","print.filterSummary","%&%","as.data.frame.manyFilterResult")
+export("read.FCS", "read.flowSet", "read.FCSheader","filterSet",
+       "filterReference", "manyFilterResult","flowSet", "linearTransform",
+       "quadraticTransform", "lnTransform", "logTransform",
+       "scaleTransform", "arcsinhTransform", "splitScaleTransform",
+       "biexponentialTransform", "logicleTransform", "truncateTransform",
+       "rectangleGate", "polygonGate", "polytopeGate",
+       "ellipsoidGate", "sampleFilter", "expressionFilter", "norm2Filter",
+       "kmeansFilter", "print.filterSummary", "%&%",
+       "as.data.frame.manyFilterResult", "curv2Filter")
        
