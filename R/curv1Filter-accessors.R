@@ -21,21 +21,6 @@ setMethod("show",signature("curv1Filter"),function(object) {
 
 
 
-curv1Filter <- function(x,bwFac=1,gridsize=401, plotFS=FALSE)
-{
-   # Load in the package `feature'.
-
-   require("feature")
-
-  
-
-  
-
-lapply(1:length(lowLims), function(i){
-    c(lowLims[i],uppLims[i])})
-}
-
-
 ## ==========================================================================
 ## Filtering Method -- we are not a logical filter so we return a vector
 ## of indices indicating a population. Additional information about the
