@@ -22,7 +22,7 @@ exportClasses("flowFrame", "flowSet","filterSet",
               "setOperationFilter", "subsetFilter", "intersectFilter",
               "complementFilter","unionFilter", "norm2Filter", "kmeansFilter",
               "expressionFilter", "transform","transformMap","transformList",
-              "transformFilter", "curv2Filter")
+              "transformFilter", "curv2Filter", "curv1Filter")
 
 exportMethods("initialize","description","phenoData","phenoData<-",
               "featureNames","names","colnames", "colnames<-", "keyword",
@@ -45,5 +45,5 @@ export("read.FCS", "read.flowSet", "read.FCSheader","filterSet",
        "rectangleGate", "polygonGate", "polytopeGate",
        "ellipsoidGate", "sampleFilter", "expressionFilter", "norm2Filter",
        "kmeansFilter", "print.filterSummary", "%&%",
-       "as.data.frame.manyFilterResult", "curv2Filter")
+       "as.data.frame.manyFilterResult", "curv2Filter", "curv1Filter")
        

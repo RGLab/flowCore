@@ -322,6 +322,33 @@ curv2Filter <-
         filterId=filterId, ...)
 }
 
+
+
+## ===========================================================================
+## curv1Filter
+## this filter can hold parameters to find siginficant high density regions
+## in one dimension based on Matt Wand's feature software
+## ---------------------------------------------------------------------------
+setClass("curv1Filter",
+         representation(bwFac="numeric",
+                        gridsize="numeric"),
+         contains="parameterFilter")
+
+##constructor
+curv1Filter <-
+    function(x, filterId="curv1Filter", bwFac=1.2,
+             gridsize=rep(151,2), ...)
+{
+    if(!is.numeric(bwFac) || length(bwFac)!=1)
+        stop("'bwFac must be numeric skalar")
+    if(!is.numeric(gridsize) || length(gridsize)!=2)
+        stop("'gridsize must be numeric skalar")
+        if(length(x)!=1)
+            stop("You must specify a single parameters for a curv1 filter.")
+    new("curv1Filter",parameters=x, bwFac=bwFac, gridsize=gridsize,
+        filterId=filterId, ...)
+}
+
    
 
 ## ===========================================================================
