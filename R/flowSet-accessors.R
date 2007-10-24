@@ -244,8 +244,6 @@ setMethod("show","flowSet",function(object) {
 setMethod("sampleNames", "flowSet", function(object) 
        sampleNames(phenoData(object)))
 
-
-
 setReplaceMethod("sampleNames","flowSet",function(object,value)
              {
                  oldNames <- sampleNames(object)
