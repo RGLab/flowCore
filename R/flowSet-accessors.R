@@ -14,6 +14,8 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 	object
 })
 
+setMethod("pData","flowSet",function(object) pData(object@phenoData))
+
 setMethod("varLabels",
           signature=signature(object="flowSet"),
           function(object) varLabels(phenoData(object)))
@@ -63,10 +65,10 @@ setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
 		pd = phenoData(x)
 	} else {
 		if(is.numeric(i) || is.logical(i)) {
-			copy = phenoData(x)$name[i]
+			copy = sampleNames(x)[i]
 		} else {
 			copy = i
-			i    = match(i,phenoData(x)$name)
+			i    = match(i,sampleNames(x))
 		}
 		if(missing(j))
 			for(nm in copy) fr[[nm]] = orig[[nm]][,,...,drop=drop]
@@ -242,6 +244,24 @@ setMethod("show","flowSet",function(object) {
 setMethod("sampleNames", "flowSet", function(object) 
        sampleNames(phenoData(object)))
 
+
+
+setReplaceMethod("sampleNames","flowSet",function(object,value)
+             {
+                 oldNames <- sampleNames(object)
+                 if(length(oldNames)!=length(value) ||
+                    !is.character(value))
+                     stop(" replacement values must be character vector ",
+                          "of length equal to number of frames in the set'")
+                 env <- new.env(hash=TRUE,parent=emptyenv())
+                 for(f in seq_along(oldNames))
+                     assign(value[f], get(oldNames[f], object@frames), env)
+                 pd <- phenoData(object)
+                 sampleNames(pd) <- value
+                 object@phenoData <- pd
+                 object@frames <- env
+                 return(object)
+})
 
 ## ===========================================================================
 ## spillover method
