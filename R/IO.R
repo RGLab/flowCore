@@ -1,32 +1,23 @@
-## Adapted from F.Hahne 
 ## For specifications of FACS 3.0 see
 ## http://www.isac-net.org and the file
 ## fcs3.html in the doc directory
 
+
 ## ==========================================================================
 ## Reading FCS file header and TEXT section only
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-read.FCSheader <- function(files,
-                           path=".",
-                           keyword=NULL){
-
+read.FCSheader <- function(files, path=".", keyword=NULL)
+{
     stopifnot(is.character(files), length(files)>=1, files!="")
-    
     filenames <- files
-    
     if(path != ".")
-      files = file.path(path, files)
-    
+        files = file.path(path, files)
     res <- lapply(files, header)
-    
     if (!is.null(keyword))
-      res <- lapply(res, function(x) x[keyword])
-    
+        res <- lapply(res, function(x) x[keyword])
     names(res) <- filenames
     res
-    
 }
-
 
 header <- function(files){
     con <- file(files, open="rb")
@@ -35,6 +26,7 @@ header <- function(files){
     close(con)
     txt
 }
+
 
 ## ==========================================================================
 ## main wrapper to read FCS files
@@ -46,10 +38,14 @@ read.FCS <- function(filename,
                      alter.names=FALSE,
                      column.pattern=NULL,decades=0)
 {
-    
-    stopifnot(is.character(filename), length(filename)==1, filename!="")
+    ## check file name
+    if(!is.character(filename) ||  length(filename)!=1)
+        stop("'filename' must be character skalar")
+    if(!file.exists(filename))
+        stop(paste("'", filname, "' is not a valid file", sep=""))
     con <- file(filename, open="rb")
-    
+
+    ## transform or scale data?
     if(is.logical(transformation) && transformation ||
        !is.null(transformation) && transformation == "linearize") {
         transformation <- TRUE
@@ -63,6 +59,7 @@ read.FCS <- function(filename,
         scale <- FALSE
     } 
 
+    ## read the file
     offsets <- readFCSheader(con)
     txt     <- readFCStext(con, offsets, debug)
     mat     <- readFCSdata(con, offsets, txt, transformation, which.lines,
@@ -70,25 +67,28 @@ read.FCS <- function(filename,
     params  <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades)
     close(con)
-    
+
+    ## only keep certain parameters
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
         i <- grep(column.pattern,n)
         mat <- mat[,i]
         params <- params[i,]
     }
-    
+
+    ## check for validity
     if(is.null(which.lines)){
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
-            stop(paste("file", filename, "seems to corrupted."))
+            stop(paste("file", filename, "seems to be corrupted."))
     }
-    
+
+    ## set transformed flag
     txt[["FILENAME"]] = filename
     if(transformation==TRUE){
         txt[["transformation"]] <-"applied" 
     }
     
-    
+    ## build description from FCS parameters
     description <- strsplit(txt,split=" ")
     names(description) <- names(txt)
     
@@ -105,15 +105,16 @@ makeFCSparameters <- function(cn,txt, transformation, scale, decades) {
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
     range <- origRange <- as.numeric(txt[paste(id,"R",sep="")])
-    range <- rbind(0,range)
-    
+    range <- rbind(0,range-1)
+
+    ## make sure the ranges are transformed along with the data
     if(transformation & !scale){
         ampliPar <- txt[paste(id,"E",sep="")]
         ampli <- do.call("rbind",lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:npar)
             if(ampli[i,1] > 0)
-                range[,i] <- 10^((range[,i]/(origRange[i]))*ampli[i,1])
+                range[,i] <- 10^((range[,i]/(origRange[i]-1))*ampli[i,1])
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
@@ -133,12 +134,13 @@ makeFCSparameters <- function(cn,txt, transformation, scale, decades) {
 ## ==========================================================================
 ## match FCS parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSgetPar <- function(x, pnam) {
+readFCSgetPar <- function(x, pnam)
+{
 
     stopifnot(is.character(x), is.character(pnam)) 
     i <- match(pnam, names(x))
     if(any(is.na(i)))
-      stop(paste("Parameter(s)", pnam, "not contained in 'x'"))
+        stop(paste("Parameter(s)", pnam, "not contained in 'x'"))
     return(x[i])
 }
 
@@ -146,12 +148,13 @@ readFCSgetPar <- function(x, pnam) {
 ## ==========================================================================
 ## parse FCS file header
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSheader <- function(con) {
+readFCSheader <- function(con)
+{
     
     seek(con, 0)
     version <- readChar(con, 6)
     if(!version %in% c("FCS2.0", "FCS3.0"))
-      stop("This does not seem to be a valid FCS2.0 or FCS3.0 file")
+        stop("This does not seem to be a valid FCS2.0 or FCS3.0 file")
     
     version <-  substring(version, 4, nchar(version))
     tmp <- readChar(con, 4)
@@ -159,13 +162,15 @@ readFCSheader <- function(con) {
     
     coffs <- character(6)
     for(i in 1:length(coffs))
-      coffs[i] <- readChar(con=con, nchars=8)
+        coffs[i] <- readChar(con=con, nchars=8)
     
     ioffs <- c(as.double(version), as.integer(coffs))
-    names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart", "dataend", "anastart", "anaend")
+    names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart",
+                      "dataend", "anastart", "anaend")
     
     if(all(is.na(ioffs[2:5]) || ioffs[2:5]==""))
-      stop("Missing header information to start parsing the binary section of the file")
+        stop("Missing header information to start parsing the binary ",
+             "section of the file")
     return(ioffs)
 }
 
@@ -173,17 +178,18 @@ readFCSheader <- function(con) {
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets, debug) {
+readFCStext <- function(con, offsets, debug)
+{
 
     seek(con, offsets["textstart"])
-	#Certain software (e.g. FlowJo 8 on OS X) likes to put characters into
-	#files that readChar can't read, yet readBin, rawToChar and iconv can 
-	#handle just fine.
+    ##Certain software (e.g. FlowJo 8 on OS X) likes to put characters into
+    ##files that readChar can't read, yet readBin, rawToChar and iconv can 
+    ##handle just fine.
     txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
     txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
     delimiter <- substr(txt, 1, 1)
-    sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter, fixed=TRUE)[[1]]
-    
+    sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
+                    fixed=TRUE)[[1]]
     rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
     names(rv) <- c("FCSversion", sp[seq(1, length(sp)-1, by=2)])
     return(rv)
@@ -203,7 +209,6 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
                      stop(paste("Don't know how to deal with $BYTEORD",
                                 readFCSgetPar(x, "$BYTEORD"))))
     
-    
     dattype <- switch(readFCSgetPar(x, "$DATATYPE"),
                       "I" = "integer",
                       "F" = "numeric",
@@ -211,18 +216,18 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
                                  readFCSgetPar(x, "$DATATYPE")))) 
     
     if (readFCSgetPar(x, "$MODE") != "L")
-      stop(paste("Don't know how to deal with $MODE",
-                 readFCSgetPar(x, "$MODE")))
+        stop(paste("Don't know how to deal with $MODE",
+                   readFCSgetPar(x, "$MODE")))
     
     nrpar    <- as.integer(readFCSgetPar(x, "$PAR"))
     nrowTotal <- as.integer(readFCSgetPar(x, "$TOT"))
     range    <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
-
+    
     if(length(bitwidth)!=1)
-      stop("Sorry, I am expecting the bitwidth to be the same for all ",
-           "parameters")
+        stop("Sorry, I am expecting the bitwidth to be the same for all ",
+             "parameters")
     
     ##for DATA segment exceeding 99,999,999 byte.
     if(offsets["FCSversion"] == 3){
@@ -250,7 +255,7 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
     
     size <- bitwidth/8
     if (!size %in% c(1, 2, 4, 8))
-      stop(paste("Don't know how to deal with bitwidth", bitwidth))
+        stop(paste("Don't know how to deal with bitwidth", bitwidth))
     
     
     nwhichLines = length(which.lines)
@@ -262,16 +267,16 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
                  than the number of collected events (",nrowTotal,
                 "). All the events have been read. \n")
         }
-      seek(con, offsets["datastart"])
-      dat <- readBin(con, dattype,
-                     n = (offsets["dataend"]-offsets["datastart"]+1)/size,
-                     size=size, signed=FALSE, endian=endian)
+        seek(con, offsets["datastart"])
+        dat <- readBin(con, dattype,
+                       n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+                       size=size, signed=FALSE, endian=endian)
     }else {  ##Read n lines with or without sampling 
         which.lines <- sort(which.lines)
         outrange <- length(which(which.lines > nrowTotal))
         if(outrange!=0)
-          stop("Some or all the line indices specified are greater that the",
-               "number of collected events.\n")
+            stop("Some or all the line indices specified are greater that the",
+                 "number of collected events.\n")
         dat <- c()
         for (i in 1:length(which.lines)){
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
@@ -283,13 +288,14 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
         }
     }
     stopifnot(length(dat)%%nrpar==0)
-
-
+    
+    
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
     colnames(dat) <- if(alter.names)  structure(make.names(cn),
                                                 names=names(cn))else cn
-   
+
+    ## transform or scale if necessary
     if(transformation) {
         ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
         ampli <- do.call("rbind",lapply(ampliPar, function(x)
@@ -318,20 +324,19 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
 
 
 ## ==========================================================================
-## read in flowSets, based on the prada function readCytoSet. Most of the actual
-## flowSet construction has been moved to the coercion of lists to flowSets. This
-## is to facilitate the construction of flowSets from within the R environment (e.g.
-## the flowFrames are actually retrieved from the network or a database.)
+## read in flowSets, based on the prada function readCytoSet. Most of the
+## actual flowSet construction has been moved to the coercion of lists to
+## flowSets. This is to facilitate the construction of flowSets from within
+## the R environment (e.g. the flowFrames are actually retrieved from the
+## network or a database.)
 ## ---------------------------------------------------------------------------
-
-
 read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword,
                          sep="\t",...)
 {
     ## A frame of phenoData information
     phenoFrame = NULL
-
+    
     ## deal with the case that the phenoData is provided, either as
     ## character vector or as AnnotatedDataFrame.
     if(!missing(phenoData)) {
@@ -352,7 +357,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                        "of a text file containing the phenotypic information")
           }
     }
-  
+    
     ## go on and find the files
     if(!is.null(phenoFrame)) {
         if(!is.null(files))
@@ -365,7 +370,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             stop(paste("Not all files given by phenoData could be found in",
                        path))
     }else{
-
+        
         ## if we haven't found files by now try to search according to
         ## 'pattern'
         if(is.null(files)) {
@@ -381,20 +386,22 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                 files = file.path(path, files)    
         }
     }
-         
+    
     flowSet = lapply(files, read.FCS, ...)
     ##Allows us to specify a particular keyword to use as our sampleNames
     ##rather than requiring the filename be used. This is handy when something
     ##like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
     ##a lot more insane now.
     if(!missing(name.keyword))
-        names(flowSet) = sapply(flowSet,keyword,name.keyword)
+        names(flowSet) <- sapply(flowSet,keyword,name.keyword)
     else
-        names(flowSet) = file.names
+        names(flowSet) <- file.names
     flowSet = as(flowSet,"flowSet")
-    if(!is.null(phenoFrame)) { phenoData(flowSet) = phenoFrame } else if(!missing(phenoData)) {
+    if(!is.null(phenoFrame))
+        phenoData(flowSet) <- phenoFrame
+    else if(!missing(phenoData)) {
         ##Collect the names for each field in the data frame
-        field.names = names(phenoData)
+        field.names <- names(phenoData)
         print(field.names)
         if(is.null(field.names))
             stop("phenoData list must have names")

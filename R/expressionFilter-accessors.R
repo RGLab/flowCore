@@ -1,7 +1,17 @@
 setMethod("%in%",signature("flowFrame","expressionFilter"),function(x,table) {
 	data = as.data.frame(exprs(x))
-	eval(table@expr,data,env=table@args)
+        if(length(table@args)>1){
+            res <- eval(table@expr,data,env=table@args)
+            if(is(res, "expression"))
+                eval(res,data,env=table@args) 
+        }else{
+            res <- eval(table@expr,data)
+            if(is(res, "expression"))
+                eval(res,data)
+        }
 })
+
+          
 ## ==========================================================================
 ## show method
 ## ---------------------------------------------------------------------------

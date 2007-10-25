@@ -51,7 +51,8 @@ setClass("flowSet",
                                                               all.names=TRUE)))
              if(any(name.check)) {
                  name.list <- paste(sampleNames(object)[name.check],sep=",")
-                 return(paste("These objects are not in the data environment:",name.list))
+                 return(paste("These objects are not in the data environment:",
+                              name.list))
              }
              ##Ensure that all frames match our colnames
              if(!all(sapply(sampleNames(object),function(i) {
@@ -64,8 +65,8 @@ setClass("flowSet",
                                   "vs", paste(colnames(x), sep=",")))
                  }
              }))){
-                 return("Some items identified in the data environment either ",
-                        "have the wrong dimension or type.")
+                 return(paste("Some items identified in the data environment",
+                              "either have the wrong dimension or type."))
              }
              return(TRUE)
          })
@@ -143,14 +144,16 @@ setClass("polygonGate",
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) || nrow(object@boundaries)<2)
-                 msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
+                 msg <- paste("\nslot 'boundaries' must be a numeric matrix",
+                              "of at least 2 rows")
              return(msg)
          })
 
 ## constructor
 polygonGate <- function(filterId="polygonGate", boundaries,...) {
     if(missing(boundaries) || !is.matrix(boundaries)) 
-        boundaries = {as.matrix(if(missing(boundaries)) do.call("cbind",list(...))
+        boundaries = {as.matrix(if(missing(boundaries))
+                                do.call("cbind",list(...))
         else boundaries)}
     new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
         boundaries=boundaries)
@@ -172,7 +175,8 @@ setClass("polytopeGate",
              msg <- TRUE
              if(!is.matrix(object@boundaries) ||
                 nrow(object@boundaries)<2)
-               msg <- "\nslot 'boundaries' must be a numeric matrix of at least 2 rows"
+               msg <- paste("\nslot 'boundaries' must be a numeric matrix",
+                            "of at least 2 rows")
              return(msg)
          })
 
@@ -197,7 +201,8 @@ setClass("ellipsoidGate",
          representation(focus="matrix",
                         distance="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2),distance=1),
+         prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2),
+         distance=1),
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@focus) ||
@@ -209,6 +214,7 @@ setClass("ellipsoidGate",
              return(msg)
          })
 
+## constructor
 ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
@@ -254,13 +260,17 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
         x = x[1]
         y = y[1]
     }
-    new("norm2Filter",parameters=c(x,y),method=method,scale.factor=scale.factor,
-        filterId=filterId,n=n,...)
+    new("norm2Filter",parameters=c(x,y), method=method,
+        scale.factor=scale.factor, filterId=filterId,n=n,...)
 }
 
 
 ## ===========================================================================
-## kmeansFilter 
+## kmeansFilter
+## ---------------------------------------------------------------------------
+## Apply kmeans clustering on a single parameter. The number k of clusters
+## is given by the length of the 'populations' slot. This generates a
+## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("kmeansFilter",
          representation(populations="character"),
@@ -287,8 +297,10 @@ kmeansFilter = function(filterId="kmeans",...)
 
 ## ===========================================================================
 ## curv2Filter
+## ---------------------------------------------------------------------------
 ## this filter can hold parameters to find siginficant high density regions
-## in two dimensions based on Matt Wand's feature software
+## in two dimensions based on Matt Wand's feature software. This generates a
+## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("curv2Filter",
          representation(bwFac="numeric",
@@ -326,8 +338,10 @@ curv2Filter <-
 
 ## ===========================================================================
 ## curv1Filter
+## ---------------------------------------------------------------------------
 ## this filter can hold parameters to find siginficant high density regions
-## in one dimension based on Matt Wand's feature software
+## in one dimension based on Matt Wand's feature software. This generates a
+## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("curv1Filter",
          representation(bwFac="numeric",
@@ -352,22 +366,30 @@ curv1Filter <-
    
 
 ## ===========================================================================
-## sampleFilter 
+## sampleFilter
+## ---------------------------------------------------------------------------
+## sample 'size' rows from a flowFrame
 ## ---------------------------------------------------------------------------
 setClass("sampleFilter",
          representation(size="numeric"),
          contains="concreteFilter")
 
-sampleFilter = function(filterId="sample",size) new("sampleFilter",filterId=filterId,size=size)
+##constructor
+sampleFilter = function(filterId="sample",size) new("sampleFilter",
+                        filterId=filterId,size=size)
+
 
 
 ## ===========================================================================
-## expressionFilter 
+## expressionFilter
+## ---------------------------------------------------------------------------
 ## Let's us encapsulate an expression as a gate
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
          representation(expr="call",args="list"),
          contains="concreteFilter")
+
+##constructor
 expressionFilter = function(expr,...,filterId) {
 	expr = substitute(expr)
 	if(missing(filterId)) filterId = deparse(expr)
@@ -375,10 +397,14 @@ expressionFilter = function(expr,...,filterId) {
 }
 
 
+
 ## ===========================================================================
-## filterSet 
+## filterSet
 ## ---------------------------------------------------------------------------
-setClass("filterSet",representation(env="environment"),prototype=prototype(env=new.env(hash=TRUE,parent=emptyenv())))
+## stores a list of filters from a gating sequence as an environment
+## ---------------------------------------------------------------------------
+setClass("filterSet",representation(env="environment"),
+         prototype=prototype(env=new.env(hash=TRUE,parent=emptyenv())))
 filterSet = function(...) {
 	filters = list(...)
 	#Allow the list(x,y,z) format as well.
@@ -388,8 +414,18 @@ filterSet = function(...) {
 	else
 		as(filters,"filterSet")
 }
+
+
+
+## ===========================================================================
+## filterReference
+## ---------------------------------------------------------------------------
 #References a filter (contained within a filterSet)
-setClass("filterReference",representation(name="character",env="environment"),contains="filter")
+## ---------------------------------------------------------------------------
+setClass("filterReference",representation(name="character",env="environment"),
+         contains="filter")
+
+
 
 ## ===========================================================================
 ## setOperationFilter
@@ -399,10 +435,12 @@ setClass("setOperationFilter",
          contains="concreteFilter")
 
 
+
 ## ===========================================================================
 ## unionFilter 
 ## ---------------------------------------------------------------------------
 setClass("unionFilter",representation("setOperationFilter"))
+
 
 
 ## ===========================================================================
@@ -411,30 +449,34 @@ setClass("unionFilter",representation("setOperationFilter"))
 setClass("intersectFilter",representation("setOperationFilter"))
 
 
+
 ## ===========================================================================
 ## complementFilter 
 ## ---------------------------------------------------------------------------
 setClass("complementFilter",representation("setOperationFilter"),
-	validity=function(object) { 
-		if(length(object@filters) != 1) {
-			warning("Complement filters can only operate on a single filter")
-			return(FALSE)
-		}
-		TRUE
-	})
+         validity=function(object) { 
+             if(length(object@filters) != 1) {
+                 warning("Complement filters can only operate on a ",
+                         "single filter")
+                 return(FALSE)
+             }
+             TRUE
+         })
+
 
 
 ## ===========================================================================
 ## subsetFilter 
 ## ---------------------------------------------------------------------------
 setClass("subsetFilter",representation("setOperationFilter"),
-	validity=function(object) {
-		if(length(object@filters) != 2) {
-			warning("Subset filters are only defined as binary operators")
-			return(FALSE)
-		}
-		TRUE
-	})
+         validity=function(object) {
+             if(length(object@filters) != 2) {
+                 warning("Subset filters are only defined as binary operators")
+                 return(FALSE)
+             }
+             TRUE
+         })
+
 
 
 ## ===========================================================================
@@ -449,6 +491,7 @@ setClass("filterResult",
          prototype=list(frameId=character(0), filterDetails=list()))
 
 
+
 ## ===========================================================================
 ## logicalFilterResult
 ## ---------------------------------------------------------------------------
@@ -457,12 +500,14 @@ setClass("logicalFilterResult",
          contains="filterResult")
 
 
+
 ## ===========================================================================
 ## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("multipleFilterResult",
          representation(subSet="factor"),
          contains="filterResult")
+
 
 
 ## ===========================================================================
@@ -482,6 +527,9 @@ manyFilterResult = function(filters,frameId,dependency=NULL) {
 	colnames(q@subSet) = sapply(filters,slot,"filterId")
 	q
 }
+
+
+
 ## ===========================================================================
 ## randomFilterResult
 ## ---------------------------------------------------------------------------
@@ -489,9 +537,13 @@ setClass("randomFilterResult",
          representation(subSet="numeric"),
          contains="filterResult")
 
-#
-# filterSummary now becomes a legitimate class.
-setClass("filterSummary",representation(name="character",true="numeric",count="numeric",p="numeric"))
+
+
+## ===========================================================================
+## filterSummary
+## ---------------------------------------------------------------------------
+setClass("filterSummary",representation(name="character",true="numeric",
+                                        count="numeric",p="numeric"))
 
 
 
@@ -502,7 +554,7 @@ setClass("filterSummary",representation(name="character",true="numeric",count="n
 ## ---------------------------------------------------------------------------
 setClass("transform", representation(transformationId="character", "function"))
 
-## Linear transformation function
+## Linear transformation constructor
 linearTransform <- function(transformationId,a=1,b=0){
     if(!is.double(a)) 
       stop("a must be numeric")
@@ -515,7 +567,7 @@ linearTransform <- function(transformationId,a=1,b=0){
     t
   }
 
-## Quadratic transformation function
+## Quadratic transformation constructor
 quadraticTransform <- function(transformationId,a=1,b=1,c=0){
   if(!is.double(a)) 
       stop("a must be numeric")
@@ -530,7 +582,7 @@ quadraticTransform <- function(transformationId,a=1,b=1,c=0){
   t
 }
 
-## Natural logarithm transformation function
+## Natural logarithm transformation constructor
 lnTransform <- function(transformationId,r=1,d=1){
     if(!is.double(r) || r <= 0)
        stop("r must be numeric and positive")
@@ -543,7 +595,7 @@ lnTransform <- function(transformationId,r=1,d=1){
     t
 }
 
-## Logarithm transformation function
+## Logarithm transformation constructor
 logTransform <- function(transformationId,logbase=10,r=1,d=1){
 
   if(!is.double(r) || r <= 0)
@@ -562,7 +614,7 @@ logTransform <- function(transformationId,logbase=10,r=1,d=1){
 }
 
 
-## General biexponential transformation function
+## General biexponential transformation constructor
 biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
            tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
     
@@ -573,7 +625,7 @@ biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
     t
 }
 
-## Logicle transformation function
+## Logicle transformation constructor
 logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
   if(w>d) stop("Negative range decades must be smaller than total number of decades")
     w = w*log(10)
@@ -584,7 +636,7 @@ logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
     t
   }
 
-## Truncation Transformation
+## Truncation transformation constructor
 truncateTransform <- function(transformationId, a=1){
   t= new("transform",.Data=function(x){
     x[x<=a] <- a
@@ -594,7 +646,7 @@ truncateTransform <- function(transformationId, a=1){
   t
 }
 
-## Scale Transformation
+## Scale transformation constructor
 scaleTransform <- function(transformationId,a=1,b=10^4){
     t = new("transform",.Data=function(x){
      	x=(x-a)/(b-a)
@@ -603,7 +655,7 @@ scaleTransform <- function(transformationId,a=1,b=10^4){
     t
 }
 
-## Split-scale Transformation
+## Split-scale transformation constructor
 splitScaleTransform <- function(transformationId, maxValue=1023,
                                 transitionChannel=64, r=192){
     
@@ -632,12 +684,14 @@ splitScaleTransform <- function(transformationId, maxValue=1023,
     tr
 }
 
-## Hyperbolic Arcsin Transformation
+## Hyperbolic Arcsin transformation constructor
 arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
   t = new("transform",.Data=function(x) asinh(a+b*x)+c)
   t@transformationId = transformationId
   t
 }
+
+
 
 ## ===========================================================================
 ## parameterTransform
@@ -645,9 +699,15 @@ arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
 ## A class that only applied a parameter transform to a subset of the
 ## parameters during an %on% operation.
 ## ---------------------------------------------------------------------------
-setClass("parameterTransform",representation(parameters="character"),contains="transform")
+setClass("parameterTransform",representation(parameters="character"),
+         contains="transform")
+
+## constructor
 parameterTransform = function(FUN,params)
-	new("parameterTransform",.Data=as.function(FUN),parameters=as.character(params))
+	new("parameterTransform",.Data=as.function(FUN),
+            parameters=as.character(params))
+
+
 
 ## ===========================================================================
 ## transformMap
@@ -659,6 +719,7 @@ setClass("transformMap",
          representation(output="character", input="character", f="function"))
 
 
+
 ## ===========================================================================
 ## transformList
 ## ---------------------------------------------------------------------------
@@ -667,10 +728,10 @@ setClass("transformMap",
 setClass("transformList", representation(transforms="list"))
 
 
+
 ## ===========================================================================
 ## transformFilter
 ## ---------------------------------------------------------------------------
 setClass("transformFilter",
          representation(transforms="transformList", filter="filter"),
          contains="concreteFilter")
-

@@ -328,11 +328,13 @@ setMethod("transform",
           nc <- colnames(transformed)[-c(1:ncol(x@exprs))]
           colnames(transformed) <- c(colnames(x), nc)
           if(ncol(transformed) > ncol(x@exprs)) {
-              ## Add any new parameter values, there might be a more elegant way
-              ## to do that other than poking around in the deparsed arguments...
+              ## Add any new parameter values, there might be a more elegant
+              ## way to do that other than poking around in the deparsed
+              ## arguments...
               args <- strsplit(gsub("^list\\(", "",
                                     unlist(strsplit(deparse(e), ","))), "=")
-              nCol <- gsub(" *\"|\" *| *'|' *|` *|` *", "", sapply(args, function(x) x[1]))
+              nCol <- gsub(" *\"|\" *| *'|' *|` *|` *", "",
+                           sapply(args,function(x) x[1]))
               nCol <- gsub(" ", "", nCol)
               oCol <- sapply(strsplit(sapply(args, function(x) x[2]),
                                       "`"), function(x) x[2])
