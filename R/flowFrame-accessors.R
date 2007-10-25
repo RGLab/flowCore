@@ -206,7 +206,7 @@ setMethod("show",signature=signature("flowFrame"),
 
 
 ## ==========================================================================
-## Subset methods for flowFrame: Why is this Subset with capital 's' ???
+## Subset methods for flowFrame
 ## Why do we need the 'select' parameter? Wouldn't this be equivalent:
 ## Subset(x[,c(1,3)], subset)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -315,22 +315,48 @@ setMethod("compensate",signature("flowFrame","matrix"),function(x,spillover) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
-          definition=function(`_data`, ...) {
-              e <- substitute(list(...))
-              x = `_data`
-              transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
-              ##Add any new parameter values
-              if(ncol(transformed) > ncol(x@exprs)) {
-              	cnames = c(colnames(x),colnames(transformed)[-c(1:ncol(x@exprs))])
+          definition=function(`_data`, ...)
+      {
+          e <- substitute(list(...))
+          x <- `_data`
+          par <- parameters(x)
+          ranges <- rbind(as.numeric(par$minRange),
+                          as.numeric(par$maxRange))
+          colnames(ranges) <- colnames(x)
+          tranges <- as.matrix(transform(as.data.frame(ranges),...))
+          transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
+          nc <- colnames(transformed)[-c(1:ncol(x@exprs))]
+          colnames(transformed) <- c(colnames(x), nc)
+          if(ncol(transformed) > ncol(x@exprs)) {
+              ## Add any new parameter values, there might be a more elegant way
+              ## to do that other than poking around in the deparsed arguments...
+              args <- strsplit(gsub("^list\\(", "",
+                                    unlist(strsplit(deparse(e), ","))), "=")
+              nCol <- gsub(" *\"|\" *| *'|' *|` *|` *", "", sapply(args, function(x) x[1]))
+              nCol <- gsub(" ", "", nCol)
+              oCol <- sapply(strsplit(sapply(args, function(x) x[2]),
+                                      "`"), function(x) x[2])
+              names(oCol) <- make.names(nCol)
+              oparFrame <- pData(par)
+              mt <- match(oCol[nc], oparFrame$name)
+              nparFrame <- data.frame(name=names(oCol[nc]),
+                                      desc=paste("derived from ",
+                                      "transformation of", oCol[nc]),
+                                      range=oparFrame[mt, "range"],
+                                      minRange=tranges[1, nc],
+                                      maxRange=tranges[2,nc])
+              pData(par) <- rbind(oparFrame, nparFrame)
               }
               else {
-              	cnames = colnames(x)
+                  cnames <- colnames(x)
+                  par$minRange <- tranges[1,]
+                  par$maxRange <- tranges[2,]
               }
               
-              colnames(transformed) = cnames
+              
               new("flowFrame",
                   exprs=transformed, 
-                  parameters=parameters(x),#[,params$name],
+                  parameters=par,#[,params$name],
                   description=description(x))
           })
 

@@ -159,18 +159,23 @@ setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
 ## ==========================================================================
 ## split method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("split",signature("flowSet","ANY"),function(x,f,drop=FALSE,population=NULL,prefix=NULL,flowSet=FALSE,...) {
-	#Split always returns a list
-	sample.name = sampleNames(x)
-	fsApply(x,function(y) {
-		l = split(y,f,drop,population,prefix,flowSet=flowSet,...)
-		names(l) = paste(names(l),"in",sample.name[1])
-		sample.name <<- sample.name[-1]
-		l
-	},simplify=FALSE)
-})
+## split a flowSet by a single filter
+setMethod("split",signature("flowSet","ANY"),
+          function(x,f,drop=FALSE,population=NULL,prefix=NULL,
+                   flowSet=FALSE,...)
+      {
+          ##Split always returns a list
+          sample.name = sampleNames(x)
+          fsApply(x,function(y) {
+              l = split(y,f,drop,population,prefix,flowSet=flowSet,...)
+              names(l) = paste(names(l),"in",sample.name[1])
+              sample.name <<- sample.name[-1]
+              l
+          },simplify=FALSE)
+      })
 
-
+## split a flowSet according to a list of filters orfilterResults
+## of equal length
 setMethod("split",signature("flowSet","list"),
           function(x,f,drop=FALSE,population=NULL,
                    prefix=NULL,flowSet=FALSE,...)
@@ -179,9 +184,11 @@ setMethod("split",signature("flowSet","list"),
           lf <- length(f)
           lx <- length(x)
           if(lf!=lx)
-              stop("list of filter results must be same length as flowSet")
-          if(!all(sapply(f, is, "filterResult")))
-              stop("list must be list of filter results")
+              stop("list of filterResults or filters must be same",
+                   "length as flowSet")
+          if(!all(sapply(f, is, "filterResult")) ||
+             !all(sapply(f, is, "filter")))
+              stop("list must be list of filterResults or filters")
           res <- vector(mode="list", length=lf)
           for(i in 1:lf){
               l <- split(x[[i]], f[[i]], drop, population,
@@ -193,6 +200,29 @@ setMethod("split",signature("flowSet","list"),
       })
 
 
+## split a flowSet according to a factor, character or integer 
+setMethod("split",signature("flowSet","factor"),
+          function(x,f,drop=FALSE,population=NULL,
+                   prefix=NULL,flowSet=FALSE,...)
+      {
+          if(!is.atomic(f) || length(f)!=length(x))
+              stop("split factor must be same length as flowSet") 
+          gind <- split(1:length(f), f)
+          res <- vector(mode="list", length=length(gind))
+          for(g in seq_along(gind))
+              res[[g]] <- x[gind[[g]]]
+          return(res)
+      })
+
+setMethod("split",signature("flowSet","numeric"),
+          function(x,f,drop=FALSE,population=NULL,
+                   prefix=NULL,flowSet=FALSE,...)
+          split(x, factor(f)))
+
+setMethod("split",signature("flowSet","character"),
+          function(x,f,drop=FALSE,population=NULL,
+                   prefix=NULL,flowSet=FALSE,...)
+          split(x, factor(f)))
 
 ## ==========================================================================
 ## keyword method for flowSet
@@ -315,19 +345,22 @@ setMethod("compensate",signature("flowSet","matrix"),
 ## ==========================================================================
 ## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("transform",signature=signature(`_data`="flowSet"),function(`_data`,...) {
-	fsApply(`_data`,transform,...)
-})
+setMethod("transform",signature=signature(`_data`="flowSet"),
+          function(`_data`,...) {
+              fsApply(`_data`,transform,...)
+          })
+
 setMethod("transform",signature(`_data`="missing"),function(...) {
-	funs = list(...)
-	io   = names(funs)
-	#Consistency check
-	if(!all(sapply(funs,is.function)))
-		stop("All transforms must be functions")
-	if(!all(sapply(io,is.character)))
-		stop("All transforms must be named")
-	new("transformList",transforms=lapply(seq(along=funs),function(i)
-                              new("transformMap",input=io[i],output=io[i],f=funs[[i]])))
+    funs = list(...)
+    io   = names(funs)
+    ##Consistency check
+    if(!all(sapply(funs,is.function)))
+        stop("All transforms must be functions")
+    if(!all(sapply(io,is.character)))
+        stop("All transforms must be named")
+    new("transformList",transforms=lapply(seq(along=funs),function(i)
+                        new("transformMap",input=io[i],output=io[i],
+                            f=funs[[i]])))
 })
 
 

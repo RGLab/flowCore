@@ -44,28 +44,32 @@ read.FCS <- function(filename,
                      which.lines=NULL,
                      debug=FALSE,
                      alter.names=FALSE,
-                     column.pattern=NULL,decades=0) {
+                     column.pattern=NULL,decades=0)
+{
     
     stopifnot(is.character(filename), length(filename)==1, filename!="")
     con <- file(filename, open="rb")
-
-    if(is.logical(transformation) && transformation || !is.null(transformation) && transformation == "linearize") {
+    
+    if(is.logical(transformation) && transformation ||
+       !is.null(transformation) && transformation == "linearize") {
         transformation <- TRUE
         scale <- FALSE
     } else if ( !is.null(transformation) && transformation == "scale") {
         transformation <- TRUE
         scale <- TRUE
-    } else if (is.null(transformation) || is.logical(transformation) && !transformation) {
+    } else if (is.null(transformation) || is.logical(transformation) &&
+               !transformation) {
         transformation <- FALSE 
         scale <- FALSE
     } 
 
     offsets <- readFCSheader(con)
     txt     <- readFCStext(con, offsets, debug)
-    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines, debug, scale, alter.names, decades)
-    params  <- makeFCSparameters(colnames(mat),txt)
+    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines,
+                           debug, scale, alter.names, decades)
+    params  <- makeFCSparameters(colnames(mat),txt, transformation, scale,
+                                 decades)
     close(con)
-    
     
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
@@ -76,7 +80,7 @@ read.FCS <- function(filename,
     
     if(is.null(which.lines)){
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
-          stop(paste("file", filename, "seems to corrupted."))
+            stop(paste("file", filename, "seems to corrupted."))
     }
     
     txt[["FILENAME"]] = filename
@@ -87,23 +91,42 @@ read.FCS <- function(filename,
     
     description <- strsplit(txt,split=" ")
     names(description) <- names(txt)
-
-    return(new("flowFrame", exprs=mat, description= description, parameters=params))
+    
+    return(new("flowFrame", exprs=mat, description= description,
+               parameters=params))
 }
 
 
 ## ==========================================================================
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-makeFCSparameters <- function(cn,txt) {
+makeFCSparameters <- function(cn,txt, transformation, scale, decades) {
 
-    npar = length(cn)
-    id   = paste("$P",1:npar,sep="")
+    npar <- length(cn)
+    id <- paste("$P",1:npar,sep="")
+    range <- origRange <- as.numeric(txt[paste(id,"R",sep="")])
+    range <- rbind(0,range)
+    
+    if(transformation & !scale){
+        ampliPar <- txt[paste(id,"E",sep="")]
+        ampli <- do.call("rbind",lapply(ampliPar, function(x)
+                                        as.integer(unlist(strsplit(x,",")))))
+        for (i in 1:npar)
+            if(ampli[i,1] > 0)
+                range[,i] <- 10^((range[,i]/(origRange[i]))*ampli[i,1])
+    }
+    else if(scale)
+        range[2,] <- rep(10^decades, npar)
+       
     new("AnnotatedDataFrame",
-        data=data.frame(row.names=I(id),name=I(cn),desc=I(txt[paste(id,"S",sep="")]),
-          range=as.numeric(txt[paste(id,"R",sep="")])),
-        varMetadata=data.frame(row.names=I(c("name","desc","range")),
-          labelDescription=I(c("Name of Parameter","Description of Parameter","Range of Parameter"))))
+        data=data.frame(row.names=I(id),name=I(cn),
+        desc=I(txt[paste(id,"S",sep="")]),
+        range=origRange, minRange=range[1,], maxRange=range[2,]),
+        varMetadata=data.frame(row.names=I(c("name","desc","range",
+                               "minRange", "maxRange")),
+        labelDescription=I(c("Name of Parameter","Description of Parameter",
+        "Range of Parameter", "Minimum Parameter Value after Transforamtion",
+        "Maximum Parameter Value after Transformation"))))
 }
 
 
@@ -170,22 +193,26 @@ readFCStext <- function(con, offsets, debug) {
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, scale, alter.names, decades) {
+readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
+                        scale, alter.names, decades) {
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
                      "1,2" = "little",     
                      "1,2,3,4" = "little",
-                     stop(paste("Don't know how to deal with $BYTEORD", readFCSgetPar(x, "$BYTEORD"))))
+                     stop(paste("Don't know how to deal with $BYTEORD",
+                                readFCSgetPar(x, "$BYTEORD"))))
     
     
     dattype <- switch(readFCSgetPar(x, "$DATATYPE"),
                       "I" = "integer",
                       "F" = "numeric",
-                      stop(paste("Don't know how to deal with $DATATYPE", readFCSgetPar(x, "$DATATYPE")))) 
+                      stop(paste("Don't know how to deal with $DATATYPE",
+                                 readFCSgetPar(x, "$DATATYPE")))) 
     
     if (readFCSgetPar(x, "$MODE") != "L")
-      stop(paste("Don't know how to deal with $MODE", readFCSgetPar(x, "$MODE")))
+      stop(paste("Don't know how to deal with $MODE",
+                 readFCSgetPar(x, "$MODE")))
     
     nrpar    <- as.integer(readFCSgetPar(x, "$PAR"))
     nrowTotal <- as.integer(readFCSgetPar(x, "$TOT"))
@@ -194,7 +221,8 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
     bitwidth <- unique(bitwidth)
 
     if(length(bitwidth)!=1)
-      stop("Sorry, I am expecting the bitwidth to be the same for all parameters")
+      stop("Sorry, I am expecting the bitwidth to be the same for all ",
+           "parameters")
     
     ##for DATA segment exceeding 99,999,999 byte.
     if(offsets["FCSversion"] == 3){
@@ -206,14 +234,16 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
         if(offsets["datastart"] != datastart && offsets["datastart"]!= 0){
             print(datastart)
             print(offsets["datastart"])
-            stop("The HEADER and the TEXT segment define different starting point to read the data.")
+            stop("The HEADER and the TEXT segment define different ",
+                 "starting point to read the data.")
         }
         
         if(offsets["dataend"] != dataend && offsets["dataend"]== 0){
             offsets["dataend"] <-  dataend
         }
         if(offsets["dataend"] != dataend && offsets["dataend"]!= 0){
-            stop("The HEADER and the TEXT segment define different ending point to read the data.")
+            stop("The HEADER and the TEXT segment define different ending ",
+                 "point to read the data.")
         }
     }
     
@@ -227,17 +257,21 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
     ##Read all reports
     if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
         if (nwhichLines >  nrowTotal){
-            cat("Warning: the number of lines specified (",nwhichLines,") is greater
-                 than the number of collected events (",nrowTotal,"). All the events have been read. \n")
+            cat("Warning: the number of lines specified (",nwhichLines,
+                ") is greater
+                 than the number of collected events (",nrowTotal,
+                "). All the events have been read. \n")
         }
       seek(con, offsets["datastart"])
-      dat <- readBin(con, dattype, n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+      dat <- readBin(con, dattype,
+                     n = (offsets["dataend"]-offsets["datastart"]+1)/size,
                      size=size, signed=FALSE, endian=endian)
     }else {  ##Read n lines with or without sampling 
         which.lines <- sort(which.lines)
         outrange <- length(which(which.lines > nrowTotal))
         if(outrange!=0)
-          stop("Some or all the line indices specified are greater that the number of collected events.\n")
+          stop("Some or all the line indices specified are greater that the",
+               "number of collected events.\n")
         dat <- c()
         for (i in 1:length(which.lines)){
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
@@ -253,32 +287,30 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
 
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
-    colnames(dat) <- if(alter.names)  structure(make.names(cn), names=names(cn))else cn
+    colnames(dat) <- if(alter.names)  structure(make.names(cn),
+                                                names=names(cn))else cn
    
-    
     if(transformation) {
         ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
-        ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))
+        ampli <- do.call("rbind",lapply(ampliPar, function(x)
+                                        as.integer(unlist(strsplit(x,",")))))
+        
         for (i in 1:nrpar){
             if(ampli[i,1] > 0){
                 dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+                range[i] <- 10^ampli[i,1]
             }
+            else
+                range[i] <- range[i]-1
         }
     }
     if(scale){
-		d = 10^decades	
-        if(transformation) {
-            ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
-            ampli <- do.call("rbind",lapply(ampliPar,function(x) as.integer(unlist(strsplit(x,",")))))		
-            for(i in 1:nrpar) {
-                dat[,i] = if(ampli[i,1] > 0) d*((10^((dat[,i]/(range[i]-1))*ampli[i,1]))/10^ampli[i,1]) else d*(dat[,i]/(range[i]-1))
-            }
-        }
-        else {
-            for(i in 1:nrpar) {
-                dat[,i] = d*(dat[,i]/(range[i]-1))
-            }
-        }
+        d = 10^decades	
+        for(i in 1:nrpar)
+            if(ampli[i,1] > 0)
+                dat[,i] <- d*((dat[,i]-1)/(range[i]-1))
+            else
+                dat[,i] <- d*((dat[,i])/(range[i]))
     }
     return(dat) 
 }
@@ -293,88 +325,95 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug, sc
 ## ---------------------------------------------------------------------------
 
 
-read.flowSet = function(files=NULL, path=".", pattern=NULL, phenoData, descriptions, name.keyword,
-  sep="\t",...) {
-  ##A frame of phenoData information
-  phenoFrame = NULL
+read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
+                         descriptions, name.keyword,
+                         sep="\t",...)
+{
+    ## A frame of phenoData information
+    phenoFrame = NULL
 
-  ## deal with the case that the phenoData is provided, either as character vector or
-  ## as AnnotatedDataFrame.
-  if(!missing(phenoData)) {
-    if(is.character(phenoData) && length(phenoData) == 1){
-      phenoData = read.AnnotatedDataFrame(file.path(path, phenoData),
-        header = TRUE, as.is = TRUE, sep=sep, ...)
-      ## the sampleNames of the Annotated data frame must match the file names and
-      ## we try to guess them from the input
-      fnams <- grep("name|file|filename", varLabels(phenoData), ignore.case=TRUE)
-      if(length(fnams))
-        sampleNames(phenoData) <- unlist(pData(phenoData[,fnams[1]]))
-    }else if(is(phenoData,"AnnotatedDataFrame")){
-      phenoFrame = phenoData
-    }else{if(!is.list(phenoData))
-             stop("Argument 'phenoData' must be of type 'AnnotatedDataFrame' or a filename\n",
-                  "of a text file containing the phenotypic information")
+    ## deal with the case that the phenoData is provided, either as
+    ## character vector or as AnnotatedDataFrame.
+    if(!missing(phenoData)) {
+        if(is.character(phenoData) && length(phenoData) == 1){
+            phenoData = read.AnnotatedDataFrame(file.path(path, phenoData),
+            header = TRUE, as.is = TRUE, sep=sep, ...)
+            ## the sampleNames of the Annotated data frame must match the
+            ## file names and we try to guess them from the input
+            fnams <- grep("name|file|filename", varLabels(phenoData),
+                          ignore.case=TRUE)
+            if(length(fnams))
+                sampleNames(phenoData) <- unlist(pData(phenoData[,fnams[1]]))
+        }else if(is(phenoData,"AnnotatedDataFrame")){
+            phenoFrame = phenoData
+        }else{if(!is.list(phenoData))
+                  stop("Argument 'phenoData' must be of type ",
+                       "'AnnotatedDataFrame' or a filename\n",
+                       "of a text file containing the phenotypic information")
+          }
     }
-  }
   
-  ## go on and find the files
-  if(!is.null(phenoFrame)) {
-    if(!is.null(files))
-      warning("Supplied file names will be ignored, ",
-              "using names in the phenoData slot instead.")
-    file.names = sampleNames(phenoFrame)
-    files      = dir(path,paste(gsub("\\.","\\\\\\.",file.names),collapse="|"),full.names=TRUE)
-    if(length(files) != length(file.names)) 
-      stop(paste("Not all files given by phenoData could be found in",path))
-  }else{
+    ## go on and find the files
+    if(!is.null(phenoFrame)) {
+        if(!is.null(files))
+            warning("Supplied file names will be ignored, ",
+                    "using names in the phenoData slot instead.")
+        file.names = sampleNames(phenoFrame)
+        files      = dir(path,paste(gsub("\\.","\\\\\\.",file.names),
+        collapse="|"),full.names=TRUE)
+        if(length(files) != length(file.names)) 
+            stop(paste("Not all files given by phenoData could be found in",
+                       path))
+    }else{
 
-    ## if we haven't found files by now try to search according to 'pattern'
-    if(is.null(files)) {
-      files = dir(path,pattern,full.names=TRUE)
-      file.names = dir(path,pattern,full.names=FALSE)
-      if(length(files)<1)
-        stop(paste("No matching files found in ",path))
-    } else {
-      if(!is.character(files))
-        stop("'files' must be a character vector.")
-      file.names = basename(files) ## strip path from names
-      if(path != ".")
-        files = file.path(path, files)    
+        ## if we haven't found files by now try to search according to
+        ## 'pattern'
+        if(is.null(files)) {
+            files = dir(path,pattern,full.names=TRUE)
+            file.names = dir(path,pattern,full.names=FALSE)
+            if(length(files)<1)
+                stop(paste("No matching files found in ",path))
+        } else {
+            if(!is.character(files))
+                stop("'files' must be a character vector.")
+            file.names = basename(files) ## strip path from names
+            if(path != ".")
+                files = file.path(path, files)    
+        }
     }
-  }
          
-  flowSet = lapply(files, read.FCS, ...)
-  ##Allows us to specify a particular keyword to use as our sampleNames
-  ##rather than requiring the filename be used. This is handy when something
-  ##like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
-  ##a lot more insane now.
-  if(!missing(name.keyword))
-    names(flowSet) = sapply(flowSet,keyword,name.keyword)
-  else
-    names(flowSet) = file.names
-  flowSet = as(flowSet,"flowSet")
-  if(!is.null(phenoFrame)) { phenoData(flowSet) = phenoFrame } else if(!missing(phenoData)) {
-    ##Collect the names for each field in the data frame
-    field.names = names(phenoData)
-    print(field.names)
-    if(is.null(field.names))
-      stop("phenoData list must have names")
-    field.names = sapply(seq(along=phenoData),function(i) {
-      if(length(field.names[i]) == 0) as(phenoData[i],"character")
-      else field.names[i]
-    })
-    if(!missing(descriptions)) {
-      ##If the descriptions have names, reorder them as needed.
-      if(!is.null(names(descriptions)))
-				descriptions = descriptions[field.names]
-    } else
-    descriptions = field.names
-    names(phenoData) = field.names
-    phenoData(flowSet) = new("AnnotatedDataFrame",
-               data=keyword(flowSet,phenoData),
-               varMetadata=data.frame(labelDescriptions=I(descriptions),
+    flowSet = lapply(files, read.FCS, ...)
+    ##Allows us to specify a particular keyword to use as our sampleNames
+    ##rather than requiring the filename be used. This is handy when something
+    ##like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
+    ##a lot more insane now.
+    if(!missing(name.keyword))
+        names(flowSet) = sapply(flowSet,keyword,name.keyword)
+    else
+        names(flowSet) = file.names
+    flowSet = as(flowSet,"flowSet")
+    if(!is.null(phenoFrame)) { phenoData(flowSet) = phenoFrame } else if(!missing(phenoData)) {
+        ##Collect the names for each field in the data frame
+        field.names = names(phenoData)
+        print(field.names)
+        if(is.null(field.names))
+            stop("phenoData list must have names")
+        field.names = sapply(seq(along=phenoData),function(i) {
+            if(length(field.names[i]) == 0) as(phenoData[i],"character")
+            else field.names[i]
+        })
+        if(!missing(descriptions)) {
+            ##If the descriptions have names, reorder them as needed.
+            if(!is.null(names(descriptions)))
+                descriptions = descriptions[field.names]
+        } else
+        descriptions = field.names
+        names(phenoData) = field.names
+        phenoData(flowSet) = new("AnnotatedDataFrame",
+                 data=keyword(flowSet,phenoData),
+                 varMetadata=data.frame(labelDescriptions=I(descriptions),
                  row.names=field.names))
-  }
-  flowSet
+    }
+    flowSet
 }
 
