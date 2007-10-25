@@ -1,9 +1,18 @@
-##  Generic methods definition
+## =========================================================================##
+## =========================================================================##
+##                       Generic methods definition                         ##
+## =========================================================================##
+## =========================================================================##
+
+
+
+
 
 ## ===========================================================================
 ## These are already defined as generic functions:
 ## ---------------------------------------------------------------------------
 setGeneric("draw",function(x,data,...) standardGeneric("draw"))
+
 
 ## ===========================================================================
 ## Generics for our operators
@@ -14,8 +23,12 @@ setGeneric("%subset%",function(e1,e2) standardGeneric("%subset%"))
 setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 setGeneric("%on%",function(e1,e2) standardGeneric("%on%"))
 
+
+## ===========================================================================
 ## Generic for sorting (already S3 generic...)
+## ---------------------------------------------------------------------------
 setGeneric("sort",function(x,decreasing=FALSE,...) standardGeneric("sort"))
+
 
 ## ===========================================================================
 ## Generic for ncol
@@ -23,10 +36,12 @@ setGeneric("sort",function(x,decreasing=FALSE,...) standardGeneric("sort"))
 ##if(!isGeneric("ncol"))
 ##  setGeneric("ncol", function(x) standardGeneric("ncol"))
 
+
 ## ===========================================================================
 ## Generic for keyword
 ## ---------------------------------------------------------------------------
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
+
 
 
 ## ===========================================================================
@@ -35,11 +50,13 @@ setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
 setGeneric("parameters",function(object) standardGeneric("parameters"))
 
 
+
 ## ===========================================================================
 ## Generic for identifier
 ## ---------------------------------------------------------------------------
 setGeneric("identifier",function(object) standardGeneric("identifier"))
-setGeneric("identifier<-",function(object,value) standardGeneric("identifier<-"))
+setGeneric("identifier<-",function(object,value)
+           standardGeneric("identifier<-"))
 
 
 ## ===========================================================================
@@ -58,27 +75,39 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 ## ===========================================================================
 ## Generic for filter
 ## ---------------------------------------------------------------------------
-setGeneric("filter", function(x, filter,...) standardGeneric("filter"),useAsDefault=FALSE)
-setGeneric("filterReference",function(from,name) standardGeneric("filterReference"))
+setGeneric("filter", function(x, filter,...) standardGeneric("filter"),
+           useAsDefault=FALSE)
+
 
 ## ===========================================================================
-## Generics for accessing certain aspects of the filtering process.
+## Generic for filterReference
 ## ---------------------------------------------------------------------------
-setGeneric("filterDetails<-", function(result, filterId,...,value)  standardGeneric("filterDetails<-"))
-setGeneric("filterDetails", function(result, filterId,...) standardGeneric("filterDetails"))
+setGeneric("filterReference",function(from,name)
+           standardGeneric("filterReference"))
 
 
 ## ===========================================================================
-## Used to summarize the operation of a filter on a frame. Used for the implementation
-## of filters, not for the use of filters.
+## Generics for accessing and replacing certain aspects of the
+## filtering process.
+## ---------------------------------------------------------------------------
+setGeneric("filterDetails<-", function(result, filterId,...,value)
+           standardGeneric("filterDetails<-"))
+setGeneric("filterDetails", function(result, filterId,...)
+           standardGeneric("filterDetails"))
+
+
+## ===========================================================================
+## Used to summarize the operation of a filter on a frame. Used for the
+## implementation of filters, not for the use of filters.
 ## ---------------------------------------------------------------------------
 setGeneric("summarizeFilter", function(result,filter) standardGeneric("summarizeFilter"))
 
+
 ## ===========================================================================
-## Used to summarize the operation of a filter on a frame. Used for the implementation
-## of filters, not for the use of filters.
+## Used to summarize the operation of a filter on a frame.
 ## ---------------------------------------------------------------------------
 setGeneric("summary", function(object,...) standardGeneric("summary"))
+
 
 ## ===========================================================================
 ## Generics for spillover and compensate
@@ -90,7 +119,8 @@ setGeneric("compensate", function(x,spillover) standardGeneric("compensate"))
 ## ===========================================================================
 ## Generics for apply-like methods
 ## ---------------------------------------------------------------------------
-setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE) standardGeneric("fsApply"))
+setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE)
+           standardGeneric("fsApply"))
 setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
 setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
 
