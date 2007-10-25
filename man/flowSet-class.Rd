@@ -18,6 +18,7 @@
 \alias{phenoData,flowSet-method}
 \alias{phenoData<-,flowSet,ANY-method}
 \alias{phenoData<-,flowSet,phenoData-method}
+\alias{pData,flowSet-method}
 \alias{varLabels,flowSet-method}
 \alias{varLabels<-,flowSet-method}
 \alias{varLabels<-,flowSet,ANY-method}
@@ -29,6 +30,7 @@
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
 \alias{Subset,flowSet,list-method}
+
 
 
 \title{'flowSet': a class for storing flow cytometry raw data from
@@ -77,6 +79,8 @@ containing one or more \code{\link[flowCore:flowFrame-class]{flowFrame}} objects
   object.}
 \item{colnames, colnames<-}{extract or replace the \code{colnames} slot.}
 \item{phenoData, phenoData<-}{extract or replace the \code{phenoData}
+  slot.}
+\item{phenoData}{extract a \code{data.frame} from the \code{phenoData}
   slot.}
 \item{pData}{extract actual information from the \code{phenoData} slot.}
 \item{sampleNames}{extract sample names from the \code{phenoData} object.}
