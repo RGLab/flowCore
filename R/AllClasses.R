@@ -386,14 +386,18 @@ sampleFilter = function(filterId="sample",size) new("sampleFilter",
 ## Let's us encapsulate an expression as a gate
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
-         representation(expr="call",args="list"),
+         representation(expr="expression",args="list"),
          contains="concreteFilter")
 
 ##constructor
-expressionFilter = function(expr,...,filterId) {
-	expr = substitute(expr)
-	if(missing(filterId)) filterId = deparse(expr)
-	new("expressionFilter",filterId=filterId,expr=expr,args=list(...))
+expressionFilter = function(expr, ..., filterId){
+    subs <- substitute(expr)
+    if(is(subs, "call")){
+        expr <- as.expression(subs)
+        if(missing(filterId)) filterId <- deparse(subs)
+    }else if(missing(filterId))
+        filterId <- as.character(expr)
+    new("expressionFilter",filterId=filterId,expr=expr,args=list(...))
 }
 
 

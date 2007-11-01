@@ -32,7 +32,7 @@ exportMethods("initialize","description","phenoData","phenoData<-",
               "filterReference", "filterDetails<-","plot", "coerce",
               "coerce<-","spillover", "compensate","fsApply","sampleNames",
               "each_row", "each_col", "varLabels", "varLabels<-","sort",
-              "sampleNames<-", "pData")
+              "sampleNames<-", "pData", "range")
 
 S3method("$", "flowFrame")
 
