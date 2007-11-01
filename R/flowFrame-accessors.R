@@ -205,6 +205,37 @@ setMethod("show",signature=signature("flowFrame"),
           })
 
 
+
+## ==========================================================================
+## range method for flowFrame
+## get the range of possible data values from the parameters slot. Note that
+## this range is not necessarily the range of the actual data values but
+## it is the dynamic range of the measurement instrument
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("range", signature("flowFrame"),
+          definition=function(x, ..., na.rm){
+              pind <- 1:nrow(parameters(x))
+              channel <- unlist(list(...))
+              if(length(channel)>0){
+                  if(!all(is(channel, "character")))
+                      stop("All further arguments must be characters",
+                           call.=FALSE)
+                  pind <- match(channel, parameters(x)$name, nomatch=0)
+              }
+              if(any(pind==0))
+                  stop("'", paste(channel[which(pind==0)],
+                             collapse="' and '", sep=""),
+                       "' is/are no valid parameter(s) in this frame",
+                       call.=FALSE) 
+              ret <- cbind(min=parameters(x)$minRange[pind],
+                           max=parameters(x)$maxRange[pind])
+              rownames(ret) <- parameters(x)$name[pind]
+              return(ret)
+          }
+)
+
+
+
 ## ==========================================================================
 ## Subset methods for flowFrame
 ## Why do we need the 'select' parameter? Wouldn't this be equivalent:

@@ -42,6 +42,7 @@
 \alias{featureNames,flowFrame-method}
 \alias{each_row,flowFrame-method}
 \alias{each_col,flowFrame-method}
+\alias{range,flowFrame-method}
 
   
 \title{'flowFrame': a class for storing observed quantitative
