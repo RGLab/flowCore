@@ -33,4 +33,6 @@ testsuite <- defineTestSuite(
 testResult <- runTestSuite(testsuite)
 
 # Prints a protocol of a test run
-summary(testResult)
+#summary(testResult)
+
+printHTMLProtocol(testResult,file="InOutResult.html")
