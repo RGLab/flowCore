@@ -87,10 +87,23 @@ read.FCS <- function(filename,
     if(transformation==TRUE){
         txt[["transformation"]] <-"applied" 
     }
-    
+
     ## build description from FCS parameters
-    description <- strsplit(txt,split=" ")
+    description <- strsplit(txt,split="\n")
     names(description) <- names(txt)
+
+    ## the spillover matrix
+    spID <- intersect(c("SPILL", "spillover"), names(description))
+    if(length(spID)>0){
+        sp <- description[[spID]]
+        nrCols <- as.numeric(substr(sp,1,1))
+        sp <- substr(sp,3,nchar(sp))
+        cnames <- strsplit(sp, ",")[[1]][1:nrCols]
+        vals <- as.numeric(strsplit(sp, ",")[[1]][8:(nrCols*nrCols)])
+        spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+        colnames(spmat) <- cnames
+        description[[spID]] <- spmat
+    }
     
     return(new("flowFrame", exprs=mat, description= description,
                parameters=params))
