@@ -99,7 +99,7 @@ read.FCS <- function(filename,
         nrCols <- as.numeric(substr(sp,1,1))
         sp <- substr(sp,3,nchar(sp))
         cnames <- strsplit(sp, ",")[[1]][1:nrCols]
-        vals <- as.numeric(strsplit(sp, ",")[[1]][8:(nrCols*nrCols)])
+        vals <- as.numeric(strsplit(sp, ",")[[1]][(nrCols+1):((nrCols*nrCols)+1)])
         spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
         colnames(spmat) <- cnames
         description[[spID]] <- spmat
