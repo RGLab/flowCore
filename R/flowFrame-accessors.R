@@ -9,7 +9,9 @@ setMethod("identifier", signature="flowFrame",
             if(is.null(oid) || is.na(oid))
                oid <- as.vector(object@description[["$FIL"]])
             if(is.null(oid) || is.na(oid))
-                as.vector(object@description[["FILENAME"]])
+                oid <- as.vector(object@description[["FILENAME"]])
+            if(is.null(oid) || is.na(oid))
+                "anonymous"
             else
               as.vector(oid)
         })

@@ -1,0 +1,119 @@
+\documentclass[12pt]{article}
+\usepackage{url}
+
+\title{Outline flowCore paper}
+
+\author{Florian Hahne*\\
+  Nolwenn LeMeur*\\
+  Byron Ellis\\
+  Ryan Brinkman\\
+  Perry Haaland\\
+  Errol Strain\\
+  Deepayan Sarkar\\
+  Joseph Spidlen\\
+  Robert Gentleman
+ }
+
+\begin{document}
+\maketitle
+
+\vspace{2ex} The paper will deal with the capabilities offered by
+flowCore for handling flow cytometry data in R. The main focus should
+be on high-throughput and how our infrastructure can be used to deal
+with such data. We don't want to write a user manual but rather
+highlight the problems that arise from high throughput flow
+applications and the solutions we offer. A strong point should be on
+integration of our infrastructure in the flow world. flowCore is
+intended to be a development platform for other scientists, we don't
+want to provide full-fledged solutions but rather tools for others to
+devise such solutions.
+
+
+It would be nice to show these things on one data set in the form of a
+use case, but that is open to discussion. The problem with such an
+approach is that it often looks like a software manual which is not
+what should be aiming for. 
+
+The author list is also still up for discussion, listed here are all
+the names that came up during the last telephone conference. NLM and
+FH are supposed to share first authorship.
+
+Target journal should be Cytometry, and there are two flavors:
+Cytometry A deals with more general topics while Cytometry B is more
+geared towards clinical applications. Florian suggests Cytometry A,
+here is a link to the author instructions:
+\url{http://www3.interscience.wiley.com/journal/33945/home/ForAuthors.html}.
+They require the standard Materials and Methods, Results and
+Discussion structure which might not be suited for our needs. FH
+hasn't found out about alternative methods-type articles yet.  We can
+suggest to the editor new format for software/methods oriented papaer?
+(NLM)
+
+Also it is not clear from their web page whether they support LaTeX
+manuscript submissions but FH would strongly argue for using
+LaTeX. They do accept pdf submission.
+
+There is an svn repository set up at
+\url{https://hedgehog.fhcrc.org/gentleman/bioconductor/trunk/madman/Rpacks/flowCore/paper}
+which is also the repository for the flowCore source code. All
+contributors should already have usernames and passwords, if not
+please contact FH.
+
+
+
+FH put the following very rough structure up for discussion:
+
+\section{Introduction}
+
+\subsection{High throughput flow}
+A brief introduction to the flow technology and high throughput flow
+in particular. 
+
+\subsection{R and Bioconductor}
+A couple of sentences what Bioconductor and R is all
+about.
+
+\subsection{Existing data standards and conventions}
+How does the flow data world look like
+FCS
+Other flow software (what other software are handling multiple FCS files all together)
+(NLM: should we mention prada and rflowcyt?) FH say: Maybe not, I
+think it is time to move away from history and establish flowCore as
+the one software for flow in Bioconductor. 
+
+\section{Basic data structures}
+
+\subsection{demands on flow data structures}
+numeric raw data matrices
+instrument-specific meta data
+experiment meta data
+memory issues, scale of data (tubes, plates)
+
+\subsection{flowFrame}
+to represent individual FCS files
+
+\subsection{flowSet} 
+experiments, multiple FCS files, plates
+
+
+\section{Standard flow operations}
+\subsection{transformations}
+Different flavors, R's own transformation infrastructure allows for
+arbitrary transforms
+
+\subsection{gating}
+gate definitions
+capturing gating schemes, workflow
+gate summary statistics
+
+
+\section{Application, Outlook}
+Challenges in high throughput cytometry
+(QA, automated gating, class discovery) 
+
+flowCore as toolbox
+
+already in devel 'plug-in' packages (Visualization, QA, stats, ...)
+
+\end{document}
+
