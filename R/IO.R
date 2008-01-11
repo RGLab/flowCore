@@ -269,7 +269,7 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
     size <- bitwidth/8
     if (!size %in% c(1, 2, 4, 8))
         stop(paste("Don't know how to deal with bitwidth", bitwidth))
-    
+
     
     nwhichLines = length(which.lines)
     ##Read all reports
@@ -301,7 +301,15 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
         }
     }
     stopifnot(length(dat)%%nrpar==0)
-    
+
+    ## apply bitmask for integer data
+    ## FIXME: We should think about doing this in C for
+    ## efficiency reasons
+    if(dattype=="integer"){
+        usedBits <- unique(log2(range))
+        if(usedBits<bitwidth)
+            dat <- dat %% (2^usedBits)
+    }
     
     dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
