@@ -26,6 +26,7 @@
 \alias{coerce,call,filter-method}
 \alias{coerce,filterSet,list-method}
 \alias{coerce,list,filterSet-method}
+\alias{coerce,flowSet,list-method}
 \alias{coerce,flowSet,flowFrame-method}
 \alias{coerce,flowFrame,filterSet-method}
 

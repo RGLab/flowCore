@@ -7,7 +7,7 @@
 \alias{subsetFilter-class}
 
 \title{Class "setOperationFilter"}
-\description{}
+
 
 \section{Slots}{
 	 \describe{

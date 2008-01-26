@@ -186,6 +186,17 @@ setAs("list","flowSet",function(from) {
     as(l2e(from,new.env(hash=T,parent=emptyenv())),"flowSet")
 })
 
+## ==========================================================================
+## Convert a flowSet to a list
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setAs("flowSet","list",function(from) {
+    ret <- list()
+    for(i in sampleNames(from))
+        ret[[i]] <- from[[i]]
+    return(ret)
+})
+
+
 
 ## ==========================================================================
 ## Coerce a flowSet to a flowFrame

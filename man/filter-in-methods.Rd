@@ -19,6 +19,8 @@
 \alias{\%in\%,flowFrame,sampleFilter-method}
 \alias{\%in\%,flowFrame,transformFilter-method}
 \alias{\%in\%,flowFrame,expressionFilter-method}
+\alias{\%in\%,flowFrame,curv1Filter-method}
+\alias{\%in\%,flowFrame,curv2Filter-method}
 
 \title{ Methods for Function \%in\% in Package `flowCore'}
 \description{
@@ -27,7 +29,7 @@ The operation is considered to be general and may return a \code{logical}, \code
 will be handled appropriately. The ability to handle logical matrices as well as vectors is also planned but not yet 
 implemented.}
 
-\examples{}
+
 
 \author{B. Ellis}
 \keyword{methods}

@@ -29,6 +29,5 @@ Class \code{"\linkS4class{filter}"}, directly.
 \seealso{
 	\code{"\linkS4class{filterSet}"}
 }
-\examples{
-}
+
 \keyword{classes}
