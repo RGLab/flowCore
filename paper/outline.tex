@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{url}
+\usepackage[authoryear,round]{natbib}
 
 \title{Outline flowCore paper}
 
@@ -200,13 +201,17 @@ towards the analysis the large numeric datasets like those arising
 from high throughput experiments such as FC-HCS. Indeed, this open
 source software already offers a wide range of statistical and
 visualization methods developed for various field of application, many
-of them relavant also to FC-HCS data analysis. In addition, R is a
-research platform which bioinformaticians, computer scientists, and
-statisticians are using to develop new tools for statistical data
-analyis. For biological application, the Bioconductor project has
-become the standard toolset...
- 
-\textit{end --- example text}
+of them relevant also to FC-HCS data analysis. 
+%% FIXME: either cite some of our paper or drop this sentence. 
+%% I think it it too redundant with the one above it.
+In addition, R is a research platform which
+bioinformaticians, computer scientists, and statisticians are using to
+develop new tools for statistical data analyis. For biological
+application, the Bioconductor project has become the standard toolset
+\citep{gentleman2006bos}...  
+
+NLM: reference to microarray ?
+\textit{end--- example text}
 
 \subsection{Existing data standards and conventions}
 
@@ -221,15 +226,7 @@ FCS -> we can read these files
 
 \textit{end --- example text}
 
-
-{\bf NLM:} should we mention prada and rflowcyt?  
-
-{\bf FH:} Maybe not, I think it is time to move away from history and
-establish flowCore as the one software for flow in Bioconductor.
-
-{\bf RB:} Since rflowcyt laid the groundwork for this work we might consider
-inviting Tony Rossini to contribute to the manuscript, in which case we
-wouldn't need to mention rflowcyt. It would be important to highlight
+{\bf RB:}  It would be important to highlight
 the differences between flowCore and commercial software packages,
 including in philosophy (open vs. closed source) and interaction
 (programmatic data analysis vs. GUI-driven). 
@@ -342,5 +339,7 @@ flowCore as toolbox
 
 already in devel 'plug-in' packages (Visualization, QA, stats, ...)
 
+\bibliographystyle{plainnat}  
+\bibliography{flowCoreRef} 
 \end{document}
 
