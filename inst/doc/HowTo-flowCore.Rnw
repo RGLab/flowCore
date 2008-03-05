@@ -213,13 +213,21 @@ y
 
 \subsubsection{Visualizing a \Rclass{flowFrame}}
 
-Much of the more sophisticated visualization of \Rclass{flowFrame} and \Rclass{flowSet} objects, including an interface to the \Rpackage{lattice} graphics system is implemented by the \Rpackage{flowViz} package, also included as part of Bioconductor. However, \Rpackage{flowCore} does implement some basic plotting facilities using the standard \Rfunction{plot} function. The basic plot provides a simple bivariate density plot of the first two parameters:
+Much of the more sophisticated visualization of \Rclass{flowFrame} and
+\Rclass{flowSet} objects, including an interface to the
+\Rpackage{lattice} graphics system is implemented by the
+\Rpackage{flowViz} package, also included as part of
+Bioconductor. However, \Rpackage{flowCore} does implement some basic
+plotting facilities using the standard \Rfunction{plot} function. The
+basic plot provides a simple pairs plot of all parameters:
 
 <<Plot1, fig=true, echo=true>>=
 plot(x)
 @
 
-To control the parameters being plotted we can supply a \Robject{y} value in the form of a character vector:
+To control the parameters being plotted we can supply a \Robject{y}
+value in the form of a character vector. If we choose exactly two
+parameters this will create a bivariate density plot.
 
 <<Plot2, fig=true, echo=true>>=
 plot(x,c("FL1-H", "FL2-H"))

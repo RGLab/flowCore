@@ -303,8 +303,6 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
     stopifnot(length(dat)%%nrpar==0)
 
     ## apply bitmask for integer data
-    ## FIXME: We should think about doing this in C for
-    ## efficiency reasons
     if(dattype=="integer"){
         usedBits <- unique(log2(range))
         if(usedBits<bitwidth)
@@ -409,10 +407,10 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     }
     
     flowSet = lapply(files, read.FCS, ...)
-    ##Allows us to specify a particular keyword to use as our sampleNames
-    ##rather than requiring the filename be used. This is handy when something
-    ##like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
-    ##a lot more insane now.
+    ## Allows us to specify a particular keyword to use as our sampleNames
+    ## rather than requiring the filename be used. This is handy when something
+    ## like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
+    ## a lot more insane now.
     if(!missing(name.keyword))
         names(flowSet) <- sapply(flowSet,keyword,name.keyword)
     else

@@ -1,4 +1,5 @@
 \name{filter-on-methods}
+\alias{filter-on-methods}
 \docType{methods}
 \alias{\%on\%-methods}
 \alias{\%on\%}
