@@ -4,7 +4,7 @@ import("methods")
 importFrom("utils", "getFromNamespace", "assignInNamespace")
 importFrom("MASS", "cov.rob")
 importFrom("geneplotter", "smoothScatter","densCols")
-importFrom("graphics", "plot")
+#importFrom("graphics", "plot") this was breaking method dispatch...
 
 
 importFrom("Biobase", "exprs", "exprs<-", "description", "description<-",
