@@ -5,27 +5,35 @@
 \alias{[,flowFrame,ANY-method}
 \alias{[,flowFrame,filter-method}
 \alias{[,flowFrame,filterResult-method}
-\alias{==,flowFrame,filterResult-method}
-\alias{==,flowFrame,flowFrame-method}
-\alias{Subset,flowFrame,ANY-method}
-\alias{Subset,flowFrame,logical-method}
-\alias{description,flowFrame-method}
+\alias{$.flowFrame}
+\alias{exprs]
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{exprs<-,flowFrame,ANY-method}
-\alias{colnames,flowFrame-method}
-\alias{colnames<-,flowFrame-method}
-\alias{names,flowFrame-method}
-\alias{parameters,flowFrame-method}
-\alias{parameters<-,flowFrame,AnnotatedDataFrame-method}
+\alias{description}
+\alias{description,flowFrame-method}
 \alias{show,flowFrame-method}
+\alias{summary,flowFrame-method}
+\alias{plot}
 \alias{plot,flowFrame,missing-method}
 \alias{plot,flowFrame,character-method}
 \alias{plot,flowFrame,filter-method}
-\alias{$.flowFrame}
-\alias{filter,flowFrame}
-\alias{compensate,flowFrame,matrix-method}
-\alias{spillover,flowFrame-method}
+\alias{ncol}
+\alias{ncol,flowFrame-method}
+\alias{nrow}
+\alias{nrow,flowFrame-method}
+\alias{dim}
+\alias{dim,flowFrame-method}
+\alias{featureNames}
+\alias{featureNames,flowFrame-method}
+\alias{colnames}
+\alias{colnames,flowFrame-method}
+\alias{colnames<-}
+\alias{colnames<-,flowFrame-method}
+\alias{names}
+\alias{names,flowFrame-method}
+\alias{range}
+\alias{range,flowFrame-method}
 \alias{transform,flowFrame-method}
 \alias{split,flowFrame,ANY,ANY-method}
 \alias{split,flowFrame,ANY-method}
@@ -35,17 +43,14 @@
 \alias{split,flowFrame,multipleFilterResult,ANY-method}
 \alias{split,flowFrame,manyFilterResult,ANY-method}
 \alias{split,flowFrame,factor,ANY-method}
-\alias{ncol,flowFrame-method}
-\alias{nrow,flowFrame-method}
-\alias{dim,flowFrame-method}
-\alias{identifier,flowFrame-method}
-\alias{summary,flowFrame-method}
-\alias{featureNames,flowFrame-method}
-\alias{each_row,flowFrame-method}
-\alias{each_col,flowFrame-method}
-\alias{range,flowFrame-method}
+\alias{Subset,flowFrame,ANY-method}
+\alias{Subset,flowFrame,logical-method}
+\alias{compensate,flowFrame,matrix-method}
+\alias{==,flowFrame,filterResult-method}
+\alias{==,flowFrame,flowFrame-method}
+\alias{spillover,flowFrame-method}
 
-  
+
 \title{'flowFrame': a class for storing observed quantitative
   properties for a population of cells from a FACS run
 }
@@ -280,8 +285,8 @@
     }
 
     \item{identifier}{Extract GUID of a \code{flowFrame}. Returns the
-      file name if no GUID is available. See
-      \code{\link[flowCore]{identifier}} for details.
+      file name if no GUID is available. See \code{\link{identifier}}
+      for details.
 
       \emph{Usage:}
       
@@ -302,9 +307,9 @@
 
     }
 
-    \item{each\_row, each\_col}{Apply functions over rows or columns of the
-      data matrix. These are convenince methods. To have more control
-      over the iterator use the \code{\link{fsApply}} function.
+    \item{each\_row, each\_col}{Apply functions over rows or columns of
+      the data matrix. These are convenince methods. See
+      \code{\link{each_col}} for details.
 
       \emph{Usage:}
       
@@ -318,7 +323,7 @@
       \code{\link[base]{transform}} function by treating the
       \code{flowFrame} like a regular \code{data.frame}. \code{flowCore}
       provides an additional inline mechanism for transformations (see
-      \code{\link{filter-on-methods}}) which is strictly more limited
+      \code{\link{\%on\%}}) which is strictly more limited
       than the out-of-line transformation described here. Note that only
       the out-of-line transformation makes sure that the values for the
       dynamic range in the \code{parameters} slot are also transformed
@@ -330,9 +335,9 @@
 
     }
     
-    \item{filter}{Apply a \code{filter} object on a \code{flowSet}
-      object. This returns an object of class
-      \code{\link{filterResult}}, which could then be used for
+    \item{filter}{Apply a \code{\linkS4class{filter}} object on a
+      \code{\linkS4class{flowFrame}} object. This returns an object of
+      class \code{\link{filterResult}}, which could then be used for
       subsetting of the data or to calculate summary statistics. See
       \code{\link{filter}} for details.
 
@@ -416,7 +421,7 @@
 
 \seealso{
   
-  \code{\linkS4class{flowFrame}},  \code{\link{read.FCS}}
+  \code{\linkS4class{flowSet}},  \code{\link{read.FCS}}
   
 }
 

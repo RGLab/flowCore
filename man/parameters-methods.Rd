@@ -7,6 +7,9 @@
 \alias{parameters,setOperationFilter-method}
 \alias{parameters,filterReference-method}
 \alias{parameters,parameterTransform-method}
+\alias{parameters,flowFrame-method}
+\alias{parameters<-}
+\alias{parameters<-,flowFrame,AnnotatedDataFrame-method}
 
 \title{Obtain information about parameters for flow cytometry objects.}
 
@@ -35,7 +38,7 @@ parameters(object)
 \value{
   
   When applied to a \code{flowFrame} object, the result is an
-   \code{\linkS4class{AnnotatedDataFrame} describing the parameters
+   \code{\linkS4class{AnnotatedDataFrame}} describing the parameters
    recorded by the cytometer. For other objects it will usually return a
    vector of names used by the object for its calculations.
   
@@ -59,7 +62,8 @@ parameters(object)
     \item{object = "flowFrame"}{Returns an
       \code{\linkS4class{AnnotatedDataFrame}} containing detailed
       descriptions about the measurement parameters of the
-      \code{\linkS4class{flowFrame}}.}
+      \code{\linkS4class{flowFrame}}. For \code{\linkS4class{flowFrame}}
+      objects there also exists a replacement method.}
     
     \item{object = "parameterTransform"}{Returns a vector of parameters
       that are transformed.}

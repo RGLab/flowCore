@@ -169,6 +169,8 @@ setAs("environment","flowSet",function(from) {
     
     ##Check the column names
     colNames = sapply(frameList,function(f) colnames(from[[f]]))
+    if(is.null(dim(colNames)))
+        dim(colNames) <- c(ncol(from[[frameList[[1]]]]), length(frameList))
     if(!all(apply(colNames,2,"==",colNames[,1])))
         stop("Column names for all frames do not match.")
     new("flowSet",frames=from,colnames = colNames[,1],
@@ -195,6 +197,15 @@ setAs("flowSet","list",function(from) {
         ret[[i]] <- from[[i]]
     return(ret)
 })
+
+
+## ==========================================================================
+## Coerce a flowFrame to a flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setAs("flowFrame", "flowSet", function(from) {
+    flowSet(from)
+})
+
 
 
 

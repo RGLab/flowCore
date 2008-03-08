@@ -36,10 +36,10 @@ setGeneric("sort",function(x,decreasing=FALSE,...) standardGeneric("sort"))
 
 
 ## ===========================================================================
-## Generic for ncol
+## Generic for ncol and nrow
 ## ---------------------------------------------------------------------------
-##if(!isGeneric("ncol"))
-##  setGeneric("ncol", function(x) standardGeneric("ncol"))
+setGeneric("ncol", function(x) standardGeneric("ncol"))
+setGeneric("nrow", function(x) standardGeneric("nrow"))
 
 
 ## ===========================================================================
@@ -53,7 +53,16 @@ setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
 ## Generic to access parameters in a flowframe
 ## ---------------------------------------------------------------------------
 setGeneric("parameters",function(object) standardGeneric("parameters"))
+setGeneric("parameters<-",
+           function(object, value) standardGeneric("parameters<-"))
 
+
+## ===========================================================================
+## Generic to access colnames
+## ---------------------------------------------------------------------------
+setGeneric("colnames",function(x, do.NULL = TRUE, prefix = "col") standardGeneric("colnames"))
+setGeneric("colnames<-",
+           function(x, value) standardGeneric("colnames<-"))
 
 
 ## ===========================================================================

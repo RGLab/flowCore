@@ -26,7 +26,52 @@ setClass("flowFrame",
          row.names="name")),
          description=list(note="empty")))
 
+## helper function to create empty AnnotatedDataFrame for the parameters slot
+parDefault <- function(exp){
+    vm <- data.frame(labelDescription=c(name="Name of Parameter",
+                     desc="Description of Parameter",
+                     range="Range of Parameter",
+                     minRange="Minimum Parameter Value after Transformation",
+                     maxRange="Maximum Parameter Value after Transformation"))
+    pd <- data.frame(name=colnames(exp), desc=colnames(exp),
+                     range=apply(exp, 2, max, na.rm=TRUE),
+                     minRange=apply(exp, 2, min, na.rm=TRUE),
+                     maxRange=apply(exp, 2, max, na.rm=TRUE))
+    new("AnnotatedDataFrame", pd, vm)
+}
 
+## check parameter AnnotatedDataFrame for validity
+isValidParameters <- function(parms, exprs)
+{
+     if(!is(parms, "AnnotatedDataFrame"))
+           stop("Argument 'parameters' must be object of class ",
+                'AnnotatedDataFrame', call.=FALSE)
+     if(!all(c("name", "desc", "range", "minRange", "maxRange")
+             %in% varLabels(parms)))
+         stop("The following columns are mandatory:\n  'name', 'desc',",
+              "'range', 'minRange', 'maxRange'", call.=FALSE)
+     if(!missing(exprs))
+         if(!all(colnames(exprs) %in% parms$name))
+             stop("parameter description doesn't match colnames of the ",
+                  "data matrix", call.=FALSE)
+     return(TRUE)
+}
+
+## constructor
+flowFrame <- function(exprs, parameters, description=list()){
+    if(!is.matrix(exprs) || !is.numeric(exprs) || is.null(colnames(exprs)))
+        stop("Argument 'exprs' must be numeric matrix with colnames ",
+             "attribute set", call.=FALSE)
+    if(missing(parameters))
+        parameters <- parDefault(exprs)
+    else
+        isValidParameters(parameters, exprs)
+    if(!is.list(description))
+        stop("Argument 'description' must be a list", call.=FALSE)
+    new("flowFrame", exprs=exprs, parameters=parameters,
+        description=description)
+}
+  
 
 ## ===========================================================================
 ##  flowSet
@@ -57,7 +102,7 @@ setClass("flowSet",
              ##Ensure that all frames match our colnames
              if(!all(sapply(sampleNames(object),function(i) {
                  x = get(i,env=object@frames)
-                 if(identical(object@colnames, colnames(x))){
+                 if(all(object@colnames %in% colnames(x))){
                      TRUE
                  }else{ 
                      return(paste(i, "failing colnames check: ",
@@ -72,11 +117,15 @@ setClass("flowSet",
          })
 
 ## constructor
-flowSet = function(...,phenoData) {
-    x = list(...)
-    if(length(x) == 1 && is.list(x[[1]])) x = x[[1]]
-    f = as(x,"flowSet")
-    if(!missing(phenoData)) phenoData(f) = phenoData
+flowSet <- function(...,phenoData) {
+    x <- list(...)
+    if(length(x) == 1 && is.list(x[[1]]))
+        x <- x[[1]]
+    if(!all(sapply(x, is, "flowFrame")))
+        stop("All additional arguments must be flowFrames")
+    f <- as(x,"flowSet")
+    if(!missing(phenoData))
+        phenoData(f) = phenoData
     f
 }
 

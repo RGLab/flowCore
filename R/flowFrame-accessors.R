@@ -5,13 +5,29 @@
 setMethod("[", signature="flowFrame",
           definition=function(x, i, j, ..., drop=FALSE)
       {
+          if(drop)
+              warning("Argument 'drop' ignored for subsetting of flowFrame")
+          msg <- "Subset out of bounds"
+          if(!missing(j)){
+              if(is.logical(j))
+                  if(max(which(j)) > ncol(x))
+                      stop(msg, call.=FALSE)
+              if(is.numeric(j))
+                  if(max(abs(j)) > ncol(x))
+                      stop(msg, call.=FALSE)
+              if(is.character(j))
+                  if(!all(j %in% colnames(x)))
+                      stop(msg, call.=FALSE)
+          }
+          if(!missing(i))
+               if(max(abs(i)) > nrow(x))
+                   stop(msg, call.=FALSE)
+          
           exprs(x) <-  switch(1+missing(i)+2*missing(j),
-                          { exprs(x)[i, j, ..., drop=drop] },
-                          { exprs(x)[ , j, ..., drop=drop] },
-                          { exprs(x)[i,  , ..., drop=drop] },
-                          { exprs(x)[ ,  , ..., drop=drop] } )
-          if(!missing(j)) 
-              x@parameters = x@parameters[j,]
+                          { exprs(x)[i, j, ..., drop=FALSE] },
+                          { exprs(x)[ , j, ..., drop=FALSE] },
+                          { exprs(x)[i,  , ..., drop=FALSE] },
+                          { exprs(x)[ ,  , ..., drop=FALSE] } )
           x
       })
 ## by results of a filtering operation
@@ -19,9 +35,9 @@ setMethod("[", signature=signature("flowFrame","filterResult"),
           definition=function(x,i,j,...,drop=FALSE)
       {
           if(missing(j))
-              x[x %in% i,,...,drop=drop]
+              x[x %in% i,,...,drop=FALSE]
           else
-              x[x %in% i,j,...,drop=drop]
+              x[x %in% i,j,...,drop=FALSE]
       })
 ## by filter (which computes filter result first and applies that)
 setMethod("[", signature=signature("flowFrame","filter"),
@@ -29,9 +45,9 @@ setMethod("[", signature=signature("flowFrame","filter"),
       {
           result = filter(x,i)
           if(missing(j))
-              x[result,,...,drop=drop]
+              x[result,,...,drop=FALSE]
           else
-              x[result,j,...,drop=drop]
+              x[result,j,...,drop=FALSE]
       })
 
 
@@ -83,7 +99,13 @@ setReplaceMethod("exprs", signature=c("flowFrame", "matrix"),
                  object@exprs <- value
                  return(object)
              })
-
+## throw meaningful error when trying to replace with anything other than matrix
+setReplaceMethod("exprs", signature=c("flowFrame", "ANY"),
+                 definition=function(object, value)
+                 stop("Replacement value for the 'exprs' slot of a ",
+                      "'flowFrame' object must be \n  a numeric matrix with ",
+                      "colnames matching at least a subset of the orginal",
+                      "\n  columns."))
 
 
 
@@ -95,14 +117,214 @@ setMethod("description",signature("flowFrame"),
 
 
 
+## ==========================================================================
+## accessor methods for individual items in the description slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## select keywords by name
+setMethod("keyword",signature("flowFrame","character"),
+          function(object,keyword)
+              structure(object@description[keyword],names=keyword)
+          )
+## select keywords by function
+## FIXME: What is the idea behind this? Don't see the use case...
+setMethod("keyword",signature("flowFrame","function"),
+          function(object,keyword)
+              keyword(object,object@description)
+          )
+## select keywords by combination of name and function
+setMethod("keyword",signature("flowFrame","list"),
+          function(object,keyword){
+              sapply(keyword,function(k) {
+                  if(is.character(k))
+                      object@description[k]
+                  else if(is.function(k))
+                      k(object,object@description,k)
+                  else NA
+              })
+          })
+## this is equivalent to the description method
+setMethod("keyword",signature("flowFrame","missing"),
+          function(object)
+              object@description
+          )
+
+
 
 ## ==========================================================================
-## accessor method for slot parameters
+## accessor and replace method for slot parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("parameters", signature="flowFrame",
           definition=function(object)
             object@parameters
           )
+
+setReplaceMethod("parameters", signature=c("flowFrame", "AnnotatedDataFrame"),
+                 definition=function(object, value){
+                     if(!all(c("name", "desc", "range", "minRange",
+                               "maxRange") %in% varLabels(value)))
+                         stop("varLabels of this AnnotatedDataFrame don't ",
+                              "match the specifications", call.=FALSE)
+                     if(!all(colnames(exprs(object)) ==  value$name))
+                         stop("parameter names don't match colnames of the ",
+                              "exprs matrix", call.=FALSE)
+                     object@parameters <- value
+                     return(object)
+                 })
+
+
+
+## ==========================================================================
+## show method for flowFrame
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("show",signature=signature("flowFrame"),
+          definition=function(object)
+      {
+          dm <- dim(exprs(object))
+          cat(paste("flowFrame object '", identifier(object),
+                    "' with ", dm[1], " cells and ", 
+                    dm[2], " observables:\n", sep=""))
+          show(pData(parameters(object)))
+          cat(paste("\nslot 'description' has ",
+                    length(description(object)), " elements\n", sep = ""))
+          return(invisible(NULL))
+      })
+
+
+
+## ==========================================================================
+## a simple plot method without strange plot parameter and friends. It does
+## the most intuitive thing: take a flowFrame and do a pairs plot if there
+## are more than 2 parameters. Do a smoothScatter plot for exactly 2
+## parameters and a histogram for exactly one.
+## If you want to plot specific columns, subset the frame before
+## plotting or specify them in the y argument.
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## only one argument: the flowFrame
+setMethod("plot", signature(x="flowFrame", y="missing"),
+          definition=function(x, pch, ...)
+      {
+          l = ncol(x)
+          values=exprs(x)
+          if(l==1)
+              hist(values, xlab=colnames(x), ...)
+          else if (l==2)
+              smoothScatter(values, ...)
+          else{
+              if(missing(pch))
+                  pch="."
+              pairs(values, pch=pch, ...)
+          }
+      })
+
+## second argument contains the parameters(s) to plot
+setMethod("plot",signature(x="flowFrame",y="character"),
+          function(x,y,...){
+              if(!all(y %in% colnames(x)))
+                  stop("subset out of bounds", call.=FALSE)
+              callGeneric(x[,y], ...)
+      })
+         
+
+
+
+
+## ==========================================================================
+## nrow method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("nrow", signature=signature("flowFrame"),
+          definition=function(x)
+            return(nrow(x@exprs))
+          )
+
+
+
+
+## ==========================================================================
+## ncol method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("ncol", signature=signature("flowFrame"),
+          definition=function(x)
+            return(ncol(x@exprs))
+          )
+
+
+
+
+## ==========================================================================
+## dim method
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("dim", signature=signature("flowFrame"),
+          definition=function(x)
+      {
+          d <- dim(x@exprs)
+          names(d) <- c("events", "parameters")
+          return(d)
+      })
+
+
+
+
+## ==========================================================================
+## accessor method for feature names
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("featureNames", signature="flowFrame",
+          definition=function(object)
+          object@parameters$name
+          )
+
+
+
+
+## ==========================================================================
+## accessor and replace methods for colnames of exprs slot
+## this will also update the annotation in the parameters slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("colnames", signature="flowFrame",
+          definition=function(x, do.NULL="missing", prefix="missing")
+          colnames(exprs(x))
+          )
+
+setReplaceMethod("colnames", signature=c("flowFrame", "ANY"),
+                 definition=function(x, value)
+             {
+                 if(length(value) != ncol(x))
+                     stop("colnames don't match dimensions of data matrix",
+                          call.=FALSE)
+                 pars <- parameters(x)
+                 colnames(x@exprs) <- structure(as.character(value),
+                                               names=rownames(pData(pars)))
+                 pars$name <- value
+                 names(pars$name) <- rownames(pData(pars))
+                 x@parameters <- pars
+                 return(x)
+             })
+
+
+
+
+## ==========================================================================
+## accessor method for names
+## this return a pretified version of the names, including the parameter
+## description if present
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("names", signature="flowFrame",
+          definition=function(x)
+      {
+          cn <- colnames(x)
+          fn <- featureNames(x)
+          if(length(fn) == length(cn)) {
+              cn <- paste("<", cn, ">", sep="")
+              for(i in seq(along=fn)) {
+                  if(!is.na(fn[i]) && fn[i]!="")
+                      cn[i] <- paste(cn[i],fn[i])
+              }
+          }
+          cn
+      })
+
+
+
+
 
 
 
@@ -228,126 +450,6 @@ setMethod("filter",signature(x="flowFrame",filter="filterSet"),
 
 
 
-## ==========================================================================
-## show method for flowFrame
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("show",signature=signature("flowFrame"),
-          definition=function(object)
-      {
-          dm <- dim(exprs(object))
-          msg <- paste("flowFrame object with ", dm[1], " cells and ", 
-                       dm[2], " observables:\n", paste(names(object), 
-                                                       collapse = " "),
-                       "\nslot 'description' has ",
-                       length(description(object)), " elements\n", sep = "")
-          cat(msg)
-          return(msg)
-      })
-
-
-
-
-## ==========================================================================
-## a simple plot method without strange plot parameter and friends. It does
-## the most intuitive thing: take a flowFrame and do a pairs plot if there
-## are more than 2 parameters. Do a smoothScatter plot for exactly 2
-## parameters and a histogram for exactly one.
-## If you want to plot specific columns, subset the frame before
-## plotting or specify them in the y argument.
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## only one argument: the flowFrame
-setMethod("plot", signature(x="flowFrame", y="missing"),
-          definition=function(x, pch, ...)
-      {
-          l = ncol(x)
-          values=exprs(x)
-          if(l==1)
-              hist(values, xlab=colnames(x), ...)
-          else if (l==2)
-              smoothScatter(values, ...)
-          else{
-              if(missing(pch))
-                  pch="."
-              pairs(values, pch=pch, ...)
-          }
-      })
-
-## second argument contains the parameters(s) to plot
-setMethod("plot",signature(x="flowFrame",y="character"),
-          function(x,y,...)
-          callGeneric(x[,y], ...))
-         
-
-
-
-
-## ==========================================================================
-## nrow method
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("nrow", signature=signature("flowFrame"),
-          definition=function(x)
-            return(nrow(x@exprs))
-          )
-
-
-
-
-## ==========================================================================
-## ncol method
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("ncol", signature=signature("flowFrame"),
-          definition=function(x)
-            return(ncol(x@exprs))
-          )
-
-
-
-
-## ==========================================================================
-## dim method
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("dim", signature=signature("flowFrame"),
-          definition=function(x)
-      {
-          d <- dim(x@exprs)
-          names(d) <- c("events", "parameters")
-          return(d)
-      })
-
-
-
-
-## ==========================================================================
-## accessor methods for individual items in the description slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## select keywords by name
-setMethod("keyword",signature("flowFrame","character"),
-          function(object,keyword)
-              structure(object@description[keyword],names=keyword)
-          )
-# select keywords by function
-setMethod("keyword",signature("flowFrame","function"),
-          function(object,keyword)
-              keyword(object,object@description)
-          )
-## select keywords by combination of name and function
-setMethod("keyword",signature("flowFrame","list"),
-          function(object,keyword){
-              sapply(keyword,function(k) {
-                  if(is.character(k))
-                      object@description[k]
-                  else if(is.function(k))
-                      k(object,object@description,k)
-                  else NA
-              })
-          })
-## this is equivalent to the description method
-setMethod("keyword",signature("flowFrame","missing"),
-          function(object)
-              object@description
-          )
-
-
 
 
 ## ===========================================================================
@@ -446,7 +548,7 @@ setMethod("split",signature("flowFrame","ANY"),
 
 
 ## ==========================================================================
-## Retrieve unique identifier of a flowFrame
+## Retrieve or set unique identifier of a flowFrame
 ## (normally generated by the cytometer and normally unique)
 ## "$FIL" optional field replace by filename if missing
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -463,64 +565,11 @@ setMethod("identifier", signature="flowFrame",
               as.vector(oid)
         })
 
-
-
-
-## ==========================================================================
-## accessor method for feature names
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("featureNames", signature="flowFrame",
-          definition=function(object)
-          object@parameters$name
-          )
-
-
-
-
-## ==========================================================================
-## accessor and replace methods for colnames of exprs slot
-## this will also fix the annotation in the parameters slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("colnames", signature="flowFrame",
-          definition=function(x, do.NULL="missing", prefix="missing")
-          colnames(exprs(x))
-          )
-
-setReplaceMethod("colnames", signature=c("flowFrame", "ANY"),
-                 definition=function(x, value)
-             {
-                 pars <- parameters(x)
-                 colnames(x@exprs) <- structure(as.character(value),
-                                               names=rownames(pData(pars)))
-                 pars$name <- value
-                 names(pars$name) <- rownames(pData(pars))
-                 x@parameters <- pars
-                 return(x)
-             })
-
-
-
-
-## ==========================================================================
-## accessor method for names
-## this return a pretified version of the names, including the parameter
-## description if present
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names", signature="flowFrame",
-          definition=function(x)
-      {
-          cn <- colnames(x)
-          fn <- featureNames(x)
-          if(length(fn) == length(cn)) {
-              cn <- paste("<", cn, ">", sep="")
-              for(i in seq(along=fn)) {
-                  if(!is.na(fn[i]) && fn[i]!="")
-                      cn[i] <- paste(cn[i],fn[i])
-              }
-          }
-          cn
-      })
-
+setReplaceMethod("identifier", signature="flowFrame",
+                     definition=function(object, value){
+                         object@description[["GUID"]] <- value
+                         return(object)
+                     })
 
 
 
