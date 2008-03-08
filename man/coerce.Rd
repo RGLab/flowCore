@@ -28,6 +28,7 @@
 \alias{coerce,list,filterSet-method}
 \alias{coerce,flowSet,list-method}
 \alias{coerce,flowSet,flowFrame-method}
+\alias{coerce,flowFrame,flowSet-method}
 \alias{coerce,flowFrame,filterSet-method}
 
 \title{Force an Object to Belong to a Class}
