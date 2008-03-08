@@ -1,21 +1,107 @@
 ## ==========================================================================
+## subsetting methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+## to flowSet
+setMethod("[", c("flowSet"),
+          function(x, i, j,..., drop=FALSE)
+      {
+          if(missing(i) && missing(j)) 
+              return(x)
+          if(!missing(j)){
+              if(is.character(j))
+                 colnames(x) <- colnames(x)[match(j, colnames(x))]
+              else
+                  colnames(x) <- colnames(x)[j] 
+              if(any(is.na(colnames(x))))
+                  stop("Subset out of bounds", call.=FALSE)
+          }
+          orig <- x@frames
+          fr  <- new.env(hash=TRUE, parent=emptyenv())
+          if(missing(i)) {
+              for(nm in ls(orig))
+                  fr[[nm]] <- orig[[nm]][, j, ..., drop=FALSE]
+              pd <- phenoData(x)
+          } else {
+              if(is.numeric(i) || is.logical(i)) {
+                  copy <- sampleNames(x)[i]
+              } else {
+                  copy <- i
+                  i <- match(i,sampleNames(x))
+              }
+              if(any(is.na(copy)))
+                  stop("Subset out of bounds", call.=FALSE)
+              if(missing(j))
+                  for(nm in copy)
+                      fr[[nm]] <- orig[[nm]][, , ..., drop=FALSE]
+              else
+                  for(nm in copy)
+                      fr[[nm]] <- orig[[nm]][, j, ..., drop=FALSE]
+              pd <- phenoData(x)[i,]
+          }
+          fr <- as(fr,"flowSet")
+          phenoData(fr) <- pd
+          return(fr)
+      })
+
+## to flowFrame
+setMethod("[[","flowSet",
+          function(x, i, j, ...)
+      {
+          if(length(i) != 1)
+              stop("subscript out of bounds (index must have length 1)")
+          fr <- x@frames[[if(is.numeric(i)) sampleNames(x)[[i]] else i]]
+          if(!missing(j))
+              fr <- fr[,j]
+          return(fr)
+      })
+
+## to flowFrame
+setMethod("$", c("flowSet", "character"), function(x,name) x[[name]])
+
+
+
+## ==========================================================================
+## accessor and replace methods for slot colnames
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
+          x@colnames)
+
+setReplaceMethod("colnames","flowSet",function(x,value) {
+	x@colnames = value
+	x
+})
+
+
+
+## ==========================================================================
 ## Allow for the extraction and replacement of phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("phenoData","flowSet",function(object) object@phenoData)
 setMethod("phenoData<-","flowSet",function(object,value) {
-	current = phenoData(object)
+	current <- phenoData(object)
 	#Sanity checking
 	if(nrow(current) != nrow(value))
-		stop("phenoData must have the same number of rows as flow files")
+		stop("phenoData must have the same number of rows as ",
+                     "flow files")
 	#Make sure all of the original frames appear in the new one.
 	if(!all(sampleNames(current)%in%sampleNames(value)))
 		stop("The sample names no longer match.")
-	object@phenoData = value
+	object@phenoData <- value
 	object
 })
 
+
+
+## ==========================================================================
+## directly access the pData data frame
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("pData","flowSet",function(object) pData(object@phenoData))
 
+
+
+## ==========================================================================
+## set and extract the varLabels of the phenoData
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("varLabels",
           signature=signature(object="flowSet"),
           function(object) varLabels(phenoData(object)))
@@ -31,16 +117,40 @@ setReplaceMethod("varLabels",
                      object
                  })
 
-## ==========================================================================
-## accessor and replace methods for slot colnames
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
-          x@colnames)
 
-setReplaceMethod("colnames","flowSet",function(x,value) {
-	x@colnames = value
-	x
+## ==========================================================================
+## sampleNames method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("sampleNames", "flowSet", function(object) 
+       sampleNames(phenoData(object)))
+
+setReplaceMethod("sampleNames","flowSet",function(object,value)
+             {
+                 oldNames <- sampleNames(object)
+                 if(length(oldNames)!=length(value) ||
+                    !is.character(value))
+                     stop(" replacement values must be character vector ",
+                          "of length equal to number of frames in the set'")
+                 env <- new.env(hash=TRUE,parent=emptyenv())
+                 for(f in seq_along(oldNames))
+                     assign(value[f], get(oldNames[f], object@frames), env)
+                 pd <- phenoData(object)
+                 sampleNames(pd) <- value
+                 object@phenoData <- pd
+                 object@frames <- env
+                 return(object)
 })
+
+
+## ==========================================================================
+## keyword method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
+	do.call("data.frame",c(lapply(keyword,function(k) {
+		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
+	}),list(row.names=sampleNames(object))))
+})
+
 
 
 ## ==========================================================================
@@ -49,45 +159,18 @@ setReplaceMethod("colnames","flowSet",function(x,value) {
 setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
 
 
+
 ## ==========================================================================
-## subsetting methods
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-setMethod("[",c("flowSet"),function(x,i,j,...,drop=FALSE) {
-    if(missing(drop)) drop = FALSE
-	if(missing(i) && missing(j)) 
-		return(x)
-	if(!missing(j))
-		colnames(x) = colnames(x)[j]
-	orig= x@frames
-	fr  = new.env(hash=TRUE,parent=emptyenv())
-	if(missing(i)) {
-		for(nm in ls(orig)) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
-		pd = phenoData(x)
-	} else {
-		if(is.numeric(i) || is.logical(i)) {
-			copy = sampleNames(x)[i]
-		} else {
-			copy = i
-			i    = match(i,sampleNames(x))
-		}
-		if(missing(j))
-			for(nm in copy) fr[[nm]] = orig[[nm]][,,...,drop=drop]
-		else
-			for(nm in copy) fr[[nm]] = orig[[nm]][,j,...,drop=drop]
-		pd = phenoData(x)[i,]
-	}
-    	fr = as(fr,"flowSet")
-	phenoData(fr) = pd
-	fr
-})
-setMethod("[[","flowSet",function(x,i,j,...) {
-	if(length(i)!=1)
-		stop("subscript out of bounds (index must have length 1)")
-	fr = x@frames[[if(is.numeric(i)) sampleNames(x)[[i]] else i]]
-	fr
+## show method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("show","flowSet",function(object) {
+	cat("A flowSet with",length(object),"experiments.\n\n")
+	show(phenoData(object))
+	cat("  \n  column names:\n  ")
+	cat(paste(object@colnames,sep=","))
+	cat("\n")
 })
 
-setMethod("$",c("flowSet","character"),function(x,name) x[[name]])
 
 
 ## ==========================================================================
@@ -118,89 +201,126 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 })
 
 
+## ===========================================================================
+## compensate method
+## ---------------------------------------------------------------------------
+setMethod("compensate",signature("flowSet","matrix"),
+          function(x,spillover) fsApply(x,compensate,spillover))
+
+
+
 ## ==========================================================================
-## Subset method for flowSet
+## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("Subset", signature("flowSet","ANY"),function(x,subset,select,...) {
-	y = if(missing(select))
-			fsApply(x,Subset,subset,...)
-		else
-			fsApply(x,Subset,subset,select,...)
-	phenoData(y) = phenoData(x)
-	y
+setMethod("transform",signature=signature(`_data`="flowSet"),
+          function(`_data`,...) {
+              fsApply(`_data`,transform,...)
+          })
+
+setMethod("transform",signature(`_data`="missing"),function(...) {
+    funs = list(...)
+    io   = names(funs)
+    ##Consistency check
+    if(!all(sapply(funs,is.function)))
+        stop("All transforms must be functions")
+    if(!all(sapply(io,is.character)))
+        stop("All transforms must be named")
+    new("transformList",transforms=lapply(seq(along=funs),function(i)
+                        new("transformMap",input=io[i],output=io[i],
+                            f=funs[[i]])))
 })
 
 
-setMethod("Subset", signature("flowSet","list"),function(x,subset,select,...) {
-	if(is.null(names(subset)))
-		stop("Filter list must have names to do something reasonable")
-	nn = names(subset)
-	sn = sampleNames(x)
-	unused    = nn[!(nn %in% sn)]
-	notfilter = sn[!(sn %in% nn)]
-	#Do some sanity checks
-	if(length(unused) > 0)
-		warning(paste("Some filters were not used: ",paste(unused,sep=","),collapse=""))
-	if(length(notfilter) > 0)
-		warning(paste("Some frames were not filtered: ",paste(notfilter,sep=","),collapse=""))	
-	if(length(x) != length(subset))
-		stop("You must supply a list of the same length as the flowSet.")
-	used = nn[nn %in% sn]
-	res = as(structure(
-		if(missing(select))
-			lapply(used,function(i) Subset(x[[i]],subset[[i]],...))
-		else
-			lapply(used,function(i) Subset(x[[i]],subset[[i]],select,...)),
-		names=sampleNames(x)),"flowSet")
-	phenoData(res) = phenoData(x)
-	res
-})
 
 ## ==========================================================================
-## split method for flowSet
+## filter methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## for filters
+setMethod("filter",signature=signature(x="flowSet", filter="filter"),
+          function(x,filter)
+      {
+          if(!all(parameters(filter) %in% colnames(x)))
+              stop("parameters in the filter definition don't ",
+                   "match the parameters in the flowSet", call.=FALSE)
+            fsApply(x,function(x) filter(x,filter))
+      })
+
+## for filterSets
+setMethod("filter",signature(x="flowSet", filter="filterSet"),
+          function(x, filter) fsApply(x, function(x) filter(x, filter)))
+
+## for named lists of filters. Names of the list items have to correspond
+## to sampleNames in the set.
+setMethod("filter",signature(x="flowSet",filter="list"),
+          function(x,filter)
+      {
+          if(is.null(names(filter)))
+              stop("Filter list must have names to do something reasonable")
+          nn <- names(filter)
+          sn <- sampleNames(x)
+          unused <- nn[!(nn %in% sn)]
+          notfilter <-  sn[!(sn %in% nn)]
+          ## Do some sanity checks
+          if(length(unused) > 0)
+              warning(paste("Some filters were not used:\n",
+                            paste(unused, sep="", collapse=", ")),
+                      call.=FALSE)
+          if(length(notfilter) > 0)
+              warning(paste("Some frames were not filtered:\n",
+                            paste(notfilter, sep="", collapse=", ")),
+                      call.=FALSE)
+          common <- intersect(nn, sn)
+          res <- list(length(common))
+          for(f in common)
+              res[[f]] <- filter(x[[f]], filter[[f]])
+          return(res)
+      })
+
+
+
+## ==========================================================================
+## split methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## split a flowSet by a single filter
 setMethod("split",signature("flowSet","ANY"),
-          function(x,f,drop=FALSE,population=NULL,prefix=NULL,
-                   flowSet=FALSE,...)
+          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
+                   flowSet=FALSE, ...)
       {
-          ##Split always returns a list
-          sample.name = sampleNames(x)
+          ## Split always returns a list
+          sample.name <- sampleNames(x)
           fsApply(x,function(y) {
-              l = split(y,f,drop,population,prefix,flowSet=flowSet,...)
-              names(l) = paste(names(l),"in",sample.name[1])
+              l <- split(y, f, drop, population, prefix, flowSet=flowSet, ...)
+              names(l) <- paste(names(l), "in", sample.name[1])
               sample.name <<- sample.name[-1]
               l
-          },simplify=FALSE)
+          }, simplify=FALSE)
       })
 
-## split a flowSet according to a list of filters orfilterResults
+## split a flowSet according to a list of filters or filterResults
 ## of equal length
 setMethod("split",signature("flowSet","list"),
-          function(x,f,drop=FALSE,population=NULL,
-                   prefix=NULL,flowSet=FALSE,...)
+          function(x, f, drop=FALSE, population=NULL,
+                   prefix=NULL, flowSet=FALSE, ...)
       {
-          sample.name = sampleNames(x)
+          sample.name <- sampleNames(x)
           lf <- length(f)
           lx <- length(x)
           if(lf!=lx)
               stop("list of filterResults or filters must be same",
                    "length as flowSet")
-          if(!all(sapply(f, is, "filterResult")) ||
-             !all(sapply(f, is, "filter")))
-              stop("list must be list of filterResults or filters")
+          if(!all(sapply(f, is, "filterResult") | sapply(f, is, "filter")))
+              stop("Second argument must be list of filterResults or filters")
           res <- vector(mode="list", length=lf)
           for(i in 1:lf){
               l <- split(x[[i]], f[[i]], drop, population,
                                 prefix, flowSet=flowSet,...)
-              names(l) <- paste(names(l),"in",sample.name[i])
+              names(l) <- paste(names(l), "in", sample.name[i])
               res[[i]] <- l
           }
           res
       })
 
-
-## split a flowSet according to a factor, character or integer 
+## split a flowSet according to a factor, character or numeric 
 setMethod("split",signature("flowSet","factor"),
           function(x,f,drop=FALSE,population=NULL,
                    prefix=NULL,flowSet=FALSE,...)
@@ -213,83 +333,114 @@ setMethod("split",signature("flowSet","factor"),
               res[[g]] <- x[gind[[g]]]
           return(res)
       })
-
 setMethod("split",signature("flowSet","numeric"),
           function(x,f,drop=FALSE,population=NULL,
                    prefix=NULL,flowSet=FALSE,...)
           split(x, factor(f)))
-
 setMethod("split",signature("flowSet","character"),
           function(x,f,drop=FALSE,population=NULL,
                    prefix=NULL,flowSet=FALSE,...)
           split(x, factor(f)))
 
+
+
+
 ## ==========================================================================
-## keyword method for flowSet
+## Subset methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
-	do.call("data.frame",c(lapply(keyword,function(k) {
-		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
-	}),list(row.names=sampleNames(object))))
-})
+## by filter or filter result
+setMethod("Subset", signature("flowSet","ANY"),
+          function(x,subset,select,...)
+      {
+          y <- if(missing(select))
+              fsApply(x, Subset, subset, ...)
+          else
+              fsApply(x, Subset, subset, select, ...)
+          phenoData(y) <- phenoData(x)
+          y
+      })
+
+setMethod("Subset", signature("flowSet", "list"),
+          function(x, subset, select, ...)
+      {
+          if(is.null(names(subset)))
+              stop("Filter list must have names to do something reasonable")
+          nn <- names(subset)
+          sn <- sampleNames(x)
+          unused <- nn[!(nn %in% sn)]
+          notfilter <- sn[!(sn %in% nn)]
+          ##Do some sanity checks
+          if(length(unused) > 0)
+              warning(paste("Some filters were not used:\n",
+                            paste(unused,sep="",collapse=", ")), call.=FALSE)
+          if(length(notfilter) > 0)
+              warning(paste("Some frames were not filtered:\n",
+                            paste(notfilter,sep="",collapse=", ")),
+                      .call=FALSE)	
+          if(length(x) != length(subset))
+              stop("You must supply a list of the same length as the flowSet.")
+          used <- nn[nn %in% sn]
+          res <- as(structure(if(missing(select))
+                              lapply(used, function(i) Subset(x[[i]],
+                                                              subset[[i]],...))
+          else
+                              lapply(used, function(i)
+                                     Subset(x[[i]], subset[[i]], select, ...)),
+                              names=sampleNames(x)), "flowSet")
+          phenoData(res) <- phenoData(x)
+          return(res)
+      })
+
+
 
 
 ## ==========================================================================
 ## rbind method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("rbind2",signature("flowSet","missing"),function(x,y) x)
-setMethod("rbind2",signature("flowSet","flowSet"),function(x,y) {
-	env = new.env(hash=TRUE,parent=emptyenv())
-	lx  = sampleNames(x)
-	ly  = sampleNames(y)
-	if(any(lx %in% ly))
-		stop("These flowSets contain overlapping samples.")
-	for(i in lx) assign(i,x[[i]],env=env)
-	for(i in ly) assign(i,y[[i]],env=env)
-	fs            = as(env,"flowSet")
-	pData(phenoData(fs)) = rbind(pData(phenoData(x)),pData(phenoData(y)))
-	fs
-})
+setMethod("rbind2",signature("flowSet","missing"), function(x, y) x)
+setMethod("rbind2",signature("flowSet", "flowSet"),
+          function(x, y)
+      {
+          env <- new.env(hash=TRUE, parent=emptyenv())
+          lx <- sampleNames(x)
+          ly <- sampleNames(y)
+          if(any(lx %in% ly))
+              stop("These flowSets contain overlapping samples.")
+          for(i in lx)
+              assign(i, x[[i]], env=env)
+          for(i in ly)
+              assign(i, y[[i]], env=env)
+          pd1 <- phenoData(x)
+          pd2 <- phenoData(y)
+          if(!all(varLabels(pd1) == varLabels(pd2)))
+              stop("The phenoData of the two frames doesn't match.",
+                   call.=FALSE)
+          fs <- as(env,"flowSet")
+          pData(pd1) <- rbind(pData(pd1), pData(pd2))
+          phenoData(fs) <- pd1
+          return(fs)
+      })
 
-setMethod("rbind2",signature("flowSet","flowFrame"),function(x,y) {
-	##Should be able to find a flowFrame
-})
+setMethod("rbind2",signature("flowSet","flowFrame"),
+          function(x,y)
+      {
+          ## create dummy phenoData
+          pd <- phenoData(x)[1,]
+          sampleNames(pd)
+          pData(pd)[1,] <- NA
+          tmp <- as(y, "flowSet")
+          sampleNames(pd) <- sampleNames(tmp) <- "anonymous frame"
+          phenoData(tmp) <- pd
+          rbind2(x, tmp)
+      })
+
+setMethod("rbind2",signature("flowFrame","flowSet"),
+          function(x,y) rbind2(y,x))
+    
 
 
-## ==========================================================================
-## show method for flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("show","flowSet",function(object) {
-	cat("A flowSet with",length(object),"experiments.\n\n")
-	show(phenoData(object))
-	cat("  \n  column names:\n  ")
-	cat(paste(object@colnames,sep=","))
-	cat("\n")
-})
 
 
-## ==========================================================================
-## sampleNames method for flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("sampleNames", "flowSet", function(object) 
-       sampleNames(phenoData(object)))
-
-setReplaceMethod("sampleNames","flowSet",function(object,value)
-             {
-                 oldNames <- sampleNames(object)
-                 if(length(oldNames)!=length(value) ||
-                    !is.character(value))
-                     stop(" replacement values must be character vector ",
-                          "of length equal to number of frames in the set'")
-                 env <- new.env(hash=TRUE,parent=emptyenv())
-                 for(f in seq_along(oldNames))
-                     assign(value[f], get(oldNames[f], object@frames), env)
-                 pd <- phenoData(object)
-                 sampleNames(pd) <- value
-                 object@phenoData <- pd
-                 object@frames <- env
-                 return(object)
-})
 
 ## ===========================================================================
 ## spillover method
@@ -335,54 +486,3 @@ setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",
 })
 
 
-## ===========================================================================
-## compensate methods
-## ---------------------------------------------------------------------------
-setMethod("compensate",signature("flowSet","matrix"),
-          function(x,spillover) fsApply(x,compensate,spillover))
-
-
-## ==========================================================================
-## Transformation methods
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("transform",signature=signature(`_data`="flowSet"),
-          function(`_data`,...) {
-              fsApply(`_data`,transform,...)
-          })
-
-setMethod("transform",signature(`_data`="missing"),function(...) {
-    funs = list(...)
-    io   = names(funs)
-    ##Consistency check
-    if(!all(sapply(funs,is.function)))
-        stop("All transforms must be functions")
-    if(!all(sapply(io,is.character)))
-        stop("All transforms must be named")
-    new("transformList",transforms=lapply(seq(along=funs),function(i)
-                        new("transformMap",input=io[i],output=io[i],
-                            f=funs[[i]])))
-})
-
-
-## ==========================================================================
-## filter method
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("filter",signature=signature(x="flowSet",filter="filter"),
-          function(x,filter) {
-            fsApply(x,function(x) filter(x,filter))
-})
-setMethod("filter",signature(x="flowSet",filter="filterSet"),function(x,filter) fsApply(x,function(x) filter(x,filter)))
-
-setMethod("filter",signature(x="flowSet",filter="list"),function(x,filter) {
-	if(is.null(names(filter)))
-		stop("Filter list must have names to do something reasonable")
-	nn = names(filter)
-	sn = sampleNames(x)
-	unused    = nn[!(nn %in% sn)]
-	notfilter = sn[!(sn %in% nn)]
-	#Do some sanity checks
-	if(length(unused) > 0)
-		warning(paste("Some filters were not used: ",paste(unused,sep=","),collapse=""))
-	if(length(notfilter) > 0)
-		warning(paste("Some frames were not filtered: ",paste(notfilter,sep=","),collapse=""))
-})

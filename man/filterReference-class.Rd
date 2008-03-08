@@ -6,7 +6,6 @@
 \alias{summary,filterReference-method}
 \alias{length,filterReference-method}
 \alias{show,filterReference-method}
-\alias{identifier,filterReference-method}
 
 \title{Class filterReference}
 \description{A reference to another filter inside a reference. Users should generally

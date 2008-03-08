@@ -1,6 +1,6 @@
-\name{filter-on-methods}
-\alias{filter-on-methods}
+\name{\%on\%}
 \docType{methods}
+\alias{filter-on-methods}
 \alias{\%on\%-methods}
 \alias{\%on\%}
 \alias{\%on\%,filter,transformList-method}
