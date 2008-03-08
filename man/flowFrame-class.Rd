@@ -10,16 +10,14 @@
 \alias{Subset,flowFrame,ANY-method}
 \alias{Subset,flowFrame,logical-method}
 \alias{description,flowFrame-method}
-\alias{description<-,flowFrame,character-method}
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
+\alias{exprs<-,flowFrame,ANY-method}
 \alias{colnames,flowFrame-method}
 \alias{colnames<-,flowFrame-method}
 \alias{names,flowFrame-method}
 \alias{parameters,flowFrame-method}
-\alias{keyword,flowFrame,function-method}
-\alias{keyword,flowFrame,character-method}
-\alias{keyword,flowFrame,list-method}
+\alias{parameters<-,flowFrame,AnnotatedDataFrame-method}
 \alias{show,flowFrame-method}
 \alias{plot,flowFrame,missing-method}
 \alias{plot,flowFrame,character-method}
@@ -36,6 +34,7 @@
 \alias{split,flowFrame,logicalFilterResult,ANY-method}
 \alias{split,flowFrame,multipleFilterResult,ANY-method}
 \alias{split,flowFrame,manyFilterResult,ANY-method}
+\alias{split,flowFrame,factor,ANY-method}
 \alias{ncol,flowFrame-method}
 \alias{nrow,flowFrame-method}
 \alias{dim,flowFrame-method}
@@ -62,7 +61,7 @@
     stains, dynamic range)
     
     \item additional annotation provided through keywords in the
-    \acronym{FCS}file
+    \acronym{FCS} file
     
   }
 }
@@ -75,12 +74,19 @@
   \code{    parameters  = ....,  Object of class AnnotatedDataFrame}\cr
   \code{    description = ....,  Object of class list}\cr
   \code{  )}\cr
+
+  or the constructor \code{flowFrame}, with mandatory arguments
+  \code{exprs} and optional arguments \code{parameters} and
+  \code{description}.
+
+  \code{flowFrame(exprs, parameters, description=list())}
   
-  or the function \code{\link[flowCore]{read.FCS}}, which will read the
-  content of a \acronym{FCS} file. This is the recommended and safest
-  way of object creation, since \code{read.FCS} will perform basic data
-  quality checks upon import. Unless you know exactly what you are
-  doing, creating objects using \code{new("flowFrame")} is discouraged.
+  To create a \code{flowFrame} directly from an \acronym{FCS} file, use
+  function \code{\link[flowCore]{read.FCS}}. This is the recommended and
+  safest way of object creation, since \code{read.FCS} will perform
+  basic data quality checks upon import. Unless you know exactly what
+  you are doing, creating objects using \code{new} or the constructor is
+  discouraged.
 
 }
 
@@ -95,7 +101,7 @@
       }
     
     \item{\code{parameters}:}{An
-      \code{\link[Biobase]{AnnotatedDataFrame-class}} containing information
+      \code{\linkS4class{AnnotatedDataFrame}} containing information
       about each column of the flowFrame. This will generally be filled
       in by \code{read.FCS} or similar functions using data from the
       \acronym{FCS} keywords describing the parameters.}
@@ -108,29 +114,39 @@
 
 \section{Methods}{
   \describe{
+
+    There are separate documentation pages for most of the methods
+    listed here which should be consulted for more details.
     
     \item{[}{Subsetting. Returns an object of class \code{flowFrame}.
       The subsetting is applied to the \code{exprs} slot, while the
       \code{description} slot is unchanged. The syntax for subsetting is
-      similar to that of matrices. In addition to index vectors
-      \code{flowFrames} can be subset via \code{\link{filterResult}} and
-      \code{\link{filter}} objects.
+      similar to that of \code{\link[=data.frame]{data.frames}}. In
+      addition to the usual index vectors (integer and logical by
+      position, character by parameter names), \code{flowFrames} can be
+      subset via \code{\link{filterResult}} and
+      \code{\linkS4class{filter}} objects.
 
       \emph{Usage:}
       
-      \code{   flowFrame[x,y]}
+      \code{   flowFrame[i,j]}
       
       \code{   flowFrame[filter,]}
 
       \code{   flowFrame[filterResult,]}
 
+      Note that the value of argument \code{drop} is ignored when
+      subsetting \code{flowFrames}.
+      
     }
     
     \item{\$}{Subsetting by channel name. This is similar to subsetting
-      of columns of data frames, i.e., \code{frame$FSC.H} is equivalent
-      to \code{frame[, "FSC.H"]}. Note that column names may have to be
-      quoted if they are no valid R symbols
-      (e.g. \code{frame$"FSC-H"}).}
+      of columns of \code{\link[=data.frame]{data.frames}}, i.e.,
+      \code{frame$FSC.H} is equivalent to \code{frame[, "FSC.H"]}. Note
+      that column names may have to be quoted if they are no valid R
+      symbols (e.g. \code{frame$"FSC-H"}).
+
+    }
   
     \item{exprs, exprs<-}{Extract or replace the raw data
       intensities. The replacement value must be a numeric matrix with
@@ -161,7 +177,8 @@
       \code{description} slot by keyword. Methods are defined for
       character vectors (select a keyword by name), functions (select a
       keyword by evaluating a function on their content) and for lists
-      (a combination of the above).
+      (a combination of the above). See \code{\link{keyword}} for
+      details.
       
       \emph{Usage:}
 
@@ -171,17 +188,29 @@
       
     }
     
-    \item{parameters}{Extract parameters and return an object of class
-      \code{AnnotatedDataFrame}. To access the actual parameter
-      annotation, use \code{pData(parameters(frame))}.
+    \item{parameters, parameters<-}{Extract parameters and return an
+      object of class \code{\linkS4class{AnnotatedDataFrame}}, or
+      replace such an object. To access the actual parameter annotation,
+      use \code{pData(parameters(frame))}. Replacement is only valid
+      with \code{\link[=AnnotatedDataFrame-class]{AnnotatedDataFrames}}
+      containing all varLabels \code{name}, \code{desc}, \code{range},
+      \code{minRange} and \code{maxRange}, and matching entries in the
+      \code{name} column to the colnames of the \code{exprs} matrix. See
+      \code{\link{parameters}} for more details.
       
       \emph{Usage:}
       
       \code{   parameters(flowFrame)}
 
+      \code{   parameters(flowFrame) <- value}
+
     }
 
-    \item{show}{Display details about the \code{flowFrame} object.}
+    \item{show}{
+
+      Display details about the \code{flowFrame} object.
+      
+    }
 
     \item{summary}{Return descriptive statistical summary (min, max,
       mean and quantile) for each channel
@@ -194,13 +223,16 @@
     
     \item{plot}{Basic plots for \code{flowFrame} objects. If the object
       has only a single parameter this produces a
-      \code{\link[graphics::hist]{histogram}}. For exactly two
-      parameters we plot a bivariate density map (see
-      \code{\link[geneplotter]{smootScatter}}) and for more than two
-      parameters we produce a simple \code{\link[graphics]{pairs}}
-      plot. To select specific parameters from a \code{flowFrame} for
-      plotting, either subset the object or specifiy the parameters as a
-      character vector in the second argument to \code{plot}.
+      \code{\link[graphics:hist]{histogram}}. For exactly two parameters
+      we plot a bivariate density map (see
+      \code{\link[geneplotter:smoothscatter]{smoothScatter}}) and for
+      more than two parameters we produce a simple
+      \code{\link[graphics]{pairs}} plot. To select specific parameters
+      from a \code{flowFrame} for plotting, either subset the object or
+      specifiy the parameters as a character vector in the second
+      argument to \code{plot}. For far more sophisticated plotting of
+      flow cytometry data, see the \code{\link[=flowViz-package]{flowViz
+      }} package.
 
       \emph{Usage:}
       
@@ -210,7 +242,7 @@
       
     }
 
-    \item{ncol,nrow,dim}{Extract the dimensions of the data matrix.
+    \item{ncol, nrow, dim}{Extract the dimensions of the data matrix.
 
       \emph{Usage:}
       
@@ -223,8 +255,10 @@
     }
 
     \item{featureNames, colnames}{Extract parameter names (i.e., the
-      colnames of the data matrix). For \code{colnames} there is also a
-      replacement method.
+      colnames of the data matrix). \code{colnames} and
+      \code{featureNames} are synonymes. For \code{colnames} there is
+      also a replacement method. This will update the \code{name} column
+      in the \code{parameters} slot as well.
 
       \emph{Usage:}
       
@@ -245,7 +279,8 @@
 
     }
 
-    \item{identifier}{Extract GUID. Returns file name if not available. See
+    \item{identifier}{Extract GUID of a \code{flowFrame}. Returns the
+      file name if no GUID is available. See
       \code{\link[flowCore]{identifier}} for details.
 
       \emph{Usage:}
@@ -253,11 +288,11 @@
       \code{   identifier(flowFrame)}
     }
     
-    \item{range}{Get dynamic range of the flowFame. Note that this is
-      not necessarily the range of the actual data values, but the
-      theoretical range of values the measurement instrument was able to
-      capture. The values of the dynamic range will be transformed when
-      using the out-of-line transformation method for
+    \item{range}{Get dynamic range of the \code{flowFame}. Note that
+      this is not necessarily the range of the actual data values, but
+      the theoretical range of values the measurement instrument was
+      able to capture. The values of the dynamic range will be
+      transformed when using the out-of-line transformation method for
       \code{flowFrames}. Additional character arguments are evaluated as
       parameter names for which to return the dynamic range.
       
@@ -280,7 +315,7 @@
     
     \item{transform}{Apply a transformation function on a
       \code{flowFrame} object. This uses R's
-      \code{\link[base]{transfom}} function by treating the
+      \code{\link[base]{transform}} function by treating the
       \code{flowFrame} like a regular \code{data.frame}. \code{flowCore}
       provides an additional inline mechanism for transformations (see
       \code{\link{filter-on-methods}}) which is strictly more limited
@@ -354,13 +389,17 @@
 
     }
     
-    \item{==}{Test equality between \code{flowFrames}}
+    \item{==}{Test equality between two \code{flowFrames}}
+    
   }
 }
 
+
+
 \details{
-  Objects of class \code{flowFrame} can be used to hold arbitrary
-  data of cell populations, acquired in flow-cytometry.
+  
+  Objects of class \code{flowFrame} can be used to hold arbitrary data
+  of cell populations, acquired in flow-cytometry.
   
   \acronym{FCS} is the Data File Standard for Flow Cytometry, the
   current version is FCS 3.0. See the vignette of this package for
@@ -369,14 +408,25 @@
 
 }
 
-\author{F. Hahne, B. Ellis, P. Haaland and N. Le Meur}
+\author{
+
+  F. Hahne, B. Ellis, P. Haaland and N. Le Meur
+
+}
+
+\seealso{
+  
+  \code{\linkS4class{flowFrame}},  \code{\link{read.FCS}}
+  
+}
 
 \examples{
+
 ## load example data
 data(GvHD)
 frame <- GvHD[[1]]
 
-## ubsetting
+## subsetting
 frame[1:4,]
 frame[,3]
 frame[,"FSC-H"]
@@ -420,6 +470,7 @@ names(frame)
 
 ## accessing a GUID
 identifier(frame)
+identifier(frame) <- "test"
 
 ## dynamic range of a frame
 range(frame)

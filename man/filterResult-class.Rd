@@ -1,6 +1,7 @@
 \name{filterResult-class}
 \docType{class}
 \alias{filterResult-class}
+\alias{filterResult}
 \alias{==,filterResult,flowFrame-method}
 \alias{summary,filterResult-method}
 \alias{show,filterResult-method}
