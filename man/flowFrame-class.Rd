@@ -6,7 +6,7 @@
 \alias{[,flowFrame,filter-method}
 \alias{[,flowFrame,filterResult-method}
 \alias{$.flowFrame}
-\alias{exprs]
+\alias{exprs}
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{exprs<-,flowFrame,ANY-method}
@@ -106,10 +106,11 @@
       }
     
     \item{\code{parameters}:}{An
-      \code{\linkS4class{AnnotatedDataFrame}} containing information
-      about each column of the flowFrame. This will generally be filled
-      in by \code{read.FCS} or similar functions using data from the
-      \acronym{FCS} keywords describing the parameters.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      containing information about each column of the flowFrame. This
+      will generally be filled in by \code{read.FCS} or similar
+      functions using data from the \acronym{FCS} keywords describing
+      the parameters.}
     
     \item{\code{description}:}{A list containing the meta data included
       in the FCS file.}
@@ -194,10 +195,12 @@
     }
     
     \item{parameters, parameters<-}{Extract parameters and return an
-      object of class \code{\linkS4class{AnnotatedDataFrame}}, or
-      replace such an object. To access the actual parameter annotation,
-      use \code{pData(parameters(frame))}. Replacement is only valid
-      with \code{\link[=AnnotatedDataFrame-class]{AnnotatedDataFrames}}
+      object of class
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}},
+      or replace such an object. To access the actual parameter
+      annotation, use \code{pData(parameters(frame))}. Replacement is
+      only valid with
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrames}}
       containing all varLabels \code{name}, \code{desc}, \code{range},
       \code{minRange} and \code{maxRange}, and matching entries in the
       \code{name} column to the colnames of the \code{exprs} matrix. See
@@ -236,8 +239,8 @@
       from a \code{flowFrame} for plotting, either subset the object or
       specifiy the parameters as a character vector in the second
       argument to \code{plot}. For far more sophisticated plotting of
-      flow cytometry data, see the \code{\link[=flowViz-package]{flowViz
-      }} package.
+      flow cytometry data, see the
+      \code{\link[floViz:flowViz-package]{flowViz }} package.
 
       \emph{Usage:}
       

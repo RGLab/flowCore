@@ -8,6 +8,7 @@
 \alias{identifier,flowFrame-method}
 \alias{identifier<-}
 \alias{identifier<-,flowFrame-method}
+\alias{identifier<-,flowFrame,ANY-method}
 
 \title{Retrieve the GUID of flowCore objects}
 

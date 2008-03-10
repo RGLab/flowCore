@@ -35,8 +35,10 @@
 \alias{split,flowSet,character,ANY-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
+\alias{rbind2,flowSet,flowSet,missing-method}
 \alias{rbind2,flowSet,flowFrame-method}
 \alias{rbind2,flowFrame,flowSet-method}
+\alias{rbind2,flowSet,missing-method} 
 \alias{Subset,flowSet,list-method}
 
 
@@ -59,8 +61,9 @@ quantitative cell-based assays}
 
   or via the constructor \code{flowSet}, which takes arbitrary numbers
   of flowFrames, either as a list or directly as arguments, along with
-  an optional \code{\linkS4class{AnnotatedDataFrame}} for the
-  \code{phenoData} slot.
+  an optional
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for
+  the \code{phenoData} slot.
 
   \code{flowFrame(..., phenoData)}
 
@@ -84,7 +87,7 @@ quantitative cell-based assays}
       containing one or more \code{\linkS4class{flowFrame}} objects.}
 
     \item{\code{phenoData}:}{A
-      \code{\link[Biobase:AnnotatedDataFrame]{AnnotatedDataFrame}}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
       containing the phenotyoic data for the whole data set. Each row
       corresponds to one of the \code{\linkS4class{flowFrame}}s in the
       \code{frames} slot.  The \code{sampleNames} of \code{phenoData}
@@ -112,117 +115,117 @@ quantitative cell-based assays}
       single \code{\linkS4class{flowFrame}} for all parameters in
       \code{j}. Similar to data frames, valid values for \code{i} and
       \code{j} are logicals, integers and characters.
-
+      
       \emph{Usage:}
 
       \code{   flowSet[i]}
       
       \code{   flowSet[i,j]}
-
+      
       \code{   flowSet[[i]]}
-
+      
     }
-
-     \item{$}{Subsetting by frame name. This wil return a single
-       \code{\linkS4class{flowFrame}} object. Note that names may have to
-       be quoted if they are no valid R symbols
-       (e.g. \code{flowSet$"sample 1"}}
-
+    
+    \item{\$}{Subsetting by frame name. This wil return a single
+      \code{\linkS4class{flowFrame}} object. Note that names may have to
+      be quoted if they are no valid R symbols
+      (e.g. \code{flowSet$"sample 1"}}
+    
     \item{colnames, colnames<-}{Extract or replace the \code{colnames}
       slot.
       
       \emph{Usage:}
-
+      
       \code{   colnames(flowSet)}
       
       \code{   colnames(flowSet) <- value}
-
+      
     }
-
+    
     \item{phenoData, phenoData<-}{Extract or replace the
-      \code{\linkS4class{AnnotatedDataFrame}} from the \code{phenoData}
-      slot.
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      from the \code{phenoData} slot.
       
       \emph{Usage:}
-
+      
       \code{   phenoData(flowSet)}
       
       \code{   phenoData(flowSet) <- value}
-
+      
     }
-
+    
     \item{pData}{Extract data frame containing actual phenotypic
       information from the \code{phenoData} slot.
-
+      
       \emph{Usage:}
-
+      
       \code{   pData(flowSet)}
       
     }
-
+    
     \item{varLabels}{ Extract and set varLabels in the
-      \code{\linkS4class{AnnotatedDataFrame}} of the \code{phenoData}
-      slot.
- 
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      of the \code{phenoData} slot.
+      
       \emph{Usage:}
-
+      
       \code{   varLabels(flowSet)}
       
       \code{   varLabels(flowSet) <- value}
-
+      
     }
     
     \item{sampleNames}{Extract and replace sample names from the
       \code{phenoData} object. Sample names correspond to frame
       identifiers.
-
+      
       \emph{Usage:}
-
+      
       \code{   sampleNames(flowSet)}
       
       \code{   sampleNames(flowSet) <- value}
-
+      
     }
-
-     \item{keyword}{Extract keywords specified in a list from the
-       \code{description} slot of each frame.
-
-       \emph{Usage:}
-
-       \code{   keyword(flowSet, list(keywords))}
-       
-     }
+    
+    \item{keyword}{Extract keywords specified in a list from the
+      \code{description} slot of each frame.
+      
+      \emph{Usage:}
+      
+      \code{   keyword(flowSet, list(keywords))}
+      
+    }
     
     \item{length}{number of \code{\linkS4class{flowFrame}} objects in
       the set.
-
+      
       \emph{Usage:}
-
-       \code{   length(flowSet)}
-
+      
+      \code{   length(flowSet)}
+      
     }
     
     \item{show}{display object summary.}
-
+    
     \item{fsApply}{Apply a function on all frames in a \code{flowSet}
       object. Similar to \code{\link{sapply}}, but with additional
       parameters. See separate documentation for details.
-
+      
       \emph{Usage:}
-
+      
       \code{   fsApply(flowSet, function, ...)}
-
+      
       \code{   fsApply(flowSet, function, use.exprs=TRUE, ...)}
       
     }
     
     \item{compensate}{Apply a compensation matrix on all frames in a
       \code{flowSet} object. See separate documentation for details.
-
+      
       \emph{Usage:}
-
-       \code{   compensate(flowSet, matrix)}
- 
+      
+      \code{   compensate(flowSet, matrix)}
+      
     }
     
     \item{transform}{Apply a transformation function on all frames of a
@@ -231,7 +234,7 @@ quantitative cell-based assays}
       \emph{Usage:}
       
       \code{   transform(flowSet, ...)}
-
+      
     }
     
     \item{filter}{Apply a filter object on a \code{flowSet}
@@ -240,73 +243,73 @@ quantitative cell-based assays}
       be a named list, where names of the list items are matching
       sampleNames of the \code{flowSet}. See \code{\linkS4class{filter}}
       for details.
-
+      
       \emph{Usage:}
       
       \code{   filter(flowSet, filter)}
-
-      \code{   filter(flowSet, list(filters))}
-
-    }
-
-     \item{split}{Split all \code{flowSet} objects according to a
-       \code{\link{filter}}, \code{\link{filterResult}} or a list of
-       such objects, where the length of the list has to be the same as
-       the length of the \code{flowSet}. This always returns a list of
-       \code{\linkS4class{flowFrame}}s. Alternatively, a \code{flowSet}
-       can be split according to a factor (or any vector that can be
-       coerced into factors), similar to the behaviour of
-       \code{\link[base]{split}} for lists. This will return a list of
-       \code{flowSet}s.
-
-       \emph{Usage:}
       
-       \code{   split(flowSet, filter)}
-       
-       \code{   split(flowSet, filterResult)}
-
-       \code{   split(flowSet, list(filters))}
-
-       \code{   split(flowSet, factor)}
-
-     }
-
-     \item{Subset}{Returns a \code{flowSet} of
-       \code{\linkS4class{flowFrame}}s that have been subset according
-       to a \code{\linkS4class{filter}} or
-       \code{\linkS4class{filterResult}}, or according to a list of such
-       items of equal length as the \code{flowSet}.
-
-       \emph{Usage:}
-       
-       \code{   Subset(flowSet, filter)}
-       
-       \code{   Subset(flowSet, filterResult)}
-
-       \code{   Subset(flowSet, list(filters))}
-       
-     }
-       
+      \code{   filter(flowSet, list(filters))}
+      
+    }
     
-     \item{rbind2}{Combine two \code{flowSet} objects, or one
-       \code{flowSet} and one \code{\linkS4class{flowFrame}} object.
-
-       \emph{Usage:}
-       
-       \code{   rbind2(flowSet, flowSet)}
-
-       \code{   rbind2(flowSet, flowFrame)}
-
-     }
-
-     \item{spillover}{Compute spillover matrix from a compensation
-       set. See separate documentation for details.}
-
-   }
+    \item{split}{Split all \code{flowSet} objects according to a
+      \code{\link{filter}}, \code{\link{filterResult}} or a list of
+      such objects, where the length of the list has to be the same as
+      the length of the \code{flowSet}. This always returns a list of
+      \code{\linkS4class{flowFrame}}s. Alternatively, a \code{flowSet}
+      can be split according to a factor (or any vector that can be
+      coerced into factors), similar to the behaviour of
+      \code{\link[base]{split}} for lists. This will return a list of
+      \code{flowSet}s.
+      
+      \emph{Usage:}
+      
+      \code{   split(flowSet, filter)}
+      
+      \code{   split(flowSet, filterResult)}
+      
+      \code{   split(flowSet, list(filters))}
+      
+      \code{   split(flowSet, factor)}
+      
+    }
+    
+    \item{Subset}{Returns a \code{flowSet} of
+      \code{\linkS4class{flowFrame}}s that have been subset according
+      to a \code{\linkS4class{filter}} or
+      \code{\linkS4class{filterResult}}, or according to a list of such
+      items of equal length as the \code{flowSet}.
+      
+      \emph{Usage:}
+      
+      \code{   Subset(flowSet, filter)}
+      
+      \code{   Subset(flowSet, filterResult)}
+      
+      \code{   Subset(flowSet, list(filters))}
+      
+    }
+    
+    
+    \item{rbind2}{Combine two \code{flowSet} objects, or one
+      \code{flowSet} and one \code{\linkS4class{flowFrame}} object.
+      
+      \emph{Usage:}
+      
+      \code{   rbind2(flowSet, flowSet)}
+      
+      \code{   rbind2(flowSet, flowFrame)}
+      
+    }
+    
+    \item{spillover}{Compute spillover matrix from a compensation
+      set. See separate documentation for details.
+    }
+  }
 }
 
 \section{Important note on storage and performance}{
-
+  
   The bulk of the data in a \code{flowSet} object is stored in an
   \code{\link[base:environment]{environment}}, and is therefore not
   automatically copied when the \code{flowSet} object is copied. If
