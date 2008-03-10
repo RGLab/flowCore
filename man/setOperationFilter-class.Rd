@@ -8,6 +8,10 @@
 
 \title{Class "setOperationFilter"}
 
+\description{
+Description goes here
+}
+
 
 \section{Slots}{
 	 \describe{

@@ -71,7 +71,6 @@ filter(x,filter,...)
 }  
 
 \seealso{\code{\linkS4class{filter}}, \code{\linkS4class{filterResult}}}
-}
 
 \author{F Hahne, B. Ellis, N. Le Meur}
 

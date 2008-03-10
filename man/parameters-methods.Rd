@@ -18,7 +18,7 @@
   Many different objects in \code{flowCore} are associated with one or
   more parameters. This includes \code{\linkS4class{filter}},
   \code{\linkS4class{flowFrame}} and
-  \code{\linkS4class{parameterTransform}} objects that all either
+  \code{\linkS4class{parameterFilter}} objects that all either
   describe or use parameters.
 
 }
@@ -31,16 +31,17 @@ parameters(object)
 
   \item{object}{Object of class \code{\linkS4class{filter}},
     \code{\linkS4class{flowFrame}} or
-    \code{\linkS4class{parameterTransform}}.}
+    \code{\linkS4class{parameterFilter}}.}
 
 }
 
 \value{
   
   When applied to a \code{flowFrame} object, the result is an
-   \code{\linkS4class{AnnotatedDataFrame}} describing the parameters
-   recorded by the cytometer. For other objects it will usually return a
-   vector of names used by the object for its calculations.
+   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+   describing the parameters recorded by the cytometer. For other
+   objects it will usually return a vector of names used by the object
+   for its calculations.
   
 }
 
@@ -60,13 +61,11 @@ parameters(object)
     \item{object = "filterReference"}{see above}
     
     \item{object = "flowFrame"}{Returns an
-      \code{\linkS4class{AnnotatedDataFrame}} containing detailed
-      descriptions about the measurement parameters of the
-      \code{\linkS4class{flowFrame}}. For \code{\linkS4class{flowFrame}}
-      objects there also exists a replacement method.}
-    
-    \item{object = "parameterTransform"}{Returns a vector of parameters
-      that are transformed.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      containing detailed descriptions about the measurement parameters
+      of the \code{\linkS4class{flowFrame}}. For
+      \code{\linkS4class{flowFrame}} objects there also exists a
+      replacement method.}
 
   }
 }
