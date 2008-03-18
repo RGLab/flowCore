@@ -7,7 +7,7 @@ importFrom("geneplotter", "smoothScatter","densCols")
 #importFrom("graphics", "plot") this was breaking method dispatch...
 
 
-importFrom("Biobase", "exprs", "exprs<-", "description", "description<-",
+importFrom("Biobase", "exprs", "exprs<-", "description<-",
            "phenoData","phenoData<-","multiassign", "sampleNames",
            "sampleNames<-", "featureNames","featureNames<-", "varLabels",
            "varLabels<-")
