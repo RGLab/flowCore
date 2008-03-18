@@ -46,6 +46,8 @@ setGeneric("nrow", function(x) standardGeneric("nrow"))
 ## Generic for keyword
 ## ---------------------------------------------------------------------------
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
+setGeneric("description",function(object, hideInternal=FALSE)
+           standardGeneric("description"))
 
 
 

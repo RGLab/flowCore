@@ -171,7 +171,8 @@
     \item{description}{Extract the whole list of annotation
       keywords. Usually one would only be interested in a subset of
       keywords, in which case the \code{keyword} method is more
-      appropriate
+      appropriate. The optional \code{hideInternal} parameter can be
+      used to exclude internal FCS parameters starting with\code{\\$}.
       
       \emph{Usage:}
       

@@ -300,7 +300,15 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
             dat <- c(dat, temp)                 
         }
     }
-    stopifnot(length(dat)%%nrpar==0)
+    ## stopifnot(length(dat)%%nrpar==0)
+    ## Do we want the function to bail out when the above condition is TRUE?
+    ## Might be better to assume the data was ok up to this point and
+    ## exit gracefully with a warning as done in the following lines...
+    if(length(dat) %% nrpar != 0){
+        dat <- dat[1:(length(dat) %/% nrpar)]
+        warning("Error in reading data stream for file '",
+                summary(con)$description, "'/nData may be truncated!")
+    }
 
     ## apply bitmask for integer data
     if(dattype=="integer"){

@@ -113,7 +113,13 @@ setReplaceMethod("exprs", signature=c("flowFrame", "ANY"),
 ## accessor methods for slot description
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("description",signature("flowFrame"),
-          function(object) object@description)
+          function(object, hideInternal=FALSE){
+              if(!hideInternal)
+                  object@description
+              else{
+                  sel <- grep("^\\$", names(object@description))
+                  object@description[-sel]
+              }})
 
 
 
