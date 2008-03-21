@@ -42,7 +42,7 @@ read.FCS <- function(filename,
     if(!is.character(filename) ||  length(filename)!=1)
         stop("'filename' must be character skalar")
     if(!file.exists(filename))
-        stop(paste("'", filname, "' is not a valid file", sep=""))
+        stop(paste("'", filename, "' is not a valid file", sep=""))
     con <- file(filename, open="rb")
 
     ## transform or scale data?
