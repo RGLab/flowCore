@@ -66,6 +66,8 @@ setMethod("$", c("flowSet", "character"), function(x,name) x[[name]])
 setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
           x@colnames)
 
+
+## fixme: should we make sure that parameter names are changed for each frame?
 setReplaceMethod("colnames","flowSet",function(x,value) {
 	x@colnames = value
 	x
@@ -205,7 +207,8 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 ## compensate method
 ## ---------------------------------------------------------------------------
 setMethod("compensate",signature("flowSet","matrix"),
-          function(x,spillover) fsApply(x,compensate,spillover))
+          function(x,spillover,inv=TRUE)
+          fsApply(x,compensate,spillover,inv=inv))
 
 
 

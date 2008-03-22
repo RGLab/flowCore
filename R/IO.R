@@ -96,10 +96,10 @@ read.FCS <- function(filename,
     spID <- intersect(c("SPILL", "spillover"), names(description))
     if(length(spID)>0){
         sp <- description[[spID]]
-        nrCols <- as.numeric(substr(sp,1,1))
-        sp <- substr(sp,3,nchar(sp))
-        cnames <- strsplit(sp, ",")[[1]][1:nrCols]
-        vals <- as.numeric(strsplit(sp, ",")[[1]][(nrCols+1):((nrCols*nrCols))])
+        splt <-  strsplit(sp, ",")[[1]]
+        nrCols <- as.numeric(splt[1])
+        cnames <- splt[2:(nrCols+1)]
+        vals <- as.numeric(splt[(nrCols+2):length(splt)])
         spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
         colnames(spmat) <- cnames
         description[[spID]] <- spmat
@@ -358,8 +358,10 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
 ## network or a database.)
 ## ---------------------------------------------------------------------------
 read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
-                         descriptions, name.keyword,
-                         sep="\t",...)
+                         descriptions, name.keyword, alter.names=FALSE,
+                         transformation = "linearize", which.lines=NULL,
+                         debug = FALSE,  column.pattern = NULL, decades=0,
+                         sep="\t", ...)
 {
     ## A frame of phenoData information
     phenoFrame = NULL
@@ -376,6 +378,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                           ignore.case=TRUE)
             if(length(fnams))
                 sampleNames(phenoData) <- unlist(pData(phenoData[,fnams[1]]))
+            phenoFrame = phenoData
         }else if(is(phenoData,"AnnotatedDataFrame")){
             phenoFrame = phenoData
         }else{if(!is.list(phenoData))
@@ -414,7 +417,10 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         }
     }
     
-    flowSet = lapply(files, read.FCS, ...)
+    flowSet <- lapply(files, read.FCS, alter.names=alter.names,
+                      transformation=transformation, which.lines=which.lines,
+                      debug=debug,  column.pattern=column.pattern,
+                      decades=decades)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the filename be used. This is handy when something
     ## like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
@@ -451,3 +457,14 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet
 }
 
+
+
+write.AnnotatedDataFrame <- function(frame, file)
+{
+    con <- file(file, "w")
+    on.exit(close(con))
+    writeLines(paste(rep("#", ncol(frame)), varLabels(frame),
+                     rep(": ", ncol(frame)),
+                     varMetadata(frame)$labelDescription, sep=""), con)
+    write.table(pData(frame), con, quote=FALSE, sep="\t")  
+}

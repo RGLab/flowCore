@@ -338,13 +338,16 @@ setMethod("names", signature="flowFrame",
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
-setMethod("compensate",signature("flowFrame","matrix"),
-          function(x,spillover)
+setMethod("compensate",signature("flowFrame", "matrix"),
+          function(x, spillover, inv=TRUE)
       {
           ## Make sure we're normalized to [0,1] and then invert
           cols = colnames(spillover)
           e    = exprs(x)
-          e[,cols] = e[,cols]%*%solve(spillover/max(spillover))
+          if(inv)
+              e[,cols] = e[,cols]%*%solve(spillover/max(spillover))
+          else
+              e[,cols] = e[,cols]%*%spillover
           exprs(x) = e
           x
       })
@@ -631,6 +634,8 @@ setMethod("Subset",signature("flowFrame","logical"),
 ## this range is not necessarily the range of the actual data values but
 ## it is the dynamic range of the measurement instrument
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Do we want the range to be set in a way to allow negative values?
+## Need to fix that in read.FCS if yes
 setMethod("range", signature("flowFrame"),
           definition=function(x, ..., na.rm){
               pind <- 1:nrow(parameters(x))
