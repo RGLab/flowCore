@@ -4,7 +4,12 @@
 \description{Read one or several FCS files: Data File Standard for Flow
   Cytometry}
 \usage{
-   read.flowSet(files=NULL, path=".",pattern=NULL,phenoData,descriptions,name.keyword,sep="\t",\dots)
+
+read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
+  descriptions,name.keyword,alter.names=FALSE, transformation =
+  "linearize", which.lines=NULL, debug = FALSE, column.pattern = NULL,
+  decades=0,sep="\t",\dots)
+
 }
 
 \arguments{
@@ -20,10 +25,16 @@
     \code{\link{flowSet-class}{flowSet}}.}
   \item{name.keyword}{An optional character vector that specifies which
     FCS keyword to use as the sample names.}
+  \item{alter.names}{see \code{\link{read.FCS}} for details.}
+  \item{transformation}{see \code{\link{read.FCS}} for details.}
+  \item{which.lines}{see \code{\link{read.FCS}} for details.}
+  \item{debug}{see \code{\link{read.FCS}} for details.}
+  \item{colum.pattern}{see \code{\link{read.FCS}} for details.}
+  \item{decades}{see \code{\link{read.FCS}} for details.}
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}.}
   \item{\dots}{Further arguments that get passed on to
-    \code{\link[flowCore]{read.FCS}}, see details.}
+    \code{\link[flowCore]{read.AnnotatedDataFrame}}, see details.}
 }
 
 \details{There are four different ways to specify the file from which
@@ -31,14 +42,13 @@
   
   First, if the argument \code{phenoData} is present and is of class
   \code{\link[Biobase:AnnotatedDataFrame]{AnnotatedDataFrame}}, then the
-  file names are obtained from its sample names (i.e. column \code{name}. The column is mandatory, and an
-  error will be generated if it is not there.
-  Alternatively, the argument \code{phenoData} can be of class
-  \code{character}, in which case this function tries to read a
-  \code{AnnotatedDataFrame} object from the file with that name by 
-  calling
-  \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame(file.path(path,
-      phenoData),\dots)}}.
+  file names are obtained from its sample names (i.e. column
+  \code{name}. The column is mandatory, and an error will be generated
+  if it is not there.  Alternatively, the argument \code{phenoData} can
+  be of class \code{character}, in which case this function tries to
+  read a \code{AnnotatedDataFrame} object from the file with that name
+  by calling
+  \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame(file.path(path,phenoData),\dots)}}.
   
   In some cases the file names are not a reasonable selection criterion
   and the user might want to import files based on some keywords within
@@ -49,7 +59,7 @@
   the argument \code{files} is not \code{NULL}, then \code{files}
   is expected to be a character vector with the file names.
   
-  Third, if neither the argument \code{phenoData} is present nor
+  Fourth, if neither the argument \code{phenoData} is present nor
   \code{files} is not \code{NULL}, then the file names are obtained by
   calling   \code{dir(path, pattern)}.
 }

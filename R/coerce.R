@@ -216,21 +216,27 @@ setAs("flowSet","flowFrame",function(from) {
     if(length(from) == 1)
         from[[1]]
     else {
-        ##The parameters need to match all frames
+        ## The parameters need to match all frames
         params = parameters(from[[1]])
         allParams <- fsApply(from, function(x) pData(parameters(x))$name)
         if(!all(sapply(allParams, identical, pData(params)$name)))
             stop("parameters must be the same for all frames")
-        pData(params)["Original",] <- c("Original","Original flowFrame",
-                                        rep(length(from),3))
-        exp <- NULL
-        for(i in 1:length(from))
-            exp <- rbind(exp, exprs(from[[i]]))
-        exprs <- cbind(exp, "Original"=rep(1:length(from),
-                            fsApply(from, nrow)))
+        ## making sure we are not doing too many copies of the data
+        lens <- fsApply(from, nrow)
+        exp <- matrix(ncol=nrow(params)+1, nrow=sum(lens))
+        colnames(exp) <- c(colnames(from), "Original")
+        offset <- 1
+        for(i in 1:length(from)){
+            rows <- offset:(offset+lens[i,]-1)
+            exp[rows, 1:nrow(params)] <- exprs(from[[i]])
+            exp[rows,"Original"] <- rep(i, lens[i,])
+            offset <- offset+lens[i,]
+        }
+        pData(params)["Original",c("name", "desc")] <- c("Original",
+                              "Original frame")
         desc  <- list(description="Synthetic Frame",
                       sampleNames=sampleNames(from))
-        new("flowFrame",exprs=exprs,parameters=params,description=desc)
+        new("flowFrame",exprs=exp,parameters=params,description=desc)
     }
 })
 
