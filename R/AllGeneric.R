@@ -43,11 +43,21 @@ setGeneric("nrow", function(x) standardGeneric("nrow"))
 
 
 ## ===========================================================================
+## Generic for head and tail
+## ---------------------------------------------------------------------------
+setGeneric("head", function(x, ...) standardGeneric("head"))
+setGeneric("tail", function(x, ...) standardGeneric("tail"))
+
+
+## ===========================================================================
 ## Generic for keyword
 ## ---------------------------------------------------------------------------
 setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
+setGeneric("keyword<-",function(object,value) standardGeneric("keyword<-"))
 setGeneric("description",function(object, hideInternal=FALSE)
            standardGeneric("description"))
+setGeneric("description<-",function(object, value)
+           standardGeneric("description<-"))
 
 
 

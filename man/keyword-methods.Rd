@@ -6,16 +6,19 @@
 \alias{keyword,flowFrame,function-method}
 \alias{keyword,flowFrame,character-method}
 \alias{keyword,flowFrame,list-method}
+\alias{keyword<-,flowFrame,list-method}
+\alias{keyword<-,flowFrame,ANY-method}
+\alias{keyword<-,flowFrame,character-method}
 
 \title{Methods to retrieve keywords of a flowFrame}
 
 \description{
 
-  Accessor methods for items in the description slot (usually read in
-  from a FCS file header). It lists the \code{keywords} and its values
-  for a flowFrame specified by a character vector. Additional methods
-  for \code{function} and \code{lists} exists for more programmatic
-  access to the keywords.
+  Accessor and replacement methods for items in the description slot
+  (usually read in from a FCS file header). It lists the \code{keywords}
+  and its values for a flowFrame specified by a character
+  vector. Additional methods for \code{function} and \code{lists} exists
+  for more programmatic access to the keywords.
 
 }
 

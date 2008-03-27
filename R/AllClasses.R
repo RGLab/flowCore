@@ -246,6 +246,8 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
 ## focus and distance hold the xy position of the centroid and the distance
 ## respectively.
 ## ---------------------------------------------------------------------------
+##FIXME: THIS IS NO LONGER VALID IN THE GATINGML DEFINITION! NEED TO IMPLEMENT
+##ELLIPSOIDS THROUGH MEANS AND COVARIANCE MATRIX
 setClass("ellipsoidGate",
          representation(focus="matrix",
                         distance="numeric"),

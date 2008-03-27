@@ -451,7 +451,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         names(phenoData) = field.names
         phenoData(flowSet) = new("AnnotatedDataFrame",
                  data=keyword(flowSet,phenoData),
-                 varMetadata=data.frame(labelDescriptions=I(descriptions),
+                 varMetadata=data.frame(labelDescription=I(descriptions),
                  row.names=field.names))
     }
     flowSet

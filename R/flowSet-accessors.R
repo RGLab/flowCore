@@ -167,8 +167,11 @@ setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show","flowSet",function(object) {
 	cat("A flowSet with",length(object),"experiments.\n\n")
-	show(phenoData(object))
-	cat("  \n  column names:\n  ")
+        if(any(varMetadata(phenoData(object))$labelDescription != "Name")){
+            show(phenoData(object))
+            cat("\n")
+        }
+	cat("  column names:\n  ")
 	cat(paste(object@colnames,sep=","))
 	cat("\n")
 })
