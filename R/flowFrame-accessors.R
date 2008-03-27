@@ -110,7 +110,7 @@ setReplaceMethod("exprs", signature=c("flowFrame", "ANY"),
 
 
 ## ==========================================================================
-## accessor methods for slot description
+## accessor and replace methods for slot description
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("description",signature("flowFrame"),
           function(object, hideInternal=FALSE){
@@ -121,6 +121,18 @@ setMethod("description",signature("flowFrame"),
                   object@description[-sel]
               }})
 
+## replace description entries
+descError <- "Replacement value must be a named list."
+setReplaceMethod("description", signature=c("flowFrame", "list"),
+                  definition=function(object, value){
+                      n <- names(value)
+                      if(length(n) == 0)
+                          stop(descError, call.=FALSE)
+                      object@description[n] <- value
+                      return(object) })
+setReplaceMethod("description", signature=c("flowFrame", "ANY"),
+                 definition=function(object, value)
+                 stop(descError, call.=FALSE))
 
 
 ## ==========================================================================
@@ -154,6 +166,24 @@ setMethod("keyword",signature("flowFrame","missing"),
               object@description
           )
 
+## replace keywords
+kwdError <- "Replacement value must be a named character vector or list."
+setReplaceMethod("keyword", signature=c("flowFrame", "character"),
+                  definition=function(object, value){
+                      keyword(object) <- as.list(value)
+                      return(object)
+                  })
+setReplaceMethod("keyword", signature=c("flowFrame", "list"),
+                  definition=function(object, value){
+                      n <- names(value)
+                      if(length(n) == 0)
+                          stop(kwdError, call.=FALSE)
+                      description(object) <- value
+                      return(object)
+                  })
+setReplaceMethod("keyword", signature=c("flowFrame", "ANY"),
+                 definition=function(object, value)
+                 stop(kwdError, call.=FALSE))
 
 
 ## ==========================================================================
@@ -207,27 +237,36 @@ setMethod("show",signature=signature("flowFrame"),
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## only one argument: the flowFrame
 setMethod("plot", signature(x="flowFrame", y="missing"),
-          definition=function(x, pch, ...)
+          definition=function(x, smooth=TRUE, pch, ...)
       {
           l = ncol(x)
           values=exprs(x)
+          if(missing(pch))
+              pch="."
           if(l==1)
               hist(values, xlab=colnames(x), ...)
-          else if (l==2)
-              smoothScatter(values, ...)
-          else{
-              if(missing(pch))
-                  pch="."
-              pairs(values, pch=pch, ...)
+          else if (l==2){
+              if(smooth)
+                  smoothScatter(values, pch=pch, ...)
+              else
+                  plot(values, pch=pch, ...)
+          }else{
+              sel <- tolower(colnames(x)) != "time"
+              if(smooth){
+                  require(flowViz)
+                  plot(splom(x[,sel], pch=pch, ...))
+              }
+              else
+                  pairs(values[,sel], pch=pch, ...)
           }
       })
 
 ## second argument contains the parameters(s) to plot
 setMethod("plot",signature(x="flowFrame",y="character"),
-          function(x,y,...){
+          function(x,y, smooth=TRUE, ...){
               if(!all(y %in% colnames(x)))
                   stop("subset out of bounds", call.=FALSE)
-              callGeneric(x[,y], ...)
+              callGeneric(x[,y], smooth=smooth, ...)
       })
          
 
@@ -368,9 +407,7 @@ setMethod("transform",
           e <- substitute(list(...))
           x <- `_data`
           par <- parameters(x)
-          ranges <- rbind(as.numeric(par$minRange),
-                          as.numeric(par$maxRange))
-          colnames(ranges) <- colnames(x)
+          ranges <- range(x)
           tranges <- as.matrix(transform(as.data.frame(ranges),...))
           transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
           nc <- colnames(transformed)[-c(1:ncol(x@exprs))]
@@ -671,3 +708,14 @@ setMethod("==", signature("flowFrame", "flowFrame"),
           all(as.character(pData(parameters(e1))) == as.character(pData(parameters(e2)))))
       })
 
+
+
+## ==========================================================================
+## show first or last values in the exprs matrix
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("head", signature("flowFrame"),
+          function(x, ...) head(exprs(x), ...))
+
+setMethod("tail", signature("flowFrame"),
+          function(x, ...) tail(exprs(x), ...))
+          

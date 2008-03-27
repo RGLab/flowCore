@@ -1,9 +1,10 @@
 useDynLib("flowCore",biexponential_transform, inPolygon)
 
 import("methods")
-importFrom("utils", "getFromNamespace", "assignInNamespace")
+importFrom("utils", "getFromNamespace", "assignInNamespace", "head", "tail")
 importFrom("MASS", "cov.rob")
 importFrom("geneplotter", "smoothScatter","densCols")
+
 #importFrom("graphics", "plot") this was breaking method dispatch...
 
 
@@ -48,6 +49,7 @@ exportClasses("flowFrame",
 
 exportMethods("initialize",
               "description",
+              "description<-",
               "phenoData",
               "phenoData<-",
               "featureNames",
@@ -55,6 +57,7 @@ exportMethods("initialize",
               "colnames",
               "colnames<-",
               "keyword",
+              "keyword<-",
               "%in%","%subset%",
               "%on%","summary",
               "identifier",
@@ -88,7 +91,9 @@ exportMethods("initialize",
               "sort",
               "sampleNames<-",
               "pData",
-              "range")
+              "range",
+              "head",
+              "tail")
 
 S3method("$", "flowFrame")
 

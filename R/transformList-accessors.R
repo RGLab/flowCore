@@ -10,14 +10,21 @@ setMethod("colnames",signature("transformList"),function(x, do.NULL=TRUE, prefix
 ## %on% operators
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%on%",signature("transformList","flowFrame"),function(e1,e2) {
-	x = exprs(e2)
-	cN = colnames(x)
+	x <- exprs(e2)
+        pars <- parameters(e2)
+        ranges <- range(e2)
+	cN <- colnames(x)
 	for(y in e1@transforms){
 		if( !(y@output %in% cN) )
 			stop(y@output, "is not a variable in the flowFrame")
 		x[,y@output] = y@f(x[,y@input])
+                mt <- match(y@output, pars$name)
+                pData(pars)[mt,c("minRange", "maxRange")] <-
+                    y@f(ranges[,y@input])
+                
 	}
-	exprs(e2) = x
+	exprs(e2) <- x
+        parameters(e2) <- pars
 	e2
 })
 #General %on% implementation for a flowSet.

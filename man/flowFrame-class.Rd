@@ -10,8 +10,12 @@
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{exprs<-,flowFrame,ANY-method}
+\alias{head,flowFrame-method}
+\alias{tail,flowFrame-method}
 \alias{description}
 \alias{description,flowFrame-method}
+\alias{description<-,flowFrame,list-method}
+\alias{description<-,flowFrame,ANY-method}
 \alias{show,flowFrame-method}
 \alias{summary,flowFrame-method}
 \alias{plot}
@@ -167,16 +171,29 @@
       \code{   exprs(flowFrame) <- value}
 
     }
+
+    \item{head, tail}{Show first/last elements of the raw data matrix
+
+      \emph{Usage:}
+      
+      \code{   head(flowFrame)}
+      
+      \code{   tail(flowFrame)}
+      
+    }
     
-    \item{description}{Extract the whole list of annotation
-      keywords. Usually one would only be interested in a subset of
-      keywords, in which case the \code{keyword} method is more
-      appropriate. The optional \code{hideInternal} parameter can be
-      used to exclude internal FCS parameters starting with\code{\\$}.
+    \item{description, description<-}{Extract or replace the whole list
+      of annotation keywords. Usually one would only be interested in a
+      subset of keywords, in which case the \code{keyword} method is
+      more appropriate. The optional \code{hideInternal} parameter can
+      be used to exclude internal FCS parameters starting
+      with\code{\\$}.
       
       \emph{Usage:}
       
       \code{   description(flowFrame)}
+
+      \code{   description(flowFrame) <- value}
       
     }
 
@@ -236,11 +253,14 @@
       we plot a bivariate density map (see
       \code{\link[geneplotter:smoothscatter]{smoothScatter}}) and for
       more than two parameters we produce a simple
-      \code{\link[graphics]{pairs}} plot. To select specific parameters
+      \code{\link[lattice]{splom}} plot. To select specific parameters
       from a \code{flowFrame} for plotting, either subset the object or
       specifiy the parameters as a character vector in the second
-      argument to \code{plot}. For far more sophisticated plotting of
-      flow cytometry data, see the
+      argument to \code{plot}. The smooth parameters lets you toggle
+      between density-type
+      \code{\link[geneplotter:smoothscatter]{smoothScatter}} plots and
+      regular scatterplots.  For far more sophisticated plotting of flow
+      cytometry data, see the
       \code{\link[floViz:flowViz-package]{flowViz }} package.
 
       \emph{Usage:}
@@ -248,6 +268,8 @@
       \code{   plot(flowFrame, ...)}
       
       \code{   plot(flowFrame, character, ...)}
+
+      \code{   plot(flowFrame, smooth=FALSE, ...)}
       
     }
 
@@ -301,7 +323,7 @@
       this is not necessarily the range of the actual data values, but
       the theoretical range of values the measurement instrument was
       able to capture. The values of the dynamic range will be
-      transformed when using the out-of-line transformation method for
+      transformed when using the transformation methods for
       \code{flowFrames}. Additional character arguments are evaluated as
       parameter names for which to return the dynamic range.
       
@@ -328,10 +350,7 @@
       \code{flowFrame} like a regular \code{data.frame}. \code{flowCore}
       provides an additional inline mechanism for transformations (see
       \code{\link{\%on\%}}) which is strictly more limited
-      than the out-of-line transformation described here. Note that only
-      the out-of-line transformation makes sure that the values for the
-      dynamic range in the \code{parameters} slot are also transformed
-      accordingly.
+      than the out-of-line transformation described here.
       
       \emph{Usage:}
       
@@ -463,6 +482,7 @@ summary(frame)
 plot(frame)
 plot(frame, c("FSC-H", "SSC-H"))
 plot(frame[,1])
+plot(frame, c("FSC-H", "SSC-H"), smooth=FALSE)
 
 ## frame dimensions
 ncol(frame)
