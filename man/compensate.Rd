@@ -8,11 +8,13 @@
 \description{Apply a spillover matrix to a \code{flowSet} or a \code{flowFrame} assuming a simple linear combination of values.}
 
 \usage{
-compensate(x,spillover)
+compensate(x,spillover, inv=TRUE, ...)
 }
 \arguments{
   \item{x}{Object of class \code{\link[flowCore]{flowFrame}} or \code{\link[flowCore]{flowSet}}.}
-   \item{spillover}{matrix used to store spillover between channels.}
+  \item{spillover}{matrix used to store spillover between channels.}
+  \item{inv}{Use the inverse of the spillover matrix.}
+  \item{\dots}{Additional arguments to the generic.}
 }
 \details{
 The essential premise of compensation is that some fluorochromes may register signals in detectors that

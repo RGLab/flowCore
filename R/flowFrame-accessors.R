@@ -378,7 +378,7 @@ setMethod("names", signature="flowFrame",
 ## compensate method
 ## ---------------------------------------------------------------------------
 setMethod("compensate",signature("flowFrame", "matrix"),
-          function(x, spillover, inv=TRUE)
+          function(x, spillover, inv=TRUE, ...)
       {
           ## Make sure we're normalized to [0,1] and then invert
           cols = colnames(spillover)

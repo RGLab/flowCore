@@ -28,11 +28,10 @@
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
 \alias{split,flowSet,ANY-method}
-\alias{split,flowSet,ANY,ANY-method}
-\alias{split,flowSet,list,ANY-method}
-\alias{split,flowSet,factor,ANY-method}
-\alias{split,flowSet,numeric,ANY-method}
-\alias{split,flowSet,character,ANY-method}
+\alias{split,flowSet,list-method}
+\alias{split,flowSet,factor-method}
+\alias{split,flowSet,numeric-method}
+\alias{split,flowSet,character-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
 \alias{rbind2,flowSet,flowSet,missing-method}

@@ -106,9 +106,9 @@ setMethod("&",signature("filter","list"),function(e1,e2) lapply(e2,"&",e1=e1))
 ## The ! operator returns an object that simply takes the complement of the
 ## filter it returns.
 ## --------------------------------------------------------------------------
-setMethod("!",signature("filter"),function(e1) {
-	new("complementFilter",filters=list(e1),
-            filterId=paste("not",identifier(e1)))
+setMethod("!",signature("filter"),function(x) {
+	new("complementFilter",filters=list(x),
+            filterId=paste("not",identifier(x)))
 })
 
 
