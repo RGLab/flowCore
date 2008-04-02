@@ -210,8 +210,8 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 ## compensate method
 ## ---------------------------------------------------------------------------
 setMethod("compensate",signature("flowSet","matrix"),
-          function(x,spillover,inv=TRUE)
-          fsApply(x,compensate,spillover,inv=inv))
+          function(x,spillover,inv=TRUE, ...)
+          fsApply(x,compensate,spillover,inv=inv, ...))
 
 
 

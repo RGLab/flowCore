@@ -29,7 +29,7 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   \item{transformation}{see \code{\link{read.FCS}} for details.}
   \item{which.lines}{see \code{\link{read.FCS}} for details.}
   \item{debug}{see \code{\link{read.FCS}} for details.}
-  \item{colum.pattern}{see \code{\link{read.FCS}} for details.}
+  \item{column.pattern}{see \code{\link{read.FCS}} for details.}
   \item{decades}{see \code{\link{read.FCS}} for details.}
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}.}

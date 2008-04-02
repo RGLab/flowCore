@@ -6,6 +6,7 @@
 \alias{keyword,flowFrame,function-method}
 \alias{keyword,flowFrame,character-method}
 \alias{keyword,flowFrame,list-method}
+\alias{keyword<-}
 \alias{keyword<-,flowFrame,list-method}
 \alias{keyword<-,flowFrame,ANY-method}
 \alias{keyword<-,flowFrame,character-method}
