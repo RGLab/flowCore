@@ -1,7 +1,9 @@
 \name{rectangleGate-class}
 \docType{class}
 \alias{rectangleGate-class}
+\alias{quadGate-class}
 \alias{rectangleGate}
+\alias{quadGate}
 \alias{polygonGate-class}
 \alias{polygonGate}
 \alias{polytopeGate}
@@ -9,6 +11,7 @@
 \alias{polytopeGate-class}
 \alias{summary,rectangleGate-method}
 \alias{show,rectangleGate-method}
+\alias{show,quadGate-method}
 \alias{show,polygonGate-method}
 \alias{*,rectangleGate,rectangleGate-method}
    
@@ -20,11 +23,13 @@
 rectangleGate( filterId = "rectangleGate", .gate, \dots)
 polygonGate(filterId = "polygonGate", boundaries, \dots)
 polytopeGate(filterId = "polytopeGate", .gate, \dots)
+quadGate(filterId = "polytopeGate", .gate, \dots)
 }
 
 \arguments{
   \item{filterId}{ An optional parameter that sets the \code{filterId} of this gate. }
-  \item{.gate}{ A definition of the gate. This can be either a list or matrix, described below. }
+  \item{.gate}{ A definition of the gate. This can be either a list,
+  vector or matrix, described below. }
   \item{boundaries}{ A definition of the gate.}
   \item{\dots}{ You can also directly describe a gate without wrapping it in a list, as described below. }
   
@@ -44,7 +49,11 @@ polytopeGate(filterId = "polytopeGate", .gate, \dots)
   Rectangle gate objects can also be multiplied together using the \code{*} operator,
   provided that both gate have orthogonal axes. 
 
-  For polygone gate, the boundaries are specified as vertices in 2 dimensions.
+  For polygone gate, the boundaries are specified as vertices in 2
+  dimensions.
+
+  For quadrant gates, the boundaries are specified as a named list or
+  vector of length two.
   
  
 }

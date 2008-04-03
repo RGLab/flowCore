@@ -21,6 +21,7 @@
 \alias{\%in\%,flowFrame,expressionFilter-method}
 \alias{\%in\%,flowFrame,curv1Filter-method}
 \alias{\%in\%,flowFrame,curv2Filter-method}
+\alias{\%in\%,flowFrame,quadGate-method}
 
 \title{ Methods for Function \%in\% in Package `flowCore'}
 \description{
