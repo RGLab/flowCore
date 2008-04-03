@@ -180,6 +180,37 @@ rectangleGate <- function(filterId="rectangleGate", .gate,...) {
 
 
 
+
+## ===========================================================================
+## Quadrant gate
+## ---------------------------------------------------------------------------
+## A class describing a gate which separated a 2D paramerter space into
+## four quadrants. Slot boundary holds a vector of length two indicating
+## the quadrant boundaries in each of the two dimensions
+## ---------------------------------------------------------------------------
+setClass("quadGate",
+         representation(boundary="numeric"),        
+         contains="parameterFilter",
+         prototype=list(filterId="Quadrant Gate", c(Inf, Inf)))
+
+## constructor
+quadGate <- function(filterId="quadGate", .gate, ...) {
+    if(missing(.gate))
+        .gate <- list(...)
+    n <- names(.gate) 
+    .gate <- as.numeric(.gate)
+    names(.gate) <- n
+    if(!is.numeric(.gate) || length(names(.gate)) !=2)
+        stop("Expecting two named arguments or a single named vector\n",
+             "of length 2 as input for boundaries.", call.=FALSE)
+    new("quadGate", filterId=filterId, parameters=names(.gate),
+        boundary=.gate)
+}
+
+
+
+
+
 ## ===========================================================================
 ## Polygon gate
 ## ---------------------------------------------------------------------------
