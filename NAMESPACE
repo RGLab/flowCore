@@ -45,7 +45,8 @@ exportClasses("flowFrame",
               "transformList",
               "transformFilter",
               "curv2Filter",
-              "curv1Filter")
+              "curv1Filter",
+              "quadGate")
 
 exportMethods("initialize",
               "description",
