@@ -23,7 +23,7 @@
 rectangleGate( filterId = "rectangleGate", .gate, \dots)
 polygonGate(filterId = "polygonGate", boundaries, \dots)
 polytopeGate(filterId = "polytopeGate", .gate, \dots)
-quadGate(filterId = "polytopeGate", .gate, \dots)
+quadGate(filterId = "quadGate", .gate, \dots)
 }
 
 \arguments{
