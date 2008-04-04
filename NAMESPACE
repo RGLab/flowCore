@@ -130,5 +130,6 @@ export("read.FCS",
        "%&%",
        "as.data.frame.manyFilterResult",
        "curv2Filter",
-       "curv1Filter")
+       "curv1Filter",
+       "quadGate")
        
