@@ -518,16 +518,18 @@ setMethod("spillover","flowFrame",
 ## ==========================================================================
 ## split methods for flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## We actually filter on filterResults and multipleFilterResults
+## We actually split on filterResults and multipleFilterResults
 setMethod("split",
           signature("flowFrame", "filter"),
-          function(x, f, drop=FALSE, ...) split(x, filter(x, f), drop, ...))
+          function(x, f, drop=FALSE, ...)
+          split(x, filter(x, f), drop, ...))
 
 setMethod("split",
           signature("flowFrame","filterSet"),
-          function(x, f, drop=FALSE, ...) split(x, filter(x, f), drop, ...))
+          function(x, f, drop=FALSE, ...)
+          split(x, filter(x, f), drop, ...))
 
-## filter on logicalFilterResults
+## split on logicalFilterResults
 setMethod("split",
           signature("flowFrame", "logicalFilterResult"),
           function(x, f, drop=FALSE, population=NULL, prefix=NULL,
@@ -546,7 +548,8 @@ setMethod("split",
               out
       })
 
-## filter on multipleFilterResults
+## split on multipleFilterResults, argument population can be used to
+## select only certain subpopulations
 setMethod("split",
           signature("flowFrame", "multipleFilterResult"),
           function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE,
@@ -560,8 +563,7 @@ setMethod("split",
               nn <- population
           else
               nn <- paste(prefix, population, sep="")
-          for(i in population)
-          tmp <- lapply(seq(along=population), function(i) x[f[[i]], ])
+          tmp <- lapply(population, function(i) x[f[[i]], ])
           out <- structure(tmp, names=nn)
           if(length(flowSet) > 0 && flowSet)
               flowSet(out)
@@ -569,32 +571,41 @@ setMethod("split",
               out
       })
 
-## filter on manyFilterResults
-setMethod("split",signature("flowFrame","manyFilterResult"),
-          function(x,f,drop=FALSE,prefix=NULL,flowSet=FALSE,...)
+
+## filter on manyFilterResults. FIXME: Need to take a closer look at this
+setMethod("split", signature("flowFrame","manyFilterResult"),
+          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
       {
           ##If drop is TRUE then only use results without children
-          nn  = if(drop) rownames(f@dependency)[rowSums(f@dependency)==0] else	names(f)
-          out = structure(lapply(nn,function(i) x[f[[i]],]),names=if(is.null(prefix)) nn else paste(prefix,nn,sep=""))
+          if(drop)
+              nn <- rownames(f@dependency)[rowSums(f@dependency)==0]
+          else
+              nn <- names(f)
+          out <- structure(lapply(nn, function(i) x[f[[i]], ]),
+                           names=if(is.null(prefix)) nn else
+                           paste(prefix,nn,sep=""))
           if(length(flowSet) > 0 && flowSet) {
-              print(data.frame(name=nn,as.data.frame(f)[nn,],row.names=nn))
-              flowSet(out,phenoData=new("AnnotatedDataFrame",
-                          data=data.frame(name=I(nn),as.data.frame(f)[nn,],
-                          row.names=nn),
-                          varMetadata=data.frame(labelDescription=I(c("Name",
+              print(data.frame(name=nn, as.data.frame(f)[nn, ], row.names=nn))
+              flowSet(out, phenoData=new("AnnotatedDataFrame",
+                           data=data.frame(name=I(nn),as.data.frame(f)[nn, ],
+                           row.names=nn),
+                           varMetadata=data.frame(labelDescription=I(c("Name",
                                                  "Filter")),
-                          row.names=c("name","filter"))))
+                          row.names=c("name", "filter"))))
           } else out
       })
 
-## filter on factor
-setMethod("split", signature("flowFrame","factor"),
-          function(x,f,drop=FALSE, prefix=NULL, flowSet=FALSE,...)
+
+## filter on factor, this is just for completeness, shouldn't be used
+setMethod("split", signature("flowFrame", "factor"),
+          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
       {      
-          nn  = levels(f)
-          out = structure(lapply(nn,function(i) x[f==i,]),names=if(is.null(prefix)) nn else paste(prefix,i,sep=""))
+          nn  <- levels(f)
+          out <- structure(lapply(nn,function(i) x[f==i,]),
+                           names=if(is.null(prefix)) nn else
+                           paste(prefix, i, sep=""))
           if(length(flowSet) > 0 && flowSet) {
-              print(data.frame(name=nn,split=seq_along(nn),row.names=nn))
+              print(data.frame(name=nn, split=seq_along(nn), row.names=nn))
               flowSet(out,phenoData=new("AnnotatedDataFrame",
                           data=data.frame(name=I(nn), split=seq_along(nn),
                           row.names=nn),
@@ -605,8 +616,9 @@ setMethod("split", signature("flowFrame","factor"),
       })
 
 ## Everything else should stop with an error
-setMethod("split",signature("flowFrame","ANY"),
-          function(x,f,drop=FALSE,prefix=NULL,...) 
+setMethod("split",
+          signature("flowFrame","ANY"),
+          function(x, f, drop=FALSE, prefix=NULL,...) 
           stop("invalid type for flowFrame split"))
 
 
