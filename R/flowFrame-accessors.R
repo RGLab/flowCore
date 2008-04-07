@@ -217,7 +217,7 @@ setMethod("show",signature=signature("flowFrame"),
       {
           dm <- dim(exprs(object))
           cat(paste("flowFrame object '", identifier(object),
-                    "' with ", dm[1], " cells and ", 
+                    "'\nwith ", dm[1], " cells and ", 
                     dm[2], " observables:\n", sep=""))
           show(pData(parameters(object)))
           cat(paste("\nslot 'description' has ",
@@ -519,35 +519,54 @@ setMethod("spillover","flowFrame",
 ## split methods for flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## We actually filter on filterResults and multipleFilterResults
-setMethod("split", signature("flowFrame","filter"),
-          definition=function(x,f,drop=FALSE,...)
-          split(x,filter(x,f),drop,...)
-          )
+setMethod("split",
+          signature("flowFrame", "filter"),
+          function(x, f, drop=FALSE, ...) split(x, filter(x, f), drop, ...))
 
-setMethod("split",signature("flowFrame","filterSet"),
-          function(x,f,drop=FALSE,...) 
-          split(x,filter(x,f),drop,...))
+setMethod("split",
+          signature("flowFrame","filterSet"),
+          function(x, f, drop=FALSE, ...) split(x, filter(x, f), drop, ...))
 
 ## filter on logicalFilterResults
-setMethod("split", signature("flowFrame","logicalFilterResult"),
-          function(x,f,drop=FALSE,population=NULL,prefix=NULL,
-                   flowSet=FALSE,...)
+setMethod("split",
+          signature("flowFrame", "logicalFilterResult"),
+          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
+                   flowSet=FALSE, ...)
       {
-          if(is.null(population)) population=f@filterId
-          if(!is.null(prefix)) population = paste(prefix,population,sep="")
-          out = structure(list(x[f@subSet,],x[!f@subSet,]),
-          names=c(paste(population,"+",sep=""),
-          paste(population,"-",sep="")))
-          if(length(flowSet) > 0 && flowSet) flowSet(out) else out
+          if(is.null(population))
+              population <- f@filterId
+          if(!is.null(prefix))
+              population <- paste(prefix,population, sep="")
+          out <- structure(list(x[f@subSet, ], x[!f@subSet, ]),
+                           names=c(paste(population, "+", sep=""),
+                           paste(population,"-", sep="")))
+          if(length(flowSet) > 0 && flowSet)
+              flowSet(out)
+          else
+              out
       })
 
 ## filter on multipleFilterResults
-setMethod("split", signature("flowFrame","multipleFilterResult"),
-          function(x,f,drop=FALSE,prefix=NULL,flowSet=FALSE,...)
+setMethod("split",
+          signature("flowFrame", "multipleFilterResult"),
+          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE,
+                   population=NULL, ...)
       {
-          nn = if(is.null(prefix)) names(f) else paste(prefix,names(f),sep="")
-          out = structure(lapply(seq(along=f),function(i) x[f[[i]],]),names=nn)
-          if(length(flowSet) > 0 && flowSet) flowSet(out) else out
+          if(is.null(population))
+              population <- names(f)
+          else if(!all(population %in% names(f)))
+              stop("Population(s) not valid in this filter", call.=FALSE)
+          if(is.null(prefix))
+              nn <- population
+          else
+              nn <- paste(prefix, population, sep="")
+          for(i in population)
+          tmp <- lapply(seq(along=population), function(i) x[f[[i]], ])
+          out <- structure(tmp, names=nn)
+          if(length(flowSet) > 0 && flowSet)
+              flowSet(out)
+          else
+              out
       })
 
 ## filter on manyFilterResults

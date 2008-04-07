@@ -302,28 +302,62 @@ setMethod("split",signature("flowSet","ANY"),
           }, simplify=FALSE)
       })
 
+compatibleFilters <- function(f1, f2)
+{
+    if(class(f1) != class(f2))
+        stop("Classes of filters don't match:\n", class(f1), " vs. ",
+             class(f2), call.=FALSE)
+    if(is(f1, "filterResult")){
+        ff1 <- f1@filterDetails[[1]]$filter
+        ff2 <- f2@filterDetails[[1]]$filter
+        if(class(ff1) != class(ff2))
+            stop("Classes of filters don't match:\n", class(ff1), " vs. ",
+                 class(ff2), call.=FALSE)
+        if(!(all(parameters(ff1) == parameters(ff2))))
+            stop("Classes of filters don't match:\n",
+                 paste(parameters(ff1), collapse=", "), " vs. ",
+                 paste(parameters(ff2), collapse=", "), call.=FALSE)
+    }
+}
+
 ## split a flowSet according to a list of filters or filterResults
 ## of equal length
 setMethod("split",signature("flowSet","list"),
           function(x, f, drop=FALSE, population=NULL,
                    prefix=NULL, flowSet=FALSE, ...)
       {
+          ## A lot of sanity checking up front
           sample.name <- sampleNames(x)
           lf <- length(f)
           lx <- length(x)
           if(lf!=lx)
               stop("list of filterResults or filters must be same",
                    "length as flowSet")
-          if(!all(sapply(f, is, "filterResult") | sapply(f, is, "filter")))
+          if(!all(sapply(f, is, "filter")))
               stop("Second argument must be list of filterResults or filters")
-          res <- vector(mode="list", length=lf)
-          for(i in 1:lf){
-              l <- split(x[[i]], f[[i]], drop, population,
-                                prefix, flowSet=flowSet,...)
-              names(l) <- paste(names(l), "in", sample.name[i])
-              res[[i]] <- l
+          lapply(f, compatibleFilters,  f[[1]])
+          ## split everything or just some populations (if multipleFilterResult)
+          if(is.null(population))
+              if(!is.null(names(f[[1]])))
+                  population <- names(f[[1]])
+              else
+                  population <- 1
+          finalRes <- vector(mode="list", length=length(population))
+          names(finalRes) <- population
+          for(p in population){
+              res <- vector(mode="list", length=lf)
+              for(i in 1:lf){
+                  l <- split(x[[i]], f[[i]], population=p,
+                             prefix, flowSet=FALSE, ...)
+                  res[[i]] <- l[[1]]
+                  names(res)[i] <- paste(names(l), "in", sample.name[i])
+              }
+              if(flowSet)
+                  finalRes[[p]] <- flowSet(res)
+              else
+                  finalRes[[p]] <- res
           }
-          res
+          return(if(length(finalRes)==1) finalRes[[1]] else finalRes)
       })
 
 ## split a flowSet according to a factor, character or numeric 
