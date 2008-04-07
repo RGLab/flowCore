@@ -11,6 +11,14 @@ setMethod("%in%",signature(x="flowFrame",table="quadGate"),
           })
 
 
+setMethod("summarizeFilter",signature("filterResult","quadGate"),
+          function(result,filter) {
+	ret = callNextMethod()
+	ret$populations = levels(result@subSet)
+	ret
+})
+
+
 
 ## ==========================================================================
 ## show method for quadGates

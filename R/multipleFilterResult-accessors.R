@@ -17,26 +17,35 @@ setMethod("summary","multipleFilterResult",function(object,...) {
 
 
 ## ==========================================================================
-## length method
+## length method, how many populations do we have?
 ## ---------------------------------------------------------------------------
 setMethod("length","multipleFilterResult",function(x) nlevels(x@subSet))
 
 
+
 ## ==========================================================================
-## names method
+## names method, the levels of the subSet factor
 ## ---------------------------------------------------------------------------
 setMethod("names","multipleFilterResult",function(x) levels(x@subSet))
 
 
 ## ==========================================================================
-## subsetting method
+## subsetting method: we create a new logicalFilterResult if the index is
+## of length one, otherwise we subset our multipleFilterResult directly
 ## ---------------------------------------------------------------------------
 setMethod("[[",signature("multipleFilterResult"),function(x,i,j,drop=FALSE) {
-	if(is.numeric(i)) i = names(x)[i]
-	if(length(i)!=1)
-		stop("Only a single subpopulation can be selected.")
-	filterDetails = x@filterDetails
-	filterDetails$population = i
-	new("logicalFilterResult",subSet=(x@subSet==i & !is.na(x@subSet)),filterDetails=filterDetails,
-		frameId=x@frameId,filterId=paste(x@filterId,"[[",i,"]]",sep=""))
-})
+	if(is.numeric(i))
+            i <- names(x)[i]
+        filterDetails <- x@filterDetails
+        filterDetails$population <- i
+	if(length(i)!=1){
+           x@subSet <- factor(x@subSet[x@subSet %in% i & !is.na(x@subSet)])
+           x@filterDetails <- filterDetails
+           return(x)
+       }else{
+           new("logicalFilterResult",subSet=(x@subSet==i & !is.na(x@subSet)),
+               filterDetails=filterDetails,
+               frameId=x@frameId, filterId=paste(x@filterId,"[[",i,"]]",
+                                  sep=""))
+       }
+    })
