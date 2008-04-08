@@ -92,6 +92,7 @@ exportMethods("initialize",
               "sort",
               "sampleNames<-",
               "pData",
+              "pData<-",
               "range",
               "head",
               "tail")

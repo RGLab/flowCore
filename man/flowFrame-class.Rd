@@ -39,19 +39,13 @@
 \alias{range}
 \alias{range,flowFrame-method}
 \alias{transform,flowFrame-method}
-\alias{split}
-\alias{split,flowFrame,ANY-method}
-\alias{split,flowFrame,filter-method}
-\alias{split,flowFrame,filterSet-method}
-\alias{split,flowFrame,logicalFilterResult-method}
-\alias{split,flowFrame,multipleFilterResult-method}
-\alias{split,flowFrame,manyFilterResult-method}
-\alias{split,flowFrame,factor-method}
-\alias{Subset,flowFrame-method}
-\alias{Subset,flowFrame,logical-method}
 \alias{compensate,flowFrame,matrix-method}
 \alias{==,flowFrame,filterResult-method}
 \alias{==,flowFrame,flowFrame-method}
+\alias{<,flowFrame,ANY-method}
+\alias{<=,flowFrame,ANY-method}
+\alias{>,flowFrame,ANY-method}
+\alias{>=,flowFrame,ANY-method}
 \alias{spillover,flowFrame-method}
 
 
@@ -111,10 +105,10 @@
     
     \item{\code{parameters}:}{An
       \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
-      containing information about each column of the flowFrame. This
-      will generally be filled in by \code{read.FCS} or similar
-      functions using data from the \acronym{FCS} keywords describing
-      the parameters.}
+      containing information about each column of the
+      \code{flowFrame}. This will generally be filled in by
+      \code{read.FCS} or similar functions using data from the
+      \acronym{FCS} keywords describing the parameters.}
     
     \item{\code{description}:}{A list containing the meta data included
       in the FCS file.}
@@ -162,7 +156,7 @@
       intensities. The replacement value must be a numeric matrix with
       colnames matching the parameter definitions. Implicit subsetting
       is allowed (i.e. less columns in the replacement value compared to
-      the original flowFrame, but all have to be defined there).
+      the original \code{flowFrame}, but all have to be defined there).
 
       \emph{Usage:}
       
@@ -197,12 +191,12 @@
       
     }
 
-    \item{keyword}{Extract one or more entries from the
-      \code{description} slot by keyword. Methods are defined for
-      character vectors (select a keyword by name), functions (select a
-      keyword by evaluating a function on their content) and for lists
-      (a combination of the above). See \code{\link{keyword}} for
-      details.
+    \item{keyword, keyword<-}{Extract ore replace one or more entries
+      from the \code{description} slot by keyword. Methods are defined
+      for character vectors (select a keyword by name), functions
+      (select a keyword by evaluating a function on their content) and
+      for lists (a combination of the above). See \code{\link{keyword}}
+      for details.
       
       \emph{Usage:}
 
@@ -285,7 +279,7 @@
 
     }
 
-    \item{featureNames, colnames}{Extract parameter names (i.e., the
+    \item{featureNames, colnames, colnames<-}{Extract parameter names (i.e., the
       colnames of the data matrix). \code{colnames} and
       \code{featureNames} are synonymes. For \code{colnames} there is
       also a replacement method. This will update the \code{name} column
@@ -359,8 +353,8 @@
     }
     
     \item{filter}{Apply a \code{\linkS4class{filter}} object on a
-      \code{\linkS4class{flowFrame}} object. This returns an object of
-      class \code{\link{filterResult}}, which could then be used for
+      \code{flowFrame} object. This returns an object of class
+      \code{\link{filterResult}}, which could then be used for
       subsetting of the data or to calculate summary statistics. See
       \code{\link{filter}} for details.
 
@@ -373,8 +367,9 @@
     \item{split}{Split \code{flowFrame} object according to a
       \code{\link{filter}}, a \code{\link{filterResult}} or a
       \code{factor}. For most types of filters, an optional
-      \code{flowSet=TRUE} parameter will create a \code{flowSet} rather
-      than a simple list.
+      \code{flowSet=TRUE} parameter will create a
+      \code{\linkS4class{flowSet}} rather than a simple list. See
+      \code{\link{split}} for details.
 
       \emph{Usage:}
       
@@ -386,10 +381,10 @@
 
     }
     
-    \item{Subset}{Subset a flowFrame according to a \code{filter} or a
-      logical vector. The same can be done using the standard subsetting
-      operator with a \code{filter}, \code{filterResult}, or a logical
-      vector as first argument.
+    \item{Subset}{Subset a \code{flowFrame} according to a \code{filter}
+      or a logical vector. The same can be done using the standard
+      subsetting operator with a \code{filter}, \code{filterResult}, or
+      a logical vector as first argument.
 
       \emph{Usage:}
       
@@ -418,6 +413,9 @@
     }
     
     \item{==}{Test equality between two \code{flowFrames}}
+
+    \item{<, >, <=, >=}{These operators basically treat the
+    \code{flowFrame} as a numeric matrix.}
     
   }
 }
