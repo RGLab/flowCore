@@ -23,7 +23,7 @@
 
 \description{
   
-  This function links filter descriptions to a particular set of flow
+  These methods link filter descriptions to a particular set of flow
   cytometry data allowing for the lightweight calculation of summary
   statistics common to flow cytometry analysis.
 
@@ -32,6 +32,7 @@
 \usage{
 filter(x,filter,...)
 }
+
 \arguments{
   
   \item{x}{Object of class \code{\linkS4class{flowFrame}} or
@@ -81,5 +82,6 @@ filter(x,filter,...)
  summary(filter(samp,rectGate))
 
 }
+
 \keyword{methods}  
 

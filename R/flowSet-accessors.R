@@ -67,9 +67,9 @@ setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
           x@colnames)
 
 
-## fixme: should we make sure that parameter names are changed for each frame?
+## FIXME: should we make sure that parameter names are changed for each frame?
 setReplaceMethod("colnames","flowSet",function(x,value) {
-	x@colnames = value
+	x@colnames <- value
 	x
 })
 
@@ -99,7 +99,15 @@ setMethod("phenoData<-","flowSet",function(object,value) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("pData","flowSet",function(object) pData(object@phenoData))
 
-
+setReplaceMethod("pData",
+                 signature("flowSet", "data.frame"),
+                 function(object,value)
+             {
+                 pd <- phenoData(object)
+                 pData(pd) <- value
+                 phenoData(object) <- pd
+                 object
+             })
 
 ## ==========================================================================
 ## set and extract the varLabels of the phenoData
@@ -126,16 +134,24 @@ setReplaceMethod("varLabels",
 setMethod("sampleNames", "flowSet", function(object) 
        sampleNames(phenoData(object)))
 
+## Note that the replacement method also replaces the GUID for each flowFrame
 setReplaceMethod("sampleNames","flowSet",function(object,value)
              {
                  oldNames <- sampleNames(object)
+                 value <- as.character(value)
                  if(length(oldNames)!=length(value) ||
                     !is.character(value))
                      stop(" replacement values must be character vector ",
-                          "of length equal to number of frames in the set'")
+                          "of length equal to number of frames in the set'",
+                          call.=FALSE)
+                 if(any(duplicated(value)))
+                     stop("Replacement values are not unique.", call.=FALSE)
                  env <- new.env(hash=TRUE,parent=emptyenv())
-                 for(f in seq_along(oldNames))
-                     assign(value[f], get(oldNames[f], object@frames), env)
+                 for(f in seq_along(oldNames)){
+                     tmp <- get(oldNames[f], object@frames)
+                     identifier(tmp) <- value[f]
+                     assign(value[f], tmp, env)
+                 }
                  pd <- phenoData(object)
                  sampleNames(pd) <- value
                  object@phenoData <- pd
@@ -284,105 +300,6 @@ setMethod("filter",signature(x="flowSet",filter="list"),
 
 
 
-## ==========================================================================
-## split methods
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## split a flowSet by a single filter
-setMethod("split",signature("flowSet","ANY"),
-          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
-                   flowSet=FALSE, ...)
-      {
-          ## Split always returns a list
-          sample.name <- sampleNames(x)
-          fsApply(x,function(y) {
-              l <- split(y, f, drop, population, prefix, flowSet=flowSet, ...)
-              names(l) <- paste(names(l), "in", sample.name[1])
-              sample.name <<- sample.name[-1]
-              l
-          }, simplify=FALSE)
-      })
-
-compatibleFilters <- function(f1, f2)
-{
-    if(class(f1) != class(f2))
-        stop("Classes of filters don't match:\n", class(f1), " vs. ",
-             class(f2), call.=FALSE)
-    if(is(f1, "filterResult")){
-        ff1 <- f1@filterDetails[[1]]$filter
-        ff2 <- f2@filterDetails[[1]]$filter
-        if(class(ff1) != class(ff2))
-            stop("Classes of filters don't match:\n", class(ff1), " vs. ",
-                 class(ff2), call.=FALSE)
-        if(!(all(parameters(ff1) == parameters(ff2))))
-            stop("Classes of filters don't match:\n",
-                 paste(parameters(ff1), collapse=", "), " vs. ",
-                 paste(parameters(ff2), collapse=", "), call.=FALSE)
-    }
-}
-
-## split a flowSet according to a list of filters or filterResults
-## of equal length
-setMethod("split",signature("flowSet","list"),
-          function(x, f, drop=FALSE, population=NULL,
-                   prefix=NULL, flowSet=FALSE, ...)
-      {
-          ## A lot of sanity checking up front
-          sample.name <- sampleNames(x)
-          lf <- length(f)
-          lx <- length(x)
-          if(lf!=lx)
-              stop("list of filterResults or filters must be same",
-                   "length as flowSet")
-          if(!all(sapply(f, is, "filter")))
-              stop("Second argument must be list of filterResults or filters")
-          lapply(f, compatibleFilters,  f[[1]])
-          ## split everything or just some populations (if multipleFilterResult)
-          if(is.null(population))
-              if(!is.null(names(f[[1]])))
-                  population <- names(f[[1]])
-              else
-                  population <- 1
-          finalRes <- vector(mode="list", length=length(population))
-          names(finalRes) <- population
-          for(p in population){
-              res <- vector(mode="list", length=lf)
-              for(i in 1:lf){
-                  l <- split(x[[i]], f[[i]], population=p,
-                             prefix, flowSet=FALSE, ...)
-                  res[[i]] <- l[[1]]
-                  names(res)[i] <- paste(names(l), "in", sample.name[i])
-              }
-              if(flowSet)
-                  finalRes[[p]] <- flowSet(res)
-              else
-                  finalRes[[p]] <- res
-          }
-          return(if(length(finalRes)==1) finalRes[[1]] else finalRes)
-      })
-
-## split a flowSet according to a factor, character or numeric 
-setMethod("split",signature("flowSet","factor"),
-          function(x,f,drop=FALSE,population=NULL,
-                   prefix=NULL,flowSet=FALSE,...)
-      {
-          if(!is.atomic(f) || length(f)!=length(x))
-              stop("split factor must be same length as flowSet") 
-          gind <- split(1:length(f), f)
-          res <- vector(mode="list", length=length(gind))
-          for(g in seq_along(gind))
-              res[[g]] <- x[gind[[g]]]
-          return(res)
-      })
-setMethod("split",signature("flowSet","numeric"),
-          function(x,f,drop=FALSE,population=NULL,
-                   prefix=NULL,flowSet=FALSE,...)
-          split(x, factor(f)))
-setMethod("split",signature("flowSet","character"),
-          function(x,f,drop=FALSE,population=NULL,
-                   prefix=NULL,flowSet=FALSE,...)
-          split(x, factor(f)))
-
-
 
 
 ## ==========================================================================
@@ -526,3 +443,13 @@ setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",
 })
 
 
+
+
+## ==========================================================================
+## summary method for flowSet
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("summary", signature("flowSet"), 
+    function(object, ...) 
+        fsApply(object, function(x) apply(exprs(x), 2, summary),
+                simplify=FALSE)
+ )

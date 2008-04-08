@@ -157,36 +157,47 @@ setAs("list","filterSet",function(from) {
 ## ==========================================================================
 ## Coerce method: Convert an environment to a flowSet.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setAs("environment","flowSet",function(from) {
-    frameList  = ls(env=from)
-    isFrame    = sapply(frameList,function(f) is(get(f,env=from),"flowFrame"))
-    if(!all(isFrame))
-      warning("Some symbols are not flowFrames.",
-              "They will be ignored but left intact.")
-    ## If specified, remove extraneous symbols from the environment
-    ## before continuing
-    frameList = frameList[isFrame]
+setAs("environment",
+      signature("flowSet"),
+      function(from) {
+          frameList <- ls(env=from)
+          isFrame <- sapply(frameList, function(f) is(get(f,env=from), "flowFrame"))
+          if(!all(isFrame))
+              warning("Some symbols are not flowFrames.",
+                      "They will be ignored but left intact.")
+          ## If specified, remove extraneous symbols from the environment
+          ## before continuing
+          frameList <- frameList[isFrame]
     
-    ##Check the column names
-    colNames = sapply(frameList,function(f) colnames(from[[f]]))
-    if(is.null(dim(colNames)))
+          ## Check the column names
+          colNames <- sapply(frameList, function(f) colnames(from[[f]]))
+          if(is.null(dim(colNames)))
         dim(colNames) <- c(ncol(from[[frameList[[1]]]]), length(frameList))
-    if(!all(apply(colNames,2,"==",colNames[,1])))
-        stop("Column names for all frames do not match.")
-    new("flowSet",frames=from,colnames = colNames[,1],
-        phenoData=new("AnnotatedDataFrame",
-        data=data.frame(name=I(frameList),row.names=frameList),
-        varMetadata=data.frame(labelDescription="Name",row.names="name")))
-})
+          if(!all(apply(colNames, 2, "==", colNames[,1])))
+              stop("Column names for all frames do not match.")
+          new("flowSet", frames=from, colnames=colNames[,1],
+              phenoData=new("AnnotatedDataFrame",
+              data=data.frame(name=I(frameList), row.names=frameList),
+              varMetadata=data.frame(labelDescription="Name", row.names="name")))
+      })
 
 ## ==========================================================================
-## Convert a list to a flowSet by creating an environment and coerce THAT
+## Convert a list to a flowSet by creating an environment and coerce THAT,
+## We have to trick around the fact that environments are not ordered, hence
+## the flowFrames get shuffeld around...
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setAs("list","flowSet",function(from) {
-    if(is.null(names(from)))
-        names(from) = paste("V",seq(1,length(from)),sep="")
-    as(l2e(from,new.env(hash=T,parent=emptyenv())),"flowSet")
-})
+setAs("list",
+      signature("flowSet"),
+      function(from) {
+          if(is.null(names(from)))
+              names(from) = paste("V", seq(1, length(from)), sep="")
+          orig.sampleNames <- names(from)
+          names(from) <- paste(sprintf("%0.6d", seq_along(from)), names(from),
+                               sep="_")
+          res <- as(l2e(from, new.env(hash=T, parent=emptyenv())), "flowSet")
+          sampleNames(res) <- orig.sampleNames
+          res
+      })
 
 ## ==========================================================================
 ## Convert a flowSet to a list

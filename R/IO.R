@@ -422,9 +422,9 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                       debug=debug,  column.pattern=column.pattern,
                       decades=decades)
     ## Allows us to specify a particular keyword to use as our sampleNames
-    ## rather than requiring the filename be used. This is handy when something
-    ## like SAMPLE ID is a more reasonable choice. Sadly reading the flowSet is
-    ## a lot more insane now.
+    ## rather than requiring the GUID or the filename be used. This is handy
+    ## when something like SAMPLE ID is a more reasonable choice.
+    ## Sadly reading the flowSet is a lot more insane now.
     if(!missing(name.keyword))
         names(flowSet) <- sapply(flowSet,keyword,name.keyword)
     else
@@ -454,6 +454,17 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                  varMetadata=data.frame(labelDescription=I(descriptions),
                  row.names=field.names))
     }
+    ## finally decide on which names to use for the sampleNames, but retain the
+    ## original GUIDs in case there are some
+    guids <- unlist(fsApply(flowSet, identifier))
+    if(any(guids=="anonymous") || !missing(name.keyword))
+        guids <- sampleNames(flowSet)
+    if("GUID" %in% names(description(flowSet[[1]])))
+        flowSet <- fsApply(flowSet, function(x){
+            keyword(x) <- c(GUID.original=as.character(keyword(x, "GUID")))
+            x
+        })
+    sampleNames(flowSet) <- guids
     flowSet
 }
 

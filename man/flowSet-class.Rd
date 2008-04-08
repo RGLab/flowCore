@@ -8,11 +8,9 @@
 \alias{[[,flowSet-method}
 \alias{[[,flowSet,ANY-method}
 \alias{[[<-,flowSet-method}
-\alias{Subset,flowSet,ANY}
 \alias{fsApply,flowSet-method}
 \alias{show,flowSet-method}
 \alias{length,flowSet-method}
-\alias{pData,flowSet-method}
 \alias{colnames,flowSet-method}
 \alias{colnames<-,flowSet-method}
 \alias{sampleNames,flowSet-method}
@@ -21,24 +19,20 @@
 \alias{phenoData<-,flowSet,ANY-method}
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{pData,flowSet-method}
+\alias{pData<-,flowSet,data.frame-method}
 \alias{varLabels,flowSet-method}
 \alias{varLabels<-,flowSet-method}
 \alias{varLabels<-,flowSet,ANY-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
-\alias{split,flowSet,ANY-method}
-\alias{split,flowSet,list-method}
-\alias{split,flowSet,factor-method}
-\alias{split,flowSet,numeric-method}
-\alias{split,flowSet,character-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
 \alias{rbind2,flowSet,flowSet,missing-method}
 \alias{rbind2,flowSet,flowFrame-method}
 \alias{rbind2,flowFrame,flowSet-method}
 \alias{rbind2,flowSet,missing-method} 
-\alias{Subset,flowSet,list-method}
+\alias{summary,flowSet-method}
 
 
 
@@ -46,7 +40,7 @@
 quantitative cell-based assays}
 
 \description{This class is a container for a set of
-  \code{\link[flowCore]{flowFrame}} objects}
+  \code{\linkS4class{flowFrame}} objects}
 
 
 \section{Creating Objects}{
@@ -100,6 +94,7 @@ quantitative cell-based assays}
   }
 }
 
+
 \section{Methods}{
   
   \describe{
@@ -108,7 +103,7 @@ quantitative cell-based assays}
       returns a \code{flowSet} object, and \code{x[[i]]} a
       \code{\linkS4class{flowFrame}} object. In this respect the
       semantics are similar to the behavior of the subsetting operators
-      for lists. \code{x[i, j]} returns a code{flowSet} for which the
+      for lists. \code{x[i, j]} returns a \code{flowSet} for which the
       parameters of each \code{\linkS4class{flowFrame}} have been subset
       according to \code{j}, \code{x[[i,j]]} returns the subset of a
       single \code{\linkS4class{flowFrame}} for all parameters in
@@ -153,16 +148,19 @@ quantitative cell-based assays}
       
     }
     
-    \item{pData}{Extract data frame containing actual phenotypic
-      information from the \code{phenoData} slot.
+    \item{pData, pData<-}{Extract or replace the data frame (or columns
+      thereof) containing actual phenotypic information from the
+      \code{phenoData} slot.
       
       \emph{Usage:}
       
       \code{   pData(flowSet)}
+
+      \code{   pData(flowSet)$someColumn <- value}
       
     }
     
-    \item{varLabels}{ Extract and set varLabels in the
+    \item{varLabels, varLabels<-}{ Extract and set varLabels in the
       \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
       of the \code{phenoData} slot.
       
@@ -176,7 +174,9 @@ quantitative cell-based assays}
     
     \item{sampleNames}{Extract and replace sample names from the
       \code{phenoData} object. Sample names correspond to frame
-      identifiers.
+      identifiers, and replacing them will also replace the \code{GUID}
+      slot for each frame. Note that \code{sampleName} need to be
+      unique.
       
       \emph{Usage:}
       
@@ -205,6 +205,17 @@ quantitative cell-based assays}
     }
     
     \item{show}{display object summary.}
+
+     \item{summary}{Return descriptive statistical summary (min, max,
+      mean and quantile) for each channel of each
+      \code{\linkS4class{flowFrame}}
+
+      \emph{Usage:}
+      
+      \code{   summary(flowSet)}
+      
+    }
+    
     
     \item{fsApply}{Apply a function on all frames in a \code{flowSet}
       object. Similar to \code{\link{sapply}}, but with additional
@@ -252,14 +263,16 @@ quantitative cell-based assays}
     }
     
     \item{split}{Split all \code{flowSet} objects according to a
-      \code{\link{filter}}, \code{\link{filterResult}} or a list of
-      such objects, where the length of the list has to be the same as
-      the length of the \code{flowSet}. This always returns a list of
-      \code{\linkS4class{flowFrame}}s. Alternatively, a \code{flowSet}
-      can be split according to a factor (or any vector that can be
+      \code{\link{filter}}, \code{\link{filterResult}} or a list of such
+      objects, where the length of the list has to be the same as the
+      length of the \code{flowSet}. This returns a list of
+      \code{\linkS4class{flowFrame}}s or an object of class
+      \code{flowSet} if the \code{flowSet} argument is set to
+      \code{TRUE}. Alternatively, a \code{flowSet} can be split into
+      separate subsets according to a factor (or any vector that can be
       coerced into factors), similar to the behaviour of
       \code{\link[base]{split}} for lists. This will return a list of
-      \code{flowSet}s.
+      \code{flowSet}s. See \code{\link{split}} for details.
       
       \emph{Usage:}
       
@@ -306,6 +319,8 @@ quantitative cell-based assays}
     }
   }
 }
+
+
 
 \section{Important note on storage and performance}{
   

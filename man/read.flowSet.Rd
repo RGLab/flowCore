@@ -13,28 +13,45 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
 }
 
 \arguments{
+  
   \item{files}{Optional character vector with filenames.}
+  
   \item{path}{Directory where to look for the files.}
+  
   \item{pattern}{This argument is passed on to \code{\link[base]{dir}},
     see details. }
+  
   \item{phenoData}{An object of class \code{AnnotatedDataFrame},
     \code{character} or a list of values to be extracted from the
     \code{\link[flowCore]{flowFrame}} object, see
     details.}
+  
   \item{descriptions}{Character vector to annotate the object of class
     \code{\link{flowSet-class}{flowSet}}.}
+  
   \item{name.keyword}{An optional character vector that specifies which
-    FCS keyword to use as the sample names.}
+    FCS keyword to use as the sample names. If this is not set, the GUID
+    of the FCS file is used for sampleNames, and if that is not present
+    (or not unique), then the file names are used. }
+  
   \item{alter.names}{see \code{\link{read.FCS}} for details.}
+  
   \item{transformation}{see \code{\link{read.FCS}} for details.}
+  
   \item{which.lines}{see \code{\link{read.FCS}} for details.}
+  
   \item{debug}{see \code{\link{read.FCS}} for details.}
+  
   \item{column.pattern}{see \code{\link{read.FCS}} for details.}
+  
   \item{decades}{see \code{\link{read.FCS}} for details.}
+  
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}.}
+  
   \item{\dots}{Further arguments that get passed on to
     \code{\link[flowCore]{read.AnnotatedDataFrame}}, see details.}
+  
 }
 
 \details{There are four different ways to specify the file from which

@@ -117,7 +117,7 @@ setClass("flowSet",
          })
 
 ## constructor
-flowSet <- function(...,phenoData) {
+flowSet <- function(..., phenoData) {
     x <- list(...)
     if(length(x) == 1 && is.list(x[[1]]))
         x <- x[[1]]
