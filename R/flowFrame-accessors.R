@@ -227,48 +227,16 @@ setMethod("show",signature=signature("flowFrame"),
 
 
 
-## ==========================================================================
-## a simple plot method without strange plot parameter and friends. It does
-## the most intuitive thing: take a flowFrame and do a pairs plot if there
-## are more than 2 parameters. Do a smoothScatter plot for exactly 2
-## parameters and a histogram for exactly one.
-## If you want to plot specific columns, subset the frame before
-## plotting or specify them in the y argument.
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## only one argument: the flowFrame
-setMethod("plot", signature(x="flowFrame", y="missing"),
-          definition=function(x, smooth=TRUE, pch, ...)
-      {
-          l = ncol(x)
-          values=exprs(x)
-          if(missing(pch))
-              pch="."
-          if(l==1)
-              hist(values, xlab=colnames(x), ...)
-          else if (l==2){
-              if(smooth)
-                  smoothScatter(values, pch=pch, ...)
-              else
-                  plot(values, pch=pch, ...)
-          }else{
-              sel <- tolower(colnames(x)) != "time"
-              if(smooth){
-                  require(flowViz)
-                  plot(splom(x[,sel], pch=pch, ...))
-              }
-              else
-                  pairs(values[,sel], pch=pch, ...)
-          }
-      })
 
-## second argument contains the parameters(s) to plot
-setMethod("plot",signature(x="flowFrame",y="character"),
-          function(x,y, smooth=TRUE, ...){
-              if(!all(y %in% colnames(x)))
-                  stop("subset out of bounds", call.=FALSE)
-              callGeneric(x[,y], smooth=smooth, ...)
+## ==========================================================================
+## plot method: We actually attach flowViz to do the plotting
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("plot", signature(x="flowFrame", y="ANY"),
+          function(x, y, ...)
+      {
+          message("For plotting, please attach the 'flowViz' package.\n",
+                  "   e.g. 'library(flowViz)'")
       })
-         
 
 
 

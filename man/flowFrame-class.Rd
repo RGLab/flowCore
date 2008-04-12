@@ -17,11 +17,9 @@
 \alias{description<-,flowFrame,list-method}
 \alias{description<-,flowFrame,ANY-method}
 \alias{show,flowFrame-method}
+\alias{plot,flowFrame,ANY-method}
+\alias{plot,flowFrame-method}
 \alias{summary,flowFrame-method}
-\alias{plot}
-\alias{plot,flowFrame,missing-method}
-\alias{plot,flowFrame,character-method}
-\alias{plot,flowFrame,filter-method}
 \alias{ncol}
 \alias{ncol,flowFrame-method}
 \alias{nrow}
@@ -249,7 +247,7 @@
       more than two parameters we produce a simple
       \code{\link[lattice]{splom}} plot. To select specific parameters
       from a \code{flowFrame} for plotting, either subset the object or
-      specifiy the parameters as a character vector in the second
+      specify the parameters as a character vector in the second
       argument to \code{plot}. The smooth parameters lets you toggle
       between density-type
       \code{\link[geneplotter:smoothscatter]{smoothScatter}} plots and
@@ -478,9 +476,12 @@ summary(frame)
 
 ## plotting
 plot(frame)
+if(require(flowViz)){
+plot(frame)
 plot(frame, c("FSC-H", "SSC-H"))
 plot(frame[,1])
 plot(frame, c("FSC-H", "SSC-H"), smooth=FALSE)
+}
 
 ## frame dimensions
 ncol(frame)
@@ -510,8 +511,10 @@ head(each_col(frame, mean))
 
 ## transformation
 opar <- par(mfcol=c(1:2))
+if(require(flowViz))
 plot(frame, c("FL1.H", "FL2.H"))
 frame <- transform(frame, FL1.H=log(`FL1.H`), FL2.H=log(`FL2.H`))
+if(require(flowViz))
 plot(frame, c("FL1.H", "FL2.H"))
 par(opar)
 range(frame)

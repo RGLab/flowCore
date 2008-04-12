@@ -239,11 +239,12 @@ Much of the more sophisticated visualization of \Rclass{flowFrame} and
 \Rclass{flowSet} objects, including an interface to the
 \Rpackage{lattice} graphics system is implemented by the
 \Rpackage{flowViz} package, also included as part of
-Bioconductor. However, \Rpackage{flowCore} does implement some basic
-plotting facilities using the standard \Rfunction{plot} function. The
-basic plot provides a simple pairs plot of all parameters:
+Bioconductor. Here, we will only introduce the standard
+\Rfunction{plot} function. The basic plot provides a simple pairs plot
+of all parameters:
 
 <<Plot1, fig=true, echo=true>>=
+library(flowViz)
 plot(x)
 @
 

@@ -116,34 +116,3 @@ setMethod("!",signature("filter"),function(x) {
 ## --------------------------------------------------------------------------
 "%&%" = function(e1,e2) e1 %subset% e2
 
-## ==========================================================================
-## Plotting method for filters lets us get a basic plot of the data and a 
-## filter. Uses the draw method to actually display the filter on some data.
-## --------------------------------------------------------------------------
-setMethod("plot",signature(x="flowFrame", y="filter"),function(x, y, z=NULL, results=NULL, ...) {
-    if(is.null(z))	z = parameters(y)
-    if(length(z)>2) {
-        warning("Only plotting the first two parameters.")
-        z = z[1:2]
-    }
-    ##First we plot the actual data.
-    plot(x, z, ...)
-    ##Then draw the filter on top of it which takes the form (filter, data, params, results (if any))
-    draw(y, x, z, results, ...)
-})
-
-setMethod("draw", signature("filter","flowFrame"), function(x, data, params=NULL, results=NULL, ...) {
-	if(is.null(params))
-          params = parameters(x)
-	if(length(params)>2) {
-		params = params[1:2]
-	}
-        if(is(x,"rectangleGate")){
-          lines(c(x@min[params[2]], x@min[params[2]]), c(x@min[params[1]], x@max[params[1]]), col="red", ...)
-          lines(c(x@min[params[1]], x@min[params[1]]), c(x@min[params[2]], x@max[params[2]]), col="red", ...)
-      }
-        if(is(x,"polygonGate") | is(x,"polytopeGate"))
-          lines(x@boundaries[,params[1]], x@boundaries[,params[2]], col="red", ...)
-        ##if(is(x, ellipsoidGate))
-          
-})

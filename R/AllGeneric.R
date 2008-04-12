@@ -7,13 +7,6 @@
 
 
 
-
-## ===========================================================================
-## These are already defined as generic functions:
-## ---------------------------------------------------------------------------
-setGeneric("draw",function(x,data,...) standardGeneric("draw"))
-
-
 ## ===========================================================================
 ## Generics for our operators
 ## %in% asks a question whereas %subset% forms a set.
