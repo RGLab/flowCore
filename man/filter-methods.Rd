@@ -9,7 +9,6 @@
 \alias{filter,flowSet,filter-method}
 \alias{filter,flowSet,filterSet-method}
 \alias{filter,flowSet,list-method}
-\alias{draw,filter,flowFrame-method}
 \alias{summary,filter-method}
 \alias{show,filter-method}
 \alias{length,filter-method}
