@@ -273,6 +273,13 @@ which opens the possibility to integrate flowCore in existing work flows and to
 communicate with virtually every other FCM tool that adheres to this standard.
 
 
+{\bf NLM:} Only a couple of commercial software (e.g., FlowJo and
+DeNovo) allows the user to analyse batch of FCS files.  Only a few
+allows export in XML (e.g., FlowJo). Most commercial software require
+a Microsoft Windows platform whereas flowCore runs on multiple
+operating systems including Windows, Mac OS X and Unix.
+
+
 {\bf RB:}  It would be important to highlight
 the differences between flowCore and commercial software packages,
 including in philosophy (open vs. closed source) and interaction
@@ -318,6 +325,8 @@ reflects the still predominant application of tube-based experiments
 rather than experiments following a plate-design. However, the flowSet
 structure can be readily extended to also accommodate such spacial
 information \textit{(reference)}
+
+{\bf NLM:} How about mentioning PlateCore here?
 
 
 \textit{Figure: A diagram of the data structures and the basic
@@ -407,12 +416,26 @@ analysis.
 
 \textit{A diagram of the packages and what they offer}
 
+{\bf NLM:} example: cite flowClust and floViz paper?
+
 \section{Application, Outlook}
 \textit{This is the most important part, we need to show nice examples
   of use cases, limit ourselfs to the basics and show what we can do
   that nobody else can do at the moment. Need at lot of input here
   from everybody. Also for the things that go in here we should
   provide further details in the Supplementary Materials.}
+
+
+{\bf NLM:} We could illustrate/summarize:
+\begin{itemize}
+\item the power of subsetting: for example to manipulate 
+patient below a certain age or of the same sex...
+\item Gating: filterSet strategy, kmeanFilter
+\item visualization adding metadata as parameter
+example: cite flowViz paper
+\end{itemize}
+
+
 
 \bibliographystyle{plainnat}  
 \bibliography{flowCoreRef} 
