@@ -1,17 +1,31 @@
 useDynLib("flowCore",biexponential_transform, inPolygon)
 
-import("methods")
-importFrom("utils", "getFromNamespace", "assignInNamespace", "head", "tail")
-importFrom("MASS", "cov.rob")
-importFrom("geneplotter", "smoothScatter","densCols")
+importFrom(utils,
+           "getFromNamespace",
+           "assignInNamespace",
+           "head",
+           "tail")
 
+importFrom(MASS,
+           "cov.rob")
 
-importFrom("Biobase", "exprs", "exprs<-", "description<-",
-           "phenoData","phenoData<-","multiassign", "sampleNames",
-           "sampleNames<-", "featureNames","featureNames<-", "varLabels",
+importFrom(Biobase,
+           "exprs",
+           "exprs<-",
+           "description<-",
+           "phenoData",
+           "phenoData<-",
+           "multiassign",
+           "sampleNames",
+           "sampleNames<-",
+           "featureNames",
+           "featureNames<-",
+           "varLabels",
            "varLabels<-")
 
-importClassesFrom("Biobase", "eSet")
+importClassesFrom(Biobase,
+                  "eSet",
+                  "AnnotatedDataFrame")
 
 exportClasses("flowFrame",
               "flowSet",
@@ -46,8 +60,7 @@ exportClasses("flowFrame",
               "curv1Filter",
               "quadGate")
 
-exportMethods("initialize",
-              "description",
+exportMethods("description",
               "description<-",
               "phenoData",
               "phenoData<-",
@@ -76,7 +89,6 @@ exportMethods("initialize",
               "filterReference",
               "filterDetails<-",
               "coerce",
-              "coerce<-",
               "rbind2",
               "spillover",
               "compensate",
@@ -97,9 +109,8 @@ exportMethods("initialize",
 
 S3method("$", "flowFrame")
 
-export("%in%") #We define a generic. Is this necessary? I'm thinking not...
-
-export("read.FCS",
+export("%in%",
+       "read.FCS",
        "read.flowSet",
        "read.FCSheader",
        "filterSet",
