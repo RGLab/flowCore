@@ -350,6 +350,11 @@ setMethod("compensate",signature("flowFrame", "matrix"),
       {
           ## Make sure we're normalized to [0,1] and then invert
           cols = colnames(spillover)
+          sel <- cols %in% colnames(x)
+          if(!all(sel))
+              stop("The following parameters in the spillover matrix\n are not",
+                   " present in the flowFrame:\n",
+                   paste(cols[!sel], collapse=", "), call.=FALSE)
           e    = exprs(x)
           if(inv)
               e[,cols] = e[,cols]%*%solve(spillover/max(spillover))
