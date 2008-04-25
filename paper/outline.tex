@@ -373,7 +373,7 @@ first-class citizens in the analysis framework, without breaking the
 workflow or the basic infrastructure. This design allows for the
 straight forward extension of flowCore's capabilities and already
 fostered the development of a number of valuable
-improvements. \citep{(flowClust, plateCore)}
+improvements. \citep{lo2008agf} (+plateCore).
 
 
 
@@ -429,8 +429,6 @@ data analysis.
 
 \textit{A diagram of the packages and what they offer}
 
-{\bf NLM:} example: cite flowClust and floViz paper?
-
 \section{Application, Outlook}
 \textit{This is the most important part, we need to show nice examples
   of use cases, limit ourselfs to the basics and show what we can do
@@ -438,15 +436,27 @@ data analysis.
   from everybody. Also for the things that go in here we should
   provide further details in the Supplementary Materials.}
 
+{\bf NLM:} Do we really need supplementary material, can you cite the
+paper and packages's vignette?
 
-{\bf NLM:} We could illustrate/summarize:
-\begin{itemize}
-\item the power of subsetting: for example to manipulate 
-patient below a certain age or of the same sex...
-\item Gating: filterSet strategy, kmeanFilter
-\item visualization adding metadata as parameter
-example: cite flowViz paper
-\end{itemize}
+The flowCore package has already been used to analyze a number of
+datasets \citep{gasparetto2004ice,brinkman2007hcf}. Its concepts have
+also been integrated in other Bioconductor packages. As an example,
+\cite{lo2008agf} have recently proposed an automatic gating approach
+via robust model-based clustering using the flowCore data model as the
+container for the experimental data and some of the concepts as
+clustering methods. The authors have wrapped their clustering method
+in a filter operation and the outcome extends the flowCore
+filterResult class. Most of the methods available for the flowCore
+filterResult class are then available to manipulate the clustering
+result. Similarly, the flowViz package make use of the filter concepts
+to group variables in a display \cite{sarkar2008ufv}. Even more, the
+flowViz plotting functions take advantages of the flowCore data model
+to represent multiple variables within one display. To that aim and to
+list a few, the plotting functions make use of the data structure to
+modify the scale, group, subset, and color the variables.
+
+{\bf NLM:} Should we add some figure or code?
 
 
 
