@@ -167,7 +167,7 @@ think about how we would make that argument.
 
 \maketitle
 
-\section{Introduction}
+\section*{Introduction}
 
 Traditionally, flow cytometry (FCM) has been a tube-based technique
 limited to small-scale laboratory and clinical studies.  High
@@ -288,24 +288,9 @@ underlying R and Bioconductor software and flowCore itself are open
 source and open development projects, thus community involvement in the
 developing process is highly appreciated.
 
-\textit{How does the flow data world look like? Other flow software
-  (what other software are handling multiple FCS files at
-  all). Somebody more familiar with flowJo and friends should add to
-  this...}
-
-{\bf NLM:} Only a couple of commercial software (e.g., FlowJo and
-DeNovo) allows the user to analyse batch of FCS files.  Only a few
-allows export in XML (e.g., FlowJo).
 
 
-{\bf RB:}  It would be important to highlight
-the differences between flowCore and commercial software packages,
-including in philosophy (open vs. closed source) and interaction
-(programmatic data analysis vs. GUI-driven). 
-
-
-
-\section{Basic data structures}
+\section*{Basic data structures}
 \subsection*{flowFrame}
 flowCore's primary task is the representation and basic manipulation
 of flow cytometry data. This is accomplished through a data model very
@@ -349,7 +334,7 @@ spatial information \citep{(plateCore)}
 
 
 
-\section{Standard flow operations}
+\section*{Standard flow operations}
 The basic operations in flow cytometry analysis are almost always the
 same: the data need to be compensated (if not already done on the
 instrument side), often transformed and sup-population of interest
@@ -411,7 +396,7 @@ multi-step gating strategies. The definition of gates in flowCore
 follows the Gating-ML CR, thus any flowCore gating strategy can be
 reproduced by any other software that also adheres to the standard.
 
-\section{Related flow packages}
+\section*{Related flow packages}
 In addition to the flowCore package that offers basic infrastructure,
 we have implemented a range of additional Bioconductor packages that
 are dedicated to more specific tasks of flow cytometry data
@@ -429,34 +414,74 @@ data analysis.
 
 \textit{A diagram of the packages and what they offer}
 
-\section{Application, Outlook}
-\textit{This is the most important part, we need to show nice examples
-  of use cases, limit ourselfs to the basics and show what we can do
-  that nobody else can do at the moment. Need at lot of input here
-  from everybody. Also for the things that go in here we should
-  provide further details in the Supplementary Materials.}
+\section*{Application}
+The flowCore package has already been applied in the analysis of a
+number of datasets \citep{gasparetto2004ice,brinkman2007hcf}, and
+several other Bioconductor packages are making use of its code
+base. As an example, \cite{lo2008agf} have recently proposed an
+automatic gating approach via robust model-based clustering using the
+flowCore data model and infrastructure (implemented in the
+Bioconductor package flowClust). Another package providing more
+specialized support for experiments conducted on microtitre plates is
+currently being developed. The documentation of all of flowCore's
+features is way beyond the scope of this publication. Instead, we
+want to use a single example to demonstrate some of the software's
+hallmarks, that is, the concept of data-driven automated gating, the
+integration of existing software into the framework and the generation
+of publication-quality graphics for data visualization. The data used
+for this example are flow measurements of human T-lymphocytes from 30
+different patients, stained for both the CD4 and CD8 markers.
 
-{\bf NLM:} Do we really need supplementary material, can you cite the
-paper and packages's vignette?
+A very basic matrix of scatterplots is shown in Figure \ref{xyplot},
+where each panel in the matrix represents the data of one individual
+patient. Instead of plotting individual points, the local bivariate
+density of the data is shown as a false color image. For each panel,
+the outlines of the regions identified in the automated gating
+operation described below are added to the plot. The input to the
+plotting function is either a single flow frame or a complete flow set
+object, and all available metadata can be accessed to control the
+appearance and the composition of the plot. Similarily, gate objects
+are directly passed on to the plotting function and are included in
+the plot if possible. Besides the very basic scatterplot shown here,
+there is a wealth of additional data visualizations available in the
+flowViz package\cite{sarkar2008ufv}, all making use of flowCore's data
+models allowing to easily arrange the data according to numerous
+experimental factors. Furthermore, the design and the API of the
+visualization software itself is very generic, and the user can
+readily extend its capabilities by providing self-defined plotting
+functions.
 
-The flowCore package has already been used to analyze a number of
-datasets \citep{gasparetto2004ice,brinkman2007hcf}. Its concepts have
-also been integrated in other Bioconductor packages. As an example,
-\cite{lo2008agf} have recently proposed an automatic gating approach
-via robust model-based clustering using the flowCore data model as the
-container for the experimental data and some of the concepts as
-clustering methods. The authors have wrapped their clustering method
-in a filter operation and the outcome extends the flowCore
-filterResult class. Most of the methods available for the flowCore
-filterResult class are then available to manipulate the clustering
-result. Similarly, the flowViz package make use of the filter concepts
-to group variables in a display \cite{sarkar2008ufv}. Even more, the
-flowViz plotting functions take advantages of the flowCore data model
-to represent multiple variables within one display. To that aim and to
-list a few, the plotting functions make use of the data structure to
-modify the scale, group, subset, and color the variables.
+Static gating for all samples in a high-throughput flow cytometry
+experiment is often not an option, since the measured variables tend
+to vary between different treatments or over time. Automated or
+data-driven gating tries to estimate the gating regions from the
+underlying data, thus providing a fast objective solution to the
+analysis of potentially very large and diverse data sets
+\cite{lo2008agf}. One of the automated gating methods implemented in
+flowCore is based on identifying areas of significant curvature in a
+kernel density estimate of the data (\ref{Wandetal}). Assuming that
+the regions of interest are of high density, the software is able to
+reliably detect them in either the one ore the two-dimensional density
+landscape. Kernel density estimation is a well-known problem in
+statistical computing, and a lot of effort has been invested in the
+development of good software to address it(\ref{Wandetal}). The
+modular design of R, Bioconductor and flowCore allows to easily
+integrate these existing solutions into our framework. Instead of
+re-writing existing code, we are able to include it via the well
+tested distribution mechanism provided by R's software package
+system. This process is bi-directional, and all funtionality
+implemented in flowCore is available to other package authors, as we
+have seen with the afore-mentioned flowClust package.
 
-{\bf NLM:} Should we add some figure or code?
+In developing flowCore, we tried to provided a unified develoment and
+analysis platform for flow-cytometry data. The scope and complexity of
+the technology is evolving rapidly, and a collaborative effort in
+devising new methodolgy has been proven beneficial for a number of
+different biological and computational biology challenges. We hope
+that our framework will be the foundation for fruitful shared research
+by many calloborators from multiple scientific fields, further pushing
+the boundaries of the exiting and still promising flow
+cytometry technology.
 
 
 
