@@ -1,6 +1,8 @@
 \documentclass[12pt]{article}
+\usepackage{graphicx}
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
+
 
 \title{Outline flowCore paper}
 
@@ -268,7 +270,7 @@ programmatically.
 
 The flowCore framework presented here offers import functionality for
 raw data FCS files along with their complete set of file-specific meta
-information.  Moreover, it is one of the very first software
+information (Figure~\ref{fig1:FrameWork}).  Moreover, it is one of the very first software
 implementations of the Gating-ML CR, which opens the possibility to
 integrate flowCore in existing work flows and to communicate with
 virtually every other FCM tool that adheres to the proposed
@@ -326,12 +328,19 @@ structure. In general, there is no native ordering to a flowSet, which
 in a way reflects the still predominant application of tube-based
 experiments rather than experiments following a plate-design. However,
 the flowSet structure can be readily extended to also accommodate such
-spatial information \citep{(plateCore)}
+spatial information [citing plateCore - Any reference here Perry, Errol?]
 
-
-\textit{Figure: A diagram of the data structures and the basic
-  operations (Figure1.ppt)}
-
+%%Figure1 Diagram of the data structures and the basic operations
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Figure1-flowCoreFrameWork.jpg}
+\caption{\label{fig1:FrameWork}{The flowCore frame work.For each experiement,
+  FCS files, phenotypic and meta data can be store in a flowSet. Each
+  flowFrame of a flowSet corresponds to one FCS file.  Any basic
+  operation (compensate, filter, ...) can be applied on a flowSet or a
+  flowFrame.Different summary output can be generated with flowCore or
+  the associated packages.}}
+\end{figure}
 
 
 \section*{Standard flow operations}
@@ -358,14 +367,14 @@ first-class citizens in the analysis framework, without breaking the
 workflow or the basic infrastructure. This design allows for the
 straight forward extension of flowCore's capabilities and already
 fostered the development of a number of valuable
-improvements. \citep{lo2008agf} (+plateCore).
+improvements \citep{lo2008agf, sarkar2008ufv}.
 
 
 
 
 \subsection*{Transformation and compensation}
 Proper transformation have been proven beneficial for both data
-visualization and modelling \textit{cite flowClust paper}. All the
+visualization and modelling \citep{lo2008agf}. All the
 major transformations that are routinely used in flow cytometry
 analysis have been implemented in flowCore. Furthermore, the design of
 the R language makes it easy to define arbitrary functions to apply to
@@ -399,20 +408,30 @@ reproduced by any other software that also adheres to the standard.
 \section*{Related flow packages}
 In addition to the flowCore package that offers basic infrastructure,
 we have implemented a range of additional Bioconductor packages that
-are dedicated to more specific tasks of flow cytometry data
-analysis. The flowViz package provides sophisticated data
-visualization tools, that make use of multivariate trellis
-plotting. These functions can be used to quickly generate customized
-plots for extended cytometry data sets for both direct data inspection
-and quality control. The flowQ package offers more advanced quality
-assurance (QA) methodology and a framework to create interactive
-web-based reports of QA results. Most of flowUtil's content deals with
-data import and output from and to flowCore and the flow-cytometry
-specific standard markup languages. Finally, flowStats provides
-statistical methods that are relevant in the context of flow cytometry
-data analysis.
+are dedicated to more specific tasks of flow cytometry data analysis
+(Figure~\ref{fig2:flowWheel}). The flowViz package provides
+sophisticated data visualization tools, that make use of multivariate
+trellis plotting. These functions can be used to quickly generate
+customized plots for extended cytometry data sets for both direct data
+inspection and quality control. The flowQ package offers more advanced
+quality assurance (QA) methodology and a framework to create
+interactive web-based reports of QA results. Most of flowUtil's
+content deals with data import and output from and to flowCore and the
+flow-cytometry specific standard markup languages. Finally, flowStats
+provides statistical methods that are relevant in the context of flow
+cytometry data analysis.
 
-\textit{A diagram of the packages and what they offer}
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{Figure2-flowWheel-version4.jpg}
+\caption{\label{fig2:flowWheel}{The flowCore Suite: visualization and analysis
+  packages relying on the flowCore data structure.  Dedicated packages
+  have been developped using the flowCore data structure for
+  manipulating the experiemental data: flowViz is a data visualization
+  package; flowQ helps at data quality assessment; flowUtils provides
+  xml parser, flowClust proposes population 
+  filtration using model-based clustering}}
+\end{figure}
 
 \section*{Application}
 The flowCore package has already been applied in the analysis of a
@@ -444,7 +463,7 @@ appearance and the composition of the plot. Similarily, gate objects
 are directly passed on to the plotting function and are included in
 the plot if possible. Besides the very basic scatterplot shown here,
 there is a wealth of additional data visualizations available in the
-flowViz package\cite{sarkar2008ufv}, all making use of flowCore's data
+flowViz package \citep{sarkar2008ufv}, all making use of flowCore's data
 models allowing to easily arrange the data according to numerous
 experimental factors. Furthermore, the design and the API of the
 visualization software itself is very generic, and the user can
@@ -457,21 +476,22 @@ to vary between different treatments or over time. Automated or
 data-driven gating tries to estimate the gating regions from the
 underlying data, thus providing a fast objective solution to the
 analysis of potentially very large and diverse data sets
-\cite{lo2008agf}. One of the automated gating methods implemented in
+\citep{lo2008agf}. One of the automated gating methods implemented in
 flowCore is based on identifying areas of significant curvature in a
-kernel density estimate of the data (\ref{Wandetal}). Assuming that
-the regions of interest are of high density, the software is able to
-reliably detect them in either the one ore the two-dimensional density
-landscape. Kernel density estimation is a well-known problem in
-statistical computing, and a lot of effort has been invested in the
-development of good software to address it(\ref{Wandetal}). The
-modular design of R, Bioconductor and flowCore allows to easily
-integrate these existing solutions into our framework. Instead of
-re-writing existing code, we are able to include it via the well
-tested distribution mechanism provided by R's software package
-system. This process is bi-directional, and all funtionality
-implemented in flowCore is available to other package authors, as we
-have seen with the afore-mentioned flowClust package.
+kernel density estimate of the data
+\citep{wand2008,wand2008_2}. Assuming that the regions of interest are
+of high density, the software is able to reliably detect them in
+either the one ore the two-dimensional density landscape. Kernel
+density estimation is a well-known problem in statistical computing,
+and a lot of effort has been invested in the development of good
+software to address it \citep{wand2008,wand2008_2}. The modular design
+of R, Bioconductor and flowCore allows to easily integrate these
+existing solutions into our framework. Instead of re-writing existing
+code, we are able to include it via the well tested distribution
+mechanism provided by R's software package system. This process is
+bi-directional, and all funtionality implemented in flowCore is
+available to other package authors, as we have seen with the
+afore-mentioned flowClust package.
 
 In developing flowCore, we tried to provided a unified develoment and
 analysis platform for flow-cytometry data. The scope and complexity of
