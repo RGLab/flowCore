@@ -342,12 +342,13 @@ landscape. Kernel density estimation is a well-known problem in
 statistical computing, and a lot of effort has been invested in the
 development of good software to address it. The modular design of R,
 Bioconductor and flowCore allows to easily integrate these existing
-solutions into our framework. Instead of re-writing existing code, we
-are able to include it via the well tested distribution mechanism
-provided by R's software package system. This process is
-bi-directional, and all funtionality implemented in flowCore is
-available to other package authors, as we have seen with the
-afore-mentioned flowClust package.
+solutions into our framework. In this example, we directly use R code
+from the feature package developed by Wand et al. Instead of
+re-writing existing code, we are able to include it via the well
+tested distribution mechanism provided by R's software package
+system. This process is bi-directional, and all funtionality
+implemented in flowCore is available to other package authors, as we
+have seen with the afore-mentioned flowClust package.
 
 In developing flowCore, we tried to provided a unified develoment and
 analysis platform for flow-cytometry data. The scope and complexity of
