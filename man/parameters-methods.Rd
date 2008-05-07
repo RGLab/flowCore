@@ -3,6 +3,7 @@
 \alias{parameters}
 \alias{parameters,flowFrame,missing-method}
 \alias{parameters,filter-method}
+\alias{parameters,filterResult-method}
 \alias{parameters,parameterFilter-method}
 \alias{parameters,setOperationFilter-method}
 \alias{parameters,filterReference-method}
