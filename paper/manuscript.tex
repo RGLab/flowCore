@@ -21,41 +21,57 @@
 \maketitle
 
 \section*{Introduction}
-Traditionally, flow cytometry (FCM) has been a tube-based technique
-limited to small-scale laboratory and clinical studies.  High
-throughput methods for flow cytometry high content screening (FC-HCS)
-have recently been developed and are now used in both basic and
-clinical research. As a result, the need for flexible and well
-structured computational tools to efficiently handle and analyze
-FC-HCS has increased considerably.
-However, the absence of a shared research platform that
-bioinformaticians, computer scientists, and statisticians can collaboratively
-use has hindered the development of novel methods 
-for FCM data analysis \citep{lizard2007fca}.
-We believe that the open source statistical
-software R, in conjunction with the Bioconductor Project can fill this
-gap.  
+During the last several years, automation technologies have been developed
+that enable the use of flow cytometry high content screening (FC-HCS)
+to generate large, complex datasets in both basic and clinical research
+applications \citep{references from Ryan's FC-HCS paper}. A
+serious bottleneck in the intepretation of existing studies and the application of
+FC-HCS to even larger, more complex problems is that data management
+and data analysis methods have not advanced sufficiently far from the
+methods developed for 
+traditional applications of flow cytometry (FCM) to small-scale, tube-based
+studies. 
+
+Some of the consequences of this lag in development are difficulties in 
+maintaining the integrity and documentation of extremely large datasets,
+assessing measurement quality, developing validated assays, assessing the
+accuracy of gating techniques, automating complex gating strategies, and
+aggregating statistical results across large study sets for further analysis.
+Among the most serious consequences of the current situation is, however, 
+that it is very difficult for new analysis
+approaches to find there way into standard practice. We believe that
+this barrier to the development and dissemination of new analysis methods
+is one of the fundamental restraints on the
+future expansion of FC-HCS in both clinical and research applications.
+
+In this paper, we describe a set of flexible and well
+structured computational tools to efficiently analyze
+FC-HCS. This set of tools is based on the open source statistical
+software R, in conjunction with the Bioconductor Project. Our intent
+is to provide a shared research platform that enables
+bioinformaticians, computer scientists, and statisticians to work
+collaboratively with biologists and clinicians to develop novel methods \citep{lizard2007fca} for FCM
+data analysis. A critical component of this approach is the development and implementation
+of standards that will facilitate the adoption of these methods
+by both the larger research community and commercial software vendors.
+Consequently, we are optimistic that this software platform will play a
+critical role in addressing the bottlenecks described above that limit
+further advances in the application of FC-HCS.
+
 %% EAS: I think we mention flowCore before talking about data structures and
 % methods.  We should first say explicity that we have a solution for
 % the missing shared platform.
-We have developed the Bioconductor package flowCore as a freely available,
-sophisticated and extensible FCM data analysis platform that enables
-researchers to efficiently handle FC-HCS data and encourages open
-development of tools for their coherent analysis. 
-%In this paper, we propose R data structures to handle FCM data
-%through the main steps of importing, storing, assessing and
-%preprocessing. 
-%These structures, along with a range of specialized
-%methods for compensation, transformation, gating and additional
-%preprocessing steps, are implemented in the newly developed
-%Bioconductor package flowCore.  flowCore is a freely available,
-%sophisticated and extensible FCM data analysis platform that enables
-%researchers to efficiently handle FC-HCS data and enables open
-%development of new methods and tools for their coherent
-%analysis.
+The computational tools we have developed are distributed in the R 
+software language (www.r-project.org) as the Bioconductor
+(www.bionductor.org) package flowCore. flowCore is a freely available, highly
+functional and extensible FCM data analysis platform that 
+enables researchers to efficiently handle FC-HCS data and encourages open
+development of tools for their coherent analysis. Among the issues
+addressed by flowCore are computationally efficient data structures and
+a range of specialized methods for compensation, transformation, and gating. 
 flowCore runs on Windows, Mac OS X and Linux/Unix operating
-systems.  In this paper, we describe the data structures and methods underlying
-flowCore, and provide examples of their use.
+systems.  In this paper, we describe the functionality and methods underlying flowCore, 
+and provide examples of their use.
 
 
 \subsection*{R and Bioconductor}
@@ -67,11 +83,11 @@ statisticians routinely use to develop novel tools and methodology for
 statistical data analysis. For biological applications, the
 Bioconductor project has become the standard toolset
 \citep{gentleman2006bos} to process data spanning a diversity of
-research fields from genomics to proteomics to complex cell
+research fields from genomics to proteomics to cell
 biology. It is particularly geared towards the analysis of large
 numeric datasets that typically arise from high throughput experiments
 such as microarray gene expression analysis or FC-HCS. A shared
-platform proved to be particularly beneficial for the development of
+platform has proven to be particularly beneficial for the development of
 analysis routines for microarray gene expression data, and by today
 many of these early innovations have been incorporated into commercial
 software products, thus greatly improving the quality of gene
@@ -141,16 +157,19 @@ information (Figure~\ref{fig1:FrameWork}). Moreover, it is a software
 implementation of the Gating-ML CR, which opens the possibility to
 integrate flowCore in existing workflows and to communicate with
 every other FCM tool that adheres to the proposed
-standard. 
+standard. Adherence to standards also plays a critical role in the ability
+of new methods based on flowCore to find there way back into the
+standard practices for FCM data analysis.
 
 flowCore is not a GUI-driven software, and all operations are done
 using a command line interface. Conceptually, it is possible to add a
 more elaborate user interface on top of that, however the focus is on
 a programmatic approach to enable the convenient development of novel
-analysis methods. By taking the burden of data management from the
-programmer, and by providing well-defined APIs and a structured class
+analysis methods and automation of complex analysis approaches. By taking the
+burden of data management from the programmer, and by providing well-defined 
+APIs and a structured class
 hierarchy, it is possible to readily test new ideas and to easily
-extend the frameworks functionality. %Both the underlying R and
+extend the framework's functionality. %Both the underlying R and
 %Bioconductor software and flowCore itself are open source and open %already mentioned its open source
 %development projects, thus community involvement in the developing
 %process is highly appreciated. 
@@ -191,7 +210,7 @@ that occur when using more or less ad hoc spreadsheets that
 lack a controlled structure. There is no native ordering
 to a flow set, which in a way reflects the still predominant
 application of tube-based experiments rather than experiments
-following a plate-design. 
+that depend on automated sample acquisition using a plate-based platform. 
 %% EAS: I don't think the previous sentence is required. Does it 
 %% matter if the flowSet is ordered or not?
 
@@ -389,15 +408,22 @@ system. This process is bi-directional, and all functionality
 implemented in flowCore is available to other package authors, as we
 have seen with the afore-mentioned flowClust package.
 
+\secttion*{Conclusions}
+
 Through flowCore, we have provided the FCM community a freely
-available, sophisticated, development and analysis platform for high
-throughput data analysis. The scope and complexity of the technology
-is evolving rapidly, and a collaborative effort in devising new
-methodology has been proven beneficial for a number of different
-biological and computational biology challenges. We hope that our
+available, highly functional, development and analysis platform for high
+throughput data analysis. Our intent is to provide a platform
+for the collaborative development of new analysis methods that
+will facilitate the transition of these new methods to the larger 
+flow community. Our experience has been that the 
+collaborative effort we enable for devising new methodology has been proven
+beneficial for a number of different biological and computational biology challenges. 
+We hope that our
 framework will be the foundation for fruitful shared research by many
-collaborators from multiple scientific fields, further pushing the
-boundaries of the exiting and still promising FCM technology.
+collaborators from multiple scientific fields and will help resolve
+bottlenecks that currently prevent the further development of and deployment of
+FC-HCS to increasingly complex and important scientific and clinical 
+applications. 
 
 \section*{Acknowledgements}
 This work was supported by NIH grant EB005034. RRB is a Michael Smith
