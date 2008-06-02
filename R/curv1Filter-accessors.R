@@ -35,6 +35,10 @@ setMethod("%in%",signature("flowFrame","curv1Filter"),function(x,table)
           bwFac <- table@bwFac
           gridsize <- table@gridsize
 
+          ## drop data that has piled up on the measurement ranges
+          r <- range(x, param)
+          values <- values[values > r[1,] & values < r[2,]]
+
           ## Compute normal scale bandwidth (second derivative).
           st.dev <- sqrt(var(values))
           Q1.val <- quantile(values,1/4) ; Q3.val <- quantile(values,3/4)
