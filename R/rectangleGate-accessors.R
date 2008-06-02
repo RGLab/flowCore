@@ -6,14 +6,16 @@ setMethod("%in%",signature(x="flowFrame",table="rectangleGate"),
              
             e <- if(length(table@parameters)==1) as.matrix(exprs(x)[,table@parameters]) else
             exprs(x)[,table@parameters]
-            apply(sapply(seq(along=table@parameters), function(i) {
+            tmp <- sapply(seq(along=table@parameters), function(i) {
                 if(table@min[i] >= table@max[i]){
                     print(i)
                   e[,i]
                 } else {
               !is.na(cut(e[,i],c(table@min[i],table@max[i]),labels=FALSE,
                          right=FALSE))}
-            }), 1, all)
+            })
+            dim(tmp) <- c(nrow(e), length(table@parameters))
+            apply(tmp, 1, all)
           })
 
 

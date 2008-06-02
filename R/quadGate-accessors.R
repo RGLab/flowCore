@@ -7,7 +7,8 @@ setMethod("%in%",signature(x="flowFrame",table="quadGate"),
               e <-  exprs(x)[,table@parameters, drop=FALSE]
               lev <- c("tr", "tl", "br", "bl")
               factor(lev[as.integer(e[,1] <= table@boundary[1]) +
-                         2 * (as.integer(e[,2] <= table@boundary[2]))+1])
+                         2 * (as.integer(e[,2] <= table@boundary[2]))+1],
+                     levels=lev)
           })
 
 
