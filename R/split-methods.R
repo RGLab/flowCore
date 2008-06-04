@@ -223,7 +223,7 @@ setMethod("split",signature("flowSet","factor"),
       {
           if(!is.atomic(f) || length(f)!=length(x))
               stop("split factor must be same length as flowSet") 
-          gind <- split(1:length(f), f)
+          gind <- split(1:length(f), f, drop=TRUE)
           res <- vector(mode="list", length=length(gind))
           for(g in seq_along(gind))
               res[[g]] <- x[gind[[g]]]
