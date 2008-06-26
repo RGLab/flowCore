@@ -10,6 +10,7 @@
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{exprs<-,flowFrame,ANY-method}
+\alias{initialize,flowFrame-method}
 \alias{head,flowFrame-method}
 \alias{tail,flowFrame-method}
 \alias{description}
@@ -413,8 +414,10 @@
     \item{==}{Test equality between two \code{flowFrames}}
 
     \item{<, >, <=, >=}{These operators basically treat the
-    \code{flowFrame} as a numeric matrix.}
+      \code{flowFrame} as a numeric matrix.}
     
+    \item{\code{initialize(flowFrame)}:}{Object instantiation, used
+      by \code{new}; not to be called directly by the user.}
   }
 }
 
