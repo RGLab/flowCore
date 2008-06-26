@@ -20,11 +20,9 @@ setClass("flowFrame",
                         parameters="AnnotatedDataFrame",
                         description="list"),
          prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
-         parameters=new("AnnotatedDataFrame",
-         data=data.frame(name=I(character(0))),
-         varMetadata=data.frame(labelDescription="Name in frame",
-         row.names="name")),
+         parameters=new("AnnotatedDataFrame"),
          description=list(note="empty")))
+
 
 ## helper function to create empty AnnotatedDataFrame for the parameters slot
 parDefault <- function(exp){
