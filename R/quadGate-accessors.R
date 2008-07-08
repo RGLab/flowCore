@@ -5,7 +5,18 @@
 setMethod("%in%",signature(x="flowFrame",table="quadGate"),
           function(x,table) {
               e <-  exprs(x)[,table@parameters, drop=FALSE]
-              lev <- c("tr", "tl", "br", "bl")
+              ## create useful names for the populations:
+              ## first choice are channel descriptors, then
+              ## channel names.
+              mt <- match(table@parameters, parameters(x)$name)
+              desc <- pData(parameters(x))[mt, "desc"]
+              noName <- which(is.na(desc) | desc=="")
+              desc[noName] <- parameters(x)$name[mt][noName]
+              lev <- c(sprintf("%s+%s+", desc[1], desc[2]),
+                       sprintf("%s-%s+", desc[1], desc[2]),
+                       sprintf("%s+%s-", desc[1], desc[2]),
+                       sprintf("%s-%s-", desc[1], desc[2]))
+              #lev <- c("tr", "tl", "br", "bl")
               factor(lev[as.integer(e[,1] <= table@boundary[1]) +
                          2 * (as.integer(e[,2] <= table@boundary[2]))+1],
                      levels=lev)

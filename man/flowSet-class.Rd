@@ -8,6 +8,7 @@
 \alias{[[,flowSet-method}
 \alias{[[,flowSet,ANY-method}
 \alias{[[<-,flowSet-method}
+\alias{[[<-,flowFrame-method}
 \alias{fsApply,flowSet-method}
 \alias{show,flowSet-method}
 \alias{length,flowSet-method}
