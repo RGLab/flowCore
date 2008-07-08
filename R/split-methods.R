@@ -181,17 +181,22 @@ setMethod("split",signature("flowSet","list"),
           lf <- length(f)
           lx <- length(x)
           if(lf!=lx)
-              stop("list of filterResults or filters must be same",
+              stop("list of filterResults or filters must be same ",
                    "length as flowSet")
           if(!all(sapply(f, is, "filter")))
               stop("Second argument must be list of filterResults or filters")
           lapply(f, compatibleFilters,  f[[1]])
           ## split everything or just some populations (if multipleFilterResult)
-          if(is.null(population))
+          if(is.null(population)){
               if(!is.null(names(f[[1]])))
                   population <- names(f[[1]])
               else
                   population <- 1
+          }
+          if(!identical(unique(as.vector(sapply(f, names))), names(f[[1]])))
+              stop("Filtering operation produced non-unique population ",
+                   "names.\nPlease check parameter descriptions in the ",
+                   "parameter slots of the individual flowFrames.")
           finalRes <- vector(mode="list", length=length(population))
           names(finalRes) <- population
           for(p in population){

@@ -58,7 +58,17 @@ setMethod("[[","flowSet",
 ## to flowFrame
 setMethod("$", c("flowSet", "character"), function(x,name) x[[name]])
 
-
+## replace a flowFrame
+setReplaceMethod("[[", signature=c("flowSet", value="flowFrame"),
+                 definition=function(x, i, j, ..., value)
+             {
+                 if(length(i) != 1)
+                     stop("subscript out of bounds (index must have ",
+                          "length 1)")
+                 sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
+                 x@frames[[sel]] <- value
+                 return(x)
+             })
 
 ## ==========================================================================
 ## accessor and replace methods for slot colnames
