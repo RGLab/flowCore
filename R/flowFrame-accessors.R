@@ -442,11 +442,11 @@ setMethod("filter",signature(x="flowFrame",filter="filterSet"),
           function(x,filter)
       {
           ## A list of filter names sorted by dependency
-          fl = sort(filter,dependencies=TRUE)
-          e  = filterSet()
-          m  = as(filter,"list")
-          r  = lapply(fl,function(n) {
-              e[[n]] = eval(m[[n]])
+          fl <- sort(filter,dependencies=TRUE)
+          e <- filterSet()
+          m <- as(filter,"list")
+          r <-  lapply(fl,function(n) {
+              e[[n]] <- eval(m[[n]])
               filter(x,e[n])
           })
           ## A place to evaluate filters

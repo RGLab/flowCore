@@ -157,3 +157,11 @@ setMethod("[[",
               stop("filter index out of bounds")
           x
       })
+
+
+setMethod("show",
+          signature("filterResult"),
+          function(object) 
+          cat(paste("A filterResult produced by the filter named '",
+                    object@filterId, "'\n", sep="")))
+

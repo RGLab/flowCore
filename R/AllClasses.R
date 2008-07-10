@@ -90,16 +90,16 @@ setClass("flowSet",
          validity=function(object){
              nc <- length(colnames(object))
              ## Make sure that all of our samples list
-             name.check <- is.na(match(sampleNames(object),ls(object@frames,
+             name.check <- is.na(match(sampleNames(object), ls(object@frames,
                                                               all.names=TRUE)))
              if(any(name.check)) {
-                 name.list <- paste(sampleNames(object)[name.check],sep=",")
+                 name.list <- paste(sampleNames(object)[name.check], sep=",")
                  return(paste("These objects are not in the data environment:",
                               name.list))
              }
              ##Ensure that all frames match our colnames
-             if(!all(sapply(sampleNames(object),function(i) {
-                 x = get(i,env=object@frames)
+             if(!all(sapply(sampleNames(object), function(i) {
+                 x <- get(i, env=object@frames)
                  if(all(object@colnames %in% colnames(x))){
                      TRUE
                  }else{ 
@@ -121,7 +121,7 @@ flowSet <- function(..., phenoData) {
         x <- x[[1]]
     if(!all(sapply(x, is, "flowFrame")))
         stop("All additional arguments must be flowFrames")
-    f <- as(x,"flowSet")
+    f <- as(x, "flowSet")
     if(!missing(phenoData))
         phenoData(f) = phenoData
     f
@@ -163,14 +163,14 @@ setClass("rectangleGate",
                         max="numeric"),
          contains="parameterFilter",
          prototype=list(filterId="Rectangle Gate",
-         min=0,max=Inf)
+         min=0, max=Inf)
          )
 
 ## constructor
 rectangleGate <- function(filterId="rectangleGate", .gate,...) {
     if(missing(.gate) || !is.matrix(.gate))
-      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,function(x) {
-            x = sort(x);c("min"=x[1],"max"=x[2])
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) {
+            x <- sort(x);c("min"=x[1], "max"=x[2])
 		})
     new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
         min=.gate[1,], max=.gate[2,])
@@ -228,12 +228,12 @@ setClass("polygonGate",
          })
 
 ## constructor
-polygonGate <- function(filterId="polygonGate", boundaries,...) {
+polygonGate <- function(filterId="polygonGate", boundaries, ...) {
     if(missing(boundaries) || !is.matrix(boundaries)) 
         boundaries = {as.matrix(if(missing(boundaries))
-                                do.call("cbind",list(...))
+                                do.call("cbind", list(...))
         else boundaries)}
-    new("polygonGate",filterId=filterId, parameters=colnames(boundaries),
+    new("polygonGate", filterId=filterId, parameters=colnames(boundaries),
         boundaries=boundaries)
 }
 
@@ -324,7 +324,7 @@ setClass("norm2Filter",
 
 ## constructor
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
-                        filterId="norm2Gate", n=50000,...)
+                        filterId="norm2Gate", n=50000, ...)
 {
     if(missing(y)) {
         if(length(x)==1)
@@ -340,8 +340,8 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
         x = x[1]
         y = y[1]
     }
-    new("norm2Filter",parameters=c(x,y), method=method,
-        scale.factor=scale.factor, filterId=filterId,n=n,...)
+    new("norm2Filter", parameters=c(x, y), method=method,
+        scale.factor=scale.factor, filterId=filterId, n=n, ...)
 }
 
 
@@ -358,17 +358,17 @@ setClass("kmeansFilter",
 
 ## contructor
 ## not sure why but the parameters in list format can not be read.
-kmeansFilter = function(filterId="kmeans",...)
+kmeansFilter <- function(filterId="kmeans", ...)
 {
-    l = length(list(...))
+    l <- length(list(...))
     if(l>1)
 	stop("k-means filters only operate on a single parameter.")
-    x = ..1
+    x <- ..1
     if(is.list(x)) {
-        new("kmeansFilter",parameters=names(x)[1],populations=x[[1]],
+        new("kmeansFilter", parameters=names(x)[1], populations=x[[1]],
             filterId=filterId)
     } else {
-        new("kmeansFilter",parameters=names(list(...))[1],populations=x,
+        new("kmeansFilter", parameters=names(list(...))[1], populations=x,
             filterId=filterId)
     }
 }
@@ -390,7 +390,7 @@ setClass("curv2Filter",
 ##constructor
 curv2Filter <-
     function(x, y, filterId="curv2Filter", bwFac=1.2,
-             gridsize=rep(151,2), ...)
+             gridsize=rep(151, 2), ...)
 {
     if(!is.numeric(bwFac) || length(bwFac)!=1)
         stop("'bwFac must be numeric skalar")
@@ -410,7 +410,7 @@ curv2Filter <-
         x = x[1]
         y = y[1]
     }
-    new("curv2Filter",parameters=c(x,y), bwFac=bwFac, gridsize=gridsize,
+    new("curv2Filter", parameters=c(x, y), bwFac=bwFac, gridsize=gridsize,
         filterId=filterId, ...)
 }
 
@@ -431,7 +431,7 @@ setClass("curv1Filter",
 ##constructor
 curv1Filter <-
     function(x, filterId="curv1Filter", bwFac=1.2,
-             gridsize=rep(151,2), ...)
+             gridsize=rep(151, 2), ...)
 {
     if(!is.numeric(bwFac) || length(bwFac)!=1)
         stop("'bwFac must be numeric skalar")
@@ -439,7 +439,7 @@ curv1Filter <-
         stop("'gridsize must be numeric skalar")
         if(length(x)!=1)
             stop("You must specify a single parameters for a curv1 filter.")
-    new("curv1Filter",parameters=x, bwFac=bwFac, gridsize=gridsize,
+    new("curv1Filter", parameters=x, bwFac=bwFac, gridsize=gridsize,
         filterId=filterId, ...)
 }
 
@@ -455,8 +455,8 @@ setClass("sampleFilter",
          contains="concreteFilter")
 
 ##constructor
-sampleFilter = function(filterId="sample",size) new("sampleFilter",
-                        filterId=filterId,size=size)
+sampleFilter = function(filterId="sample", size) new("sampleFilter",
+                        filterId=filterId, size=size)
 
 
 
@@ -466,7 +466,7 @@ sampleFilter = function(filterId="sample",size) new("sampleFilter",
 ## Let's us encapsulate an expression as a gate
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
-         representation(expr="expression",args="list"),
+         representation(expr="expression", args="list"),
          contains="concreteFilter")
 
 ##constructor
@@ -477,7 +477,7 @@ expressionFilter = function(expr, ..., filterId){
         if(missing(filterId)) filterId <- deparse(subs)
     }else if(missing(filterId))
         filterId <- as.character(expr)
-    new("expressionFilter",filterId=filterId,expr=expr,args=list(...))
+    new("expressionFilter", filterId=filterId, expr=expr, args=list(...))
 }
 
 
@@ -487,16 +487,19 @@ expressionFilter = function(expr, ..., filterId){
 ## ---------------------------------------------------------------------------
 ## stores a list of filters from a gating sequence as an environment
 ## ---------------------------------------------------------------------------
-setClass("filterSet",representation(env="environment"),
-         prototype=prototype(env=new.env(hash=TRUE,parent=emptyenv())))
-filterSet = function(...) {
-	filters = list(...)
-	#Allow the list(x,y,z) format as well.
-	if(length(filters)==1 && is.list(filters[[1]])) filters = filters[[1]]
-	if(length(filters) == 0)
-		new("filterSet",env=new.env(parent=emptyenv()))
-	else
-		as(filters,"filterSet")
+setClass("filterSet",
+         representation(env="environment"),
+         prototype=prototype(env=new.env(hash=TRUE, parent=emptyenv())))
+
+##constructor
+filterSet <- function(...) {
+    filters <- list(...)
+    ## Allow the list(x, y, z) format as well.
+    if(length(filters)==1 && is.list(filters[[1]])) filters <- filters[[1]]
+    if(length(filters) == 0)
+        new("filterSet", env=new.env(parent=emptyenv()))
+    else
+        as(filters, "filterSet")
 }
 
 
@@ -506,7 +509,8 @@ filterSet = function(...) {
 ## ---------------------------------------------------------------------------
 #References a filter (contained within a filterSet)
 ## ---------------------------------------------------------------------------
-setClass("filterReference",representation(name="character",env="environment"),
+setClass("filterReference",
+         representation(name="character", env="environment"),
          contains="filter")
 
 
@@ -523,43 +527,49 @@ setClass("setOperationFilter",
 ## ===========================================================================
 ## unionFilter 
 ## ---------------------------------------------------------------------------
-setClass("unionFilter",representation("setOperationFilter"))
+setClass("unionFilter",
+         representation("setOperationFilter"))
 
 
 
 ## ===========================================================================
 ## intersectFilter 
 ## ---------------------------------------------------------------------------
-setClass("intersectFilter",representation("setOperationFilter"))
+setClass("intersectFilter",
+         representation("setOperationFilter"))
 
 
 
 ## ===========================================================================
 ## complementFilter 
 ## ---------------------------------------------------------------------------
-setClass("complementFilter",representation("setOperationFilter"),
-         validity=function(object) { 
-             if(length(object@filters) != 1) {
-                 warning("Complement filters can only operate on a ",
-                         "single filter")
-                 return(FALSE)
-             }
-             TRUE
-         })
+setClass("complementFilter",
+         representation("setOperationFilter"),
+         validity=function(object)
+     { 
+         if(length(object@filters) != 1) {
+             warning("Complement filters can only operate on a ",
+                     "single filter")
+             return(FALSE)
+         }
+         TRUE
+     })
 
 
 
 ## ===========================================================================
 ## subsetFilter 
 ## ---------------------------------------------------------------------------
-setClass("subsetFilter",representation("setOperationFilter"),
-         validity=function(object) {
-             if(length(object@filters) != 2) {
-                 warning("Subset filters are only defined as binary operators")
-                 return(FALSE)
-             }
-             TRUE
-         })
+setClass("subsetFilter",
+         representation("setOperationFilter"),
+         validity=function(object)
+     {
+         if(length(object@filters) != 2) {
+             warning("Subset filters are only defined as binary operators")
+             return(FALSE)
+         }
+         TRUE
+     })
 
 
 
@@ -601,15 +611,18 @@ setClass("multipleFilterResult",
 ## overlapping sets
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
-         representation(subSet="matrix",dependency="ANY"),
+         representation(subSet="matrix", dependency="ANY"),
          contains="filterResult")
-manyFilterResult = function(filters,frameId,dependency=NULL) {
-	q = new("manyFilterResult",
-		filterDetails = sapply(filters,slot,"filterDetails"),
-		subSet=do.call("cbind",lapply(filters,as,"logical")),
-		dependency=dependency)
-	colnames(q@subSet) = sapply(filters,slot,"filterId")
-	q
+
+##constructor
+manyFilterResult <- function(filters, frameId, dependency=NULL)
+{
+    q <- new("manyFilterResult",
+             filterDetails=sapply(filters, slot, "filterDetails"),
+             subSet=do.call("cbind", lapply(filters, as, "logical")),
+             dependency=dependency)
+    colnames(q@subSet) <- sapply(filters, slot, "filterId")
+    q
 }
 
 
@@ -626,8 +639,9 @@ setClass("randomFilterResult",
 ## ===========================================================================
 ## filterSummary
 ## ---------------------------------------------------------------------------
-setClass("filterSummary",representation(name="character",true="numeric",
-                                        count="numeric",p="numeric"))
+setClass("filterSummary",
+         representation(name="character", true="numeric",
+                        count="numeric", p="numeric"))
 
 
 
@@ -636,143 +650,144 @@ setClass("filterSummary",representation(name="character",true="numeric",
 ## ---------------------------------------------------------------------------
 ## Parameterize transforms so that we can describe them.
 ## ---------------------------------------------------------------------------
-setClass("transform", representation(transformationId="character", "function"))
+setClass("transform",
+         representation(transformationId="character", "function"))
 
-## Linear transformation constructor
-linearTransform <- function(transformationId,a=1,b=0){
+## Linear transform constructor
+linearTransform <- function(transformationId, a=1, b=0)
+{
     if(!is.double(a)) 
-      stop("a must be numeric")
+        stop("a must be numeric")
     if(!is.double(b))
-       stop("b must be numeric")
-    t= new("transform", .Data=function(x){    
-        x <- a*x+b
-    })
-    t@transformationId = transformationId
+        stop("b must be numeric")
+    t <- new("transform", .Data=function(x)  x <- a*x+b)
+    t@transformationId <- transformationId
     t
-  }
+}
 
 ## Quadratic transformation constructor
-quadraticTransform <- function(transformationId,a=1,b=1,c=0){
-  if(!is.double(a)) 
-      stop("a must be numeric")
+quadraticTransform <- function(transformationId, a=1, b=1, c=0)
+{
+    if(!is.double(a)) 
+        stop("a must be numeric")
     if(!is.double(b))
-       stop("b must be numeric")
-  if(!is.double(c))
-       stop("c must be numeric")
-    t = new("transform",.Data=function(x){
-        x <- a*x^2 + b*x + c
-      })
-  t@transformationId = transformationId
-  t
+        stop("b must be numeric")
+    if(!is.double(c))
+        stop("c must be numeric")
+    t <- new("transform", .Data=function(x) x <- a*x^2 + b*x + c)
+    t@transformationId <- transformationId
+    t
 }
 
 ## Natural logarithm transformation constructor
-lnTransform <- function(transformationId,r=1,d=1){
+lnTransform <- function(transformationId, r=1, d=1)
+{
     if(!is.double(r) || r <= 0)
-       stop("r must be numeric and positive")
+        stop("r must be numeric and positive")
     if(!is.double(d) || d <=0)
-       stop("d must be numeric")
-    t= new("transform",.Data=function(x){
-      x<-log(x)*(r/d)
-    })
-    t@transformationId = transformationId
+        stop("d must be numeric")
+    t <- new("transform", .Data=function(x)
+             x<-log(x)*(r/d))
+    t@transformationId <- transformationId
     t
 }
 
 ## Logarithm transformation constructor
-logTransform <- function(transformationId,logbase=10,r=1,d=1){
-
-  if(!is.double(r) || r <= 0)
-    stop("r must be numeric and positive")
-  if(!is.double(d) || d <=0)
-    stop("d must be numeric")
-  if(!is.double(r) || r <=0)
-    stop("r must be numeric and positive")
-  if(!is.double(logbase) || logbase <= 1)
-    stop("logabse must be a pnumeric greater than 1")
-  t = new("transform",.Data=function(x){
-    x <- log(x,logbase)*(r/d)
-  })
-  t@transformationId = transformationId
-  t
+logTransform <- function(transformationId, logbase=10, r=1, d=1)
+{
+    if(!is.double(r) || r <= 0)
+        stop("r must be numeric and positive")
+    if(!is.double(d) || d <=0)
+        stop("d must be numeric")
+    if(!is.double(r) || r <=0)
+        stop("r must be numeric and positive")
+    if(!is.double(logbase) || logbase <= 1)
+        stop("logabse must be a pnumeric greater than 1")
+    t <- new("transform", .Data=function(x) x <- log(x, logbase)*(r/d))
+    t@transformationId <- transformationId
+    t
 }
 
 
 ## General biexponential transformation constructor
-biexponentialTransform<- function(transformationId, a=.5, b=1,c=.5,d=1,f=0,w=0,
-           tol=.Machine$double.eps^0.25,maxit=as.integer(5000)){
-    
-    t = new("transform",.Data=function(x){
-        x <- .Call(biexponential_transform, x, a, b, c, d, f, w, tol, maxit)
-    })
-    t@transformationId = transformationId
+biexponentialTransform <-
+    function(transformationId, a=.5, b=1, c=.5, d=1, f=0, w=0,
+             tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
+{
+    t <- new("transform", .Data=function(x)
+             x <- .Call(biexponential_transform, x, a, b, c,
+                        d, f, w, tol, maxit))
+    t@transformationId <- transformationId
     t
 }
 
 ## Logicle transformation constructor
-logicleTransform <- function(transformationId, w=0,r=262144,d=5,...) {
-  if(w>d) stop("Negative range decades must be smaller than total number of decades")
-    w = w*log(10)
-    d = d*log(10)
-    if(w==0) p = 1 else p = uniroot(function(p) -w+2*p*log(p)/(p+1), c(.Machine$double.eps,2*(w+d)))$root
-    t= new("transform",.Data=biexponentialTransform(transformationId, a=r*exp(-(d-w)),b=1,c=r*exp(-(d-w))*p^2,d=1/p,f=p^2-1,w=w,...))
-    t@transformationId = transformationId
+logicleTransform <- function(transformationId, w=0, r=262144, d=5, ...)
+{
+    if(w>d)
+        stop("Negative range decades must be smaller than total ",
+             "number of decades")
+    w <- w*log(10)
+    d <- d*log(10)
+    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
+            c(.Machine$double.eps, 2*(w+d)))$root
+    t <- new("transform", .Data=biexponentialTransform(transformationId,
+                          a=r*exp(-(d-w)), b=1, c=r*exp(-(d-w))*p^2, d=1/p,
+                          f=p^2-1, w=w, ...))
+    t@transformationId <- transformationId
     t
-  }
+}
 
 ## Truncation transformation constructor
-truncateTransform <- function(transformationId, a=1){
-  t= new("transform",.Data=function(x){
-    x[x<=a] <- a
-    x
-  })
-  t@transformationId = transformationId
-  t
+truncateTransform <- function(transformationId, a=1)
+{
+    t <- new("transform", .Data=function(x){
+        x[x<=a] <- a
+        x
+    })
+    t@transformationId <- transformationId
+    t
 }
 
 ## Scale transformation constructor
-scaleTransform <- function(transformationId,a=1,b=10^4){
-    t = new("transform",.Data=function(x){
-     	x=(x-a)/(b-a)
-    })
-    t@transformationId = transformationId
+scaleTransform <- function(transformationId, a=1, b=10^4)
+{
+    t <- new("transform", .Data=function(x) (x-a)/(b-a))
+    t@transformationId <- transformationId
     t
 }
 
 ## Split-scale transformation constructor
 splitScaleTransform <- function(transformationId, maxValue=1023,
-                                transitionChannel=64, r=192){
-    
-    maxChannel = r + transitionChannel
-    b = transitionChannel/2
-    d= 2*log10(exp(1))*r/transitionChannel
-    logt = -2*log10(exp(1))*r/transitionChannel + log10(maxValue)
-    t = 10^logt
-    a = transitionChannel/(2*t)
-    logCT = (a*t+b)*d/r
-    c = 10^logCT/t
-    
-    tr = new("transform",.Data= function(x){
-        idx = which(x <= t)
-        idx2 = which(x > t)
-
-        if(length(idx2)>0){
-            x[idx2]= log10(c*x[idx2])*r/d
-        }
-        if(length(idx)>0){
-            x[idx] = a*x[idx]+b
-        }
-        x        
+                                transitionChannel=64, r=192)
+{
+    maxChannel <- r + transitionChannel
+    b <- transitionChannel/2
+    d <- 2*log10(exp(1))*r/transitionChannel
+    logt <- -2*log10(exp(1))*r/transitionChannel + log10(maxValue)
+    t <- 10^logt
+    a <- transitionChannel/(2*t)
+    logCT <- (a*t+b)*d/r
+    c <- 10^logCT/t
+    tr <- new("transform", .Data= function(x){
+        idx <- which(x <= t)
+        idx2 <- which(x > t)
+        if(length(idx2)>0)
+            x[idx2] <- log10(c*x[idx2])*r/d
+        if(length(idx)>0)
+            x[idx] <- a*x[idx]+b
+        x
     })
-    tr@transformationId = transformationId
+    tr@transformationId <- transformationId
     tr
 }
 
 ## Hyperbolic Arcsin transformation constructor
-arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
-  t = new("transform",.Data=function(x) asinh(a+b*x)+c)
-  t@transformationId = transformationId
-  t
+arcsinhTransform <- function(transformationId, a=1, b=1, c=0)
+{
+    t <- new("transform", .Data=function(x) asinh(a+b*x)+c)
+    t@transformationId <- transformationId
+    t
 }
 
 
@@ -783,13 +798,14 @@ arcsinhTransform <- function(transformationId,a=1,b=1,c=0) {
 ## A class that only applied a parameter transform to a subset of the
 ## parameters during an %on% operation.
 ## ---------------------------------------------------------------------------
-setClass("parameterTransform",representation(parameters="character"),
+setClass("parameterTransform",
+         representation(parameters="character"),
          contains="transform")
 
 ## constructor
-parameterTransform = function(FUN,params)
-	new("parameterTransform",.Data=as.function(FUN),
-            parameters=as.character(params))
+parameterTransform <- function(FUN, params)
+    new("parameterTransform", .Data=as.function(FUN),
+        parameters=as.character(params))
 
 
 
@@ -809,7 +825,8 @@ setClass("transformMap",
 ## ---------------------------------------------------------------------------
 ## A list of transformMaps
 ## ---------------------------------------------------------------------------
-setClass("transformList", representation(transforms="list"))
+setClass("transformList",
+         representation(transforms="list"))
 
 
 
