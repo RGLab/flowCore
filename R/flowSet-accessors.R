@@ -138,6 +138,23 @@ setReplaceMethod("varLabels",
                  })
 
 
+setMethod("varMetadata",
+          signature=signature(object="flowSet"),
+          function(object) varMetadata(phenoData(object)))
+
+setReplaceMethod("varMetadata",
+                 signature=signature(
+                   object="flowSet",
+                   value="ANY"),
+                 function(object, value) {
+                     pd <- phenoData(object)
+                     varMetadata(pd) <- value
+                     object@phenoData <- pd
+                     object
+                 })
+
+
+
 ## ==========================================================================
 ## sampleNames method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

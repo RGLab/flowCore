@@ -38,14 +38,51 @@
 \maketitle
 
 \begin{abstract}
-\noindent \textbf{Background} The recent application of modern automation technologies to staining and collecting flow cytometry (FCM) samples has led to many new challenges in data management and analysis. We limit our attention here to the associated problems in the analysis of the massive amounts of FCM data now being collected. From our viewpoint, see two related but substantially different problems arising. On the one hand, there is the problem of adapting existing software to apply standard methods to the increased volume of data. The second problem, which we intend to address here, is the absence of any research platform which bioinformaticians, computer scientists, and statisticians can use to develop novel methods that address both the volume and multidimensionality of the mounting tide of data. In our opinion, such a platform should be Open Source, be focused on visualization,  support rapid prototyping, have a large existing base of users, and have demonstrated suitability for development of new methods. We believe that the Open Source statistical software R in conjunction with the Bioconductor Project fills all of these requirements. Consequently we have developed a Bioconductor package that we call \Rpackage{flowCore}. The \Rpackage{flowCore} package is not intended to be a complete analysis package for FCM data, rather, we see it as providing a clear object model and a collection of standard tools that enable R as an informatics research platform for flow cytometry. One of the important issues that we have addressed in the \Rpackage{flowCore} package is that of using a standardized representation that will insure compatibility with existing technologies for data analysis and will support collaboration and interoperability of new methods as they are developed. In order to do this, we have followed the current standardized descriptions of FCM data analysis as being developed under NIH Grant xxxx [n]. We believe that researchers will find flowCore to be a solid foundation for future development of new methods to attack the many interesting open research questions in FCM data analysis.\\
+\noindent \textbf{Background} The recent application of modern
+automation technologies to staining and collecting flow cytometry
+(FCM) samples has led to many new challenges in data management and
+analysis. We limit our attention here to the associated problems in
+the analysis of the massive amounts of FCM data now being
+collected. From our viewpoint, see two related but substantially
+different problems arising. On the one hand, there is the problem of
+adapting existing software to apply standard methods to the increased
+volume of data. The second problem, which we intend to address here,
+is the absence of any research platform which bioinformaticians,
+computer scientists, and statisticians can use to develop novel
+methods that address both the volume and multidimensionality of the
+mounting tide of data. In our opinion, such a platform should be Open
+Source, be focused on visualization, support rapid prototyping, have a
+large existing base of users, and have demonstrated suitability for
+development of new methods. We believe that the Open Source
+statistical software R in conjunction with the Bioconductor Project
+fills all of these requirements. Consequently we have developed a
+Bioconductor package that we call \Rpackage{flowCore}. The
+\Rpackage{flowCore} package is not intended to be a complete analysis
+package for FCM data, rather, we see it as providing a clear object
+model and a collection of standard tools that enable R as an
+informatics research platform for flow cytometry. One of the important
+issues that we have addressed in the \Rpackage{flowCore} package is
+that of using a standardized representation that will insure
+compatibility with existing technologies for data analysis and will
+support collaboration and interoperability of new methods as they are
+developed. In order to do this, we have followed the current
+standardized descriptions of FCM data analysis as being developed
+under NIH Grant xxxx [n]. We believe that researchers will find
+flowCore to be a solid foundation for future development of new
+methods to attack the many interesting open research questions in FCM
+data analysis.\\
 
-\noindent \textbf{Methods} We propose a variety different data structures. We have implemented the classes and methods in the Bioconductor package flowCore. 
-We illustrate their use with X case studies.\\
+\noindent \textbf{Methods} We propose a variety different data
+structures. We have implemented the classes and methods in the
+Bioconductor package flowCore.  We illustrate their use with X case
+studies.\\
 
-\noindent \textbf{Results} We hope that those proposed data structures will the base for the development of many tools for the analysis of high throughput flowcytometry.\\
+\noindent \textbf{Results} We hope that those proposed data structures
+will the base for the development of many tools for the analysis of
+high throughput flowcytometry.\\
 
-\noindent \textbf{keywords} Flow cytometry, high throughtput, software, standard
+\noindent \textbf{keywords} Flow cytometry, high throughtput,
+software, standard
 \end{abstract}
 
 <<loadPackage, echo=false,results=hide>>=
@@ -656,7 +693,8 @@ function also does not take a specific \Rclass{flowFrame} or
 can then construct a filter with respect to the transform as follows:
 
 <<TectGate3, echo=true, results=verbatim>>=
-rect2 <- rectangleGate(filterId="Another Rect", "FL1-H"=c(1,2), "FL2-H"=c(2,3)) %on% tFilter
+rect2 <- rectangleGate(filterId="Another Rect", "FL1-H"=c(1,2), 
+"FL2-H"=c(2,3)) %on% tFilter
 rect2
 @
 
@@ -686,7 +724,8 @@ logical operators available for gates. To recreate this example as a
 
 <<FilterSet1, echo=true, results=verbatim>>=
 fset1 = filterSet(
-	rectangleGate(filterId="Fluorescence Region","FL1-H"=c(50,100),"FL2-H"=c(50,100)),
+	rectangleGate(filterId="Fluorescence Region","FL1-H"=c(50,100),
+                      "FL2-H"=c(50,100)),
 	norm2Filter(filterId="Morphology Gate","FSC-H","SSC-H",scale=2),
 	~ `Fluorescence Region` & `Morphology Gate`,
 	~ `Fluorescence Region` | `Morphology Gate`,

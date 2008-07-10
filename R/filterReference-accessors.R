@@ -22,3 +22,11 @@ setMethod("summarizeFilter",signature("filterResult","filterReference"),
 setMethod("filterReference",signature("environment","character"),function(from,name) {
 	new("filterReference",name=name,env=from)
 })
+
+## A filterReference from a filterSet
+setMethod("filterReference",
+          signature("filterSet", "character"),
+          function(from,name) {
+              new("filterReference", env=from@env,
+                  name=name)
+})

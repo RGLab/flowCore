@@ -26,8 +26,15 @@ setMethod("length","multipleFilterResult",function(x) nlevels(x@subSet))
 ## ==========================================================================
 ## names method, the levels of the subSet factor
 ## ---------------------------------------------------------------------------
-setMethod("names","multipleFilterResult",function(x) levels(x@subSet))
-
+setMethod("names", "multipleFilterResult",function(x) levels(x@subSet))
+setReplaceMethod("names", "multipleFilterResult", function(x, value)
+             {
+                 if(length(value) != length(levels(x@subSet)))
+                     stop("Length of replacement vector doesn't match.")
+                 levels(x@subSet) <- value
+                 x@filterDetails[[1]]$populations <- value
+                 return(x)
+             })
 
 ## ==========================================================================
 ## subsetting method: we create a new logicalFilterResult if the index is
@@ -49,3 +56,13 @@ setMethod("[[",signature("multipleFilterResult"),function(x,i,j,drop=FALSE) {
                                   sep=""))
        }
     })
+
+
+
+setMethod("show",
+          signature("multipleFilterResult"),
+          function(object) 
+          cat(paste("A filterResult produced by the filter named '",
+                    object@filterId, "'\n resulting in multiple ",
+                    "populations:\n", paste("\t", names(object), collapse="\n"),
+                    "\n", sep="")))
