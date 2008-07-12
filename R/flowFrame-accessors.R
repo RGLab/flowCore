@@ -430,6 +430,11 @@ setMethod("transform",
 setMethod("filter", signature(x="flowFrame", filter="filter"),
           function(x, filter)
       {
+          allPar <- parameters(filter) %in% colnames(x)
+          if(!all(allPar))
+              stop("The following parameter(s) are not available in this ",
+                   "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
+                                         collapse="\n"), call.=FALSE)
           result <- as(x %in% filter, "filterResult")
           identifier(result) = identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
