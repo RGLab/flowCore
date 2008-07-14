@@ -166,7 +166,7 @@
   names of the populations of interest. See the documentation of the
   different filter classes on how population names can be defined and
   the respective default values. For splitting of
-  \code{\linkS4class{logicalFilterResults}}, the \code{population}
+  \code{\linkS4class{logicalFilterResult}}s, the \code{population}
   argument can be used to set the population names since there is no
   reasonable default other than the name of the gate. The content of the
   argument \code{prefix} will be prepended to the population names and

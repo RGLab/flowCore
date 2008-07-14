@@ -29,6 +29,8 @@ importFrom(Biobase,
            "varMetadata",
            "varMetadata<-")
 
+importFrom("graphics", "plot")
+
 importMethodsFrom(Biobase,
                   "dim",
                   "length",
