@@ -326,6 +326,7 @@ setClass("norm2Filter",
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
                         filterId="norm2Gate", n=50000, ...)
 {
+    x <- unlist(x)
     if(missing(y)) {
         if(length(x)==1)
             stop("You must specify two parameters for a norm2 gate.")
@@ -358,7 +359,7 @@ setClass("kmeansFilter",
 
 ## contructor
 ## not sure why but the parameters in list format can not be read.
-kmeansFilter <- function(filterId="kmeans", ...)
+kmeansFilter <- function(..., filterId="kmeans")
 {
     l <- length(list(...))
     if(l>1)
@@ -393,25 +394,27 @@ curv2Filter <-
              gridsize=rep(151, 2), ...)
 {
     if(!is.numeric(bwFac) || length(bwFac)!=1)
-        stop("'bwFac must be numeric skalar")
+        stop("'bwFac must be numeric skalar.", call.=FALSE)
     if(!is.numeric(gridsize) || length(gridsize)!=2)
-        stop("'gridsize must be numeric skalar")
+        stop("'gridsize must be numeric skalar", call.=FALSE)
     if(missing(y)) {
         if(length(x)==1)
-            stop("You must specify two parameters for a curv2 filter.")
+            stop("You must specify two parameters for a curv2Filter.",
+                 call.=FALSE)
         if(length(x)>2)
-            warning("Only the first two parameters will be used.")
+            warning("Only using parameters '", x[1], "' and '", x[2],
+                    "'.", call.=FALSE)
         y=x[2]
         x=x[1]
     } else {
         if(length(x)>1 || length(y)>1)
-            warning("Only the first two parameters from 'x' and ",
-                    "'y' will be used.")
+            warning("Only using parameters '", x[1], "' and '", y[1],
+                    "'.", call.=FALSE)
         x = x[1]
         y = y[1]
     }
-    new("curv2Filter", parameters=c(x, y), bwFac=bwFac, gridsize=gridsize,
-        filterId=filterId, ...)
+    new("curv2Filter", parameters=as.character(c(x, y)), bwFac=bwFac,
+        gridsize=gridsize, filterId=as.character(filterId), ...)
 }
 
 
@@ -431,16 +434,18 @@ setClass("curv1Filter",
 ##constructor
 curv1Filter <-
     function(x, filterId="curv1Filter", bwFac=1.2,
-             gridsize=rep(151, 2), ...)
+             gridsize=rep(151, 2))
 {
     if(!is.numeric(bwFac) || length(bwFac)!=1)
         stop("'bwFac must be numeric skalar")
     if(!is.numeric(gridsize) || length(gridsize)!=2)
         stop("'gridsize must be numeric skalar")
-        if(length(x)!=1)
-            stop("You must specify a single parameters for a curv1 filter.")
-    new("curv1Filter", parameters=x, bwFac=bwFac, gridsize=gridsize,
-        filterId=filterId, ...)
+    x <- unlist(x)
+    if(length(x)!=1)
+        warning("You must specify a single parameters for a curv1Filter.\n",
+                "Only using parameter '", x[1], "' now.", call.=FALSE)
+    new("curv1Filter", parameters=as.character(x[1]), bwFac=bwFac,
+        gridsize=gridsize, filterId=as.character(filterId))
 }
 
    
@@ -479,6 +484,46 @@ expressionFilter = function(expr, ..., filterId){
         filterId <- as.character(expr)
     new("expressionFilter", filterId=filterId, expr=expr, args=list(...))
 }
+
+
+
+
+## ===========================================================================
+## timeFilter
+## ---------------------------------------------------------------------------
+## Detect turbulences and abnormalities in the aquisition of flow data over
+## time and gate them out. Argument 'bandwidth' sets the sensitivity, i.e.,
+## the amount of local variance of the signal we want to allow. 'binSize'
+## controls the size of the bins for the local variance and location
+## estimation, 'timeParameter' can be used to explicitely give the paramter
+## name of the time parameter (we will make an educated guess if this is not
+## given)
+## ---------------------------------------------------------------------------
+setClass("timeFilter",
+         representation(bandwidth="numeric",
+                        binSize="numeric",
+                        timeParameter="character"),
+         contains="parameterFilter")
+
+## contructor
+timeFilter <- function(..., filterId="time", bandwidth=0.75,
+                       binSize=NULL, timeParameter=NULL)
+{
+  x <- ..1
+  if(is.list(x))
+    pars <- unlist(x)
+  else if (is.character(x) && length(x)>1)
+    pars <- x
+  else
+    pars <- unlist(list(...))
+  if(!all(is.character(pars)))
+    stop("Only know how to deal with character data for the parameter ",
+         "definition.", call.=FALSE)
+  new("timeFilter", parameters=pars,
+      bandwidth=bandwidth, binSize=as.numeric(binSize),
+      timeParameter=as.character(timeParameter), filterId=filterId)
+}
+
 
 
 
