@@ -96,6 +96,24 @@ timeFilter(\dots, filterId="time", bandwidth=0.75, binSize=NULL,
   }
 }
 
+\details{
+
+  Clods and disturbances in the laminar flow of a FACS instrument can
+  lead to temporal aberations in the data acquisition, leading to
+  artifactual values. \code{timeFilter}s try to identify such stretches
+  of disturbance by computing local variance and location estimates and
+  and to remove them from the data.
+
+}
+
+
+\value{
+
+  Returns a \code{\link{timeFilter}} object for use in filtering
+  \code{\link{flowFrame}}s or other flow cytometry objects.
+  
+}
+
 
 \author{ Florian Hahne }
 
@@ -105,6 +123,10 @@ timeFilter(\dots, filterId="time", bandwidth=0.75, binSize=NULL,
 }
 
 \examples{
+
 timeFilter("SSC-H", bandwidth=1)
 
+}
+
 \keyword{classes}
+\keyword{methods}

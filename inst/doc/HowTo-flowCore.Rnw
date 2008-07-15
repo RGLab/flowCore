@@ -596,7 +596,8 @@ A filter which contains multiple populations, such as the
 \Rclass{kmeansFilter}, can return a list of summary lists:
 
 <<SummarFilter, echo=true, results=verbatim>>=
-summary(filter(fs[[1]], kmeansFilter("myKMeans","FSC-H"=c("Low", "Medium", "High"))))
+summary(filter(fs[[1]], kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
+                                     filterId="myKMeans")))
 @
 
 A filter may also be applied to an entire \Rclass{flowSet}, in which
@@ -619,7 +620,8 @@ only with that population, we might use \Rfunction{Subset} along with
 a \Rclass{norm2Filter} object as follows:
 
 <<Norm2Filter, echo=true, results=verbatim>>=
-morphGate <- norm2Filter(filterId="MorphologyGate", "FSC-H", "SSC-H", scale=2)
+morphGate <- norm2Filter("FSC-H", "SSC-H", filterId="MorphologyGate", 
+                         scale=2)
 smaller <- Subset(fs, morphGate)
 fs[[1]]
 smaller[[1]]
@@ -631,13 +633,15 @@ before to split our first fluorescence parameter into three
 populations. To do this we employ the \Rfunction{split} function:
 
 <<Split, echo=true, results=verbatim>>=
-split(smaller[[1]], kmeansFilter("myKMeans","FSC-H"=c("Low","Medium","High")))
+split(smaller[[1]], kmeansFilter("FSC-H"=c("Low","Medium","High"),
+                                 filterId="myKMeans"))
 @
 
 or for an entire \Rclass{flowSet}
 
 <<Split2, echo=true, results=verbatim>>=
-split(smaller, kmeansFilter("myKMeans", "FSC-H"=c("Low", "Medium", "High")))
+split(smaller, kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
+                            filterId="myKMeans"))
 @
 
 \subsection{Combining Filters}
@@ -726,7 +730,7 @@ logical operators available for gates. To recreate this example as a
 fset1 = filterSet(
 	rectangleGate(filterId="Fluorescence Region","FL1-H"=c(50,100),
                       "FL2-H"=c(50,100)),
-	norm2Filter(filterId="Morphology Gate","FSC-H","SSC-H",scale=2),
+	norm2Filter("FSC-H","SSC-H",filterId="Morphology Gate", scale=2),
 	~ `Fluorescence Region` & `Morphology Gate`,
 	~ `Fluorescence Region` | `Morphology Gate`,
 	Debris ~ ! `Morphology Gate`,
