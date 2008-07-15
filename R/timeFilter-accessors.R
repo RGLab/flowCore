@@ -39,19 +39,15 @@ setMethod("%in%",signature("flowFrame","timeFilter"),function(x,table)
           ## for each bin. These are then used to identify stretches
           ## of unusual data distribution over time. The time parameter
           ## has to be guessed if not explicitely given before.
+          ex <- exprs(x)
           if(!length(table@timeParameter))
-              time <- grep("^Time$", colnames(x), value=TRUE,
-                           ignoreCase=TRUE)[1]
-          if(!length(time))
-              stop("No time domain recording for this data.\n",
-                   "Please define time parameter in the filter's",
-                   "'timeParameter' slot.", call.=FALSE)
+              time <- findTimeChannel(ex) 
           param <- parameters(table)
           bw <- table@bandwidth
           bs <- table@binSize
           if(!length(bs))
               bs <- min(max(1, floor(nrow(x)/100)), 500)
-          binned <- prepareSet(exprs(x), param, time, bs,
+          binned <- prepareSet(ex, param, time, bs,
                                locM=median, varM=mad)
           
           ## Standardize to compute meaningful scale-free scores.
@@ -159,4 +155,18 @@ prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad){
 }
 
 
+findTimeChannel <- function(xx)
+{
+    time <- grep("^Time$", colnames(xx), value=TRUE,
+                 ignore.case=TRUE)[1]
+    if(!length(time)){
+        cont <- apply(xx, 2, function(y) all(sign(diff(y)) >= 0))
+        time <- names(which(cont))
+    }
+    if(!length(time))
+        stop("No time domain recording for this data.\n",
+             "Please define time parameter in the filter's",
+             "'timeParameter' slot.", call.=FALSE)
+    return(time)
+}
 

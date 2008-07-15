@@ -83,6 +83,22 @@ curv1Filter(x, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
   }
 }
 
+\details{
+
+  Areas of high local density in one dimensions are identified by
+  detecting significant curvature regions. See \cite{Duong, T. and
+  Cowling, A. and Koch, I. and Wand, M.P., Computational Statistics and
+  Data Analysis 52/9, 2008} for details.
+
+}
+
+
+\value{
+
+  Returns a \code{\link{curv1Filter}} object for use in filtering
+  \code{\link{flowFrame}}s or other flow cytometry objects.
+  
+}
 
 \author{ Florian Hahne }
 
@@ -99,3 +115,4 @@ curv1Filter("FSC-H", bwFac=2)
 }
 
 \keyword{classes}
+\keyword{methods}

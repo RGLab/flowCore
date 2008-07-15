@@ -358,18 +358,27 @@ setClass("kmeansFilter",
          contains="parameterFilter")
 
 ## contructor
-## not sure why but the parameters in list format can not be read.
 kmeansFilter <- function(..., filterId="kmeans")
 {
-    l <- length(list(...))
+    ll <- list(...)
+    l <- length(ll)
     if(l>1)
-	stop("k-means filters only operate on a single parameter.")
+	warning("k-means filters only operate on a single parameter.\n",
+                "Using '", names(ll)[1], "' now.", call.=FALSE)
     x <- ..1
-    if(is.list(x)) {
-        new("kmeansFilter", parameters=names(x)[1], populations=x[[1]],
+    if(is.character(x))
+        new("kmeansFilter", parameters=names(ll)[1], populations=x,
             filterId=filterId)
-    } else {
-        new("kmeansFilter", parameters=names(list(...))[1], populations=x,
+    else if(is.list(x) && ! length(names(x))){
+        new("kmeansFilter", parameters=names(ll)[1], populations=unlist(x),
+            filterId=filterId)
+    }else{
+        if(length(x)>1){
+            warning("k-means filters only operate on a single parameter.\n",
+                    "Using '", names(x)[1], "' now.", call.=FALSE)
+            x <- x[1]
+        }
+        new("kmeansFilter", parameters=names(x[1]), populations=unlist(x),
             filterId=filterId)
     }
 }
@@ -391,7 +400,7 @@ setClass("curv2Filter",
 ##constructor
 curv2Filter <-
     function(x, y, filterId="curv2Filter", bwFac=1.2,
-             gridsize=rep(151, 2), ...)
+             gridsize=rep(151, 2))
 {
     if(!is.numeric(bwFac) || length(bwFac)!=1)
         stop("'bwFac must be numeric skalar.", call.=FALSE)
@@ -414,7 +423,7 @@ curv2Filter <-
         y = y[1]
     }
     new("curv2Filter", parameters=as.character(c(x, y)), bwFac=bwFac,
-        gridsize=gridsize, filterId=as.character(filterId), ...)
+        gridsize=gridsize, filterId=as.character(filterId))
 }
 
 

@@ -22,7 +22,7 @@
 
 \usage{
 
-curv1Filter(x, y, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
+curv2Filter(x, y, filterId="curv2Filter", bwFac=1.2, gridsize=rep(151, 2))
 
 }
 
@@ -75,13 +75,30 @@ curv1Filter(x, y, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
   \describe{
     
     \item{\%in\%}{\code{signature(x = "flowFrame", table =
-	"curv1Filter")}: The workhorse used to evaluate the filter on
+	"curv2Filter")}: The workhorse used to evaluate the filter on
 	data. This is usually not called directly by the user. }
     
-    \item{show}{\code{signature(object = "curv1Filter")}: Print
+    \item{show}{\code{signature(object = "curv2Filter")}: Print
       information about the filter. }
     
   }
+}
+
+\details{
+
+  Areas of high local density in two dimensions are identified by
+  detecting significant curvature regions. See \cite{Duong, T. and
+  Cowling, A. and Koch, I. and Wand, M.P., Computational Statistics and
+  Data Analysis 52/9, 2008} for details.
+
+}
+
+
+\value{
+
+  Returns a \code{\link{curv2Filter}} object for use in filtering
+  \code{\link{flowFrame}}s or other flow cytometry objects.
+  
 }
 
 \author{ Florian Hahne }
@@ -98,3 +115,4 @@ curv2Filter("FSC-H", "SSC-H", filterId="test filter")
 }
 
 \keyword{classes}
+\keyword{methods}
