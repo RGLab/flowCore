@@ -21,6 +21,7 @@
 \maketitle
 
 \section*{Introduction}
+\subsection*{Computational tools for the analysis of FC-HCS data}
 During the last several years, automation technologies have been
 developed that enable the use of flow cytometry high content screening
 (FC-HCS) to generate large, complex datasets in both basic and
@@ -35,7 +36,7 @@ studies.
 Some of the consequences of this lag in development are difficulties
 in maintaining the integrity and documentation of extremely large
 datasets, assessing measurement quality, developing validated assays,
-assessing the accuracy of gating techniques, automating complex gating
+controling the accuracy of gating techniques, automating complex gating
 strategies, and aggregating statistical results across large study
 sets for further analysis.  Among the most serious consequences of the
 current situation is, however, that it is very difficult for new
@@ -80,9 +81,9 @@ R is a robust statistical programing environment which offers a wide
 range of statistical and visualization methods developed for various
 fields of application. In particular, the Bioconductor project aims to
 provide R software modules for biolocial and clinical data analysis.
-It is widely used to process data in various applications, spanning a
-diversity of research fields from genomics to proteomics to cell
-biology \citep{gentleman2006bos}. The R language and Bioconductor are
+It is widely used to process such data, spanning a diversity of
+research fields from genomics to proteomics to cell biology
+\citep{gentleman2006bos}. The R language and Bioconductor are
 particularly geared towards the analysis of large complex datasets
 that typically arise from high throughput experiments such as
 microarray gene expression analysis or FC-HCS. Using flow cytometry as
@@ -93,7 +94,8 @@ analysis: the first being the importance of data structures that
 reflect the underlying data and facilitate the manipulations that are
 of most interest, while the second lesson being the importance of a
 modular architecture that allows for many developers to extend and use
-the underlying infrastructure and to combine in complex workflows.
+the underlying infrastructure and to combine its tools in complex
+workflows.
 
 \subsection*{Existing data standards and conventions}
 Currently, data from FCM experiments are stored in single files
@@ -165,36 +167,37 @@ framework's functionality.
 
 
 
-\section*{Basic data structures}
-\subsection*{flowFrame}
-flowCore's primary task is the representation and basic manipulation
+\section*{Materials and Methods}
+\subsection*{Basic data structures}
+\subsubsection*{flowFrame}
+FlowCore's primary task is the representation and basic manipulation
 of FCM data. This is accomplished through a data model very close to
 that adopted by other Bioconductor packages. All information from a
 single FCS file, i.e., the collection of events and the accompanying
 metadata, is stored in one single container. We call the structure
-that hold this data a flowFrame, and raw data values as well as
-associated metadata can be accessed programmatically. Most commonly,
-these are descriptors of the stains used in the experiment and the
-respective measurement channels, information about compensation
-performed at the instrument side and any additional keywords the user
-deems to be important to annotate the data. A number of quality checks
-are performed during the creation of a flowFrame to ensure data
-integrity. 
+that hold this data a flowFrame. Raw data values as well as associated
+metadata of a flowFrame can be accessed programmatically. Most
+commonly, these are descriptors of the stains used in the experiment
+and the respective measurement channels, information about
+compensation performed at the instrument side and any additional
+keywords the user deems to be important to annotate the data. A number
+of quality checks are performed during the creation of a flowFrame to
+ensure data integrity.
 
-\subsection*{flowSet}
+\subsubsection*{flowSet}
 In high-throughput FCM, many of the analysis tasks need to be
 performed consistently across multiple flow measurements, hence we
 introduce the concept of a collection of flowFrames called a
 flowSet. One can envision a flowSet to be a container for multiple
 flowFrames along with relevant information associated with each
 individual frame such as descriptions of the cell sample or the
-treatment to which the sample was subjected. They manage the
-consistent application of operations on the individual flow frames and
+treatment to which the sample was subjected. FlowSets manage the
+consistent application of operations on the individual flowFrames and
 shift the burden of keeping score of the annotation from the user to
-the infrastructure, thus reducing the risk of common errors
-(\textit{e.g.}, mixups of sample labels). The flowSet structure can be
-readily extended to incorporate the potentially complex annotation
-associated with large FC-HCS experiments. Access to flowCore data
+the infrastructure, thus reducing the risk of errors (\textit{e.g.},
+mixups of sample labels). The flowSet structure can be readily
+extended to incorporate the potentially complex annotation associated
+with even larger FC-HCS experiments. Access to flowCore data
 structures and methods has already enabled the development of new
 Bioconductor packages, such as plateCore, that faciliate the analysis
 of plate-based FC-HCS data and make handling the annotation and
@@ -214,71 +217,121 @@ processing the data easier.
 \end{figure}
 
 
-\section*{Standard flow operations}
+\subsection*{Standard flow operations}
 The basic operations in FCM analyses are typically the same: the data
 need to be compensated (if not already done on the instrument side)
 and transformed, and sup-populations of interest need to be selected
 based on a set of (predominantly sequential) gates. All software
 solutions for FCM analysis offer more or less elaborate support for
-these kinds of operation, and most of them in an interactive,
-GUI-driven interface. The approach we have taken in flowCore is to
-abstractly describe these operations and build a set of tools to
-perform them on both flow frames and flow sets. While transformation,
-and to a certain extent compensation, are fairly routine operations
-with only limited potential for improvement, being able to implement
-new methodologies for gating of FCM data, and extending the
-capabilities of flowCore through object oriented programming are
-features that clearly sets our framework apart from other FCM analysis
-tools. By factoring out as much of the bookkeeping as possible,
-programmers can focus on the actual operations rather then having to
-deal with the tedious details of data integration and
-access. Third-party methods can act on their own as first-class
-citizens in the analysis framework, without breaking the workflow or
-the basic infrastructure. This design allows for the straightforward
-extension of flowCore's capabilities, and has already fostered the
-development of a number of valuable add-ons
-\citep{lo2008agf,sarkar2008ufv} \textit{(plateCore}.
+these kinds of operation in an interactive, GUI-driven interface. The
+approach we have taken in flowCore is to abstractly describe these
+operations and build a set of tools to perform them on both flowFrames
+and flowSets. While transformation, and to a certain extent
+compensation, are fairly routine operations with only limited
+potential for improvement, being able to implement new methodologies
+for gating of FCM data, and extending the capabilities of flowCore
+through object oriented programming are features that clearly sets our
+framework apart from other FCM analysis tools. By factoring out as
+much of the bookkeeping as possible, programmers can focus on the
+actual operations rather then having to deal with the tedious details
+of data integration and access. Third-party methods can act on their
+own as first-class citizens in the analysis framework, without
+breaking the workflow or the basic infrastructure. This design allows
+for the straightforward extension of flowCore's capabilities, and has
+already fostered the development of a number of valuable add-ons
+\citep{lo2008agf,sarkar2008ufv} \textit{(plateCore)}.
 
 
 
 
-\subsection*{Transformation and compensation}
+\subsubsection*{Transformation and compensation}
 Data transformation is essential for both data visualization and
 modelling \citep{lo2008agf}. The major transformations that are
 routinely used in FCM analysis have been implemented in flowCore
-(\textit{e.g.,} quadratic, log or arcsinh). Furthermore, the design of the R language makes
-it easy to define arbitrary functions to apply to the data of
-individual flow frames or entire flow sets, respectively. Compensation
-is available for both flow frames and flow sets, and the software also
+(\textit{e.g.,} quadratic, log or arcsinh, see Table~\ref{table1} for a
+complete list). Furthermore, the design of the R language makes it
+easy to define arbitrary functions to apply to the data of individual
+flowFrames or entire flowSets, respectively. Compensation is
+available for both flowFrames and flowSets, and the software also
 offers functionality to compute spillover or compensation matrices
 from a set of appropriate compensation samples.
 
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{Data Transformations} \\
+\hline
+linear & $ax + b$ \\
+quadratic & $ax^2 + bx + c$ \\
+natural logarithm & $ln(x)(r/d)$ \\
+logarithm & log(x)(r/d) \\
+biexponential & need equation \\
+logicle& need equation \\
+truncate & $x_{x<=a} = a$ \\
+scale & (x-a)/(b-a) \\
+split-scale & need equation \\
+arcsinh & $asinh(a + bx)+c$ \\
+\hline
+\end{tabular}
+\caption{\label{table1}Data transformations implemented in flowCore.}
+\end{center}
+\end{table}
 
-
-\subsection*{Gating}
+\subsubsection*{Gating}
 In flowCore, gating operations are represented by classes that can be
-extended in an object-oriented manner. Basic gate types such as
-rectangular gates, ellipses and polygon gates are implemented as part
-of the framework. In addition, we introduce the notion of data-driven
-gates, or filters, for which the necessary parameters are computed
-based on the properties of the underlying data, for instance by
-modelling underlying data distribution or by density estimation. The
-ability to programmatically access gates is a prerequisite for
-automated or semi-automated gating. By utilizing a unified interface
-for all different types of gates, the user is able to subset data sets
-as well as to create summary statistics, like the proportions of
-events falling in single gates or in the combinations of
-gates. Complex combinations and hierarchies of gates can be captured
-in objects of class filterSet, allowing to apply multi-step gating
-strategies. The definition of gates in flowCore follows the Gating-ML
-CR, thus any flowCore gating strategy can be reproduced by any other
-software that also adheres to the standard.
+extended in an object-oriented manner (Table~\ref{table2}). Basic gate
+types such as rectangular gates, ellipses and polygon gates are
+implemented as part of the framework. In addition, we introduce the
+notion of data-driven gates, or filters, for which the necessary
+parameters are computed based on the properties of the underlying
+data, for instance by modelling data distribution or by density
+estimation. The ability to programmatically access gates is a
+prerequisite for automated or semi-automated gating. By utilizing a
+unified interface for all different types of gates, the user is able
+to subset data sets as well as to create summary statistics, for
+instance the proportions of events falling in single gates or in the
+combinations of gates. Complex combinations and hierarchies of gates
+can be captured in objects of class filterSet, allowing to apply
+multi-step gating strategies. The definition of gates in flowCore
+follows the Gating-ML CR, thus any flowCore gating strategy can be
+reproduced by any other software that also adheres to the standard.
 
-\section*{Related flow packages}
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{Gates} \\
+\hline
+rectangleGate & n-dinensional rectangular regions \\
+quadGate & quadrant regions in two dimensions \\
+polygonGate & polygonal regions in two dimensions \\
+polytopeGate & generalization of polygon in n dimensions \\
+ellipsoidGate & n-dimesnional ellipsoid region \\
+\hline
+\multicolumn{2}{|c|}{Filters} \\
+\hline
+sampleFilter & random subsampling\\
+expressionFilter & filter by resuts of a boolean expression \\
+kmeansFilter & based on K-means clustering \\
+norm2Filter & based on bivariate normal distribution \\
+curv1Filter & based on local density regions in 1D \\
+curv2Filter & based on local density regions in 2D \\
+timeFilter & based on abnormal data acquisition over time \\
+\hline
+filterSet & gating strategy \\
+\hline
+\end{tabular}
+\caption{\label{table2}Filter and gate classes implemented in flowCore.}
+\end{center}
+\end{table}
+
+\subsection*{Related flow packages}
 In addition to the flowCore package that offers basic infrastructure,
 we have implemented a range of additional Bioconductor packages that
 are dedicated to more specific tasks of FCM data analysis
-(Figure \ref{fig2:flowWheel}). The flowViz package provides
+%(Figure \ref{fig2:flowWheel}) 
+. The flowViz package provides
 sophisticated data visualization tools, that make use of multivariate
 trellis plotting. These functions can be used to quickly generate
 customized plots for extended cytometry data sets for both direct data
@@ -332,7 +385,7 @@ patient. Instead of plotting individual points, the local bivariate
 density of the data is shown as a false color image. For each panel,
 the outlines of the regions identified in the automated gating
 operation described below are added to the plot. The input to the
-plotting function is either a single flow frame or a complete flow set
+plotting function is either a single flowFrame or a complete flowSet
 object, and all available metadata can be accessed to control the
 appearance and the composition of the plot. Similarly, gate objects
 are directly passed on to the plotting function and are included in
@@ -349,7 +402,7 @@ functions.
 \centering
 \includegraphics[width=0.75\textwidth]{xyplot}
 \caption{\label{xyplot}%
-Scatterplot matrix of a single Flow Set with outlines of the gating
+Scatterplot matrix of a single FlowSet with outlines of the gating
 regions identified by an automated gating operation.}
 \end{figure}
 
