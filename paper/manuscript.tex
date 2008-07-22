@@ -60,8 +60,8 @@ will play a critical role in addressing the bottlenecks described
 above that limit further advances in the application of FC-HCS.
 
 The computational tools we have developed are distributed in the R
-software language (www.r-project.org) as the Bioconductor
-(www.bionductor.org) package flowCore. flowCore is a freely available,
+software language \citep{Rmain} as the Bioconductor
+\citep{BIOC} package flowCore. flowCore is a freely available,
 highly functional and extensible FCM data analysis platform that
 enables researchers to efficiently handle FC-HCS data and encourages
 open development of tools for their coherent analysis. Among the
@@ -319,7 +319,7 @@ curv1Filter & based on local density regions in 1D \\
 curv2Filter & based on local density regions in 2D \\
 timeFilter & based on abnormal data acquisition over time \\
 \hline
-filterSet & gating strategy \\
+filterSet & gating strategies \\
 \hline
 \end{tabular}
 \caption{\label{table2}Filter and gate classes implemented in flowCore.}
@@ -329,122 +329,141 @@ filterSet & gating strategy \\
 \subsection*{Related flow packages}
 In addition to the flowCore package that offers basic infrastructure,
 we have implemented a range of additional Bioconductor packages that
-are dedicated to more specific tasks of FCM data analysis
-%(Figure \ref{fig2:flowWheel}) 
-. The flowViz package provides
-sophisticated data visualization tools, that make use of multivariate
-trellis plotting. These functions can be used to quickly generate
-customized plots for extended cytometry data sets for both direct data
-inspection and quality control. The flowQ package offers more advanced
-quality assurance (QA) methodology and a framework to create
-interactive web-based reports of QA results. Most of flowUtil's
-content deals with data import and output from and to flowCore and the
-flow-cytometry specific standard markup languages. Finally, flowStats
-provides statistical methods that are relevant in the context of flow
+are dedicated to more specific tasks of FCM data analysis. The flowViz
+package \citep{sarkar2008ufv} provides sophisticated data
+visualization tools, that make use of multivariate trellis
+plotting. These functions can be used to quickly generate customized
+plots for extended cytometry data sets for both direct data inspection
+and quality control. The objects annotation information can be used to
+arange the layout and composition of the plots. Furthermore, the
+design and the API of the visualization software is very generic, and
+users can readily extend its capabilities by providing self-defined
+plotting functions.  The flowQ package offers more advanced quality
+assurance (QA) methodology and a framework to create interactive
+web-based reports of QA results. Most of flowUtil's content deals with
+data import and output from and to flowCore and the flow-cytometry
+specific standard markup languages. Finally, flowStats provides more
+elaborate statistical methods that are relevant in the context of flow
 cytometry data analysis.
 
 
-%\begin{figure}
-%\centering
-%\includegraphics[width=0.6\textwidth]{Figure2-flowWheel-version4.jpg}
-%\caption{\label{fig2:flowWheel}{flowCore and assoziated Bioconductor
-%    packages: dedicated packages have been developed that utilize
-%    flowCoreœôòùs data structures. flowViz is a data visualization
-%    package; flowQ provides data quality assessment methods; flowUtils
-%    contains interfaces for flow data, including xml parsers:
-%    flowClust provides automated gating by model-based clustering.}}
-%\end{figure}
-
-
-\section*{Application}
-The flowCore package has successfully been applied in the analysis of
+\section*{Results}
+The flowCore package has been successfully applied in the analysis of
 several datasets \citep{gasparetto2004ice,brinkman2007hcf}, and
 several other Bioconductor packages are making use of its code
 base. As an example, \cite{lo2008agf} have recently developed an
-automatic gating approach via robust model-based clustering using the
-flowCore data model and infrastructure and implemented this in the
-Bioconductor package flowClust. Another package (plateCore) providing
+automatic gating approach via robust model-based clustering using
+flowCore's data model and infrastructure and implemented this in the
+Bioconductor package flowClust. Another package, plateCore, providing
 more specialized support for experiments conducted on microtitre
-plates is under development. The documentation of all of flowCore's
-features is beyond the scope of this publication, however additional
-documentation and users guide information with programmatic examples
-is available <here> . However, in the Supplementary Material to this
-article we use a single example to demonstrate some of the software's
-hallmarks, including the concept of data-driven automated gating, the
-integration of existing software into the framework, and the
-generation of publication-quality graphics for data visualization.
+plates is under development.
 
-%% not sure about this next section vs. the use of Suuplementary material. Would it be useful/informative to show the code required to generate the plot? Otherwise I'm not sold that the next paragraph adds anything.
+A complete documentation of the flowCore software is way beyond the
+scope of this publication. Much more comprehensive documentation and
+users guide information with programmatic examples is available online
+(\url{http://bioconductor.org/packages/2.2/bioc/html/flowCore.html})
+and as part of the package distribution. Here, we only want to briefly
+exemplify some of the software's key features, that is, the coherent
+treatment of all samples in a potentially large expreriment, the
+concept of data-driven automated gating, the integration of existing
+software into the framework, and the generation of publication-quality
+graphics for data visualization.
 
-%% I am not sure about the use of Supplementary Material - flowCore and all the packages mentioned here 
-%% already have at least 1 vignette with examples and code
+Data analysis for most experiments usually begins with a quality
+assurance step, and we can use functionality from the flowQ package to
+create an HTML report that highlights potential quality
+issues. Assuming that the data has already been imported as the
+flowSet object ``dat'', the following simple line of code produces the
+quite complex output:
 
-A very basic matrix of scatterplots is shown in Figure \ref{xyplot},
-where each panel in the matrix represents the data of one individual
-patient. Instead of plotting individual points, the local bivariate
-density of the data is shown as a false color image. For each panel,
-the outlines of the regions identified in the automated gating
-operation described below are added to the plot. The input to the
-plotting function is either a single flowFrame or a complete flowSet
-object, and all available metadata can be accessed to control the
-appearance and the composition of the plot. Similarly, gate objects
-are directly passed on to the plotting function and are included in
-the plot if possible. Besides the very basic scatterplot shown here,
-there is a wealth of additional data visualizations available in the
-flowViz package\cite{sarkar2008ufv}, all making use of flowCore's data
-models allowing to easily arrange the data according to numerous
-experimental factors. Furthermore, the design and the API of the
-visualization software itself is very generic, and the user can
-readily extend its capabilities by providing self-defined plotting
-functions.
+\begin{verbatim}
+> library(flowCore)
+> library(flowQ)
+> qaReport(dat, c("qaProcess.timeline", "qaProcess.timeflow", 
+                  "qaProcess.cellnumber"))
+\end{verbatim}
+
+The report is interactive and provides drilldown to more detailed
+aspects of the analysis, starting from a concise overview
+(Figure~\ref{flowQ}). The design of flowCore's data model allows for a
+coherent treatment of all the samples, hence we are able to compare
+features between individuals, or between groups of individuals, based
+on the available annotation information.
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{flowQ.jpg}
+\caption{\label{flowQ}% 
+  HTML quality assesment report generated by
+  the flowQ package. Rows correspond to samples, columns to different
+  quality checks.}
+\end{figure}
+
+Static gating for all samples in a high-throughput FCM experiment is
+often not an option, since the measured variables tend to vary between
+different treatments, over time or between different experiment
+batches. Automated or data-driven gating tries to estimate the gating
+regions from the underlying data, thus providing a fast objective
+solution to the analysis of potentially very large and diverse data
+sets \cite{lo2008agf}. One of the automated gating methods implemented
+in flowCore is based on identifying areas of significant curvature in
+a kernel density estimate of the data \citep{wand2008}. Assuming that
+the regions of interest are of high density, the software is able to
+reliably detect them in a one or two-dimensional density landscape.
+
+\begin{verbatim}
+> cf <- curv2Filter("FL1-H", "FL3-H")
+> fres <- filter(dat, cf)
+\end{verbatim}
+
+Kernel density estimation is a well-known problem in statistical
+computing, and a lot of effort has been invested in the development of
+good software to address it. The modular design of flowCore allows to
+easily integrate these existing solutions into our framework. In this
+example, we directly use R code from the feature package developed by
+\cite{wand2008}. Instead of re-writing existing code, we are able to
+include it via the well tested distribution mechanism provided by R's
+software package system. This process is bi-directional, and all
+functionality implemented in flowCore is available to other package
+authors, as we have seen with the afore-mentioned flowClust package.
+
+We can chose one of the many visualization option from the flowViz
+package to plot the results of the recent filtering operation. A very
+basic matrix of density plots is shown in Figure \ref{xyplot}, where
+each panel in the matrix represents the data of one individual
+patient.
+
+\begin{verbatim}
+> xyplot(`FL1-H` ~ `FL3-H` | SampleID, data=dat, filter=fres)
+\end{verbatim}
+
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.75\textwidth]{xyplot}
 \caption{\label{xyplot}%
-Scatterplot matrix of a single FlowSet with outlines of the gating
+Scatterplot matrix of a single flowSet with outlines of the gating
 regions identified by an automated gating operation.}
 \end{figure}
 
-Static gating for all samples in a high-throughput FCM experiment is
-often not an option, since the measured variables tend to vary between
-different treatments or over time. Automated or data-driven gating
-tries to estimate the gating regions from the underlying data, thus
-providing a fast objective solution to the analysis of potentially
-very large and diverse data sets \cite{lo2008agf}. One of the
-automated gating methods implemented in flowCore is based on
-identifying areas of significant curvature in a kernel density
-estimate of the data \citep{wand2008}. Assuming that the regions of
-interest are of high density, the software is able to reliably detect
-them in either the one or the two-dimensional density
-landscape. Kernel density estimation is a well-known problem in
-statistical computing, and a lot of effort has been invested in the
-development of good software to address it. The modular design of R,
-Bioconductor and flowCore allows to easily integrate these existing
-solutions into our framework. In this example, we directly use R code
-from the feature package developed by \cite{wand2008}. Instead of
-re-writing existing code, we are able to include it via the well
-tested distribution mechanism provided by R's software package
-system. This process is bi-directional, and all functionality
-implemented in flowCore is available to other package authors, as we
-have seen with the afore-mentioned flowClust package.
 
-\section*{Conclusions}
+
+\section*{Discussion}
 
 Through flowCore, we have provided the FCM community a freely
-available, highly functional, development and analysis platform for high
-throughput data analysis. Our intent is to provide a platform
-for the collaborative development of new analysis methods that
-will facilitate the transition of these new methods to the larger 
-flow community. Our experience has been that the 
-collaborative effort we enable for devising new methodology has been proven
-beneficial for a number of different biological and computational biology challenges. 
-We hope that our
-framework will be the foundation for fruitful shared research by many
-collaborators from multiple scientific fields and will help resolve
-bottlenecks that currently prevent the further development of and deployment of
-FC-HCS to increasingly complex and important scientific and clinical 
-applications. 
+available, highly functional, development and analysis platform for
+high throughput data analysis. Our intent is to provide a platform for
+the collaborative development of new analysis methods that will
+facilitate the transition of these new methods to the larger flow
+community. Our experience has been that the collaborative effort we
+enable for devising new methodology has been proven beneficial for a
+number of different biological and computational biology challenges.
+We hope that our framework will be the foundation for fruitful shared
+research by many collaborators from multiple scientific fields and
+will help resolve bottlenecks that currently prevent the further
+development of and deployment of FC-HCS to increasingly complex and
+important scientific and clinical applications.
 
 \section*{Acknowledgements}
 This work was supported by NIH grant EB005034. RRB is a Michael Smith
