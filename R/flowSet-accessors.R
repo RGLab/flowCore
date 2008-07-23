@@ -282,6 +282,16 @@ setMethod("transform",signature(`_data`="missing"),function(...) {
 
 
 ## ==========================================================================
+## General %on% implementation for a flowSet. Basically a wrapper around
+## fsApply
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("%on%",
+          signature(e2="flowSet"),
+          function(e1, e2) fsApply(e2, "%on%", e1=e1))
+
+
+
+## ==========================================================================
 ## filter methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## for filters
@@ -429,45 +439,49 @@ setMethod("rbind2",signature("flowFrame","flowSet"),
 ## ===========================================================================
 ## spillover method
 ## ---------------------------------------------------------------------------
-setMethod("spillover","flowSet",function(x,unstained=NULL,patt=NULL,fsc="FSC-A",
-                                         ssc="SSC-A",method="median") {
-	if(is.null(unstained)) {
-		stop("Sorry, we don't yet support unstained cells blended with stained cells")
-	} else {
-		## We often only want spillover for a subset of the columns 
-		allcols = colnames(x)
-		cols    = if(is.null(patt)) allcols else grep(patt,allcols,value=TRUE)
-		
-		
-		if(is.numeric(fsc)) fsc = allcols[fsc]
-		if(is.numeric(ssc)) ssc = allcols[ssc]
+setMethod("spillover",
+          signature("flowSet"),
+          function(x, unstained=NULL, patt=NULL, fsc="FSC-A",
+                   ssc="SSC-A", method="median")
+      {
+          if(is.null(unstained)) {
+              stop("Sorry, we don't yet support unstained cells blended ",
+                   "with stained cells", call.=FALSE)
+          } else {
+              ## We often only want spillover for a subset of the columns 
+              allcols <- colnames(x)
+              cols <- if(is.null(patt)) allcols else grep(patt, allcols,
+                                                          value=TRUE)
+              if(is.numeric(fsc)) fsc <- allcols[fsc]
+              if(is.numeric(ssc)) ssc <- allcols[ssc]
 
-		
+              if(is.na(match(fsc,allcols)))
+                  stop("Could not find forward scatter parameter. ",
+                       "Please set the fsc parameter", call.=FALSE)
+              if(is.na(match(ssc,allcols)))
+                  stop("Could not find side scatter parameter. ",
+                       "Please set the ssc parameter", call.=FALSE)
+              ## Ignore these guys if they somehow got into cols.
+              cols <- cols[-match(c(fsc,ssc),cols)]
 
-		if(is.na(match(fsc,allcols)))
-			stop("Could not find forward scatter parameter. Please set the fsc parameter")
-		if(is.na(match(ssc,allcols)))
-			stop("Could not find side scatter parameter. Please set the ssc parameter")
-		#Ignore these guys if they somehow got into cols.
-		cols = cols[-match(c(fsc,ssc),cols)]
-
-		## There has got to be a better way of doing this...
-		if(!is.numeric(unstained)) {
-			unstained = match(unstained,sampleNames(x))
-			if(is.na(unstained))
-				stop("Baseline not in this set.")
+              ## There has got to be a better way of doing this...
+              if(!is.numeric(unstained)) {
+                  unstained <- match(unstained,sampleNames(x))
+                  if(is.na(unstained))
+                      stop("Baseline not in this set.", call.=FALSE)
 		}
-		#Check to see if the unstained sample is in the list of stains. If not, we need
-		#to add it, making it the first row and adjust the unstained index accordingly.
-		#If it is there we adjust to the appropriate index.
-		n2f   = norm2Filter(fsc,ssc,scale.factor=1.5)
-		inten = fsApply(Subset(x,n2f),each_col,method)[,cols]
-		inten = pmax(sweep(inten[-unstained,],2,inten[unstained,]),0)
-		inten = sweep(inten,1,apply(inten,1,max),"/")
-		row.names(inten) = colnames(inten)[apply(inten,1,which.max)]
-		inten[colnames(inten),]
-	}
-})
+              ## Check to see if the unstained sample is in the list of
+              ## stains. If not, we need to add it, making it the first
+              ## row and adjust the unstained index accordingly.
+              ## If it is there we adjust to the appropriate index.
+              n2f <- norm2Filter(fsc, ssc, scale.factor=1.5)
+              inten <- fsApply(Subset(x, n2f), each_col,method)[, cols]
+              inten <- pmax(sweep(inten[-unstained,], 2,inten[unstained,]), 0)
+              inten <- sweep(inten, 1,apply(inten, 1, max), "/")
+              row.names(inten) <- colnames(inten)[apply(inten ,1, which.max)]
+              inten[colnames(inten),]
+          }
+      })
 
 
 

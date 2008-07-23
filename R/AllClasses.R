@@ -549,7 +549,8 @@ setClass("filterSet",
 filterSet <- function(...) {
     filters <- list(...)
     ## Allow the list(x, y, z) format as well.
-    if(length(filters)==1 && is.list(filters[[1]])) filters <- filters[[1]]
+    if(length(filters)==1 && is.list(filters[[1]]))
+        filters <- filters[[1]]
     if(length(filters) == 0)
         new("filterSet", env=new.env(parent=emptyenv()))
     else
@@ -561,7 +562,7 @@ filterSet <- function(...) {
 ## ===========================================================================
 ## filterReference
 ## ---------------------------------------------------------------------------
-#References a filter (contained within a filterSet)
+## References a filter (contained within a filterSet)
 ## ---------------------------------------------------------------------------
 setClass("filterReference",
          representation(name="character", env="environment"),
@@ -662,7 +663,8 @@ setClass("multipleFilterResult",
 ## manyFilterResult
 ## ---------------------------------------------------------------------------
 ## A special case of multipleFilterResult that arises when there are
-## overlapping sets
+## overlapping sets. The subset indices are stored as a matrix, where
+## each row contains the results of a single filtering operation.
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
          representation(subSet="matrix", dependency="ANY"),
@@ -866,7 +868,7 @@ parameterTransform <- function(FUN, params)
 ## ===========================================================================
 ## transformMap
 ## ---------------------------------------------------------------------------
-## I want to be able to include transforms within a filter. First we need to
+## We want to be able to include transforms within a filter. First we need to
 ## know which parameters should be input filters
 ## ---------------------------------------------------------------------------
 setClass("transformMap",
@@ -880,7 +882,32 @@ setClass("transformMap",
 ## A list of transformMaps
 ## ---------------------------------------------------------------------------
 setClass("transformList",
-         representation(transforms="list"))
+         representation(transforms="list"),
+         validity=function(object)
+         if(all(sapply(object@transforms, is, "transformMap"))) TRUE else
+         stop("All list items of a 'transformList' must be of class ",
+              "'transformMap.'", call.=FALSE))
+
+## constructor
+transformList <- function(from, tfun, to=from)
+{
+    from <- unique(from)
+    to <- unique(to)
+    if(!is.character(from) || !is.character(to) || length(from) != length(to))
+        stop("'from' and 'to' must be character vectors of equal length.",
+             call.=FALSE)
+    if(is.character(tfun))
+        tfun <- lapply(tfun, get)
+    if(!is.list(tfun)) tfun <- list(tfun)
+    if(!all(sapply(tfun, is, "function")))
+        stop("'tfun' must be a list of functions or a character vector ",
+             "with the function names.", call.=FALSE)
+    tfun <- rep(tfun, length(from))
+    tlist <- mapply(function(x, y, z)
+                    new("transformMap", input=x, output=y, f=z),
+                    from, to, tfun[1:length(from)])
+    return(as(tlist, "transformList"))
+}
 
 
 

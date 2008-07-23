@@ -22,3 +22,16 @@ setMethod("%on%",signature("parameterTransform","flowFrame"),function(e1,e2) {
 	e2
 })
 
+
+## ==========================================================================
+## summary method
+## So that we can get parameters back OUT of a transform
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("summary",
+          signature("transform"),
+          function(object, ...) {
+              e <- environment(object)
+              x <- ls(env=e)
+              structure(lapply(x, "get", env=e), names=x)
+          })
+
