@@ -26,7 +26,7 @@ During the last several years, automation technologies have been
 developed that enable the use of flow cytometry high content screening
 (FC-HCS) to generate large, complex datasets in both basic and
 clinical research applications \citep{brinkman2007hcf}. A serious
-bottleneck in the intepretation of existing studies and the
+bottleneck in the interpretation of existing studies and the
 application of FC-HCS to even larger, more complex problems is that
 data management and data analysis methods have not advanced
 sufficiently far from the methods developed for traditional
@@ -36,7 +36,7 @@ studies.
 Some of the consequences of this lag in development are difficulties
 in maintaining the integrity and documentation of extremely large
 datasets, assessing measurement quality, developing validated assays,
-controling the accuracy of gating techniques, automating complex gating
+controlling the accuracy of gating techniques, automating complex gating
 strategies, and aggregating statistical results across large study
 sets for further analysis.  Among the most serious consequences of the
 current situation is, however, that it is very difficult for new
@@ -47,40 +47,40 @@ expansion of FC-HCS in both clinical and research applications.
 
 In this paper, we describe a set of flexible and well structured
 computational tools to efficiently analyze FC-HCS. This set of tools
-is based on the open source statistical software R, in conjunction
-with the Bioconductor Project. Our intent is to provide a shared
-research platform that enables bioinformaticians, computer scientists,
-and statisticians to work collaboratively with biologists and
-clinicians to develop novel methods \citep{lizard2007fca} for FCM data
-analysis. A critical component of this approach is the development and
-implementation of standards that will facilitate the adoption of these
-methods by both the larger research community and commercial software
-vendors.  Consequently, we are optimistic that this software platform
-will play a critical role in addressing the bottlenecks described
-above that limit further advances in the application of FC-HCS.
+is based on the open source statistical software R \citep{Rmain}, in
+conjunction with the Bioconductor Project \citep{BIOC}. Our intent is
+to provide a shared research platform that enables bioinformaticians,
+computer scientists, and statisticians to work collaboratively with
+biologists and clinicians to develop novel methods
+\citep{lizard2007fca} for FCM data analysis. A critical component of
+this approach is the development and implementation of standards that
+will facilitate the adoption of these methods by both the larger
+research community and commercial software vendors.  Consequently, we
+are optimistic that this software platform will play a critical role
+in addressing the bottlenecks described above that limit further
+advances in the application of FC-HCS.
 
 The computational tools we have developed are distributed in the R
-software language \citep{Rmain} as the Bioconductor
-\citep{BIOC} package flowCore. flowCore is a freely available,
-highly functional and extensible FCM data analysis platform that
-enables researchers to efficiently handle FC-HCS data and encourages
-open development of tools for their coherent analysis. Among the
-issues addressed by flowCore are computationally efficient data
-structures and a range of specialized methods for compensation,
-transformation, and gating.  flowCore runs on Windows, Mac OS X and
-Linux/Unix operating systems. Conceptually, the underlying data
-structures that build the core of our software can be implemented in
-any programming language, and we chose the R language for its obvious
-advantages in statistical programming. In this paper, we describe the
-functionality and methods underlying flowCore, and provide examples of
-their use.
+software language as the Bioconductor package flowCore. flowCore is a
+freely available, highly functional and extensible FCM data analysis
+platform that enables researchers to efficiently handle FC-HCS data
+and encourages open development of tools for their coherent
+analysis. Among the issues addressed by flowCore are computationally
+efficient data structures and a range of specialized methods for
+compensation, transformation, and gating.  flowCore runs on Windows,
+Mac OS X and Linux/Unix operating systems. Conceptually, the
+underlying data structures that build the core of our software can be
+implemented in any programming language, and we chose the R language
+for its obvious advantages in statistical programming. In this paper,
+we describe the functionality and methods underlying flowCore, and
+provide examples of their use.
 
 
 \subsection*{R and Bioconductor}
 R is a robust statistical programing environment which offers a wide
 range of statistical and visualization methods developed for various
 fields of application. In particular, the Bioconductor project aims to
-provide R software modules for biolocial and clinical data analysis.
+provide R software modules for biological and clinical data analysis.
 It is widely used to process such data, spanning a diversity of
 research fields from genomics to proteomics to cell biology
 \citep{gentleman2006bos}. The R language and Bioconductor are
@@ -88,14 +88,14 @@ particularly geared towards the analysis of large complex datasets
 that typically arise from high throughput experiments such as
 microarray gene expression analysis or FC-HCS. Using flow cytometry as
 a high-throughput technology requires suitable software infrastructure
-to facilitate the rapid handling of the data obtained. We rely on two
-important lessons learned from the field of gene expression data
-analysis: the first being the importance of data structures that
-reflect the underlying data and facilitate the manipulations that are
-of most interest, while the second lesson being the importance of a
-modular architecture that allows for many developers to extend and use
-the underlying infrastructure and to combine its tools in complex
-workflows.
+to facilitate the rapid handling of the data. We rely on two important
+lessons learned from the field of gene expression data analysis: the
+first being the importance of data structures that reflect the
+underlying data and facilitate the manipulations that are of most
+interest, while the second lesson being the importance of a modular
+architecture that allows for many developers to extend and use the
+underlying infrastructure and to combine its tools in complex
+work flows.
 
 \subsection*{Existing data standards and conventions}
 Currently, data from FCM experiments are stored in single files
@@ -121,11 +121,11 @@ fully address the highly complex nature of FCM data; in particular,
 they discard many of the fundamental aspects of the data, such as its
 underlying distribution and its high-dimensional nature. Furthermore,
 the subjective character of manual analyses are a major obstacle to
-reproducibility. For FC-HCS data, unassisted manual inspection is too
-time consuming, and robust statistical methods need to be developed to
-point investigators to interesting aspects of the data, or to
-potential problems. While the expert knowledge of immunologists and
-researchers remains crucial for the understanding of FCM data, we
+reproducibility. For FC-HCS data, unassisted manual inspection is
+extremely time consuming, and robust statistical methods need to be
+developed to point investigators to interesting aspects of the data,
+or to potential problems. While the expert knowledge of immunologists
+and researchers remains crucial for the understanding of FCM data, we
 believe that collaboration with other research fields such as
 statistics and computer science can greatly improve the relevance of
 FCM in today's high-throughput paradigm.
@@ -133,22 +133,23 @@ FCM in today's high-throughput paradigm.
 These issues are currently being addressed by emerging new flow
 cytometry data standards developed in collaboration with the ISAC Data
 Standards Task Force.  For example, the Gating-ML Candidate
-Recommendation (CR) represents a proposal on how to form unambiguous
-XML-based gate definitions, which can facilitate the interchange and
-validation of data between different software packages. Gates may be
-ordered into a hierarchical structure to describe a gating
-strategy. This enables the encoding of a simple analytical workflow,
-in a way that allows us to reconstruct the analysis programmatically.
+Recommendation (CR) \textit{Fixme Ryan or Joseph: How do we cite
+  this?}  represents a proposal on how to form unambiguous XML-based
+gate definitions, which can facilitate the interchange and validation
+of data between different software packages. Gates may be ordered into
+a hierarchical structure to describe a gating strategy. This enables
+the encoding of a simple analytical work flow, in a way that allows us
+to reconstruct the analysis programmatically.
 
 The flowCore framework presented here offers import functionality for
 raw data FCS files along with their complete set of file-specific meta
 information (Figure~\ref{fig1:FrameWork}). Moreover, it is a software
 implementation of the Gating-ML CR, which opens the possibility to
-integrate flowCore in existing workflows and to communicate with every
+integrate flowCore in existing work flows and to communicate with every
 other FCM tool that adheres to the proposed standard. Adherence to
 standards also plays a critical role in the ability of new methods
 based on flowCore to find there way back into the standard practices
-for FCM data analysis. Note that the data strucures defined in
+for FCM data analysis. Note that the data structures defined in
 flowCore aim to model large sets of FCM data in a natural and coherent
 way; they are not specific to the R language and can be implemented in
 any other programming language. Ideally, different software programs
@@ -161,9 +162,9 @@ more elaborate user interface on top of that, however the focus is on
 a programmatic approach to enable the convenient development of novel
 analysis methods and automation of complex analysis approaches. By
 taking the burden of data management from the programmer, and by
-providing well-defined APIs and a structured class hierarchy, it is
-possible to readily test new ideas and to easily extend the
-framework's functionality.
+providing well-defined programming interfaces (APIs) and a structured
+class hierarchy, it is possible to readily test new ideas and to
+easily extend the framework's functionality.
 
 
 
@@ -174,9 +175,9 @@ FlowCore's primary task is the representation and basic manipulation
 of FCM data. This is accomplished through a data model very close to
 that adopted by other Bioconductor packages. All information from a
 single FCS file, i.e., the collection of events and the accompanying
-metadata, is stored in one single container. We call the structure
+meta data, is stored in one single container. We call the structure
 that hold this data a flowFrame. Raw data values as well as associated
-metadata of a flowFrame can be accessed programmatically. Most
+meta data of a flowFrame can be accessed programmatically. Most
 commonly, these are descriptors of the stains used in the experiment
 and the respective measurement channels, information about
 compensation performed at the instrument side and any additional
@@ -199,7 +200,7 @@ mixups of sample labels). The flowSet structure can be readily
 extended to incorporate the potentially complex annotation associated
 with even larger FC-HCS experiments. Access to flowCore data
 structures and methods has already enabled the development of new
-Bioconductor packages, such as plateCore, that faciliate the analysis
+Bioconductor packages, such as plateCore, that facilitate the analysis
 of plate-based FC-HCS data and make handling the annotation and
 processing the data easier.
 
@@ -209,11 +210,11 @@ processing the data easier.
 \centering
 \includegraphics[width=0.9\textwidth]{Figure1-flowCoreFrameWork.jpg}
 \caption{\label{fig1:FrameWork}{For each experiment, FCS files (as
-    individual flowFrames), phenotypic and metadata are stored in a
+    individual flowFrames), phenotypic and meta data are stored in a
     flowSet. Each flowFrame in a flowSet corresponds to one FCS
     file. All basic operations (e.g., compensation, transformation,
     gating) can be applied to either single flowFrames or a flowSet
-    simulataneously.}}
+    simultaneously.}}
 \end{figure}
 
 
@@ -236,10 +237,11 @@ much of the bookkeeping as possible, programmers can focus on the
 actual operations rather then having to deal with the tedious details
 of data integration and access. Third-party methods can act on their
 own as first-class citizens in the analysis framework, without
-breaking the workflow or the basic infrastructure. This design allows
+breaking the work flow or the basic infrastructure. This design allows
 for the straightforward extension of flowCore's capabilities, and has
 already fostered the development of a number of valuable add-ons
-\citep{lo2008agf,sarkar2008ufv} \textit{(plateCore)}.
+\citep{lo2008agf,sarkar2008ufv} \textit{(Fixme Errol: Will plateCore
+  be in Bioconductor soon. It should be if we want to cite it.)}.
 
 
 
@@ -265,12 +267,12 @@ from a set of appropriate compensation samples.
 linear & $ax + b$ \\
 quadratic & $ax^2 + bx + c$ \\
 natural logarithm & $ln(x)(r/d)$ \\
-logarithm & log(x)(r/d) \\
+logarithm & $log(x)(r/d)$ \\
 biexponential & need equation \\
 logicle& need equation \\
 truncate & $x_{x<=a} = a$ \\
-scale & (x-a)/(b-a) \\
-split-scale & need equation \\
+scale & $(x-a)/(b-a)$ \\
+split-scale & combination of linear and logarithm \\
 arcsinh & $asinh(a + bx)+c$ \\
 \hline
 \end{tabular}
@@ -303,21 +305,21 @@ reproduced by any other software that also adheres to the standard.
 \hline
 \multicolumn{2}{|c|}{Gates} \\
 \hline
-rectangleGate & n-dinensional rectangular regions \\
+rectangleGate & n-dimensional rectangular regions \\
 quadGate & quadrant regions in two dimensions \\
 polygonGate & polygonal regions in two dimensions \\
 polytopeGate & generalization of polygon in n dimensions \\
-ellipsoidGate & n-dimesnional ellipsoid region \\
+ellipsoidGate & n-dimensional ellipsoid region \\
 \hline
 \multicolumn{2}{|c|}{Filters} \\
 \hline
-sampleFilter & random subsampling\\
-expressionFilter & filter by resuts of a boolean expression \\
-kmeansFilter & based on K-means clustering \\
-norm2Filter & based on bivariate normal distribution \\
-curv1Filter & based on local density regions in 1D \\
-curv2Filter & based on local density regions in 2D \\
-timeFilter & based on abnormal data acquisition over time \\
+sampleFilter & random sub-sampling\\
+expressionFilter & results of a boolean expression \\
+kmeansFilter & K-means clustering \\
+norm2Filter & bivariate normal distribution \\
+curv1Filter & local density regions in 1D \\
+curv2Filter & density regions in 2D \\
+timeFilter & abnormal data acquisition over time \\
 \hline
 filterSet & gating strategies \\
 \hline
@@ -335,7 +337,7 @@ visualization tools, that make use of multivariate trellis
 plotting. These functions can be used to quickly generate customized
 plots for extended cytometry data sets for both direct data inspection
 and quality control. The objects annotation information can be used to
-arange the layout and composition of the plots. Furthermore, the
+arrange the layout and composition of the plots. Furthermore, the
 design and the API of the visualization software is very generic, and
 users can readily extend its capabilities by providing self-defined
 plotting functions.  The flowQ package offers more advanced quality
@@ -364,7 +366,7 @@ users guide information with programmatic examples is available online
 (\url{http://bioconductor.org/packages/2.2/bioc/html/flowCore.html})
 and as part of the package distribution. Here, we only want to briefly
 exemplify some of the software's key features, that is, the coherent
-treatment of all samples in a potentially large expreriment, the
+treatment of all samples in a potentially large experiment, the
 concept of data-driven automated gating, the integration of existing
 software into the framework, and the generation of publication-quality
 graphics for data visualization.
@@ -383,7 +385,7 @@ quite complex output:
                   "qaProcess.cellnumber"))
 \end{verbatim}
 
-The report is interactive and provides drilldown to more detailed
+The report is interactive and provides drill-down to more detailed
 aspects of the analysis, starting from a concise overview
 (Figure~\ref{flowQ}). The design of flowCore's data model allows for a
 coherent treatment of all the samples, hence we are able to compare
@@ -395,7 +397,7 @@ on the available annotation information.
 \centering
 \includegraphics[width=0.75\textwidth]{flowQ.jpg}
 \caption{\label{flowQ}% 
-  HTML quality assesment report generated by
+  HTML quality assessment report generated by
   the flowQ package. Rows correspond to samples, columns to different
   quality checks.}
 \end{figure}
