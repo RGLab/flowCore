@@ -169,7 +169,7 @@ amenable to programmatical access. In addition, the closed-source
 nature of these products often makes it impractical to integrate them
 into analysis pipelines. In this manuscript we describe classes for
 FCM data analysis and their implementation in R, however, they could
-just as easily be implemented in any other language (eg Java,
+just as easily be implemented in any other language (e.g., Java,
 C++). Software written in those languages could use similar data
 structures, thereby simplifying communication and the interchange of
 data between analysis tools.
@@ -177,11 +177,11 @@ data between analysis tools.
 The \Rpackage{flowCore} framework presented here can import and
 process raw data FCS files along with their complete set of
 file-specific metadata (Figure~\ref{fig1:FrameWork}).  Moreover, it is
-a software implementation of the Gating-ML CR, an emerging new flow
+a software implementation of the Gating-ML CR, an new flow
 cytometry data standard developed in collaboration with the ISAC Data
 Standards Task Force, which makes it possibile to integrate
 \Rpackage{flowCore} in existing work flows and to communicate with any
-other FCM tool that adheres to the proposed standard. Adherence to
+other FCM tool that adheres to the proposed standard\citep{SpidlenInPressCytometryA}. Adherence to
 standards also plays a critical role in the ability of new methods
 based on \Rpackage{flowCore} to find their way back into the standard
 practices for FCM data analysis. \Rpackage{flowCore} is not a
@@ -395,7 +395,7 @@ In addition to the \Rpackage{flowCore} package that offers basic
 infrastructure, we have implemented a range of additional Bioconductor
 packages that are dedicated to more specific tasks of FCM data
 analysis. The \Rpackage{flowViz} package \citep{sarkar2008ufv}
-provides sophisticated data visualization tools, that make use of
+provides sophisticated data visualization tools, that make use off
 multivariate trellis plotting \citep{lattice}.  These functions can be
 used to quickly generate customized plots for extended cytometry data
 sets for both direct data inspection and quality control.  The objects
@@ -412,7 +412,7 @@ elaborate statistical methods that are relevant in the context of flow
 cytometry data analysis. \cite{lo2008agf} have recently developed an
 automatic gating approach via robust model-based clustering using
 \Rpackage{flowCore}'s data model and infrastructure which is
-implemented in the Bioconductor package \Rpackage{flowClust} Another
+implemented in the Bioconductor package \Rpackage{flowClust}. Another
 package, \Rpackage{plateCore}, providing more specialized support for
 experiments conducted on microtitre plates and facilitiating the
 handling of spatial metadata, is under development.
