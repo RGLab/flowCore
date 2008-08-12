@@ -7,13 +7,13 @@
 
 
 
-\title{Outline flowCore paper}
+\title{flowCore: A Bioconductor software package for high throughput flow cytometry analysis}
 
 
 \author{Florian Hahne*\\
   Nolwenn LeMeur*\\
   Byron Ellis\\
-  Ryan Brinkman\\
+  Ryan R. Brinkman\\
   Perry Haaland\\
   Errol Strain\\
   Deepayan Sarkar\\
@@ -52,7 +52,7 @@ important scientific and clinical applications.
 \section*{Introduction}
 \subsection*{Computational tools for the analysis of FC-HCS data}
 During the last several years, automation technologies have been
-developed that enable the use of flow cytometry high content screening
+developed that enable the use of FCM high content screening
 (FC-HCS) to generate large, complex datasets in both basic and
 clinical research applications \citep{brinkman2007hcf}. A serious
 bottleneck in the interpretation of existing studies and the
@@ -115,7 +115,7 @@ research fields including genomics, proteomics and cell biology
 \citep{BIOC}. The R language and Bioconductor are
 particularly geared towards the analysis of large complex datasets
 that typically arise from high throughput experiments such as
-microarray gene expression analysis or FC-HCS. Using flow cytometry as
+microarray gene expression analysis or FC-HCS. Using FCM as
 a high-throughput technology requires suitable software infrastructure
 to facilitate the rapid handling of the data. In our implementation of
 \Rpackage{flowCore} we rely on two important lessons learned from the field of
@@ -335,8 +335,8 @@ the properties of the underlying data, for instance by modelling data
 distribution or by density estimation. This approach is fundamentally
 different from the traditional application of static gating regions
 across samples, as it is able to take into accounts unforeseen changes
-in signal intensities. \textit{e.g.} drifts in the instrumentation
-over time or sample variablity.
+in signal intensities (\textit{e.g.,} drifts in the instrumentation
+over time or sample variablity).
 
 The ability to programmatically access gates is a prerequisite for
 automated or semi-automated gating. By utilizing a unified interface
@@ -437,7 +437,7 @@ assurance step, and we can use functionality from the \Rpackage{flowQ}
 package to create an HTML report that highlights potential quality
 issues. Assuming that the data has already been imported as the
 \Rclass{flowSet} object ``dat'', the following simple line of code
-produces the quite complex output:
+produces the output shown in Figure~\ref{flowQ}:
 
 \begin{verbatim}
 > library(flowCore)
@@ -447,8 +447,7 @@ produces the quite complex output:
 \end{verbatim}
 
 The report is interactive and provides drill-down to more detailed
-aspects of the analysis, starting from a concise overview
-(Figure~\ref{flowQ}). The design of \Rpackage{flowCore}'s data model
+aspects of the analysis, starting from a concise overview. The design of \Rpackage{flowCore}'s data model
 allows for a coherent treatment of all the samples, hence we are able
 to compare features between individuals, or between groups of
 individuals, based on the available metadata information.
@@ -516,7 +515,7 @@ patient.
 
 \section*{Discussion}
 
-Through \Rpackage{flowCore}, we have provided the FCM community a
+Through \Rpackage{flowCore}, we have provided the FCM community an open source,
 freely available, highly functional, standards compliant development
 and analysis platform for high throughput data analysis.  Our
 intention is to provide a platform for the collaborative development
@@ -532,9 +531,8 @@ to increasingly complex and important scientific and clinical
 applications.
 
 \section*{Acknowledgements}
-This work was supported by NIH grant EB005034. RRB is a Michael Smith
-Foundation for Health Research Scholar and a International Society for
-Analytical Cytology Scholar.
+This work was supported by NIH grant EB005034 and by the Michael Smith
+Foundation for Health Research. RRB is an ISAC Scholar.
 
 \bibliographystyle{plainnat}  
 \bibliography{flowCoreRef} 
