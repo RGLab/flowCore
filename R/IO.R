@@ -64,8 +64,12 @@ read.FCS <- function(filename,
     txt     <- readFCStext(con, offsets, debug)
     mat     <- readFCSdata(con, offsets, txt, transformation, which.lines,
                            debug, scale, alter.names, decades)
+    id <- paste("$P",1:ncol(mat),sep="")
+    zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
+                                  function(x) x[2]))
+    realMin <- pmin(zeroVals,apply(mat,2,min,na.rm=TRUE))
     params  <- makeFCSparameters(colnames(mat),txt, transformation, scale,
-                                 decades)
+                                 decades, realMin)
     close(con)
 
     ## only keep certain parameters
@@ -113,12 +117,13 @@ read.FCS <- function(filename,
 ## ==========================================================================
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-makeFCSparameters <- function(cn,txt, transformation, scale, decades) {
+makeFCSparameters <- function(cn,txt, transformation, scale, decades,
+                              realMin) {
 
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
     range <- origRange <- as.numeric(txt[paste(id,"R",sep="")])
-    range <- rbind(0,range-1)
+    range <- rbind(realMin,range-1)
 
     ## make sure the ranges are transformed along with the data
     if(transformation & !scale){
