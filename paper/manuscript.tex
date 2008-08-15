@@ -52,54 +52,54 @@ scientific and clinical applications.
 
 \section*{Introduction}
 \subsection*{Computational tools for the analysis of FC-HCS data}
-During the last several years, automation technologies have been
-developed that enable the use of FCM high content screening
-(FC-HCS) to generate large, complex datasets in both basic and
-clinical research applications \citep{brinkman2007hcf}. A serious
-bottleneck in the interpretation of existing studies and the
-application of FC-HCS to even larger, more complex problems is that
-data management and data analysis methods have not advanced
-sufficiently far from the methods developed for applications of flow
-cytometry (FCM) to small-scale, tube-based studies.
+Automation technologies developed during the last several years have
+enabled the use of FCM high content screening (FC-HCS) to generate
+large, complex datasets in both basic and clinical research
+applications \citep{brinkman2007hcf}. A serious bottleneck in the
+interpretation of existing studies and the application of FC-HCS to
+even larger, more complex problems is that data management and data
+analysis methods have not advanced sufficiently far from the methods
+developed for applications of flow cytometry (FCM) to small-scale,
+tube-based studies.
 
-Some of the consequences of this lag in development are difficulties
-in maintaining the integrity and documentation of extremely large
-datasets, assessing measurement quality, developing validated assays,
-controlling the accuracy of gating techniques, automating complex
-gating strategies, and aggregating statistical results across large
-study sets for further analysis.  Among the most serious consequences
-of the current situation is, however, that it is very difficult for
-new analysis approaches to find their way into standard practice. We
-believe that this barrier to the development and dissemination of new
-analysis methods is one of the fundamental restraints on the future
-expansion of FC-HCS in both clinical and research applications.
+Some of the consequences of this lag are difficulties in maintaining
+the integrity and documentation of extremely large datasets, assessing
+measurement quality, developing validated assays, controlling the
+accuracy of gating techniques, automating complex gating strategies,
+and aggregating statistical results across large study sets for
+further analysis. The most serious consequence, however, is that new
+analysis approaches face difficulty in finding their way into standard
+practice. We believe that this barrier to the development and
+dissemination of new analysis methods is one of the fundamental
+restraints on the future expansion of FC-HCS in both clinical and
+research applications.
 
 In this paper, we describe a set of flexible and well structured
-computational tools to efficiently analyze FC-HCS. This set of tools
-is based on the open source statistical software R \citep{Rmain}, in
-conjunction with the Bioconductor Project \citep{BIOC}. Our intent is
-to provide a shared research platform that enables bioinformaticians,
-computer scientists, and statisticians to work collaboratively with
-biologists and clinicians to develop novel methods for FCM data
-analysis, a process deemed crucial by many for the further development
-of the technology \citep{lizard2007fca}. A critical component of this
-approach is the development and implementation of standards that will
-facilitate the adoption of these methods by both the larger research
-community and commercial software vendors.  Consequently, we are
-optimistic that this software platform will play a critical role in
-addressing the bottlenecks described above that limit further advances
-in the application of FC-HCS.
+computational tools to efficiently analyze FC-HCS data. This set of
+tools is based on the open source statistical software R
+\citep{Rmain}, in conjunction with the Bioconductor Project
+\citep{BIOC}. Our intent is to provide a shared research platform that
+enables bioinformaticians, computer scientists, and statisticians to
+work collaboratively with biologists and clinicians to develop novel
+methods for FCM data analysis, a process deemed crucial by many for
+the further development of the technology \citep{lizard2007fca}. A
+critical component of this approach is the development and
+implementation of standards that will facilitate the adoption of these
+methods by both the larger research community and commercial software
+vendors.  Consequently, we are optimistic that this software platform
+will play a critical role in addressing the bottlenecks described
+above that limit advances in the application of FC-HCS.
 
 The computational tools we have developed are distributed in the R
 software language as the Bioconductor package
 \Rpackage{flowCore}. \Rpackage{flowCore} is a freely available, highly
-functional and extensible FCM data analysis platform that enables
+functional, and extensible FCM data analysis platform that enables
 researchers to efficiently handle FC-HCS data and encourages open
 development of tools for their coherent analysis. \Rpackage{flowCore}
 implements computationally efficient data structures and a range of
 specialized methods addressing all components of a typical FCM
 analysis work flow, including compensation, transformation, and
-gating. \Rpackage{flowCore} runs on Windows, Mac OS X and Linux/Unix
+gating. \Rpackage{flowCore} runs on Windows, Mac OS X, and Linux/Unix
 operating systems. Conceptually, the underlying data structures that
 build the core of our software can be implemented in any programming
 language. We chose the R language for its advantages in statistical
