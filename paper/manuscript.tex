@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage{setspace}
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
 \usepackage{graphicx} 
@@ -7,23 +8,48 @@
 
 
 
-\title{flowCore: A Bioconductor software package for high throughput flow cytometry analysis}
+\title{flowCore: A Bioconductor software package for high throughput
+  flow cytometry data analysis \footnote{This work was supported by
+    NIH grant EB005034 and by the Michael Smith Foundation for Health
+    Research. RRB is an ISAC Scholar.}}
 
 
-\author{Florian Hahne*\\
-  Nolwenn LeMeur*\\
-  Byron Ellis\\
-  Ryan R. Brinkman\\
-  Perry Haaland\\
-  Errol Strain\\
-  Deepayan Sarkar\\
-  Josef Spidlen\\
-  Robert Gentleman
- }
+\author{Florian Hahne (\textit{Fred Hutchinson Cancer Research
+    Center})\\
+  Nolwenn LeMeur* (\textit{Fred Hutchinson Cancer Research Center})\\
+  Ryan R. Brinkman (\textit{BC Cancer Research Centre})\\
+  Byron Ellis (\textit{AdBrite, Inc})\\
+  Perry Haaland (\textit{BD Biosciences})\\
+  Deepayan Sarkar (\textit{Fred Hutchinson Cancer Research
+    Center})\\
+  Josef Spidlen (\textit{BC Cancer Research Centre})\\
+  Errol Strain (\textit{BD Biosciences})\\
+  Robert Gentleman (\textit{Fred Hutchinson Cancer Research
+    Center})\\
+}
 
+
+\doublespacing
 \begin{document}
-
+\begin{singlespace}
 \maketitle
+
+Corresponding author:\\
+\textit{
+  Florian Hahne, PhD\\
+  Computational Biology Program\\
+  Division of Public Health Sciences\\
+  Fred Hutchinson Cancer Research Center\\
+  1100 Fairview Ave. N, M2-B876\\
+  PO Box 19024\\
+  Seattle, Washington 98109-1024\\
+  phone: 206-667-3148\\
+  fax: 206-667-1319\\
+  fhahne@fhcrc.org
+}
+
+
+\end{singlespace}
 
 \section*{Abstract}
 \subsubsection*{Background}
@@ -245,6 +271,7 @@ experiment.
 
 
 %%Figure1 Diagram of the data structures and the basic operations
+\begin{singlespace}
 \begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth]{Figure1-flowCoreFrameWork.jpg}
@@ -255,6 +282,7 @@ experiment.
     compensation, transformation, gating) can be applied to either
     single \Rclass{flowFrames} or a \Rclass{flowSet} simultaneously.}}
 \end{figure}
+\end{singlespace}
 
 
 
@@ -456,6 +484,7 @@ to compare features between individuals, or between groups of
 individuals, based on the available metadata information.
 
 
+\begin{singlespace}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.98\textwidth]{flowQ.jpg}
@@ -465,6 +494,7 @@ individuals, based on the available metadata information.
   Disease \citep{brinkman2007hcf}. Rows correspond to the samples in
   the set, columns to different quality checks.}
 \end{figure}
+\end{singlespace}
 
 Static gating for all samples in a high-throughput FCM experiment is
 often impossible, since the measured variables tend to vary between
@@ -508,6 +538,7 @@ patient.
 \end{verbatim}
 
 
+\begin{singlespace}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.75\textwidth]{xyplot}
@@ -518,7 +549,7 @@ patient.
   automated gating operation are added on top of the density
   representation of the data.}
 \end{figure}
-
+\end{singlespace}
 
 
 \section*{Discussion}
