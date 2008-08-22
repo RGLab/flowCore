@@ -1,6 +1,7 @@
 \name{multipleFilterResult-class}
 \docType{class}
 \alias{multipleFilterResult-class}
+\alias{multipleFilterResult}
 \alias{length,multipleFilterResult-method}
 \alias{names,multipleFilterResult-method}
 \alias{[[,multipleFilterResult-method}

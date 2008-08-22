@@ -138,6 +138,7 @@ S3method("$", "flowFrame")
 export("arcsinhTransform",
        "as.data.frame.manyFilterResult",
        "biexponentialTransform",
+       "char2ExpressionFilter",
        "curv1Filter",
        "curv2Filter",
        "ellipsoidGate",

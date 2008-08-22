@@ -1,13 +1,23 @@
 ## ==========================================================================
-## An intersectFilter only returns TRUE if ALL the member filters are TRUE.
-## --------------------------------------------------------------------------
-setMethod("%in%",c("flowFrame","intersectFilter"),function(x,table) {
-	fr = sapply(table@filters,filter,x=x)
-	res= apply(sapply(fr,as,"logical"),1,all)
-	details = list()
-	for(i in fr) { 
-		fd = filterDetails(i)
-		details[names(fd)] = fd
-	}
-	attr(res,'filterDetails') = details
-	res})
+## Methods for objects of type 'intersectFilter'
+## Note: All filtering methods are stored in file 'in-methods.R'
+## ==========================================================================
+
+
+## ==========================================================================
+## show method
+## ---------------------------------------------------------------------------
+setMethod("show",signature("intersectFilter"),
+          function(object)
+      {
+          cat("filter '", identifier(object),
+              "'\nthe intersection between the ", length(object@filters),
+              " filters\n\n", sep="")
+          for(i in 1:length(object@filters)){
+              print(object@filters[[i]])
+              cat("\n")
+          }
+      })
+
+
+

@@ -144,3 +144,4 @@ setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE)
 setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
 setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
 
+

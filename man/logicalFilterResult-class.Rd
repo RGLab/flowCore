@@ -1,6 +1,7 @@
 \name{logicalFilterResult-class}
 \docType{class}
 \alias{logicalFilterResult-class}
+\alias{logicalFilterResult}
 \alias{summary,logicalFilterResult-method}
 
 \title{Class "logicalFilterResult"}

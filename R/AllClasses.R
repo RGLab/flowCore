@@ -146,9 +146,14 @@ setClass("filter",
              else
                  TRUE
          })
-setClass("concreteFilter", "filter")
-setClass("parameterFilter", representation(parameters="character"),
-         contains="concreteFilter", prototype=prototype(parameters=""))
+
+setClass("concreteFilter",
+         contains="filter")
+
+setClass("parameterFilter",
+         representation(parameters="character"),
+         contains="concreteFilter",
+         prototype=prototype(parameters=""))
 
 
 
@@ -167,11 +172,16 @@ setClass("rectangleGate",
          )
 
 ## constructor
-rectangleGate <- function(filterId="rectangleGate", .gate,...) {
+rectangleGate <- function(filterId="rectangleGate", .gate, ...) {
     if(missing(.gate) || !is.matrix(.gate))
-      	.gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) {
-            x <- sort(x);c("min"=x[1], "max"=x[2])
-		})
+      	.gate <- sapply(if(missing(.gate)) list(...) else .gate,
+                        function(x){
+                            x <- sort(x)
+                            c("min"=x[1], "max"=x[2])
+                        })
+    if(!is.numeric(.gate) || is.null(colnames(.gate)))
+        stop("Expecting named arguments or a single named matrix\n",
+             "as input for gate boundaries.", call.=FALSE)
     new("rectangleGate", filterId=filterId, parameters=colnames(.gate),
         min=.gate[1,], max=.gate[2,])
 }
@@ -198,9 +208,10 @@ quadGate <- function(filterId="quadGate", .gate, ...) {
     n <- names(.gate) 
     .gate <- as.numeric(.gate)
     names(.gate) <- n
-    if(!is.numeric(.gate) || length(names(.gate)) !=2)
+    if(!is.numeric(.gate) || length(names(.gate)) !=2 |
+       any(names(.gate)==""))
         stop("Expecting two named arguments or a single named vector\n",
-             "of length 2 as input for boundaries.", call.=FALSE)
+             "of length 2 as input for gate boundaries.", call.=FALSE)
     new("quadGate", filterId=filterId, parameters=names(.gate),
         boundary=.gate)
 }
@@ -221,9 +232,10 @@ setClass("polygonGate",
          prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=3)),
          validity=function(object){
              msg <- TRUE
-             if(!is.matrix(object@boundaries) || nrow(object@boundaries)<2)
+             if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3 ||
+                ncol(object@boundaries)!=2)
                  msg <- paste("\nslot 'boundaries' must be a numeric matrix",
-                              "of at least 2 rows")
+                              "of at least 3 rows and exactly 2 columns")
              return(msg)
          })
 
@@ -242,19 +254,21 @@ polygonGate <- function(filterId="polygonGate", boundaries, ...) {
 ## ===========================================================================
 ## Polytope gate
 ## ---------------------------------------------------------------------------
-## A class describing a 2D polytope region in the parameter space. Slot
-## boundary holds the vertices of the polygon in a 2 colum matrix
+## A class describing a nD polytope region in the parameter space. Slot
+## boundary holds the vertices of the polygon in a n colum matrix
 ## ---------------------------------------------------------------------------
+## FIXME: Need a representation of halfspaces and corresponding linear
+## equations here.
+
 setClass("polytopeGate",
          representation(boundaries="matrix"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=2)), 
+         prototype=list(filterId="ALL", boundaries=matrix()), 
          validity=function(object){
              msg <- TRUE
-             if(!is.matrix(object@boundaries) ||
-                nrow(object@boundaries)<2)
-               msg <- paste("\nslot 'boundaries' must be a numeric matrix",
-                            "of at least 2 rows")
+             if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3)
+                 msg <- paste("\nslot 'boundaries' must be a numeric matrix",
+                              "of at least 2 rows")
              return(msg)
          })
 
@@ -262,6 +276,9 @@ setClass("polytopeGate",
 polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
     if(missing(.gate) || !is.matrix(.gate))
         .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
+    if(is.null(colnames(.gate)))
+        stop("either provide colnames for argument '.gate' or use named ",
+             "arguments for boundary vertices", call.=FALSE)
     new("polytopeGate", filterId=filterId, parameters=colnames(.gate),
         boundaries=.gate)
 }
@@ -271,36 +288,38 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
 ## ===========================================================================
 ## Ellipsoid gate
 ## ---------------------------------------------------------------------------
-## A class describing a 2D polytope region in the parameter space. Slots
-## focus and distance hold the xy position of the centroid and the distance
-## respectively.
+## A class describing an ellipsoid region in the parameter space. Slots
+## mean and cov contain the mean values and the covariance matrix describing
+## the ellipse
 ## ---------------------------------------------------------------------------
-##FIXME: THIS IS NO LONGER VALID IN THE GATINGML DEFINITION! NEED TO IMPLEMENT
-##ELLIPSOIDS THROUGH MEANS AND COVARIANCE MATRIX
 setClass("ellipsoidGate",
-         representation(focus="matrix",
-                        distance="numeric"),
+         representation(mean="numeric",
+                        cov="matrix"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", focus=matrix(ncol=2, nrow=2),
-         distance=1),
+         prototype=list(filterId="ALL", mean=numeric(), cov=matrix()),
          validity=function(object){
              msg <- TRUE
-             if(!is.matrix(object@focus) ||
-                nrow(object@focus)< 2)
-               msg <- "\nslot 'focus' must be matrix of at least 2 rows"
-             if(!is.numeric(object@distance) ||
-                length(object@distance)!=1)
-               msg <- "\nslot 'distance' must be numeric vector of length 1"
+             if(!is.matrix(object@cov) ||
+                nrow(object@cov) != ncol(object@cov) ||
+                nrow(object@cov) < 2) 
+                 msg <- "\nslot 'cov' must be a symmetric matrix of at least 2 rows"
+             if(!is.numeric(object@mean) ||
+                length(object@mean) != nrow(object@cov))
+                 msg <- paste("\nslot 'distance' must be numeric vector of",
+                              "same length as dimensions in 'cov'")
              return(msg)
          })
 
 ## constructor
-ellipsoidGate <- function(filterId="ellipsoidGate", .gate, distance,...) {
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, mean, ...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
-      
+    if(!all(rownames(.gate) == colnames(.gate)) ||
+       !all(names(mean) == colnames(.gate)))
+        stop("'.gate' must be covariance matrix with same dimnames as ",
+             "parameter names in 'mean'", call.=FALSE)    
     new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
-        focus=.gate, distance=distance)
+        cov=.gate, mean=mean)
 }
 
 
@@ -324,7 +343,7 @@ setClass("norm2Filter",
 
 ## constructor
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
-                        filterId="norm2Gate", n=50000, ...)
+                        filterId="norm2Gate", n=50000)
 {
     x <- unlist(x)
     if(missing(y)) {
@@ -342,7 +361,7 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
         y = y[1]
     }
     new("norm2Filter", parameters=c(x, y), method=method,
-        scale.factor=scale.factor, filterId=filterId, n=n, ...)
+        scale.factor=scale.factor, filterId=filterId, n=n)
 }
 
 
@@ -469,7 +488,7 @@ setClass("sampleFilter",
          contains="concreteFilter")
 
 ##constructor
-sampleFilter = function(filterId="sample", size) new("sampleFilter",
+sampleFilter <- function(filterId="sample", size) new("sampleFilter",
                         filterId=filterId, size=size)
 
 
@@ -480,20 +499,31 @@ sampleFilter = function(filterId="sample", size) new("sampleFilter",
 ## Let's us encapsulate an expression as a gate
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
-         representation(expr="expression", args="list"),
+         representation(expr="expression", args="list", deparse="character"),
          contains="concreteFilter")
 
-##constructor
-expressionFilter = function(expr, ..., filterId){
+## constructor
+expressionFilter <- function(expr, ..., filterId)
+{
     subs <- substitute(expr)
-    if(is(subs, "call")){
-        expr <- as.expression(subs)
-        if(missing(filterId)) filterId <- deparse(subs)
-    }else if(missing(filterId))
-        filterId <- as.character(expr)
-    new("expressionFilter", filterId=filterId, expr=expr, args=list(...))
+    if(missing(filterId)){
+        filterId <- deparse(subs)
+        if(length(filterId)>1)
+            filterId <- paste(gsub("^ *", "", filterId[2]), "...", sep="")
+    }
+    new("expressionFilter", filterId=filterId, expr=as.expression(subs),
+        args=list(...), deparse=deparse(subs))
 }
 
+## construct expression by parsing a character string
+char2ExpressionFilter <- function(expr, ..., filterId)
+{
+    subs <- parse(text=expr)
+    if(missing(filterId))
+         filterId <- expr
+    new("expressionFilter", filterId=filterId, expr=subs,
+        args=list(...), deparse=expr)
+}
 
 
 

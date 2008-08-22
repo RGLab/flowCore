@@ -46,7 +46,7 @@
 setMethod("split",
           signature("flowFrame", "filter"),
           function(x, f, drop=FALSE, ...)
-          split(x, filter(x, f), drop, ...))
+          split(x, filter(x, f), drop=drop, ...))
 
 ## Evalute the filterSet first and split on the filterResult
 ## FIXME: Is that really what we want? And what is the final output of
@@ -54,7 +54,7 @@ setMethod("split",
 setMethod("split",
           signature("flowFrame","filterSet"),
           function(x, f, drop=FALSE, ...)
-          split(x, filter(x, f), drop, ...))
+          split(x, filter(x, f), drop=drop, ...))
 
 ## Split on logicalFilterResults. This will divide the data set into those
 ## events that are contained within the gate and those that are not. 
@@ -67,7 +67,8 @@ setMethod("split",
           ## if necessary
           if(is.null(population))
               population <- f@filterId
-          else if(!is.character(population))
+          population <- unlist(population)
+          if(!is.character(population))
               stop("'population' must be character scalar.", call.=FALSE)
           if(!is.null(prefix)){
               if(!is.character(prefix))
@@ -103,35 +104,48 @@ setMethod("split",
       {
           if(is.null(population))
               population <- names(f)
-          else if(!is.character(population))
-              stop("'population' must be character scalar.", call.=FALSE)
-          population <- unique(population)
-          allThere <- population %in% names(f)
+          else if(!all(sapply(population, is, "character")))
+              stop("'population' must be a single character vector ",
+                   "or a list of character vectors", call.=FALSE)
+          if(!is.list(population)){
+              n <- population
+              population <- as.list(population)
+              names(population) <- n
+          }
+          pop <- unique(unlist(population))
+          allThere <- pop %in% names(f)
           if(!all(allThere))
-              stop("The following population(s) are not valid in this ",
-                   "filter:\n\t", paste(population[!allThere],
+              stop("The following are not valid population names in this ",
+                   "filterResult:\n\t", paste(pop[!allThere],
                                         collapse="\n\t"), call.=FALSE)
           np <- length(population)
           if(is.null(prefix))
-              nn <- population
+              nn <- names(population)
           else{
               if(!is.character(prefix))
                   stop("'prefix' must be character vector.", call.=FALSE)
-              
               prefix <- rep(prefix, np)
-              nn <- paste(prefix[1:np], population, sep="")
+              nn <- paste(prefix[1:np], names(population), sep="")
           }
-          tmp <- lapply(population, function(i)
-                    {
-                        ss <- x[f[[i]], ]
-                        description(ss)$GUID <-
-                            sprintf("%s (%s)", identifier(ss), i)
-                        ss})
-          out <- structure(tmp, names=nn)
+          out <- vector(np, mode="list")
+          names(out) <- nn
+          i <- 1
+          for(p in population){        
+              tmp <- lapply(p, function(i) x[f[[i]], ])
+              combined <- as(as(tmp, "flowSet"), "flowFrame")
+              cn <- match("Original", colnames(combined))
+              if(!is.na(cn))
+                  combined <- combined[,-cn]
+              description(combined)$GUID <-
+                  sprintf("%s (%s)", identifier(tmp[[1]]),
+                          paste(p, collapse=","))
+              out[[i]] <- combined
+              i <- i+1
+          }
           if(flowSet){
               out <- flowSet(out)
-              phenoData(out)$population <- population
-              sampleNames(out) <- population
+              phenoData(out)$population <- names(population)
+              sampleNames(out) <- names(population)
               varMetadata(out)["population", "labelDescription"] <-
                   "population identifier produced by splitting"
           }
@@ -290,7 +304,14 @@ setMethod("split",signature("flowSet","list"),
               if(!is.null(names(f[[1]])))
                   population <- names(f[[1]])
               else
-                  population <- "1"
+                  population <- c("in", "out")
+          } else if(!all(sapply(population, is, "character")))
+              stop("'population' must be a single character vector ",
+                   "or a list of character vectors", call.=FALSE)
+          if(!is.list(population)){
+              n <- population
+              population <- as.list(population)
+              names(population) <- n
           }
           ## FIXME: Do we want to allow for different names when splitting
           ## flowSets by multipleFilterResults?
@@ -305,11 +326,12 @@ setMethod("split",signature("flowSet","list"),
                       call.=FALSE)
           }
           finalRes <- vector(mode="list", length=length(population))
-          names(finalRes) <- population
-          for(p in population){
+          names(finalRes) <- names(population)
+          for(p in seq_along(population)){
+              tp <- population[p]
               res <- vector(mode="list", length=lf)
               for(i in 1:lf){
-                  l <- split(x[[i]], f[[i]], population=p,
+                  l <- split(x[[i]], f[[i]], population=tp,
                              prefix=prefix, flowSet=FALSE, ...)
                   res[[i]] <- l[[1]]
                   if(!is.null(prefix)){
@@ -320,9 +342,10 @@ setMethod("split",signature("flowSet","list"),
                   }else
                   names(res)[i] <- sample.name[i]   
               }
-              finalRes[[p]] <- flowSet(res, phenoData=phenoData(x))
-              phenoData(finalRes[[p]])$population <- p
-              varMetadata(finalRes[[p]])["population", "labelDescription"] <-
+              np <- names(population)[p]
+              finalRes[[np]] <- flowSet(res, phenoData=phenoData(x))
+              phenoData(finalRes[[np]])$population <- np
+              varMetadata(finalRes[[np]])["population", "labelDescription"] <-
                   "population identifier produced by splitting"
           }
           return(finalRes)
@@ -354,3 +377,9 @@ setMethod("split", signature("flowSet", "numeric"),
 setMethod("split", signature("flowSet", "character"),
           function(x, f, drop=FALSE, ...)
           split(x, factor(f)))
+setMethod("split", signature("flowSet", "filterResult"),
+          function(x, f, drop=FALSE, ...)
+          stop("Can't split a flowSet by a single filterResult.\n",
+               "Either provide list of filterResults or a single filter.",
+               call.=FALSE))
+
