@@ -103,16 +103,6 @@ setMethod("summary",
 
 
 
-## ==========================================================================
-## Lets us filter by filterResults, rather than filters, but only as long
-## as we have a logicalFilterResult or randomFilterResult
-## --------------------------------------------------------------------------
-setMethod("%in%",
-          signature("flowFrame","filterResult"),
-          function(x, table) {
-              as(table, "logical")
-          })
-
 
 
 ## ==========================================================================

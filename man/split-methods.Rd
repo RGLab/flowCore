@@ -82,7 +82,9 @@
       \code{\linkS4class{flowSet}}. The optional \code{population}
       argument takes a character vector indicating the subpopulations to
       use for splitting (as identified by the population name in the
-      \code{filterDetails} slot). }
+      \code{filterDetails} slot). Alternatively, this can be a list of
+      characters, in which case the populations for each list item are
+      collapsed into one \code{\linkS4class{flowFrame}}.}
 
     }
 
@@ -117,9 +119,12 @@
       \code{\linkS4class{flowSet}}. The optional \code{population}
       argument takes a character vector indicating the subpopulations to
       use for splitting (as identified by the population name in the
-      \code{filterDetails} slot). Note that this also implies common
-      population names for all\code{\linkS4class{filterResult}}s in the
-      list. }
+      \code{filterDetails} slot).  Alternatively, this can be a list of
+      characters, in which case the populations for each list item are
+      collapsed into one \code{\linkS4class{flowFrame}}. Note that using
+      the \code{population} argument implies common population names for
+      all\code{\linkS4class{filterResult}}s in the list and there will
+      be an error if this is not the case. }
     
   }
 }

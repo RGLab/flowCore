@@ -1,19 +1,15 @@
 ## ==========================================================================
-## %in% method
-## ---------------------------------------------------------------------------
-setMethod("%in%",signature("flowFrame","sampleFilter"),function(x,table) {
-	n = if(table@size > nrow(x)) nrow(x) else table@size
-	l = rep(FALSE,nrow(x))
-	l[sample(length(l),n,replace=FALSE)] = TRUE
-	l
-})
+## Methods for objects of type 'sampleFilter'
+## Note: All filtering methods are stored in file 'in-methods.R'
+## ==========================================================================
 
 
 ## ==========================================================================
 ## show method
 ## ---------------------------------------------------------------------------
 setMethod("show",signature("sampleFilter"),function(object) {
-	msg = paste("A filter named '",object@filterId,"' returning objects with ",object@size," rows",sep="")
+	msg = paste("sample filter '", object@filterId,
+        "' returning objects with ", object@size," rows", sep="")
 	cat(msg)
 	cat("\n")
 	invisible(msg)

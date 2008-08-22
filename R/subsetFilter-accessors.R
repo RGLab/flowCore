@@ -1,40 +1,26 @@
 ## ==========================================================================
-## Returns TRUE for elements that are true on the LHS and the RHS, however the
-## LHS filter is only executed against the subset returned by the RHS filtering
-## operation. This is particularly important for unsupervised filters like
-## norm2Filter. The result is still relative to the ENTIRE flowFrame however.
-## ---------------------------------------------------------------------------
-setMethod("%in%",c("flowFrame","subsetFilter"),function(x,table) {
-	y = filter(x,table@filters[[2]])
-	z = if(length(y) == 1) {
-			w = as(y,"logical")
-			n = which(w)
-			r = filter(x[n,],table@filters[[1]])
-			filterDetails(y,identifier(table@filters[[1]])) = summarizeFilter(r,table@filters[[1]])
-			attr(w,'subsetCount') = sum(w)
-			w[n[!as(r,"logical")]] = FALSE
-			w
-		} else {
-			res = rep(NA,nrow(x))
-			ll  = paste(identifier(table@filters[[1]]),"in",names(y))
-			count  = rep(0,length(y))
-			for(i in seq(along=y)) {
-				w = as(y[[i]],"logical")
-				count[i] = sum(w)
-				n = which(w)
-				r = filter(x[n,],table@filters[[1]])
-				filterDetails(y,ll[i]) = summarizeFilter(r,table@filters[[1]])
-				w[n[!as(r,"logical")]] = FALSE
-				res[z] = i
-			}
-			w = structure(as.integer(res),levels=ll)
-			attr(w,'subsetCount') = count
-		}
-	#We need to track our filterDetails to a higher level for summarizeFilter.
-	attr(z,'filterDetails') = filterDetails(y)
-	z
-})
+## Methods for objects of type 'intersectFilter'
+## Note: All filtering methods are stored in file 'in-methods.R'
+## ==========================================================================
 
+
+## ==========================================================================
+## show method
+## ---------------------------------------------------------------------------
+setMethod("show",signature("subsetFilter"),
+          function(object)
+      {
+          cat("filter '", identifier(object),
+              "'\nthe filtering operation defined by\n", sep="")
+          print(object@filters[[1]])
+          cat("after subsetting by\n")
+          print(object@filters[[2]])
+      })
+
+
+
+# FIXME: What do summarizeFilter methods do and why are they not
+## exported in the name space?
 setMethod("summarizeFilter",signature("filterResult","subsetFilter"),function(result,filter) {
 	ret = callNextMethod()
 	ret$subsetCount = attr(result@subSet,'subsetCount')

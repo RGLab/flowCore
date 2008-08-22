@@ -2,43 +2,30 @@
 \docType{class}
 \alias{curv1Filter-class}
 \alias{curv1Filter} 
-\alias{curv1Filter-class}
 \alias{show,curv1Filter-method}
 
-\title{Class "curv1Filter" }
+
+\title{Class "curv1Filter"}
+
 
 \description{
   
-  Define a filter that selects high-density regions in one dimension.
+  Class and constructor for data-driven \code{\link{filter}} objects
+  that selects high-density regions in one dimension.
 
 }
 
-\section{Objects from the Class}{
 
-  Objects can be created by calls of the form \code{new("curv1Filter",
-    ...)} or using the constructor \code{curv1Filter}.
-  Using the constructor is the recommended way:
-
-}
-
-\usage{
-
-curv1Filter(x, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
-
-}
-
-\arguments{
-
-  \item{x}{ Character giving the name of the measurement parameter on
-    which the filter is supposed to work on. This can also be a list
-    containing a single character scalar. }
-    
-  \item{filterId}{ An optional parameter that sets the \code{filterId}
-    slot of this gate. }
+\section{Extends}{
   
-  \item{bwFac, gridsize}{ Numerics of length 1 and 2, respectively, used
-    to set the \code{bwFac} and \code{gridsize} slots of the object. }
-  
+  Class \code{"\linkS4class{parameterFilter}"}, directly.
+
+  Class \code{"\linkS4class{concreteFilter}"}, by class
+  \code{parameterFilter}, distance 2.
+
+  Class \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
+  distance 3.
+
 }
 
 
@@ -60,22 +47,54 @@ curv1Filter(x, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
   }
 }
 
-\section{Extends}{
-  
-  Class \code{"\linkS4class{parameterFilter}"}, directly.  Class
-  \code{"\linkS4class{concreteFilter}"}, by class
-  \code{parameterFilter}, distance 2.  Class
-  \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
-  distance 3.
+
+\section{Objects from the Class}{
+
+  Objects can be created by calls of the form \code{new("curvFilter",
+    ...)} or using the constructor \code{curv1Filter}.  Using the
+    constructor is the recommended way of object instantiation:
 
 }
+
+
+\usage{
+
+curv1Filter(x, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
+
+}
+
+
+\arguments{
+
+  \item{x}{ Character giving the name of the measurement parameter on
+    which the filter is supposed to work on. This can also be a list
+    containing a single character scalar for programmatic access. }
+    
+  \item{filterId}{ An optional parameter that sets the \code{filterId}
+    slot of this filter. The object can later be identified by this
+    name. }
+  
+  \item{bwFac, gridsize}{ Numerics of length 1 and 2, respectively, used
+    to set the \code{bwFac} and \code{gridsize} slots of the object. }
+  
+}
+
+
+\value{
+
+  Returns a \code{curv1Filter} object for use in filtering
+  \code{\link{flowFrame}}s or other flow cytometry objects.
+  
+}
+
 
 \section{Methods}{
   \describe{
     
     \item{\%in\%}{\code{signature(x = "flowFrame", table =
 	"curv1Filter")}: The workhorse used to evaluate the filter on
-	data. This is usually not called directly by the user. }
+	data. This is usually not called directly by the user, but
+	internally by calls to the \code{\link{filter}} methods. }
     
     \item{show}{\code{signature(object = "curv1Filter")}: Print
       information about the filter. }
@@ -83,36 +102,73 @@ curv1Filter(x, filterId="curv1Filter", bwFac=1.2, gridsize=rep(151, 2))
   }
 }
 
+
 \details{
 
   Areas of high local density in one dimensions are identified by
   detecting significant curvature regions. See \cite{Duong, T. and
   Cowling, A. and Koch, I. and Wand, M.P., Computational Statistics and
-  Data Analysis 52/9, 2008} for details.
+  Data Analysis 52/9, 2008} for details. The constructor
+  \code{curv1Filter} is a conveniance function for object
+  instantiation. Evaluating a \code{curv1Filter} results in potentially
+  multiple sub-populations, an hence in an object of class
+  \code{\link{multipleFilterResult}}. Accordingly, \code{curv1Filters}
+  can be used to split flow cytometry data sets. 
 
 }
 
 
-\value{
+\note{
 
-  Returns a \code{\link{curv1Filter}} object for use in filtering
-  \code{\link{flowFrame}}s or other flow cytometry objects.
-  
+  See the documentation in the
+  \code{\link[flowViz:flowViz-package]{flowViz}} package for plotting of
+  \code{curv1Filters}.
+
 }
+
 
 \author{ Florian Hahne }
 
 
 \seealso{
-  \code{\link[flowCore]{filter}}
-  \code{\link[flowCore]{curv2Filter}}
+
+  \code{\link[flowCore]{curv2Filter}}, \code{\link{flowFrame}},
+  \code{\link{flowSet}}, \code{\link[flowCore]{filter}} for evaluation
+  of \code{curv1Filters} and \code{\link{split}} for splitting of flow
+  cytometry data sets based on that.
+  
 }
+
 
 \examples{
 
-curv1Filter("FSC-H", bwFac=2)
+
+## Loading example data
+dat <- read.FCS(system.file("extdata","0877408774.B08",
+package="flowCore"))
+
+## Create directly. Most likely from a command line
+curv1Filter("FSC-H", filterId="myCurv1Filter", bwFac=2)
+
+## To facilitate programmatic construction we also have the following
+c1f <- curv1Filter(filterId="myCurv1Filter", x=list("FSC-H"), bwFac=2)
+
+## Filtering using curv1Filter
+fres <- filter(dat, c1f)
+fres
+summary(fres)
+names(fres)
+
+## The result of curv1 filtering are multiple sub-populations
+## and we can split our data set accordingly
+split(dat, fres)
+
+## We can limit the splitting to one or several sub-populations
+split(dat, fres, population="rest")
+split(dat, fres, population=list(keep=c("peak 2", "peak 3")))
 
 }
+
 
 \keyword{classes}
 \keyword{methods}

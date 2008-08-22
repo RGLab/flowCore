@@ -5,6 +5,10 @@
 \alias{unionFilter-class}
 \alias{intersectFilter-class}
 \alias{subsetFilter-class}
+\alias{show,complementFilter-method}
+\alias{show,unionFilter-method}
+\alias{show,intersectFilter-method}
+\alias{show,subsetFilter-method}
 
 \title{Class "setOperationFilter"}
 
