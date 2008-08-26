@@ -66,29 +66,36 @@ setMethod("split",
           ## take filterID as default population name and prepend prefix
           ## if necessary
           if(is.null(population))
-              population <- f@filterId
+              population <- paste(f@filterId, c("+","-"), sep="")
           population <- unlist(population)
           if(!is.character(population))
               stop("'population' must be character scalar.", call.=FALSE)
+          if(length(population)>2)
+              stop("Population argument when splitting on logicalFilterResults",
+                   " must be of length 2", call.=FALSE)
+          allThere <- population %in% names(f)
+          if(!all(allThere))
+              stop("The following are not valid population names in this ",
+                   "filterResult:\n\t", paste(population[!allThere],
+                                        collapse="\n\t"), call.=FALSE)
           if(!is.null(prefix)){
               if(!is.character(prefix))
                   stop("'prefix' must be character vector.", call.=FALSE) 
               population <- paste(prefix[1:(min(2, length(prefix)))],
-                                  population[1], sep="")
+                                  population, sep="")
           }
-          nn <- c(paste(population[1], "+", sep=""),
-                  paste(population[1],"-", sep=""))
           out <- structure(list(x[f@subSet, ], x[!f@subSet, ]),
-                           names=nn)
+                           names=names(f))
           description(out[[1]])$GUID <-
-              sprintf("%s (%s)", identifier(out[[1]]), nn[1])
+              sprintf("%s (%s)", identifier(out[[1]]), names(f)[1])
           description(out[[2]])$GUID <-
-              sprintf("%s (%s)", identifier(out[[2]]), nn[2])
+              sprintf("%s (%s)", identifier(out[[2]]), names(f)[2])
+          keep <- match(population, names(f))
+          out <- out[keep]
           if(flowSet){
               out <- flowSet(out)
-              phenoData(out)$population <- paste(c("in", "not in"),
-                                                 population[1])
-              sampleNames(out) <- nn
+              phenoData(out)$population <- population
+              sampleNames(out) <- population
               varMetadata(out)["population", "labelDescription"] <-
                   "population identifier produced by splitting"
           }
@@ -304,7 +311,7 @@ setMethod("split",signature("flowSet","list"),
               if(!is.null(names(f[[1]])))
                   population <- names(f[[1]])
               else
-                  population <- c("in", "out")
+                  population <- c("positive", "negative")
           } else if(!all(sapply(population, is, "character")))
               stop("'population' must be a single character vector ",
                    "or a list of character vectors", call.=FALSE)
