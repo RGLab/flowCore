@@ -238,10 +238,12 @@ setAs("flowSet","flowFrame",function(from) {
         colnames(exp) <- c(colnames(from), "Original")
         offset <- 1
         for(i in 1:length(from)){
-            rows <- offset:(offset+lens[i,]-1)
-            exp[rows, 1:nrow(params)] <- exprs(from[[i]])
-            exp[rows,"Original"] <- rep(i, lens[i,])
-            offset <- offset+lens[i,]
+            if(lens[[i]]>0){
+                rows <- offset:(offset+lens[i,]-1)
+                exp[rows, 1:nrow(params)] <- exprs(from[[i]])
+                exp[rows,"Original"] <- rep(i, lens[i,])
+                offset <- offset+lens[i,]
+            }
         }
         pData(params)["Original",c("name", "desc")] <- c("Original",
                               "Original frame")

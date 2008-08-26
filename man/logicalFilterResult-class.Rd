@@ -3,6 +3,7 @@
 \alias{logicalFilterResult-class}
 \alias{logicalFilterResult}
 \alias{summary,logicalFilterResult-method}
+\alias{names,logicalFilterResult-method}
 
 \title{Class "logicalFilterResult"}
 \description{Container to store the result of applying a \code{filter} on a
