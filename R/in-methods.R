@@ -519,7 +519,7 @@ setMethod("%in%",
           definition=function(x, table)
       {
           y <- filter(x,table@filters[[2]])
-          z <- if(length(y) == 1) {
+          z <- if(is(y, "logicalFilterResult")) {
               w <- as(y,"logical")
               n <- which(w)
               r <- filter(x[n,], table@filters[[1]])
@@ -540,7 +540,7 @@ setMethod("%in%",
                   filterDetails(y,ll[i]) <-
                       summarizeFilter(r, table@filters[[1]])
                   w[n[!as(r,"logical")]] <- FALSE
-                  res[z] <- i
+                  res[w] <- i
               }
               w <- structure(as.integer(res),levels=ll)
               attr(w,'subsetCount') <- count

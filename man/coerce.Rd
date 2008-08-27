@@ -12,6 +12,7 @@
 \alias{coerce,randomFilterResult,logical-method}
 \alias{coerce,environment,flowSet-method}
 \alias{coerce,list,flowSet-method}
+\alias{coerce,list,transformList-method}
 \alias{coerce,intersectFilter,logical-method}
 \alias{coerce,filter,call-method}
 \alias{coerce,subsetFilter,call-method}

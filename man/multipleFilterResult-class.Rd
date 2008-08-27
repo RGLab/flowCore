@@ -4,9 +4,12 @@
 \alias{multipleFilterResult}
 \alias{length,multipleFilterResult-method}
 \alias{names,multipleFilterResult-method}
+\alias{names<-,multipleFilterResult-method}
 \alias{[[,multipleFilterResult-method}
 \alias{[[,multipleFilterResult,ANY-method}
+\alias{[,multipleFilterResult,ANY-method}
 \alias{summary,multipleFilterResult-method}
+\alias{show,multipleFilterResult-method}
 
 \title{Class "multipleFilterResult"}
 \description{Container to store the result of applying \code{filter} on

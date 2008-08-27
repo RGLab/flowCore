@@ -289,7 +289,9 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
         dat <- readBin(con, dattype,
                        n = (offsets["dataend"]-offsets["datastart"]+1)/size,
                        size=size, signed=FALSE, endian=endian)
-    }else {  ##Read n lines with or without sampling 
+    }else {  ##Read n lines with or without sampling
+        if(length(which.lines)==1)
+            which.lines <- sample(seq_len(nrowTotal), which.lines)
         which.lines <- sort(which.lines)
         outrange <- length(which(which.lines > nrowTotal))
         if(outrange!=0)
