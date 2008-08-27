@@ -229,13 +229,13 @@ setMethod("show",signature=signature("flowFrame"),
 
 
 ## ==========================================================================
-## plot method: We actually attach flowViz to do the plotting
+## plot method: We actually need to attach flowViz to do the plotting
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("plot", signature(x="flowFrame", y="ANY"),
           function(x, y, ...)
       {
           message("For plotting, please attach the 'flowViz' package.\n",
-                  "   e.g. 'library(flowViz)'")
+                  "   i.e., 'library(flowViz)'")
       })
 
 

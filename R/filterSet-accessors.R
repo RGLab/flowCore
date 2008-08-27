@@ -8,6 +8,10 @@ setReplaceMethod("[[",
                  x
              })
 
+## This fucntion was not defined before, and I can only guess that's what
+## it was supposed to do initially. No guarantee, though...
+.resolveFilter <- function(f)
+    get(f@name, f@env)
 
 setReplaceMethod("[[",
                  signature(x="filterSet", i="ANY", value="filterReference"),

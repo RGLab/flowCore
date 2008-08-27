@@ -17,6 +17,7 @@
 \alias{split,flowSet,list-method}
 \alias{split,flowSet,numeric-method}
 \alias{split,flowSet,filter-method}
+\alias{split,flowSet,filterResult-method}
 
 
 \title{ Methods to split flowFrames and flowSets according to filters }

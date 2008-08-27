@@ -114,7 +114,7 @@ setMethod("==",
           signature("flowFrame", "filterResult"),
           function(e1,e2)
       {
-          i1 <- identifer(e1)
+          i1 <- identifier(e1)
           i2 <- e2@frameId
           (length(i1) == 0 || length(i2) == 0 || i1 == i2)
       })

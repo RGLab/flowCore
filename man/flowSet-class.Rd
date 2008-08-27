@@ -8,6 +8,7 @@
 \alias{[[,flowSet-method}
 \alias{[[,flowSet,ANY-method}
 \alias{[[<-,flowSet-method}
+\alias{[[<-,flowSet,ANY,ANY,flowFrame-method}
 \alias{[[<-,flowFrame-method}
 \alias{fsApply,flowSet-method}
 \alias{show,flowSet-method}
@@ -21,9 +22,13 @@
 \alias{phenoData<-,flowSet,phenoData-method}
 \alias{pData,flowSet-method}
 \alias{pData<-,flowSet,data.frame-method}
+\alias{plot,flowSet,ANY-method}
+\alias{plot,flowSet-method}
 \alias{varLabels,flowSet-method}
 \alias{varLabels<-,flowSet-method}
 \alias{varLabels<-,flowSet,ANY-method}
+\alias{varMetadata,flowSet-method}
+\alias{varMetadata<-,flowSet,ANY-method}
 \alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
@@ -444,7 +449,7 @@ fres2 <- filter(set, list(A=rectGate, B=rectGate2, C=rectGate, D=rectGate2))
 
 ## Splitting frames of a flowSet
 split(set, rectGate)
-split(set[1:2], list(rectGate, rectGate2))
+split(set[1:2], rectGate, populatiuon="nonDebris2+")
 split(set, c(1,1,2,2))
 
 ## subsetting according to filters and filter results

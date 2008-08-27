@@ -3,7 +3,7 @@
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## to flowSet
 setMethod("[", c("flowSet"),
-          function(x, i, j,..., drop=FALSE)
+          function(x, i, j, ..., drop=FALSE)
       {
           if(missing(i) && missing(j)) 
               return(x)
@@ -494,3 +494,14 @@ setMethod("summary", signature("flowSet"),
         fsApply(object, function(x) apply(exprs(x), 2, summary),
                 simplify=FALSE)
  )
+
+
+## ==========================================================================
+## plot method: We actually need to attach flowViz to do the plotting
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("plot", signature(x="flowSet", y="ANY"),
+          function(x, y, ...)
+      {
+          message("For plotting, please attach the 'flowViz' package.\n",
+                  "   i.e., 'library(flowViz)'")
+      })

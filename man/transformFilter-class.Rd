@@ -2,6 +2,7 @@
 \docType{class}
 \alias{transformFilter-class}
 \alias{transformFilter}
+\alias{show,transformFilter-method}
 
 \title{
   

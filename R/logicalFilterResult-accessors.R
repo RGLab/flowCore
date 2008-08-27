@@ -7,3 +7,9 @@ setMethod("summary",
 setMethod("names",
           signature=signature("logicalFilterResult"),
           definition=function(x) paste(x@filterId, c("+","-"), sep=""))
+
+
+## ==========================================================================
+## length method, how many populations do we have?
+## ---------------------------------------------------------------------------
+setMethod("length","logicalFilterResult",function(x) 2)
