@@ -294,9 +294,10 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
 ## ---------------------------------------------------------------------------
 setClass("ellipsoidGate",
          representation(mean="numeric",
-                        cov="matrix"),
+                        cov="matrix",
+			distance="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", mean=numeric(), cov=matrix()),
+         prototype=list(filterId="ALL", mean=numeric(), cov=matrix(), distance=1),
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@cov) ||
@@ -305,21 +306,27 @@ setClass("ellipsoidGate",
                  msg <- "\nslot 'cov' must be a symmetric matrix of at least 2 rows"
              if(!is.numeric(object@mean) ||
                 length(object@mean) != nrow(object@cov))
-                 msg <- paste("\nslot 'distance' must be numeric vector of",
+                 msg <- paste("\nslot 'mean' must be numeric vector of",
                               "same length as dimensions in 'cov'")
+	     if(!is.numeric(object@distance) ||	length(object@distance)!=1)
+	         msg <- "'distance' must be numeric of length 1"      
              return(msg)
          })
 
 ## constructor
-ellipsoidGate <- function(filterId="ellipsoidGate", .gate, mean, ...) {
+ellipsoidGate <- function(filterId="ellipsoidGate", .gate, mean, distance=1,
+...) {
     if(missing(.gate) || !is.matrix(.gate))
       .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
-    if(!all(rownames(.gate) == colnames(.gate)) ||
-       !all(names(mean) == colnames(.gate)))
+    rn <- rownames(.gate)
+    cn <- colnames(.gate)
+    if(any(sapply(dimnames(cov), is.null)) ||
+       !all(rn == cn) || !all(names(mean) == cn))
         stop("'.gate' must be covariance matrix with same dimnames as ",
-             "parameter names in 'mean'", call.=FALSE)    
+             "parameter names in 'mean'", call.=FALSE)
+    names(mean) <- cn
     new("ellipsoidGate", filterId=filterId, parameters=colnames(.gate),
-        cov=.gate, mean=mean)
+        cov=.gate, mean=mean, distance=distance)
 }
 
 
