@@ -2,14 +2,14 @@
 ## Methods for objects of type 'kmeansFilter'
 ## Note: All filtering methods are stored in file 'in-methods.R'
 ## ==========================================================================
-## FIXME: What do summarizeFilter methods do and why are they not
-## exported in the name space?
+## Method to gather information about the filtering operation which is
+## supposed to be stored in the filterDetails slot. 
 setMethod("summarizeFilter",
           signature("filterResult","kmeansFilter"),
           function(result,filter)
       {
           ret <- callNextMethod()
-          ret$populations = filter@populations
+          ret$populations <- filter@populations
           ret
       })
 

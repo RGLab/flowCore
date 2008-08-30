@@ -43,7 +43,7 @@ setMethod("[", signature=signature("flowFrame","filterResult"),
 setMethod("[", signature=signature("flowFrame","filter"),
           definition=function(x,i,j,...,drop=FALSE)
       {
-          result = filter(x,i)
+          result <- filter(x,i)
           if(missing(j))
               x[result,,...,drop=FALSE]
           else
@@ -436,7 +436,7 @@ setMethod("filter", signature(x="flowFrame", filter="filter"),
                    "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
                                          collapse="\n"), call.=FALSE)
           result <- as(x %in% filter, "filterResult")
-          identifier(result) = identifier(filter)
+          identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
           result@frameId <- identifier(x)
           result
