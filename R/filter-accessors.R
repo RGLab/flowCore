@@ -11,16 +11,17 @@
 ## accessor method for slot parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("parameters",
-          signature("filter"),
-          function(object) character(0))
+          signature=signature("filter"),
+          definition=function(object) character(0))
 
 setMethod("parameters",
-          signature("parameterFilter"),
-          function(object) object@parameters)
+          signature=signature("parameterFilter"),
+          definition=function(object) object@parameters)
 
 setMethod("parameters",
-          signature("setOperationFilter"),
-          function(object) unique(unlist(lapply(object@filters, parameters))))
+          signature=signature("setOperationFilter"),
+          definition=function(object)
+          unique(unlist(lapply(object@filters, parameters))))
 
 
 
@@ -28,11 +29,13 @@ setMethod("parameters",
 ## summary method for filters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
-          signature("filter"),
-          function(object, result, ...)
+          signature=signature("filter"),
+          definition=function(object, result, ...)
       {
           if(missing(result))
-              stop("Only resolved filters may be summarized")
+              stop("Only resolved filters may be summarized.\nTry something ",
+                   "like 'filter(myFlowFrame, myFilter)'\nbefore calling ",
+                   "'summary'.", call.=FALSE)
           else
               l <- as(result, "logical")
           true <- sum(l)
@@ -47,8 +50,8 @@ setMethod("summary",
 ## Printing out a filter should give us something at least mildly sensible.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("show",
-          signature("filter"),
-          function(object) 
+          signature=signature("filter"),
+          definition=function(object) 
           cat(paste("A filter named '", object@filterId, "'\n", sep="")))
 
 
@@ -61,12 +64,12 @@ setMethod("show",
 ## We need to be able to get an ID for a filter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature="filter",
+          signature=signature="filter",
           definition=function(object) object@filterId)
 
 setReplaceMethod("identifier",
-                 signature("filter","character"),
-                 function(object,value)
+                 signature=signature("filter","character"),
+                 definition=function(object,value)
              {
                  object@filterId = value
                  object
@@ -80,8 +83,8 @@ setReplaceMethod("identifier",
 ## For many cases this is equivalent to an intersection filter.
 ## --------------------------------------------------------------------------
 setMethod("%subset%",
-          signature("filter","filter"),
-          function(e1, e2)
+          signature=signature("filter","filter"),
+          definition=function(e1, e2)
       {
           new("subsetFilter",
               filters=list(e1, e2), filterId=paste(identifier(e1),"in",
@@ -89,12 +92,12 @@ setMethod("%subset%",
       })
 
 setMethod("%subset%",
-          signature("list","filter"),
-          function(e1, e2) lapply(e1, "%subset%", e2=e2))
+          signature=signature("list","filter"),
+          definition=function(e1, e2) lapply(e1, "%subset%", e2=e2))
 
 setMethod("%subset%",
-          signature("filterSet","filter"),
-          function(e1,e2)
+          signature=signature("filterSet","filter"),
+          definition=function(e1,e2)
       {
           ## Make a copy of the filterSet, preserving R semantics
           x <- as(as(e1, "list"), "filterSet")
@@ -116,44 +119,44 @@ setMethod("%subset%",
 ## another union filter.
 ## --------------------------------------------------------------------------
 setMethod("|",
-          signature("filter", "filter"),
-          function(e1, e2)
+          signature=signature("filter", "filter"),
+          definition=function(e1, e2)
       {
           new("unionFilter", filters=list(e1, e2),
               filterId=paste(identifier(e1), "or", identifier(e2)))
       })
 
 setMethod("|",
-          signature("list","filter"),
-          function(e1, e2) lapply(e1, "|", e2=e2))
+          signature=signature("list","filter"),
+          definition=function(e1, e2) lapply(e1, "|", e2=e2))
 
 setMethod("|",
-          signature("filter", "list"),
-          function(e1, e2) lapply(e2, "|", e1=e1))
+          signature=signature("filter", "list"),
+          definition=function(e1, e2) lapply(e2, "|", e1=e1))
 
 
 
 ## ==========================================================================
 ## The & operator returns an object representing the intersection of two
 ## filters. This is somewhat different from the %subset% operator because
-## some filters depend on the  data and would return different results
+## some filters depend on the data and would return different results
 ## when applied to the full dataset.
 ## --------------------------------------------------------------------------
 setMethod("&",
-          signature("filter", "filter"),
-          function(e1, e2)
+          signature=signature("filter", "filter"),
+          definition=function(e1, e2)
       {
           new("intersectFilter", filters=list(e1, e2),
               filterId=paste(identifier(e1), "and", identifier(e2)))
       })
 
 setMethod("&",
-          signature("list", "filter"),
-          function(e1, e2) lapply(e1, "&", e2=e2))
+          signature=signature("list", "filter"),
+          definition=function(e1, e2) lapply(e1, "&", e2=e2))
 
 setMethod("&",
-          signature("filter", "list"),
-          function(e1, e2) lapply(e2, "&", e1=e1))
+          signature=signature("filter", "list"),
+          definition=function(e1, e2) lapply(e2, "&", e1=e1))
 
 
 
@@ -162,8 +165,8 @@ setMethod("&",
 ## filter it returns.
 ## --------------------------------------------------------------------------
 setMethod("!",
-          signature("filter"),
-          function(x)
+          signature=signature("filter"),
+          definition=function(x)
       {
 	new("complementFilter",filters=list(x),
             filterId=paste("not",identifier(x)))
