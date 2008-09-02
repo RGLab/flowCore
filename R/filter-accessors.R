@@ -64,7 +64,7 @@ setMethod("show",
 ## We need to be able to get an ID for a filter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature="filter",
+          signature="filter",
           definition=function(object) object@filterId)
 
 setReplaceMethod("identifier",
