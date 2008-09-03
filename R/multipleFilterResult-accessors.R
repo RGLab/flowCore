@@ -3,11 +3,12 @@
 ## ==========================================================================
 ## summary method
 ## ---------------------------------------------------------------------------
-setMethod("summary","multipleFilterResult",function(object,...) {
-	true = summary(object@subSet[!is.na(object@subSet)])
-	count= rep(sum(!is.na(object@subSet)),nlevels(object@subSet))
-	structure(list(name=levels(object@subSet),true=true,false=count-true,
-                       n=count,p=true/count,q=1-(true/count)),class="filterSummary")
+setMethod("summary","multipleFilterResult",function(object, ...) {
+	true <- summary(object@subSet[!is.na(object@subSet)])
+	count <-  rep(sum(!is.na(object@subSet)),nlevels(object@subSet))
+        name=levels(object@subSet)
+        new("filterSummary", name=levels(object@subSet),true=true,
+            count=count,p=true/count)
 })
 
 
