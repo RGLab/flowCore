@@ -145,3 +145,8 @@ setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
 setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
 
 
+
+## ===========================================================================
+## Generics for toTable for output in table-like structure
+## ---------------------------------------------------------------------------
+setGeneric("toTable",function(x,...) standardGeneric("toTable"))

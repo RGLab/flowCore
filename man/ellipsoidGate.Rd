@@ -35,6 +35,9 @@
 
     \item{\code{cov}:}{Objects of class \code{"matrix"}. The covariance
       matrix defining the shape of the ellipse. }
+
+    \item{\code{distance}:}{Objects of class \code{"numeric"}. The
+      Mahalanobis distance defining the size of the ellipse. }
     
     \item{\code{parameters}:}{Object of class \code{"character"},
       describing the parameter used to filter the \code{flowFrame}. }
@@ -61,7 +64,7 @@
 
 \usage{
 
-ellipsoidGate(filterId = "ellipsoidGate", .gate, mean, \dots)
+ellipsoidGate(filterId = "ellipsoidGate", .gate, mean, distance=1, \dots)
 
 }
 
@@ -75,6 +78,13 @@ ellipsoidGate(filterId = "ellipsoidGate", .gate, mean, \dots)
   
   \item{mean}{ Numeric vector of equal length as dimensions in
     \code{.gate}.}
+
+  \item{distance}{ Numeric scalar giving the Mahalanobis distance
+      defining the size of the ellipse. This mostly exists for
+      compliance reaons to the gatingML standard as \code{mean} and
+      \code{gate} should already uniquely define the
+      ellipse. Essentially, \code{distance} is merely a factor that gets
+      applied to the values in the covariance matrix.}
   
   \item{\dots}{ You can also directly describe the covariance matrix
     through named arguments, as described below. }

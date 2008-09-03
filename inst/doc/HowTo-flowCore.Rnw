@@ -552,7 +552,7 @@ pages for more details):
 
 <<rectGate, echo=true, results=verbatim>>=
 rectGate <- rectangleGate(filterId="Fluorescence Region", 
-                          "FL1-H"=c(50, 100), "FL2-H"=c(50, 100))
+                          "FL1-H"=c(0, 12), "FL2-H"=c(0, 12))
 @
 
 We also include some data-driven filters not usually found in flow
