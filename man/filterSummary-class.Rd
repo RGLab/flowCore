@@ -2,9 +2,17 @@
 \docType{class}
 \alias{filterSummary-class}
 \alias{[[,filterSummary,character-method}
+\alias{[[,filterSummary,numeric-method}
 \alias{$,filterSummary,ANY-method}
 \alias{show,filterSummary-method}
+\alias{toTable}
 \alias{toTable,filterSummary-method}
+\alias{coerce,filterSummary,data.frame-method}
+\alias{summary}
+\alias{summary,subsetFilter-method}
+\alias{names,filterSummary-method}
+\alias{length,filterSummary-method}
+
 
 \title{Class "filterSummary" }
 
@@ -26,8 +34,8 @@ The user doesn't have to deal with manual object instantiation.
   \describe{
     
     \item{\code{name}:}{Object of class \code{"character"} A vector of
-      population names. In the case of
-      \code{\link{logicalFilterResults}}, this will only be one.}
+      population names. In the case of a
+      \code{\link{logicalFilterResult}}, this will only be one.}
        
     \item{\code{true}:}{Object of class \code{"numeric"} The number of
       events in the filter for each population.}
@@ -73,29 +81,35 @@ summary(object, \dots)
     \item{[[}{\code{signature(x = "filterSummary", i = "character")}:
       Subsetting of  \code{filterSummary} objects for the case of
       multiple populations.}
-    
-    \item{$}{\code{signature(x = "filterSummary", name = "ANY")}: A
+   
+     
+    \item{\$}{\code{signature(x = "filterSummary", name = "ANY")}: A
       list-like accessor to the slots and more. Valid values are
       \code{n} and \code{count} (those are identical), \code{true} and
       \code{in} (identical), \code{false} and \code{out} (identical),
-      code{name}, code{p} and \code{q} (\code(1-p}).}
-    
+      \code{name}, \code{p} and \code{q} (\code{1-p}).}
+  
     \item{show}{\code{signature(object = "filterSummary")}: A
       human-readable output}
     
     \item{toTable}{\code{signature(x = "filterSummary")}: Output as
-	 \code{data.frame} for more programmatic access.}
-     }
-     
+      \code{data.frame} for more programmatic access.}
+  }
 }
+
 
 \author{Florian Hahne, Byron Ellis}
 
 
-\seealso{\code{\linkS4class{filterResult}},
-  \code{\linkS4class{multipleFilterResult}} }
+\seealso{
+  
+  \code{\linkS4class{filterResult}},
+  \code{\linkS4class{multipleFilterResult}}
+  
+}
 
 \examples{
+
 ## Loading example data, creating and applying a curv1Filter
 dat <- read.FCS(system.file("extdata","0877408774.B08",
 package="flowCore"))
@@ -115,6 +129,7 @@ s$true
 s$n
 toTable(s)
 
+}
 
 
 \keyword{classes}
