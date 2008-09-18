@@ -61,7 +61,7 @@
 
 \usage{
 
-rectangleGate( filterId = "rectangleGate", .gate, \dots)
+rectangleGate( filterId = "Rectangle Gate", .gate, \dots)
 
 }
 

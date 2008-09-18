@@ -4,25 +4,8 @@
 ## ==========================================================================
 
 
-## ==========================================================================
-## show method
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("show",signature(object="rectangleGate"),function(object)
-      {
-          parms <- parameters(object)
-          cat("Rectangular gate '", identifier(object),
-              "' with dimensions:\n", sep="")
-          for(i seq_along(parms)) {
-              cat("  ")
-              if(is.character(parms[i]))
-                  cat(parms[i])
-              else
-                  cat("anonymous parameter")
-              cat(": (")
-              cat(paste(object@min[],object@max[i],sep=","))
-		cat(")\n")
-	}
-})
+
+
 
 
 ## ==========================================================================

@@ -9,6 +9,7 @@
 \alias{show,unionFilter-method}
 \alias{show,intersectFilter-method}
 \alias{show,subsetFilter-method}
+\alias{summary,subsetFilter-method}
 
 \title{Class "setOperationFilter"}
 

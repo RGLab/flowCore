@@ -1,6 +1,23 @@
+## ==========================================================================
+## filterSets are remnants of a first attempt to build a reference-based
+## workflow infrastructure. Although they are still around we strongly
+## recommend using the new workFlow class for that purpose.
+## ==========================================================================
+
+
+
+
+
+
+## ==========================================================================
+## Replacement methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## By a filter
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="NULL", value="filter"),
-                 function(x, i, j, ..., value)
+                 signature=signature(x="filterSet",
+                                     i="NULL",
+                                     value="filter"),
+                 definition=function(x, i, j, ..., value)
              {
                  n <- paste(".", value@filterId, sep="")
                  x@env[[n]] <- value
@@ -13,9 +30,12 @@ setReplaceMethod("[[",
 .resolveFilter <- function(f)
     get(f@name, f@env)
 
+## By a filter Reference
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="ANY", value="filterReference"),
-                 function(x, i, j, ..., value)
+                  signature=signature(x="filterSet",
+                                      i="ANY",
+                                      value="filterReference"),
+                 definition=function(x, i, j, ..., value)
              {
                  ## Copy this filter in from another filterSet
                  if(value@env != x@env)
@@ -23,9 +43,12 @@ setReplaceMethod("[[",
                  x
              })
 
+## A formula interface for replacement
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="NULL", value="formula"),
-                 function(x, i, j, ..., value)
+                  signature=signature(x="filterSet",
+                                      i="NULL",
+                                      value="formula"),
+                 definition=function(x, i, j, ..., value)
              {
                  if(length(value) == 3) {
                      a <- value[[2]]
@@ -36,8 +59,10 @@ setReplaceMethod("[[",
              })
 
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="character", value="formula"),
-                 function(x, i, j, ..., value)
+                 signature=signature(x="filterSet",
+                                     i="character",
+                                     value="formula"),
+                 definition=function(x, i, j, ..., value)
              {
                  ## Build a place to put names...
                  e <- new.env(parent=x@env)
@@ -79,12 +104,16 @@ setReplaceMethod("[[",
              })
 
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="missing", value="filter"),
-                 function(x, i, j, ..., value) x[[NULL]] <- value)
+                 signature=signature(x="filterSet",
+                                     i="missing",
+                                     value="filter"),
+                 definition=function(x, i, j, ..., value) x[[NULL]] <- value)
 
 setReplaceMethod("[[",
-                 signature(x="filterSet", i="character", value="filter"),
-                 function(x,i,j,...,value)
+                 signature=signature(x="filterSet",
+                                     i="character",
+                                     value="filter"),
+                 definition=function(x, i, j, ..., value)
              {
                  if(nzchar(i))
                      value@filterId <- i
@@ -92,17 +121,24 @@ setReplaceMethod("[[",
                  x
              })
 
+
+
+## ==========================================================================
+## Subsetting methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("[[",
-          signature("filterSet", "character"),
-          function(x, i, j, ..., drop=TRUE) {
+          signature=signature(x="filterSet",
+                              i="character"),
+          definition=function(x, i, j, ..., drop=TRUE) {
               if(length(i) > 1) stop("Can only select a single item")
               as(x@env[[i]],"concreteFilter")
           })
 
 ## Retrieve the filterReferences
 setMethod("[",
-          signature("filterSet", "character"),
-          function(x, i, j, ..., drop=TRUE)
+          signature=signature(x="filterSet",
+                              i="character"),
+          definition=function(x, i, j, ..., drop=TRUE)
       {
           if(length(i)==1)
               x@env[[i]]
@@ -110,25 +146,23 @@ setMethod("[",
               sapply(i,function(i) x@env[[i]])
       })
 
-setMethod("show",
-          signature("filterSet"),
-          function(object)
-      {
-          cat("A set of filter objects:\n")
-          cat(paste(sapply(names(object), function(i)
-                           identifier(object@env[[i]])), sep=",",
-                    collapse=","))
-          cat("\n")
-      })
 
+
+## ==========================================================================
+## The names of the filters in the set
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("names",
-          signature("filterSet"),
-          function(x) ls(env=x@env))
+          signature=signature(x="filterSet"),
+          definition=function(x) ls(env=x@env))
 
+
+
+## ==========================================================================
 ## Performs a topological sort of the filterSet (if possible)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("sort",
-          signature("filterSet"),
-          function(x, decreasing=FALSE, dependencies=FALSE, ...)
+          signature=signature(x="filterSet"),
+          definition=function(x, decreasing=FALSE, dependencies=FALSE, ...)
       {
           n <- names(x)
           ## Dependency matrix for this filter set
@@ -174,7 +208,4 @@ setMethod("sort",
           O
       })
 
-setMethod("filterReference",
-          signature("filterSet", "character"),
-          function(from, name) new("filterReference", env=from@env, name=name)
-          )
+

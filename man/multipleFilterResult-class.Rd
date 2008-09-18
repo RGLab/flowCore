@@ -5,6 +5,7 @@
 \alias{length,multipleFilterResult-method}
 \alias{names,multipleFilterResult-method}
 \alias{names<-,multipleFilterResult-method}
+\alias{names<-,multipleFilterResult,ANY-method}
 \alias{[[,multipleFilterResult-method}
 \alias{[[,multipleFilterResult,ANY-method}
 \alias{[,multipleFilterResult,ANY-method}

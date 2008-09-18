@@ -72,7 +72,7 @@
 \usage{
 
 norm2Filter(x, y, method="covMcd", scale.factor=1,
-                        filterId="norm2Gate", n=50000)
+                        filterId="Norm2 Filter", n=50000)
 
 }
 

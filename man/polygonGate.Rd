@@ -56,7 +56,7 @@
 
 
 \usage{
-polygonGate(filterId = "polygonGate", boundaries, \dots)
+polygonGate(filterId = "Polygon Gate", boundaries, \dots)
 
 }
 
