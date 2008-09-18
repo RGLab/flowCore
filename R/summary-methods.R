@@ -26,7 +26,7 @@ setMethod("summary",
 ## For a flowSet, we iterate over each frame and provide summaries for those.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
-          signature=signature("flowSet"), 
+          signature=signature(object="flowSet"), 
           definition=function(object, ...)
       {
           fsApply(object, function(x) apply(exprs(x), 2, summary),

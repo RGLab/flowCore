@@ -11,8 +11,9 @@
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## to flowSet
-setMethod("[", c("flowSet"),
-          function(x, i, j, ..., drop=FALSE)
+setMethod("[",
+          signature=signature(x="flowSet"),
+          definition=function(x, i, j, ..., drop=FALSE)
       {
           if(missing(i) && missing(j)) 
               return(x)
@@ -53,8 +54,9 @@ setMethod("[", c("flowSet"),
       })
 
 ## to flowFrame
-setMethod("[[","flowSet",
-          function(x, i, j, ...)
+setMethod("[[",
+          signature=signature(x="flowSet"),
+          definition=function(x, i, j, ...)
       {
           if(length(i) != 1)
               stop("subscript out of bounds (index must have length 1)")
@@ -65,10 +67,15 @@ setMethod("[[","flowSet",
       })
 
 ## to flowFrame
-setMethod("$", c("flowSet", "character"), function(x,name) x[[name]])
+setMethod("$",
+          signature=signature(x="flowSet",
+                              name="character"),
+          definition=function(x, name) x[[name]])
 
 ## replace a flowFrame
-setReplaceMethod("[[", signature=c("flowSet", value="flowFrame"),
+setReplaceMethod("[[",
+                 signature=signature(x="flowSet",
+                                     value="flowFrame"),
                  definition=function(x, i, j, ..., value)
              {
                  if(length(i) != 1)
@@ -82,45 +89,61 @@ setReplaceMethod("[[", signature=c("flowSet", value="flowFrame"),
 ## ==========================================================================
 ## accessor and replace methods for slot colnames
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("colnames","flowSet",function(x, do.NULL="missing",prefix="missing")
+setMethod("colnames",
+          signature=signature(x="flowSet"),
+          definition=function(x, do.NULL="missing", prefix="missing")
           x@colnames)
 
 
 ## FIXME: should we make sure that parameter names are changed for each frame?
-setReplaceMethod("colnames","flowSet",function(x,value) {
-	x@colnames <- value
-	x
-})
+setReplaceMethod("colnames",
+                 signature=signature(x="flowSet",
+                                     value="ANY"),
+                 definition=function(x, value)
+             {
+                 x@colnames <- value
+                 x
+             })
 
 
 
 ## ==========================================================================
 ## Allow for the extraction and replacement of phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("phenoData","flowSet",function(object) object@phenoData)
-setMethod("phenoData<-","flowSet",function(object,value) {
-	current <- phenoData(object)
-	#Sanity checking
-	if(nrow(current) != nrow(value))
-		stop("phenoData must have the same number of rows as ",
-                     "flow files")
-	#Make sure all of the original frames appear in the new one.
-	if(!all(sampleNames(current)%in%sampleNames(value)))
-		stop("The sample names no longer match.")
-	object@phenoData <- value
-	object
-})
+setMethod("phenoData",
+          signature=signature(object="flowSet"),
+          definition=function(object) object@phenoData)
+
+setMethod("phenoData<-",
+          signature=signature(object="flowSet",
+                              value="ANY"),
+          definition=function(object, value)
+      {
+          current <- phenoData(object)
+          ## Sanity checking
+          if(nrow(current) != nrow(value))
+              stop("phenoData must have the same number of rows as ",
+                   "flow files")
+          ## Make sure all of the original frames appear in the new one.
+          if(!all(sampleNames(current)%in%sampleNames(value)))
+              stop("The sample names no longer match.")
+          object@phenoData <- value
+          object
+      })
 
 
 
 ## ==========================================================================
 ## directly access the pData data frame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("pData","flowSet",function(object) pData(object@phenoData))
+setMethod("pData",
+          signature=signature(object="flowSet"),
+          definition=function(object) pData(object@phenoData))
 
 setReplaceMethod("pData",
-                 signature("flowSet", "data.frame"),
-                 function(object,value)
+                 signature=signature(object="flowSet",
+                                     value="data.frame"),
+                 definition=function(object,value)
              {
                  pd <- phenoData(object)
                  pData(pd) <- value
@@ -136,42 +159,45 @@ setMethod("varLabels",
           function(object) varLabels(phenoData(object)))
 
 setReplaceMethod("varLabels",
-                 signature=signature(
-                   object="flowSet",
-                   value="ANY"),
-                 function(object, value) {
-                     pd <- phenoData(object)
-                     varLabels(pd) <- value
-                     object@phenoData <- pd
-                     object
-                 })
-
+                 signature=signature(object="flowSet",
+                                     value="ANY"),
+                 definition=function(object, value)
+             {
+                 pd <- phenoData(object)
+                 varLabels(pd) <- value
+                 object@phenoData <- pd
+                 object
+             })
 
 setMethod("varMetadata",
           signature=signature(object="flowSet"),
-          function(object) varMetadata(phenoData(object)))
+          definition=function(object) varMetadata(phenoData(object)))
 
 setReplaceMethod("varMetadata",
-                 signature=signature(
-                   object="flowSet",
-                   value="ANY"),
-                 function(object, value) {
-                     pd <- phenoData(object)
-                     varMetadata(pd) <- value
-                     object@phenoData <- pd
-                     object
-                 })
+                 signature=signature(object="flowSet",
+                                     value="ANY"),
+                 definition=function(object, value)
+             {
+                 pd <- phenoData(object)
+                 varMetadata(pd) <- value
+                 object@phenoData <- pd
+                 object
+             })
 
 
 
 ## ==========================================================================
 ## sampleNames method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("sampleNames", "flowSet", function(object) 
-       sampleNames(phenoData(object)))
+setMethod("sampleNames",
+          signature=signature(object="flowSet"),
+          definition=function(object) 
+          sampleNames(phenoData(object)))
 
 ## Note that the replacement method also replaces the GUID for each flowFrame
-setReplaceMethod("sampleNames","flowSet",function(object,value)
+setReplaceMethod("sampleNames",
+                 signature=signature(object="flowSet"),
+                 definition=function(object, value)
              {
                  oldNames <- sampleNames(object)
                  value <- as.character(value)
@@ -199,81 +225,87 @@ setReplaceMethod("sampleNames","flowSet",function(object,value)
 ## ==========================================================================
 ## keyword method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("keyword",signature("flowSet","list"),function(object,keyword) {
-	do.call("data.frame",c(lapply(keyword,function(k) {
-		I(sapply(sampleNames(object),function(n) keyword(object[[n]],k)))
-	}),list(row.names=sampleNames(object))))
-})
-
-
-
-## ==========================================================================
-## accessor method for length of flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
-
-
-
+setMethod("keyword",
+          signature=signature(object="flowSet",
+                              keyword="list"),
+          definition=function(object,keyword)
+      {
+          do.call("data.frame",c(lapply(keyword,function(k) {
+              I(sapply(sampleNames(object),function(n)
+                       keyword(object[[n]],k)))}),
+                                 list(row.names=sampleNames(object))))
+      })
 
 
 
 ## ==========================================================================
 ## apply method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
-                                                        use.exprs=FALSE) {
-	if(missing(FUN))
-		stop("fsApply function missing")
-	FUN = match.fun(FUN)
-	if(!is.function(FUN))
-		stop("This is not a function!")
-	## row.names and sampleNames had damn well better match, use this to
-        ## give us access to the phenoData
-	res = structure(lapply(sampleNames(x),function(n) {
-		y = as(x[[n]],"flowFrame")
-		FUN(if(use.exprs) exprs(y) else y,...)
-	}),names=sampleNames(x))
-	if(simplify) {
-		if(all(sapply(res,is,"flowFrame"))) {
-			res = as(res,"flowSet")
-			phenoData(res) = phenoData(x)[sampleNames(x),]
-		} else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
-			res = do.call(rbind,res)
-		}
-	}
-	res
-})
+setMethod("fsApply",
+          signature=signature(x="flowSet",
+                              FUN="ANY"),
+          definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE)
+      {
+          if(missing(FUN))
+              stop("fsApply function missing")
+          FUN <- match.fun(FUN)
+          if(!is.function(FUN))
+              stop("This is not a function!")
+          ## row.names and sampleNames had damn well better match, use this to
+          ## give us access to the phenoData
+          res <- structure(lapply(sampleNames(x),function(n) {
+              y <- as(x[[n]],"flowFrame")
+              FUN(if(use.exprs) exprs(y) else y,...)
+          }),names=sampleNames(x))
+          if(simplify) {
+              if(all(sapply(res,is,"flowFrame"))) {
+                  res <- as(res,"flowSet")
+                  phenoData(res) = phenoData(x)[sampleNames(x),]
+              } else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
+                  res <- do.call(rbind,res)
+              }
+          }
+          res
+      })
 
 
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
-setMethod("compensate",signature("flowSet","ANY"),
-          function(x,spillover,inv=TRUE, ...)
-          fsApply(x,compensate,spillover,inv=inv, ...))
+setMethod("compensate",
+          signature=signature(x="flowSet",
+                              spillover="ANY"),
+          definition=function(x, spillover, inv=TRUE, ...)
+          fsApply(x, compensate, spillover, inv=inv, ...))
 
 
 
 ## ==========================================================================
 ## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("transform",signature=signature(`_data`="flowSet"),
-          function(`_data`,...) {
-              fsApply(`_data`,transform,...)
-          })
+setMethod("transform",
+          signature=signature(`_data`="flowSet"),
+          definition=function(`_data`,...)
+      {
+          fsApply(`_data`,transform,...)
+      })
 
-setMethod("transform",signature(`_data`="missing"),function(...) {
-    funs = list(...)
-    io   = names(funs)
-    ##Consistency check
-    if(!all(sapply(funs,is.function)))
-        stop("All transforms must be functions")
-    if(!all(sapply(io,is.character)))
-        stop("All transforms must be named")
-    new("transformList",transforms=lapply(seq(along=funs),function(i)
-                        new("transformMap",input=io[i],output=io[i],
-                            f=funs[[i]])))
-})
+setMethod("transform",
+          signature=signature(`_data`="missing"),
+          definition=function(...)
+      {
+          funs <- list(...)
+          io <- names(funs)
+          ## Consistency check
+          if(!all(sapply(funs,is.function)))
+              stop("All transforms must be functions")
+          if(!all(sapply(io,is.character)))
+              stop("All transforms must be named")
+          new("transformList",
+              transforms=lapply(seq(along=funs),function(i)
+                                new("transformMap",input=io[i],output=io[i],
+                                    f=funs[[i]])))
+      })
 
 
 
@@ -285,8 +317,10 @@ setMethod("transform",signature(`_data`="missing"),function(...) {
 ## a filterResultList
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## for filters
-setMethod("filter",signature=signature(x="flowSet", filter="filter"),
-          function(x,filter)
+setMethod("filter",
+          signature=signature(x="flowSet",
+                              filter="filter"),
+          definition=function(x, filter)
       {
           if(!all(parameters(filter) %in% colnames(x)))
               stop("parameters in the filter definition don't ",
@@ -299,8 +333,10 @@ setMethod("filter",signature=signature(x="flowSet", filter="filter"),
 ## for filterSets
 ## FIXME: Need to check that everything still works after introduction
 ## of filterResultLists
-setMethod("filter",signature(x="flowSet", filter="filterSet"),
-          function(x, filter)
+setMethod("filter",
+          signature=signature(x="flowSet",
+                              filter="filterSet"),
+          definition=function(x, filter)
       {
           res <- fsApply(x, function(x) filter(x, filter))
           return(new("filterResultList", .Data=res, frameId=sampleNames(x),
@@ -311,8 +347,10 @@ setMethod("filter",signature(x="flowSet", filter="filterSet"),
 ## to sampleNames in the set. Filters in the filter list that can't be
 ## matched are ignored, for those that are missing, and "empty" dummy
 ## filterResult is produced
-setMethod("filter",signature(x="flowSet",filter="list"),
-          function(x,filter)
+setMethod("filter",
+          signature=signature(x="flowSet",
+                              filter="list"),
+          definition=function(x,filter)
       {
           if(is.null(names(filter)))
               stop("'filter' must be a named list, where names correspond",
@@ -358,8 +396,10 @@ setMethod("filter",signature(x="flowSet",filter="list"),
 ## Subset methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## by filter or filter result
-setMethod("Subset", signature("flowSet","ANY"),
-          function(x,subset,select,...)
+setMethod("Subset",
+          signature=signature(x="flowSet",
+                              subset="ANY"),
+          definition=function(x,subset,select,...)
       {
           y <- if(missing(select))
               fsApply(x, Subset, subset, ...)
@@ -369,8 +409,10 @@ setMethod("Subset", signature("flowSet","ANY"),
           y
       })
 
-setMethod("Subset", signature("flowSet", "list"),
-          function(x, subset, select, ...)
+setMethod("Subset",
+          signature=signature(x="flowSet",
+                              subset="list"),
+          definition=function(x, subset, select, ...)
       {
           if(is.null(names(subset)))
               stop("Filter list must have names to do something reasonable")
@@ -406,9 +448,15 @@ setMethod("Subset", signature("flowSet", "list"),
 ## ==========================================================================
 ## rbind method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("rbind2",signature("flowSet","missing"), function(x, y) x)
-setMethod("rbind2",signature("flowSet", "flowSet"),
-          function(x, y)
+setMethod("rbind2",
+          signature=signature(x="flowSet",
+                              y="missing"),
+          definition=function(x, y) x)
+
+setMethod("rbind2",
+          signature=signature(x="flowSet",
+                              y="flowSet"),
+          definition=function(x, y)
       {
           env <- new.env(hash=TRUE, parent=emptyenv())
           lx <- sampleNames(x)
@@ -430,8 +478,10 @@ setMethod("rbind2",signature("flowSet", "flowSet"),
           return(fs)
       })
 
-setMethod("rbind2",signature("flowSet","flowFrame"),
-          function(x,y)
+setMethod("rbind2",
+          signature=signature(x="flowSet",
+                              y="flowFrame"),
+          definition=function(x,y)
       {
           ## create dummy phenoData
           pd <- phenoData(x)[1,]
@@ -443,8 +493,10 @@ setMethod("rbind2",signature("flowSet","flowFrame"),
           rbind2(x, tmp)
       })
 
-setMethod("rbind2",signature("flowFrame","flowSet"),
-          function(x,y) rbind2(y,x))
+setMethod("rbind2",
+          signature=signature(x="flowFrame",
+                              y="flowSet"),
+          definition=function(x,y) rbind2(y,x))
     
 
 
@@ -455,9 +507,9 @@ setMethod("rbind2",signature("flowFrame","flowSet"),
 ## spillover method
 ## ---------------------------------------------------------------------------
 setMethod("spillover",
-          signature("flowSet"),
-          function(x, unstained=NULL, patt=NULL, fsc="FSC-A",
-                   ssc="SSC-A", method="median")
+          signature=signature(x="flowSet"),
+          definition=function(x, unstained=NULL, patt=NULL, fsc="FSC-A",
+                              ssc="SSC-A", method="median")
       {
           if(is.null(unstained)) {
               stop("Sorry, we don't yet support unstained cells blended ",
@@ -503,8 +555,10 @@ setMethod("spillover",
 ## ==========================================================================
 ## plot method: We actually need to attach flowViz to do the plotting
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("plot", signature(x="flowSet", y="ANY"),
-          function(x, y, ...)
+setMethod("plot",
+          signature=signature(x="flowSet",
+                              y="ANY"),
+          definition=function(x, y, ...)
       {
           message("For plotting, please attach the 'flowViz' package.\n",
                   "   i.e., 'library(flowViz)'")

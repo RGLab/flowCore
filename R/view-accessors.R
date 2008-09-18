@@ -1,12 +1,9 @@
-
-
-
 ## ==========================================================================
-## Accessor to name slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature("view"),
-          definition=function(x) x@name)
+## Objects of class view provide wrappers for the results of common flow
+## operations in order to organize them in a workflow. There are three
+## subclasses: gateView, transformView and compensateView.
+## ==========================================================================
+
 
 
 
@@ -17,7 +14,7 @@ setMethod("names",
 ## resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("action",
-          signature=signature("view"),
+          signature=signature(object="view"),
           definition=function(object) get(object@action))
 
 
@@ -38,11 +35,11 @@ setMethod("Data",
 ## after resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("parent",
-          signature=signature("view"),
+          signature=signature(object="view"),
           definition=function(object) parent(action(object)))
 
 setMethod("parent",
-          signature=signature("NULL"),
+          signature=signature(object="NULL"),
           definition=function(object) NULL)
 
 

@@ -15,7 +15,8 @@
 ## environment in 'workspace'.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("get",
-          signature=signature(x="character", pos="workFlow",
+          signature=signature(x="character",
+                              pos="workFlow",
           envir="missing", mode="missing", inherits="missing"),
           definition=function(x, pos)
       {
@@ -33,13 +34,15 @@ setMethod("get",
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
 setMethod("get",
-          signature=signature(x="character", pos="missing",
+          signature=signature(x="character",
+                              pos="missing",
           envir="workFlow", mode="missing", inherits="missing"),
           definition=function(x, envir) get(x, envir=envir@env))
 
 ## get multiple objects
 setMethod("mget",
-          signature=signature(x="character", envir="workFlow",
+          signature=signature(x="character",
+                              envir="workFlow",
           mode="missing", ifnotfound="missing", inherits="missing"),
           definition=function(x, envir) sapply(x, get, envir))
 
@@ -49,13 +52,15 @@ setMethod("mget",
 ## List the content of 'env' in a workFlow object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("ls",
-          signature=signature(name="workFlow", pos="missing",
+          signature=signature(name="workFlow",
+                              pos="missing",
           envir="missing", all.names="missing", pattern="missing"),
           definition=function(name) ls(name@env))
 
 ## Allow for pattern search
 setMethod("ls",
-          signature=signature(name="workFlow", pos = "missing",
+          signature=signature(name="workFlow",
+                              pos = "missing",
           envir="missing", all.names="missing", pattern="character"),
           definition=function(name, pattern) ls(name@env, pattern=pattern))
 
@@ -80,27 +85,12 @@ setMethod("Rm",
 
 
 ## ==========================================================================
-## The names of the views in the workFlow object. Note that this method also
-## affects completion for workFlow objects, as only the view are available
-## for that. 
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature(x="workFlow"),
-          definition=function(x){
-              nam <- nodes(get(x@tree))
-              names(nam) <- sapply(nam, function(y, wf)
-                                   identifier(action(get(y, x))), x)
-              return(nam)
-              
-          })
-
-
-## ==========================================================================
-## subsetting methods
+## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## by name
-setMethod("[[","workFlow",
-          function(x, i, j, ...)
+setMethod("[[",
+          signature=signature(x="workFlow"),
+          definition=function(x, i, j, ...)
       {
           if(length(i) != 1)
               stop("subscript out of bounds (index must have length 1)",
@@ -117,8 +107,9 @@ setMethod("[[","workFlow",
       })
 
 ## A useful error message
-setMethod("[","workFlow",
-          function(x, i, j, ..., drop=FALSE)
+setMethod("[",
+          signature=signature(x="workFlow"),
+          definition=function(x, i, j, ..., drop=FALSE)
       {
           i <- i[[1]]
           stop("This is not a valid operation for a 'workFlow' object.\n",
@@ -161,7 +152,8 @@ traverseEdge <- function(g, node=nodes(g)[1], result=NULL)
 }
 
 setMethod("plot",
-          signature=signature(x="workFlow", y="missing"),
+          signature=signature(x="workFlow",
+                              y="missing"),
           definition=function(x, y, ...)
       {
           if(!suppressWarnings(require(Rgraphviz)))

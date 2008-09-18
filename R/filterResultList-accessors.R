@@ -78,7 +78,3 @@ setMethod("toTable",
               return(res)
           })
 
-
-setMethod("names",
-          signature=signature(x="filterResultList"),
-          definition=function(x) x@frameId)

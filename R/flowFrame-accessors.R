@@ -324,29 +324,6 @@ setReplaceMethod("colnames",
 
 
 
-## ==========================================================================
-## accessor method for names
-## this return a pretified version of the names, including the parameter
-## description if present
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature(x="flowFrame"),
-          definition=function(x)
-      {
-          cn <- colnames(x)
-          fn <- featureNames(x)
-          if(length(fn) == length(cn)) {
-              cn <- paste("<", cn, ">", sep="")
-              for(i in seq(along=fn)) {
-                  if(!is.na(fn[i]) && fn[i]!="")
-                      cn[i] <- paste(cn[i],fn[i])
-              }
-          }
-          cn
-      })
-
-
-
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
@@ -610,7 +587,8 @@ setMethod("head",
           signature=signature(x="flowFrame"),
           definition=function(x, ...) head(exprs(x), ...))
 
-setMethod("tail", signature("flowFrame"),
+setMethod("tail",
+          signature=signature(x="flowFrame"),
           definition=function(x, ...) tail(exprs(x), ...))
           
 

@@ -149,15 +149,6 @@ setMethod("[",
 
 
 ## ==========================================================================
-## The names of the filters in the set
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature(x="filterSet"),
-          definition=function(x) ls(env=x@env))
-
-
-
-## ==========================================================================
 ## Performs a topological sort of the filterSet (if possible)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("sort",

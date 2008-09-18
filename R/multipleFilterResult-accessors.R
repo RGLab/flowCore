@@ -1,33 +1,15 @@
-
-
+## ==========================================================================
+## multipleFilterResults create a multiple non-overlapping populations
+## ==========================================================================
 
 
 ## ==========================================================================
-## length method, how many populations do we have?
-## ---------------------------------------------------------------------------
-setMethod("length","multipleFilterResult",function(x) nlevels(x@subSet))
-
-
-
-## ==========================================================================
-## names method, the levels of the subSet factor
-## ---------------------------------------------------------------------------
-setMethod("names", "multipleFilterResult",function(x) levels(x@subSet))
-setReplaceMethod("names", "multipleFilterResult", function(x, value)
-             {
-                 if(length(value) != length(levels(x@subSet)))
-                     stop("Length of replacement vector doesn't match.")
-                 levels(x@subSet) <- value
-                 x@filterDetails[[1]]$populations <- value
-                 return(x)
-             })
-
-## ==========================================================================
-## subsetting method: we create a new logicalFilterResult
+## Subsetting to the individual populations. We create a new
+## logicalFilterResult
 ## ---------------------------------------------------------------------------
 setMethod("[[",
-          signature=signature("multipleFilterResult"),
-          definition=function(x,i,j,drop=FALSE)
+          signature=signature(x="multipleFilterResult"),
+          definition=function(x, i, j, drop=FALSE)
       {
           if(length(i)!=1)
               stop("subscript out of bounds (index must have length 1)")
@@ -44,8 +26,12 @@ setMethod("[[",
       })
 
 
+
+## ==========================================================================
+## Subsetting to the a (smaller) multipleFilterResult 
+## ---------------------------------------------------------------------------
 setMethod("[",
-          signature=signature("multipleFilterResult"),
+          signature=signature(x="multipleFilterResult"),
           definition=function(x, i, j, ..., drop=FALSE)
       {
           if(is.numeric(i))

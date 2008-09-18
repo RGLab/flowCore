@@ -1,19 +1,22 @@
 ## ==========================================================================
-## Accessor to parentView slot. This returns the view object after
-## resolving the reference
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("parent",
-          signature=signature("actionItem"),
-          definition=function(object) get(object@parentView))
+## Objects of class actionItem provide wrappers for the common flow
+## operations in order to organize them in a workflow. There are three
+## subclasses: gateActionItem, transformActionItem and compensateActionItem.
+## ==========================================================================
+
+
+
 
 
 
 ## ==========================================================================
-## Accessor to name slot.
+## Accessor to parentView slot. This returns the view object after
+## resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature("actionItem"),
-          definition=function(x) x@name)
+setMethod("parent",
+          signature=signature(object="actionItem"),
+          definition=function(object) get(object@parentView))
+
 
 
 
@@ -22,7 +25,7 @@ setMethod("names",
 ## the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("gate",
-          signature=signature("gateActionItem"),
+          signature=signature(object="gateActionItem"),
           definition=function(object) get(object@gate))
 
 

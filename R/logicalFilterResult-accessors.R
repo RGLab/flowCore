@@ -1,15 +1,9 @@
-
-
-
-setMethod("names",
-          signature=signature("logicalFilterResult"),
-          definition=function(x) paste(x@filterId, c("+", "-"), sep=""))
-
-
 ## ==========================================================================
-## length method, how many populations do we have?
-## ---------------------------------------------------------------------------
-setMethod("length","logicalFilterResult",function(x) 1)
+## logicalFilterResults create a single population (and the complement of it)
+## ==========================================================================
+
+
+
 
 
 
@@ -18,7 +12,7 @@ setMethod("length","logicalFilterResult",function(x) 1)
 ## in the filter and 1=2 as the complement of that. Values >2 are not allowed
 ## --------------------------------------------------------------------------
 setMethod("[[",
-          signature=signature("logicalFilterResult"),
+          signature=signature(x="logicalFilterResult"),
           definition=function(x, i, j, drop=FALSE)
       {
           if(drop)

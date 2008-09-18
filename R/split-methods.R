@@ -1,5 +1,4 @@
-## split methods for flowFrames and flowSets:
-##
+## ==========================================================================
 ## The splitting operation in the context of 'flowFrames' and 'flowSets' is
 ## the logical extension of subsetting. While the latter only returns
 ## the events contained within a gate, the former splits the data into
@@ -27,6 +26,7 @@
 ## of a list (the default) or whether they should be coerced into objects
 ## of class 'flowSet'. This only applies when splitting 'flowFrames',
 ## splitting of 'flowSets' always results in lists of 'flowSet' objects.
+## ==========================================================================
 
 
 
@@ -44,24 +44,27 @@
 
 ## Evaluate the filter first and split on the filterResult
 setMethod("split",
-          signature("flowFrame", "filter"),
-          function(x, f, drop=FALSE, ...)
+          signature=signature(x="flowFrame",
+                              f="filter"),
+          definition=function(x, f, drop=FALSE, ...)
           split(x, filter(x, f), drop=drop, ...))
 
 ## Evalute the filterSet first and split on the filterResult
 ## FIXME: Is that really what we want? And what is the final output of
 ## a filterSet filtering operation anyways? Just the leaves???
 setMethod("split",
-          signature("flowFrame","filterSet"),
-          function(x, f, drop=FALSE, ...)
+          signature=signature(x="flowFrame",
+                              f="filterSet"),
+          definition=function(x, f, drop=FALSE, ...)
           split(x, filter(x, f), drop=drop, ...))
 
 ## Split on logicalFilterResults. This will divide the data set into those
 ## events that are contained within the gate and those that are not. 
 setMethod("split",
-          signature("flowFrame", "logicalFilterResult"),
-          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
-                   flowSet=FALSE, ...)
+          signature=signature(x="flowFrame",
+                              f="logicalFilterResult"),
+          definition=function(x, f, drop=FALSE, population=NULL, prefix=NULL,
+                              flowSet=FALSE, ...)
       {
           ## take filterID as default population name and prepend prefix
           ## if necessary
@@ -105,9 +108,10 @@ setMethod("split",
 ## Split on multipleFilterResults. The argument 'population' can be used to
 ## select only certain subpopulations
 setMethod("split",
-          signature("flowFrame", "multipleFilterResult"),
-          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE,
-                   population=NULL, ...)
+          signature=signature(x="flowFrame",
+                              f="multipleFilterResult"),
+          definition=function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE,
+                             population=NULL, ...)
       {
           if(is.null(population))
               population <- names(f)
@@ -161,8 +165,11 @@ setMethod("split",
 
 
 ## Split on manyFilterResults. FIXME: Need to take a closer look at this
-setMethod("split", signature("flowFrame","manyFilterResult"),
-          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
+setMethod("split",
+          signature=signature(x="flowFrame",
+                              f="manyFilterResult"),
+          definition=function(x, f, drop=FALSE, prefix=NULL,
+                              flowSet=FALSE, ...)
       {
           ##If drop is TRUE then only use results without children
           if(drop)
@@ -184,8 +191,11 @@ setMethod("split", signature("flowFrame","manyFilterResult"),
 
 ## Split on a factor, or on a vector that is easily coerced into a factor.
 ## This is just for completeness.
-setMethod("split", signature("flowFrame", "factor"),
-          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
+setMethod("split",
+          signature=signature(x="flowFrame",
+                              f="factor"),
+          definition=function(x, f, drop=FALSE, prefix=NULL,
+                             flowSet=FALSE, ...)
       {      
           if(drop)
               f <- factor(f)
@@ -204,19 +214,25 @@ setMethod("split", signature("flowFrame", "factor"),
           } else out
       })
 
-setMethod("split",signature("flowFrame","numeric"),
-          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
+setMethod("split",
+          signature=signature(x="flowFrame",
+                              f="numeric"),
+          definition=function(x, f, drop=FALSE, prefix=NULL,
+                              flowSet=FALSE, ...)
           split(x, factor(f)))
 
-setMethod("split",signature("flowFrame","character"),
-          function(x, f, drop=FALSE, prefix=NULL, flowSet=FALSE, ...)
+setMethod("split",
+          signature=signature(x="flowFrame",
+                              f="character"),
+          definition=function(x, f, drop=FALSE, prefix=NULL,
+                              flowSet=FALSE, ...)
           split(x, factor(f)))
 
 
 ## Everything else should stop with an error
 setMethod("split",
-          signature("flowFrame","ANY"),
-          function(x, f, drop=FALSE, prefix=NULL,...) 
+          signature=signature(x="flowFrame", f="ANY"),
+          definition=function(x, f, drop=FALSE, prefix=NULL,...) 
           stop("Don't know how to split a 'flowFrame' by an object of class '",
                class(f), "'.", call.=FALSE))
 
@@ -241,9 +257,11 @@ setMethod("split",
 
 
 ## Try and split a flowSet by whatever comes your way...
-setMethod("split",signature("flowSet","ANY"),
-          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
-                   ...)
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="ANY"),
+          definition=function(x, f, drop=FALSE, population=NULL,
+                             prefix=NULL, ...)
       {
           ## Split always returns a list
           sample.name <- sampleNames(x)
@@ -259,9 +277,11 @@ setMethod("split",signature("flowSet","ANY"),
 ## Split a flowSet by a single filter, by first creating a list of
 ## filterResult and then working our way through that in the next
 ## method.
-setMethod("split",signature("flowSet","filter"),
-          function(x, f, drop=FALSE, population=NULL, prefix=NULL,
-                   ...)
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="filter"),
+          definition=function(x, f, drop=FALSE, population=NULL,
+                              prefix=NULL, ...)
       {
          fres <- filter(x,f)
          split(x, fres, population=population, prefix=prefix,
@@ -292,7 +312,9 @@ compatibleFilters <- function(f1, f2)
 ## of equal length, We make sure that this list makes sense.
 ## FIXME: Eventually, this function should be deprecated since we represent
 ## filterResult for a flowSet in filterResultLists now.
-setMethod("split",signature("flowSet","list"),
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="list"),
           function(x, f, drop=FALSE, population=NULL,
                    prefix=NULL, ...)
       {
@@ -361,9 +383,11 @@ setMethod("split",signature("flowSet","list"),
       })
 
 ## FIXME: This should replace the above list method completely at some point
-setMethod("split",signature("flowSet","filterResultList"),
-          function(x, f, drop=FALSE, population=NULL,
-                   prefix=NULL, ...)
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="filterResultList"),
+          definition=function(x, f, drop=FALSE, population=NULL,
+                              prefix=NULL, ...)
       {
           n <- f@frameId
           f <- f@.Data
@@ -374,8 +398,10 @@ setMethod("split",signature("flowSet","filterResultList"),
 ## Split by frames of flowSet according to a factor, character or numeric.
 ## Those have to be of the same length as the flowSet. We can't allow for
 ## drop=TRUE, because this would create invalid sets.
-setMethod("split", signature("flowSet", "factor"),
-          function(x, f, drop=FALSE, ...)
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="factor"),
+          definition=function(x, f, drop=FALSE, ...)
       {
           if(!is.atomic(f) || length(f)!=length(x))
               stop("split factor must be same length as flowSet",
@@ -391,14 +417,23 @@ setMethod("split", signature("flowSet", "factor"),
           names(res) <- names(gind)
           return(res)
       })
-setMethod("split", signature("flowSet", "numeric"),
-          function(x, f, drop=FALSE, ...)
+
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="numeric"),
+          definition=function(x, f, drop=FALSE, ...)
           split(x, factor(f)))
-setMethod("split", signature("flowSet", "character"),
-          function(x, f, drop=FALSE, ...)
+
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="character"),
+          definition=function(x, f, drop=FALSE, ...)
           split(x, factor(f)))
-setMethod("split", signature("flowSet", "filterResult"),
-          function(x, f, drop=FALSE, ...)
+
+setMethod("split",
+          signature=signature(x="flowSet",
+                              f="filterResult"),
+          definition=function(x, f, drop=FALSE, ...)
           stop("Can't split a flowSet by a single filterResult.\n",
                "Either provide list of filterResults or a single filter.",
                call.=FALSE))
