@@ -9,6 +9,7 @@
 
 
 \title{Class "filterResult" }
+
 \description{Container to store the result of applying a \code{filter} on a
   \code{flowFrame} object}
 

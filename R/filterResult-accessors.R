@@ -1,12 +1,26 @@
 ## ==========================================================================
-## Add or Replacement method to complete or replace the results
-## coming out of a filtering operation
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## filterResults are the output of a filtering operation. 
+## ==========================================================================
 
-## simple accessor for the whole slot
+
+
+
+
+
+## ==========================================================================
+## Add or replacement method to complete or replace the results coming out
+## of a filtering operation. The filter replacement method (along with it
+## the summarizeFilter method) gets called during each filtering operation,
+## making sure that the filter item in the filterDetails slot contains all
+## necessary information
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Simple accessor for the whole slot. All filterResult classes except for
+## manyFilterResults only contain a single filterDetails item, and those are
+## returned directly.
 setMethod("filterDetails",
-          signature("filterResult", "missing"),
-          function(result, filterId)
+          signature=signature(result="filterResult",
+                              filterId="missing"),
+          definition=function(result, filterId)
       {
           res <- result@filterDetails
           if(length(res)==1)
@@ -14,94 +28,58 @@ setMethod("filterDetails",
           return(res)
       })
 
-## access only a single filter of the filterDetails list
+## Access only a single filter of the filterDetails list either by name
+## or by index. This is only useful for manyFilterResults.
 setMethod("filterDetails",
-          signature("filterResult", "ANY"),
-          function(result,filterId)
+          signature=signature(result="filterResult",
+                              filterId="ANY"),
+          definition=function(result, filterId)
       {
           result@filterDetails[[filterId]]
       })
 
-## replace a single filter in the list
+## Replace a single filterDetails item in the list. 
 setReplaceMethod("filterDetails",
-                 signature("filterResult", "character", value="ANY"),
-                 function(result,filterId,...,value)
+                 signature=signature(result="filterResult",
+                                     filterId="character",
+                 value="ANY"),
+                 definition=function(result, filterId, ... ,value)
              {
-                 result@filterDetails[[filterId]] = value
+                 result@filterDetails[[filterId]] <- value
                  result
              })
 
-## replace the filter, this actually calls summarizeFilter
+## Replace the filter item in a single filterDetails list. This is actually
+## only a wrapper around summarizeFilter which has to be defined for each
+## filter class separately unless the default behaviour of simply adding
+## the filter is sufficient
 setReplaceMethod("filterDetails",
-                 signature("filterResult", "character", value="filter"),
-                 function(result, filterId, ..., value)
+                 signature=signature(result="filterResult",
+                                     filterId="character",
+                 value="filter"),
+                 definition=function(result, filterId, ..., value)
              {
                  filterDetails(result, filterId) <-
                      summarizeFilter(result,value)
                  result
              })
 
-## For setOperationFilters we need to strip things from the attributes
+## For setOperationFilters we need to strip the information for the
+## individual filters in the manyFilterResult from the attributes
 setReplaceMethod("filterDetails",
-                 signature("filterResult", "character",
-                           value="setOperationFilter"),
-                 function(result, filterId, ..., value)
+                 signature=signature(result="filterResult",
+                                     filterId="character",
+                 value="setOperationFilter"),
+                 definition=function(result, filterId, ..., value)
              {
-                 details <- attr(result@subSet,'filterDetails')
+                 details <- attr(result@subSet, 'filterDetails')
                  for(i in names(details)) {
-                     filterDetails(result,i) <- details[[i]]
+                     filterDetails(result, i) <- details[[i]]
                  }
-                 ##Record ourselves for posterity
-                 filterDetails(result,filterId) <-
-                     summarizeFilter(result,value)
+                 filterDetails(result, filterId) <-
+                     summarizeFilter(result, value)
                  result
              })
-
-
-
-## ==========================================================================
-## accessor method for parameters
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("parameters",
-          signature("filterResult"),
-          function(object)
-          filterDetails(object)$parameters)
-
-
-
-## ==========================================================================
-## Summarize a filtering operation
-## This information will go in the filterDetails slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## By default, we just add one list item, which is the filter
-setMethod("summarizeFilter",
-          signature("filterResult", "filter"),
-          function(result, filter)
-      {
-          list(filter=filter)
-      })
-
-## Add parameters to the filterDetails list if we have them
-setMethod("summarizeFilter",
-          signature("filterResult", "parameterFilter"),
-          function(result,filter)
-      {
-          ret <- callNextMethod()
-          ret$parameters <- parameters(filter)
-          ret
-      })
-
-
-## summarize a filer
-setMethod("summary",
-          signature("filterResult"),
-          function(object, ...)
-      {
-          summary(filterDetails(object, object@filterId)$filter,
-                  object, ...)
-      })
-
-
 
 
 
@@ -111,8 +89,9 @@ setMethod("summary",
 ## allowing us to use it for further processing.
 ## --------------------------------------------------------------------------
 setMethod("==",
-          signature("flowFrame", "filterResult"),
-          function(e1,e2)
+          signature=signature(e1="flowFrame",
+                              e2="filterResult"),
+          definition=function(e1, e2)
       {
           i1 <- identifier(e1)
           i2 <- e2@frameId
@@ -121,27 +100,20 @@ setMethod("==",
 
 ## Does S4 do this for us automagically? I don't know!
 setMethod("==",
-          signature("filterResult", "flowFrame"),
-          function(e1, e2) e2==e1)
-
-
-
-## ==========================================================================
-## identifier method for filterResult
-## --------------------------------------------------------------------------
-setMethod("identifier", signature="filterResult",
-          definition=function(object) object@filterId)
+          signature=signature(e1="filterResult",
+                              e2="flowFrame"),
+          definition=function(e1, e2) e2==e1)
 
 
 
 
 ## ==========================================================================
-## subset a filterResult by filterId, this only makes sense for
-## multipleFilterResults, here we return everything...
+## Subset a filterResult by filterId, this only makes real sense for
+## multipleFilterResults, in the fallback option here we return everything...
 ## --------------------------------------------------------------------------
 setMethod("[[",
-          signature("filterResult"),
-          function(x, i, j, drop=FALSE)
+          signature=signature(x="filterResult"),
+          definition=function(x, i, j, drop=FALSE)
       {
           if((is.character(i) && i != x@filterId) || (as.numeric(i) > 1))
               stop("filter index out of bounds")
@@ -149,9 +121,5 @@ setMethod("[[",
       })
 
 
-setMethod("show",
-          signature("filterResult"),
-          function(object) 
-          cat(paste("A filterResult produced by the filter named '",
-                    object@filterId, "'\n", sep="")))
+
 

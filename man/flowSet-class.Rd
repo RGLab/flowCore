@@ -15,6 +15,7 @@
 \alias{length,flowSet-method}
 \alias{colnames,flowSet-method}
 \alias{colnames<-,flowSet-method}
+\alias{compensate,flowSet,ANY-method}
 \alias{sampleNames,flowSet-method}
 \alias{sampleNames<-,flowSet,ANY-method}
 \alias{phenoData,flowSet-method}

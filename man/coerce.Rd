@@ -7,6 +7,7 @@
 \alias{coerce,complementFilter,logical-method}
 \alias{coerce,factor,filterResult-method}
 \alias{coerce,logical,filterResult-method}
+\alias{coerce,gateView,filterResult-method}
 \alias{coerce,numeric,filterResult-method}
 \alias{coerce,logicalFilterResult,logical-method}
 \alias{coerce,randomFilterResult,logical-method}

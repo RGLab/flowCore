@@ -1,13 +1,6 @@
 
 
 
-## ==========================================================================
-## summary method
-## ---------------------------------------------------------------------------
-setMethod("summary","manyFilterResult",function(object,...) {
-	n = colnames(object@subSet)
-	lapply(n,function(i) summary(object[[i]]))
-})
 
 
 ## ==========================================================================
@@ -34,13 +27,6 @@ setMethod("[[",signature("manyFilterResult"),function(x,i,j,drop=FALSE) {
 	filterDetails$source     = identifier(x)
 	new("logicalFilterResult",subSet=x@subSet[,i],filterDetails=filterDetails,
 		frameId=x@frameId,filterId=i)
-})
-
-setMethod("show",signature("manyFilterResult"),function(object) {
-	n = names(object)
-	cat("A filter result containing: ")
-	cat(paste(n,sep=","))
-	cat("\n")
 })
 
 

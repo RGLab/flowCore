@@ -55,7 +55,7 @@
 
 \usage{
 
-quadGate(filterId = "quadGate", .gate, \dots)
+quadGate(filterId = "Quadrant Gate", .gate, \dots)
 
 }
 

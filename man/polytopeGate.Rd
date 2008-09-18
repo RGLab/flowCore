@@ -15,7 +15,7 @@ Convenience methods to facilitate the construction of
 }
 
 \usage{
-polytopeGate(filterId = "polytopeGate", .gate, \dots)
+polytopeGate(filterId = "Polytope Gate", .gate, \dots)
 
 }
 

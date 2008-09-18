@@ -1,4 +1,35 @@
 ## ==========================================================================
+## %in% methods are the workhorses to evaluate a filter. Each filter class
+## needs to define its own %in% method. Two types of return values are
+## allowed: logical vectors for logicalFilterResults and factors for
+## multipleFilterResults. In both cases, the length of the return vector
+## has to be equal to the number of events (i.e., rows) in the flowFrame.
+## In order to provide useful names, factor levels should be chosen
+## approriately.
+## ==========================================================================
+
+
+
+
+
+
+## ==========================================================================
+## Figure out useful population names for logical filters from the parameter
+## names. First choice are channel descriptors, then channel names.
+## ---------------------------------------------------------------------------
+popNames <- function(x, table)
+{
+    mt <- match(table@parameters, parameters(x, names=TRUE))
+    desc <- pData(parameters(x))[mt, "desc"]
+    names(desc) <- table@parameters
+    noName <- which(is.na(desc) | desc=="")
+    desc[noName] <- parameters(x)$name[mt][noName]
+    return(desc)
+}
+
+
+
+## ==========================================================================
 ## quadGate -- this is not a logical filter so we return a vector
 ## of factors indicating a population. Factor levels are later used
 ## as population names, e.g. when splitting. The evaluation of the
@@ -9,13 +40,7 @@ setMethod("%in%",
           definition=function(x,table)
       {
           e <-  exprs(x)[,table@parameters, drop=FALSE]
-          ## create useful names for the populations:
-          ## first choice are channel descriptors, then
-          ## channel names.
-          mt <- match(table@parameters, parameters(x)$name)
-          desc <- pData(parameters(x))[mt, "desc"]
-          noName <- which(is.na(desc) | desc=="")
-          desc[noName] <- parameters(x)$name[mt][noName]
+          desc <- popNames(x,table)
           lev <- c(sprintf("%s+%s+", desc[1], desc[2]),
                    sprintf("%s-%s+", desc[1], desc[2]),
                    sprintf("%s+%s-", desc[1], desc[2]),
@@ -35,7 +60,7 @@ setMethod("%in%",
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature(x="flowFrame", table="rectangleGate"),
-          definition=function(x,table)
+          definition=function(x, table)
       {       
           e <- exprs(x)[,table@parameters, drop=FALSE]
           tmp <- sapply(seq(along=table@parameters), function(i) {
@@ -48,10 +73,11 @@ setMethod("%in%",
           })
           if(nrow(e)){
               dim(tmp) <- c(nrow(e), length(table@parameters))
-              apply(tmp, 1, all)
+              tmp <- apply(tmp, 1, all)
           }else{
-              return(FALSE)
+              tmp <- FALSE
           }
+          return(tmp)
       })
 
 
@@ -74,8 +100,10 @@ setMethod("%in%",
                          range(table@boundaries[,1]), labels=FALSE,
                          right=FALSE))
           else if(ndim==2) {
-              as.logical(flowCore:::inpolygon(exprs(x)[,table@parameters],
-                                              table@boundaries))
+              tmp <-
+                  as.logical(flowCore:::inpolygon(exprs(x)[,table@parameters],
+                                                  table@boundaries))
+              return(tmp)
           } else 
           stop("Polygonal gates only support 1 or 2 dimensional gates.\n",
                "Use polytope gates for a n-dimensional represenation.",
@@ -145,34 +173,32 @@ setMethod("%in%",
           sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
                   y[,2] > r[1,2] & y[,2] < r[2,2])
           values <- y[sel, ]
-
-          
           if(is.na(match(table@method,c("covMcd","cov.rob"))))
               stop("Method must be either 'covMcd' or 'cov.rob'")
-          cov = switch(table@method,
-          covMcd = {
-              ## covMcd will be deprecated, need to use CovMcd which produces
-              ## S4 output
-              tmp <- {if(nrow(values)>table@n)
-                          CovMcd(values[sample(nrow(values),table@n),])
-              else CovMcd(values)}
-              list(center=tmp@center, cov=tmp@cov)
-          },
-          cov.rob={cov.rob(values)},
-          stop("How did you get here?")
-          )
-          W  = t(y)-cov$center
+          cov <- switch(table@method,
+                        covMcd={
+                            tmp <- if(nrow(values)>table@n)
+                                CovMcd(values[sample(nrow(values),
+                                                     table@n),])
+                            else CovMcd(values)
+                            list(center=tmp@center, cov=tmp@cov)
+                        },
+                        cov.rob={cov.rob(values)},
+                        stop("How did you get here?")
+                        )
+          W <- t(y)-cov$center
           ## FIXME: a long term change might be to save chol(cov$cov)
           ## rather than cov$cov in the result.  This helps in computing
           ## the gate boundaries and qr.solve above could be replaced by
           ## the equivalent of chol2inv(chol(cov$cov)).
-          result = colSums((qr.solve(cov$cov) %*% W) * W) < table@scale.factor^2
-          
-          attr(result,'center') = cov$center
-          attr(result,'cov')    = cov$cov
-          attr(result,'radius') = table@scale.factor
+          covsol <- qr.solve(cov$cov) %*% W
+          result <- colSums(covsol * W) < table@scale.factor^2
+          attr(result, 'center') <- cov$center
+          attr(result, 'cov') <- cov$cov
+          attr(result, 'radius') <- table@scale.factor
           result
       })
+
 
 
 
@@ -183,7 +209,7 @@ setMethod("%in%",
 ## gives us the factors, so no need to further evaluate
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "kmeansFilter"),
+          signature=signature(x="flowFrame", table="kmeansFilter"),
           definition=function(x,table)
       {
           ## We accomplish the actual filtering via K-means
@@ -203,29 +229,29 @@ setMethod("%in%",
 ## curv1Filter -- this is not a logical filter so we return a vector
 ## of factors indicating a population. Additional information about the
 ## filter result (boundaries of regions, fSObj) are stored as
-## attributes of the subSet vector.
+## attributes of the subSet vector. We use a simple naming scheme for the
+## factor levels: peak n, where n is the number of populations and rest for
+## all data points not within one of the high density areas 
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "curv1Filter"),
+          signature=signature(x="flowFrame", table="curv1Filter"),
           definition=function(x, table)
       {
-          ## We accomplish the actual filtering via Matt Wands feature software
+          ## We accomplish the actual filtering via Matt Wands feature
+          ## software
           param <- table@parameters
           ovalues <- exprs(x)[, param]
           bwFac <- table@bwFac
           gridsize <- table@gridsize
-
           ## drop data that has piled up on the measurement ranges
           r <- range(x, param)
           sel <- ovalues > r[1,] & ovalues < r[2,]
           values <- ovalues[sel]
-
           ## Compute normal scale bandwidth (second derivative).
           st.dev <- sqrt(var(values))
           Q1.val <- quantile(values,1/4) ; Q3.val <- quantile(values,3/4)
           IQR.val <- (Q3.val - Q1.val)/(qnorm(3/4) - qnorm(1/4))
           bwNS <- min(st.dev,IQR.val)*(4/(7*length(values)))^(1/9)
-          
           ## Obtain significant high curvature intervals.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
                                  addSignifCurvRegion=TRUE,
@@ -239,7 +265,6 @@ setMethod("%in%",
           uppLims <- (xGrid[uppInds] + xGrid[uppInds-1])/2
           lims <- lapply(1:length(lowLims), function(i)
               c(lowLims[i],uppLims[i]))
-          
           ## Determine filter member indicator
           indices <- rep(0, length(ovalues))
           for(i in seq(along=lims))
@@ -258,24 +283,25 @@ setMethod("%in%",
 ## of factors indicating a population. We evaluate the filter usinf the
 ## same algorithm as for polygon gates. Additional information about the
 ## filter result (polygon vertices of populations, fSObj) are stored as
-## attributes of the subSet vector.
+## attributes of the subSet vector. We use a simple naming scheme for the
+## factor levels: peak n, where n is the number of populations and rest for
+## all data points not within one of the high density areas 
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "curv2Filter"),
+          signature=signature(x="flowFrame", table="curv2Filter"),
           definition=function(x, table)
       {
-          ## We accomplish the actual filtering via Matt Wands feature software
+          ## We accomplish the actual filtering via Matt Wands feature
+          ## software
           param <- table@parameters
           ovalues <- exprs(x)[, param]
           bwFac <- table@bwFac
           gridsize <- table@gridsize
-
           ## drop data that has piled up on the measurement ranges
           r <- range(x, param)
           sel <- (ovalues[,1] > r[1,1] & ovalues[,1] < r[2,1] &
                   ovalues[,2] > r[1,2] & ovalues[,2] < r[2,2])
           values <- ovalues[sel, ]
-
           ## Compute normal scale bandwidths.
           st.devs <- sqrt(apply(values, 2, var))
           Q1.vals <- apply(values, 2, quantile, 1/4)
@@ -284,25 +310,26 @@ setMethod("%in%",
           IQR.vals <- (Q3.vals - Q1.vals)/corr.fac
           sig.hats <- apply(cbind(st.devs, IQR.vals), 1, min)
           samp.size.fac <- nrow(values)^(-1/6)
-          bwNS <- samp.size.fac*sig.hats
-          
+          bwNS <- samp.size.fac*sig.hats        
           ## Obtain significant high curvature regions.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
                                  addSignifCurvRegion=TRUE,
                            gridsize=gridsize, plotFS=FALSE)
-          contourLinesObj <- contourLines(fSObj$fhat$x[[1]], fSObj$fhat$x[[2]],
+          contourLinesObj <- contourLines(fSObj$fhat$x[[1]],
+                                          fSObj$fhat$x[[2]],
                                     fSObj$curv, levels=0.5)
-
           ## Determine filter member indicator
           filterInds <- rep(0,nrow(ovalues))
           for (i in seq(along=contourLinesObj)){
-              vertices <- cbind(contourLinesObj[[i]]$x, contourLinesObj[[i]]$y)
+              vertices <- cbind(contourLinesObj[[i]]$x,
+                                contourLinesObj[[i]]$y)
               sel <- as.logical(flowCore:::inpolygon(ovalues,vertices))
               filterInds[sel] <- i
           }
           
           result <- factor(filterInds)
-          levels(result) <- c("rest", paste("area", seq_along(contourLinesObj)))
+          levels(result) <-
+              c("rest", paste("area", seq_along(contourLinesObj)))
           attr(result,'polygons') <- contourLinesObj
           attr(result,'fSObj') <- fSObj
           result
@@ -318,7 +345,7 @@ setMethod("%in%",
 ## be combined with rectangleGates...
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "timeFilter"),
+          signature=signature(x="flowFrame", table="timeFilter"),
           definition=function(x,table)
       {
           ## We first bin the data and compute summary statistics
@@ -334,8 +361,7 @@ setMethod("%in%",
           if(!length(bs))
               bs <- min(max(1, floor(nrow(x)/100)), 500)
           binned <- prepareSet(ex, param, time, bs,
-                               locM=median, varM=mad)
-          
+                               locM=median, varM=mad)         
           ## Standardize to compute meaningful scale-free scores.
           ## This is done by substracing the mean values of each
           ## bin and divide by the mean bin variance.
@@ -344,7 +370,6 @@ setMethod("%in%",
           stand <- abs(binned$smooth[,2]-med)/(gvars*bw)
           outBins <- which(stand > 1)
           bins <- c(-Inf, binned$bins, Inf)
-
           ## we can treat adjacend regions as one
           ## FIXME: There must be a more elegant way to do that
           if(length(outBins)){
@@ -362,8 +387,7 @@ setMethod("%in%",
                       tr <- c(tr, outBins[i]+1) 
               }
               if(db[1]==1)
-                  br <- c(outBins[1], br)
-            
+                  br <- c(outBins[1], br)          
               ## Now generate rectangle gates over the identified
               ## regions and use them for the filtering
               ## FIXME: This step is notoriously slow. Is there a
@@ -457,7 +481,7 @@ findTimeChannel <- function(xx)
 ## complementFilter -- Returns TRUE when the input filter is FALSE.
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame","complementFilter"),
+          signature=signature(x="flowFrame", table="complementFilter"),
           definition=function(x,table)
       {
           r <-  filter(x,table@filters[[1]])
@@ -472,7 +496,7 @@ setMethod("%in%",
 ## unionFilter -- returns TRUE if ANY of the argument filters return true.
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "unionFilter"),
+          signature=signature(x="flowFrame", table="unionFilter"),
           function(x,table)
       {	
           fr <- sapply(table@filters, filter, x=x)
@@ -492,7 +516,7 @@ setMethod("%in%",
 ## intersectFilter -- only returns TRUE if ALL the member filters are TRUE.
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "intersectFilter"),
+          signature=signature(x="flowFrame", table="intersectFilter"),
           definition=function(x,table)
       {
           fr <- sapply(table@filters, filter, x=x)
@@ -515,7 +539,7 @@ setMethod("%in%",
 ## norm2Filter. The result is still relative to the ENTIRE flowFrame however.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "subsetFilter"),
+          signature=signature(x="flowFrame", table="subsetFilter"),
           definition=function(x, table)
       {
           y <- filter(x,table@filters[[2]])
@@ -554,10 +578,10 @@ setMethod("%in%",
 
 
 ## ==========================================================================
-## subsetFilter -- We randomly subsample events here.
+## sampleFilter -- We randomly subsample events here.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "sampleFilter"),
+          signature=signature(x="flowFrame", table="sampleFilter"),
           definition=function(x, table)
       {
           n <- if(table@size > nrow(x)) nrow(x) else table@size
@@ -573,7 +597,7 @@ setMethod("%in%",
 ## or a factor
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "expressionFilter"),
+          signature=signature(x="flowFrame", table="expressionFilter"),
           definition=function(x, table)
       {
           data <- flowFrame2env(x)
@@ -603,8 +627,8 @@ flowFrame2env <- function(ff){
 ## transformFilter -- We transform the data prior to gating
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame","transformFilter"),
-          definition=function(x,table)
+          signature=signature(x="flowFrame", table="transformFilter"),
+          definition=function(x, table)
       {
           (table@transforms %on% x) %in% table@filter
       })
@@ -617,7 +641,7 @@ setMethod("%in%",
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature("ANY", "filterReference"),
-          definition=function(x,table) x %in% as(table, "concreteFilter"))
+          definition=function(x, table) x %in% as(table, "concreteFilter"))
 
 
 
@@ -626,7 +650,7 @@ setMethod("%in%",
 ## but only as long as we have a logicalFilterResult or randomFilterResult
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", "filterResult"),
+          signature=signature(x="flowFrame", table="filterResult"),
           definition=function(x, table) as(table, "logical"))
 
 
@@ -636,8 +660,8 @@ setMethod("%in%",
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("ANY", "manyFilterResult"),
-          definition=function(x,table)
+          signature=signature(x="ANY", table="manyFilterResult"),
+          definition=function(x, table)
           stop("manyFilterResult: You must specify a subpopulation."))
 
 
@@ -647,6 +671,6 @@ setMethod("%in%",
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("ANY", "multipleFilterResult"),
-          definition=function(x,table)
+          signature=signature(x="ANY", table="multipleFilterResult"),
+          definition=function(x, table)
           stop("multipleFilterResult: You must specify a subpopulation."))

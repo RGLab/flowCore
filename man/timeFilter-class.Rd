@@ -67,7 +67,7 @@
 
 \usage{
 
-timeFilter(\dots, filterId="time", bandwidth=0.75, binSize=NULL,
+timeFilter(\dots, filterId="Time Filter", bandwidth=0.75, binSize=NULL,
            timeParameter=NULL)
 
 }

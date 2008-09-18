@@ -1,4 +1,13 @@
 ## ==========================================================================
+## flowSets are basically lists flowFrames
+## ==========================================================================
+
+
+
+
+
+
+## ==========================================================================
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## to flowSet
@@ -205,19 +214,6 @@ setMethod("length","flowSet",function(x) nrow(pData(phenoData(x))))
 
 
 
-## ==========================================================================
-## show method for flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("show","flowSet",function(object) {
-	cat("A flowSet with",length(object),"experiments.\n\n")
-        if(any(varMetadata(phenoData(object))$labelDescription != "Name")){
-            show(phenoData(object))
-            cat("\n")
-        }
-	cat("  column names:\n  ")
-	cat(paste(object@colnames,sep=","))
-	cat("\n")
-})
 
 
 
@@ -252,7 +248,7 @@ setMethod("fsApply",signature("flowSet","ANY"),function(x,FUN,...,simplify=TRUE,
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
-setMethod("compensate",signature("flowSet","matrix"),
+setMethod("compensate",signature("flowSet","ANY"),
           function(x,spillover,inv=TRUE, ...)
           fsApply(x,compensate,spillover,inv=inv, ...))
 
@@ -282,17 +278,11 @@ setMethod("transform",signature(`_data`="missing"),function(...) {
 
 
 ## ==========================================================================
-## General %on% implementation for a flowSet. Basically a wrapper around
-## fsApply
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("%on%",
-          signature(e2="flowSet"),
-          function(e1, e2) fsApply(e2, "%on%", e1=e1))
-
-
-
-## ==========================================================================
 ## filter methods
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## These methods apply single filters, filterSets or lists of filters to
+## flowSet object. In all cases, the output of the filtering operation is
+## a filterResultList
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## for filters
 setMethod("filter",signature=signature(x="flowSet", filter="filter"),
@@ -301,38 +291,63 @@ setMethod("filter",signature=signature(x="flowSet", filter="filter"),
           if(!all(parameters(filter) %in% colnames(x)))
               stop("parameters in the filter definition don't ",
                    "match the parameters in the flowSet", call.=FALSE)
-            fsApply(x,function(x) filter(x,filter))
+          res <- fsApply(x,function(x) filter(x,filter))
+          return(new("filterResultList", .Data=res, frameId=sampleNames(x),
+                     filterId=identifier(filter)))
       })
 
 ## for filterSets
+## FIXME: Need to check that everything still works after introduction
+## of filterResultLists
 setMethod("filter",signature(x="flowSet", filter="filterSet"),
-          function(x, filter) fsApply(x, function(x) filter(x, filter)))
+          function(x, filter)
+      {
+          res <- fsApply(x, function(x) filter(x, filter))
+          return(new("filterResultList", .Data=res, frameId=sampleNames(x),
+                     filterId=identifier(filter)))
+      })
 
 ## for named lists of filters. Names of the list items have to correspond
-## to sampleNames in the set.
+## to sampleNames in the set. Filters in the filter list that can't be
+## matched are ignored, for those that are missing, and "empty" dummy
+## filterResult is produced
 setMethod("filter",signature(x="flowSet",filter="list"),
           function(x,filter)
       {
           if(is.null(names(filter)))
-              stop("Filter list must have names to do something reasonable")
+              stop("'filter' must be a named list, where names correspond",
+                   " to sample names in the flowSet", call.=FALSE)
           nn <- names(filter)
           sn <- sampleNames(x)
           unused <- nn[!(nn %in% sn)]
-          notfilter <-  sn[!(sn %in% nn)]
-          ## Do some sanity checks
+          notfilter <-  setdiff(sn, nn)
+          ## Check for non-matching filters
           if(length(unused) > 0)
               warning(paste("Some filters were not used:\n",
                             paste(unused, sep="", collapse=", ")),
                       call.=FALSE)
-          if(length(notfilter) > 0)
+          common <- intersect(nn, sn)
+          res <- vector("list", length(x))
+          fid <- character(length(x))
+          names(res) <- names(fid) <- sampleNames(x)
+          ## use all matching filters first
+          for(f in common){
+              res[[f]] <- filter(x[[f]], filter[[f]])
+              fid[f] <- identifier(filter[[f]])
+          }
+          ## use dummy filters for all the rest (if any)
+          if(length(notfilter)){
               warning(paste("Some frames were not filtered:\n",
                             paste(notfilter, sep="", collapse=", ")),
                       call.=FALSE)
-          common <- intersect(nn, sn)
-          res <- list(length(common))
-          for(f in common)
-              res[[f]] <- filter(x[[f]], filter[[f]])
-          return(res)
+              exp <- paste("rep(length(", parameters(x[[1]], names=TRUE)[1],
+                           "))", sep="")
+              dummyFilter <- char2ExpressionFilter(exp, filterId="dummy")
+              res[notfilter] <- filter(x[notfilter], dummyFilter)
+              fid[notfilter] <- identifier(dummyFilter)
+          }
+          return(new("filterResultList", .Data=res, frameId=sampleNames(x),
+                     filterId=fid))
       })
 
 
@@ -483,17 +498,6 @@ setMethod("spillover",
           }
       })
 
-
-
-
-## ==========================================================================
-## summary method for flowSet
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("summary", signature("flowSet"), 
-    function(object, ...) 
-        fsApply(object, function(x) apply(exprs(x), 2, summary),
-                simplify=FALSE)
- )
 
 
 ## ==========================================================================

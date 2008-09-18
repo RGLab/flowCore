@@ -9,6 +9,7 @@
 \alias{show,manyFilterResult-method}
 \alias{as.data.frame.manyFilterResult}
 \alias{manyFilterResult}
+\alias{parameters,manyFilterResult-method}
 
 \title{Class "manyFilterResult"}
 \description{The result of a several related, but possibly

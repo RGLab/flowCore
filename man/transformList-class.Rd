@@ -55,8 +55,8 @@ transformList(from, tfun, to=from)
 
   \item{\%on\%}{\code{signature(e1 = "transformList", e2 =
     "flowFrame")}: Perform a transformation using the
-    \code{transformList} on a \code{\{link{flowFrame}} or
-    \code{\{link{flowSet}}. }
+    \code{transformList} on a \code{\link{flowFrame}} or
+    \code{\link{flowSet}}. }
   
 }
 

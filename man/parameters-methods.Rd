@@ -25,7 +25,7 @@
 }
 
 \usage{
-parameters(object)
+parameters(object, \dots)
 }
 
 \arguments{
@@ -33,6 +33,8 @@ parameters(object)
   \item{object}{Object of class \code{\linkS4class{filter}},
     \code{\linkS4class{flowFrame}} or
     \code{\linkS4class{parameterFilter}}.}
+
+  \item{\dots}{Further arguments that get passed on to the methods.}
 
 }
 

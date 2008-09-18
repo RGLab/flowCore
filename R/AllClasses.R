@@ -1,9 +1,29 @@
 ## =========================================================================##
 ## =========================================================================##
-##              Class definitions and contructors if available              ##
+##                    Class definitions and contructors                     ##
 ## =========================================================================##
 ## =========================================================================##
 
+
+
+
+
+
+## ===========================================================================
+##  Some helpers
+## ---------------------------------------------------------------------------
+## Check for the class of object x and its length and cast error if wrong
+checkClass <- function(x, class, length=NULL)
+{
+    msg <- paste("'", substitute(x), "' must be object of class '",
+                 class, "'", sep="")
+    fail <- !is(x, class)
+    if(!is.null(length) && length(x) != length){
+        fail <- TRUE
+        msg <- paste(msg, "of length", length)
+    }
+    if(fail) stop(msg, call.=FALSE) else invisible(NULL)     
+}
 
 
 
@@ -13,24 +33,26 @@
 ## A container for flow cytometry measurements with slots exprs, parameters
 ## and description. exprs contains measurement values, description contains 
 ## information from file headers of FCS file and parameters contains
-## information about the FCS measurement parameters (i.e. channels) available
+## information about the FCS measurement parameters (i.e. channels) available.
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
-         representation(exprs="matrix",
-                        parameters="AnnotatedDataFrame",
-                        description="list"),
-         prototype=list(exprs=matrix(numeric(0), nrow=0, ncol=0),
-         parameters=new("AnnotatedDataFrame"),
-         description=list(note="empty")))
-
+         representation=representation(exprs="matrix",
+                                       parameters="AnnotatedDataFrame",
+                                       description="list"),
+         prototype=list(exprs=matrix(numeric(0),
+                                     nrow=0,
+                                     ncol=0),
+                        parameters=new("AnnotatedDataFrame"),
+                        description=list(note="empty")))
 
 ## helper function to create empty AnnotatedDataFrame for the parameters slot
-parDefault <- function(exp){
+parDefault <- function(exp)
+{
     vm <- data.frame(labelDescription=c(name="Name of Parameter",
-                     desc="Description of Parameter",
-                     range="Range of Parameter",
-                     minRange="Minimum Parameter Value after Transformation",
-                     maxRange="Maximum Parameter Value after Transformation"))
+                                        desc="Description of Parameter",
+                                        range="Range of Parameter",
+                                        minRange="Minimum Parameter Value after Transformation",
+                                        maxRange="Maximum Parameter Value after Transformation"))
     pd <- data.frame(name=colnames(exp), desc=colnames(exp),
                      range=apply(exp, 2, max, na.rm=TRUE),
                      minRange=apply(exp, 2, min, na.rm=TRUE),
@@ -39,24 +61,23 @@ parDefault <- function(exp){
 }
 
 ## check parameter AnnotatedDataFrame for validity
-isValidParameters <- function(parms, exprs)
+isValidParameters <- function(parameters, exprs)
 {
-     if(!is(parms, "AnnotatedDataFrame"))
-           stop("Argument 'parameters' must be object of class ",
-                'AnnotatedDataFrame', call.=FALSE)
-     if(!all(c("name", "desc", "range", "minRange", "maxRange")
-             %in% varLabels(parms)))
-         stop("The following columns are mandatory:\n  'name', 'desc',",
-              "'range', 'minRange', 'maxRange'", call.=FALSE)
-     if(!missing(exprs))
-         if(!all(colnames(exprs) %in% parms$name))
-             stop("parameter description doesn't match colnames of the ",
-                  "data matrix", call.=FALSE)
-     return(TRUE)
+    checkClass(parameters, "AnnotatedDataFrame")
+    if(!all(c("name", "desc", "range", "minRange", "maxRange")
+            %in% varLabels(parameters)))
+        stop("The following columns are mandatory:\n  'name', 'desc',",
+             "'range', 'minRange', 'maxRange'", call.=FALSE)
+    if(!missing(exprs))
+        if(!all(colnames(exprs) %in% parameters$name))
+            stop("parameter description doesn't match colnames of the ",
+                 "data matrix", call.=FALSE)
+    return(TRUE)
 }
 
 ## constructor
-flowFrame <- function(exprs, parameters, description=list()){
+flowFrame <- function(exprs, parameters, description=list())
+{
     if(!is.matrix(exprs) || !is.numeric(exprs) || is.null(colnames(exprs)))
         stop("Argument 'exprs' must be numeric matrix with colnames ",
              "attribute set", call.=FALSE)
@@ -64,12 +85,12 @@ flowFrame <- function(exprs, parameters, description=list()){
         parameters <- parDefault(exprs)
     else
         isValidParameters(parameters, exprs)
-    if(!is.list(description))
-        stop("Argument 'description' must be a list", call.=FALSE)
+    checkClass(description, "list")
     new("flowFrame", exprs=exprs, parameters=parameters,
         description=description)
 }
-  
+
+
 
 ## ===========================================================================
 ##  flowSet
@@ -79,19 +100,19 @@ flowFrame <- function(exprs, parameters, description=list()){
 ## phenoData the experiment meta data and colnames the channel names. 
 ## ---------------------------------------------------------------------------
 setClass("flowSet",                   
-         representation(frames="environment",
-                        phenoData="AnnotatedDataFrame",
-                        colnames="character"),
+         representation=representation(frames="environment",
+                                       phenoData="AnnotatedDataFrame",
+                                       colnames="character"),
          prototype=list(frames=new.env(hash=TRUE, parent=emptyenv()),
-         phenoData=new("AnnotatedDataFrame",
-         data=data.frame(),
-         varMetadata=data.frame()),
-         colnames=character(0)),
+                        phenoData=new("AnnotatedDataFrame",
+                                      data=data.frame(),
+                                      varMetadata=data.frame()),
+                        colnames=character(0)),
          validity=function(object){
              nc <- length(colnames(object))
              ## Make sure that all of our samples list
              name.check <- is.na(match(sampleNames(object), ls(object@frames,
-                                                              all.names=TRUE)))
+                                                               all.names=TRUE)))
              if(any(name.check)) {
                  name.list <- paste(sampleNames(object)[name.check], sep=",")
                  return(paste("These objects are not in the data environment:",
@@ -115,7 +136,8 @@ setClass("flowSet",
          })
 
 ## constructor
-flowSet <- function(..., phenoData) {
+flowSet <- function(..., phenoData)
+{
     x <- list(...)
     if(length(x) == 1 && is.list(x[[1]]))
         x <- x[[1]]
@@ -132,26 +154,21 @@ flowSet <- function(..., phenoData) {
 ## ===========================================================================
 ## Virtual filter and derived concreteFilter and parameterFilter
 ## ---------------------------------------------------------------------------
-## A class describing a selection applied to a data matrix. Consist of
+## A class describing a selection applied to a flow data matrix. Consist of
 ## a filterId and the names of the parameters to operate on (for parameter
-## filters only). Specific filters all inherit from either of these two
-## classes
+## filters only). More specific filters all inherit from either of these two
+## classes.
 ## ---------------------------------------------------------------------------
 setClass("filter", 
-         representation("VIRTUAL", filterId="character"),
-         prototype=prototype(filterId=""),
-         validity=function(object) {
-             if(length(object@filterId) != 1)
-                 "'filterId' must have a length of one."
-             else
-                 TRUE
-         })
+         representation=representation("VIRTUAL",
+                                       filterId="character"),
+         prototype=prototype(filterId=""))
 
 setClass("concreteFilter",
          contains="filter")
 
 setClass("parameterFilter",
-         representation(parameters="character"),
+         representation=representation(parameters="character"),
          contains="concreteFilter",
          prototype=prototype(parameters=""))
 
@@ -161,18 +178,20 @@ setClass("parameterFilter",
 ## Rectangular gate
 ## ---------------------------------------------------------------------------
 ## A class describing a 2D rectangular region in the parameter space. Slots
-## min and max hold the boundaries in the two dimensions
+## min and max hold the boundaries in the two dimensions.
 ## ---------------------------------------------------------------------------
 setClass("rectangleGate",
-         representation(min="numeric",
-                        max="numeric"),
+         representation=representation(min="numeric",
+                                       max="numeric"),
          contains="parameterFilter",
          prototype=list(filterId="Rectangle Gate",
-         min=0, max=Inf)
+                        min=-Inf,
+                        max=Inf)
          )
 
 ## constructor
-rectangleGate <- function(filterId="rectangleGate", .gate, ...) {
+rectangleGate <- function(filterId="Rectangle Gate", .gate, ...)
+{
     if(missing(.gate) || !is.matrix(.gate))
       	.gate <- sapply(if(missing(.gate)) list(...) else .gate,
                         function(x){
@@ -188,21 +207,22 @@ rectangleGate <- function(filterId="rectangleGate", .gate, ...) {
 
 
 
-
 ## ===========================================================================
 ## Quadrant gate
 ## ---------------------------------------------------------------------------
-## A class describing a gate which separated a 2D paramerter space into
+## A class describing a gate which separates a 2D parameter space into
 ## four quadrants. Slot boundary holds a vector of length two indicating
-## the quadrant boundaries in each of the two dimensions
+## the quadrant boundaries in each of the two dimensions.
 ## ---------------------------------------------------------------------------
 setClass("quadGate",
-         representation(boundary="numeric"),        
+         representation=representation(boundary="numeric"),        
          contains="parameterFilter",
-         prototype=list(filterId="Quadrant Gate", c(Inf, Inf)))
+         prototype=list(filterId="Quadrant Gate",
+                        boundary=c(Inf, Inf)))
 
 ## constructor
-quadGate <- function(filterId="quadGate", .gate, ...) {
+quadGate <- function(filterId="Quadrant Gate", .gate, ...)
+{
     if(missing(.gate))
         .gate <- list(...)
     n <- names(.gate) 
@@ -218,33 +238,33 @@ quadGate <- function(filterId="quadGate", .gate, ...) {
 
 
 
-
-
 ## ===========================================================================
 ## Polygon gate
 ## ---------------------------------------------------------------------------
 ## A class describing a 2D polygonal region in the parameter space. Slot
-## boundary holds the vertices of the polygon in a 2 colum matrix
+## boundary holds the vertices of the polygon in a 2 colum matrix.
 ## ---------------------------------------------------------------------------
 setClass("polygonGate",
-         representation(boundaries="matrix"),
+         representation=representation(boundaries="matrix"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=3)),
+         prototype=list(filterId="Polygon Gate",
+                        boundaries=matrix(ncol=2, nrow=3)),
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3 ||
                 ncol(object@boundaries)!=2)
-                 msg <- paste("\nslot 'boundaries' must be a numeric matrix",
+                 msg <- paste("\nSlot 'boundaries' must be a numeric matrix",
                               "of at least 3 rows and exactly 2 columns")
              return(msg)
          })
 
 ## constructor
-polygonGate <- function(filterId="polygonGate", boundaries, ...) {
+polygonGate <- function(filterId="Polygon Gate", boundaries, ...)
+{
     if(missing(boundaries) || !is.matrix(boundaries)) 
-        boundaries = {as.matrix(if(missing(boundaries))
-                                do.call("cbind", list(...))
-        else boundaries)}
+        boundaries <- as.matrix(if(missing(boundaries))
+                                do.call("cbind", list(...)) else
+                                boundaries)
     new("polygonGate", filterId=filterId, parameters=colnames(boundaries),
         boundaries=boundaries)
 }
@@ -259,11 +279,11 @@ polygonGate <- function(filterId="polygonGate", boundaries, ...) {
 ## ---------------------------------------------------------------------------
 ## FIXME: Need a representation of halfspaces and corresponding linear
 ## equations here.
-
 setClass("polytopeGate",
-         representation(boundaries="matrix"),
+         representation=representation(boundaries="matrix"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", boundaries=matrix()), 
+         prototype=list(filterId="Polytope Gate",
+                        boundaries=matrix()), 
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3)
@@ -273,7 +293,8 @@ setClass("polytopeGate",
          })
 
 ## constructor
-polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
+polytopeGate <- function(filterId="Polytope Gate", .gate, ...)
+{
     if(missing(.gate) || !is.matrix(.gate))
         .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
     if(is.null(colnames(.gate)))
@@ -290,20 +311,25 @@ polytopeGate <- function(filterId="polytopeGate", .gate, ...) {
 ## ---------------------------------------------------------------------------
 ## A class describing an ellipsoid region in the parameter space. Slots
 ## mean and cov contain the mean values and the covariance matrix describing
-## the ellipse
+## the ellipse, slot distance holds a scaling factor, i.e., the Mahalanobis
+## distance.
 ## ---------------------------------------------------------------------------
 setClass("ellipsoidGate",
-         representation(mean="numeric",
-                        cov="matrix",
-			distance="numeric"),
+         representation=representation(mean="numeric",
+                                       cov="matrix",
+                                       distance="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", mean=numeric(), cov=matrix(), distance=1),
+         prototype=list(filterId="Ellipsoid Gate",
+                        mean=numeric(),
+                        cov=matrix(),
+                        distance=1),
          validity=function(object){
              msg <- TRUE
              if(!is.matrix(object@cov) ||
                 nrow(object@cov) != ncol(object@cov) ||
                 nrow(object@cov) < 2) 
-                 msg <- "\nslot 'cov' must be a symmetric matrix of at least 2 rows"
+                 msg <- paste("\nslot 'cov' must be a symmetric matrix of",
+                              "at least 2 rows")
              if(!is.numeric(object@mean) ||
                 length(object@mean) != nrow(object@cov))
                  msg <- paste("\nslot 'mean' must be numeric vector of",
@@ -314,13 +340,13 @@ setClass("ellipsoidGate",
          })
 
 ## constructor
-ellipsoidGate <- function(filterId="ellipsoidGate", .gate, mean, distance=1,
-...) {
+ellipsoidGate <- function(filterId="Ellipsoid Gate", .gate, mean,
+                          distance=1, ...) {
     if(missing(.gate) || !is.matrix(.gate))
-      .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
+        .gate <- sapply(if(missing(.gate)) list(...) else .gate, function(x) x)
     rn <- rownames(.gate)
     cn <- colnames(.gate)
-    if(any(sapply(dimnames(cov), is.null)) ||
+    if(any(sapply(dimnames(.gate), is.null)) ||
        !all(rn == cn) || !all(names(mean) == cn))
         stop("'.gate' must be covariance matrix with same dimnames as ",
              "parameter names in 'mean'", call.=FALSE)
@@ -335,22 +361,29 @@ ellipsoidGate <- function(filterId="ellipsoidGate", .gate, mean, distance=1,
 ## norm2Filter
 ## ---------------------------------------------------------------------------
 ## A class to describe the fit of a bivariate normal distribution.
-## Slot method holds the method argument to fitNorm2,
-## slot scale.factor holds the scalefac argument to fitNorm2,
-## transformation holds a list of length giving transformations, if applicable
-## that are applied to the data before gating. n is the number of points used
-## in the subsampling step.
+## Slot method is a character describing the method used to compute the
+## covariance matrix, slot scale.factor holds a numeric representing the
+## Mahalanobis distance. Slot transformation holds a list of length
+## giving transformations, if applicable that are applied to the data
+## before gating. n is the number of points used in the subsampling step.
 ## ---------------------------------------------------------------------------
+## FIXME" transformation slot has to go once the new transformation
+## infrastructure is in place
 setClass("norm2Filter",
-         representation(method="character",
-                        scale.factor="numeric",
-                        transformation="list",
-                        n="numeric"),
-         contains="parameterFilter")
+         representation=representation(method="character",
+                                       scale.factor="numeric",
+                                       transformation="list",
+                                       n="numeric"),
+         contains="parameterFilter",
+         prototype=list(filterId="Norm2 Filter",
+                        scale.factor=1,
+                        transformation=list(),
+                        method="covMcd",
+                        n=50000))
 
 ## constructor
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
-                        filterId="norm2Gate", n=50000)
+                        filterId="Norm2 Filter", n=50000)
 {
     x <- unlist(x)
     if(missing(y)) {
@@ -372,6 +405,7 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
 }
 
 
+
 ## ===========================================================================
 ## kmeansFilter
 ## ---------------------------------------------------------------------------
@@ -380,7 +414,7 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
 ## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("kmeansFilter",
-         representation(populations="character"),
+         representation=representation(populations="character"),
          contains="parameterFilter")
 
 ## contructor
@@ -389,7 +423,7 @@ kmeansFilter <- function(..., filterId="kmeans")
     ll <- list(...)
     l <- length(ll)
     if(l>1)
-	warning("k-means filters only operate on a single parameter.\n",
+        warning("k-means filters only operate on a single parameter.\n",
                 "Using '", names(ll)[1], "' now.", call.=FALSE)
     x <- ..1
     if(is.character(x))
@@ -412,16 +446,53 @@ kmeansFilter <- function(..., filterId="kmeans")
 
 
 ## ===========================================================================
+## curv1Filter
+## ---------------------------------------------------------------------------
+## This filter can hold parameters to find siginficant high density regions
+## in one dimension based on Matt Wand's feature software. This generates a
+## multipleFilterResult
+## ---------------------------------------------------------------------------
+setClass("curv1Filter",
+         representation=representation(bwFac="numeric",
+                                       gridsize="numeric"),
+         contains="parameterFilter",
+         prototype=list(filterId="Curv1 Filter",
+                        bwFac=1.2,
+                        gridsize=rep(151, 2)))
+
+##constructor
+curv1Filter <- function(x, filterId="Curv1 Filter",
+                        bwFac=1.2,
+                        gridsize=rep(151, 2))
+{
+    if(!is.numeric(bwFac) || length(bwFac)!=1)
+        stop("'bwFac must be numeric skalar")
+    if(!is.numeric(gridsize) || length(gridsize)!=2)
+        stop("'gridsize must be numeric skalar")
+    x <- unlist(x)
+    if(length(x)!=1)
+        warning("You must specify a single parameters for a curv1Filter.\n",
+                "Only using parameter '", x[1], "' now.", call.=FALSE)
+    new("curv1Filter", parameters=as.character(x[1]), bwFac=bwFac,
+        gridsize=gridsize, filterId=as.character(filterId))
+}
+
+
+
+## ===========================================================================
 ## curv2Filter
 ## ---------------------------------------------------------------------------
-## this filter can hold parameters to find siginficant high density regions
+## This filter can hold parameters to find siginficant high density regions
 ## in two dimensions based on Matt Wand's feature software. This generates a
 ## multipleFilterResult
 ## ---------------------------------------------------------------------------
 setClass("curv2Filter",
-         representation(bwFac="numeric",
-                        gridsize="numeric"),
-         contains="parameterFilter")
+         representation=representation(bwFac="numeric",
+                                       gridsize="numeric"),
+         contains="parameterFilter",
+         prototype=list(filterId="Curv1 Filter",
+                        bwFac=1.2,
+                        gridsize=rep(151, 2)))
 
 ##constructor
 curv2Filter <-
@@ -455,59 +526,39 @@ curv2Filter <-
 
 
 ## ===========================================================================
-## curv1Filter
-## ---------------------------------------------------------------------------
-## this filter can hold parameters to find siginficant high density regions
-## in one dimension based on Matt Wand's feature software. This generates a
-## multipleFilterResult
-## ---------------------------------------------------------------------------
-setClass("curv1Filter",
-         representation(bwFac="numeric",
-                        gridsize="numeric"),
-         contains="parameterFilter")
-
-##constructor
-curv1Filter <-
-    function(x, filterId="curv1Filter", bwFac=1.2,
-             gridsize=rep(151, 2))
-{
-    if(!is.numeric(bwFac) || length(bwFac)!=1)
-        stop("'bwFac must be numeric skalar")
-    if(!is.numeric(gridsize) || length(gridsize)!=2)
-        stop("'gridsize must be numeric skalar")
-    x <- unlist(x)
-    if(length(x)!=1)
-        warning("You must specify a single parameters for a curv1Filter.\n",
-                "Only using parameter '", x[1], "' now.", call.=FALSE)
-    new("curv1Filter", parameters=as.character(x[1]), bwFac=bwFac,
-        gridsize=gridsize, filterId=as.character(filterId))
-}
-
-   
-
-## ===========================================================================
 ## sampleFilter
 ## ---------------------------------------------------------------------------
-## sample 'size' rows from a flowFrame
+## Sample 'size' rows from a flowFrame. 
 ## ---------------------------------------------------------------------------
 setClass("sampleFilter",
-         representation(size="numeric"),
-         contains="concreteFilter")
+         representation=representation(size="numeric"),
+         contains="concreteFilter",
+         prototype=list(size=10000))
 
 ##constructor
-sampleFilter <- function(filterId="sample", size) new("sampleFilter",
-                        filterId=filterId, size=size)
+sampleFilter <- function(filterId="sample", size)
+    new("sampleFilter", filterId=filterId, size=size)
 
 
 
 ## ===========================================================================
 ## expressionFilter
 ## ---------------------------------------------------------------------------
-## Let's us encapsulate an expression as a gate
+## Let's us encapsulate an expression as a gate. There also is a constructor
+## to create the filter from a character representation of the expression
+## which is helpful for programmatic use. The args slot can contain additional
+## arguments that are passed on to the evaluation environment. deparse stores
+## a deparsed version of the expression.
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
-         representation(expr="expression", args="list", deparse="character"),
-         contains="concreteFilter")
+         representation=representation(expr="expression",
+                                       args="list",
+                                       deparse="character"),
+         contains="concreteFilter",
+         prototype=list(filterId="Expression Filter",
+                        exprs=expression(rep(TRUE, length(get(ls()[1])))),
+                        args=list(),
+                        deparse="default"))
 
 ## constructor
 expressionFilter <- function(expr, ..., filterId)
@@ -527,7 +578,7 @@ char2ExpressionFilter <- function(expr, ..., filterId)
 {
     subs <- parse(text=expr)
     if(missing(filterId))
-         filterId <- expr
+        filterId <- expr
     new("expressionFilter", filterId=filterId, expr=subs,
         args=list(...), deparse=expr)
 }
@@ -543,55 +594,66 @@ char2ExpressionFilter <- function(expr, ..., filterId)
 ## controls the size of the bins for the local variance and location
 ## estimation, 'timeParameter' can be used to explicitely give the paramter
 ## name of the time parameter (we will make an educated guess if this is not
-## given)
+## given).
 ## ---------------------------------------------------------------------------
 setClass("timeFilter",
-         representation(bandwidth="numeric",
-                        binSize="numeric",
-                        timeParameter="character"),
-         contains="parameterFilter")
+         representation=representation(bandwidth="numeric",
+                                       binSize="numeric",
+                                       timeParameter="character"),
+         contains="parameterFilter",
+         prototype=list(filterId="Time Filter",
+                        bandwidth=0.75,
+                        binSize=NULL,
+                        timeParameter=NULL))
 
 ## contructor
-timeFilter <- function(..., filterId="time", bandwidth=0.75,
+timeFilter <- function(..., filterId="Time Filter", bandwidth=0.75,
                        binSize=NULL, timeParameter=NULL)
 {
-  x <- ..1
-  if(is.list(x))
-    pars <- unlist(x)
-  else if (is.character(x) && length(x)>1)
-    pars <- x
-  else
-    pars <- unlist(list(...))
-  if(!all(is.character(pars)))
-    stop("Only know how to deal with character data for the parameter ",
-         "definition.", call.=FALSE)
-  new("timeFilter", parameters=pars,
-      bandwidth=bandwidth, binSize=as.numeric(binSize),
-      timeParameter=as.character(timeParameter), filterId=filterId)
+    x <- ..1
+    if(is.list(x))
+        pars <- unlist(x)
+    else if (is.character(x) && length(x)>1)
+        pars <- x
+    else
+        pars <- unlist(list(...))
+    if(!all(is.character(pars)))
+        stop("Only know how to deal with character data for the parameter ",
+             "definition.", call.=FALSE)
+    new("timeFilter", parameters=pars,
+        bandwidth=bandwidth, binSize=as.numeric(binSize),
+        timeParameter=as.character(timeParameter), filterId=filterId)
 }
-
 
 
 
 ## ===========================================================================
 ## filterSet
 ## ---------------------------------------------------------------------------
-## stores a list of filters from a gating sequence as an environment
+## Stores a list of filters from a gating sequence as an environment. Although
+## this will be kept as part of flowCore we encourage to use the new workflow
+## infrastructure instead.
 ## ---------------------------------------------------------------------------
 setClass("filterSet",
-         representation(env="environment"),
-         prototype=prototype(env=new.env(hash=TRUE, parent=emptyenv())))
+         representation=representation(env="environment",
+                                       name="character"),
+         prototype=prototype(env=new.env(hash=TRUE, parent=emptyenv()),
+                             name="Filter Set"))
 
-##constructor
-filterSet <- function(...) {
+## constructor
+filterSet <- function(..., name="default") {
     filters <- list(...)
     ## Allow the list(x, y, z) format as well.
     if(length(filters)==1 && is.list(filters[[1]]))
         filters <- filters[[1]]
     if(length(filters) == 0)
-        new("filterSet", env=new.env(parent=emptyenv()))
-    else
-        as(filters, "filterSet")
+        new("filterSet", env=new.env(parent=emptyenv()), name=name)
+    else{
+        tmp <- as(filters, "filterSet")
+        tmp@name <- name
+        tmp
+    }
+    
 }
 
 
@@ -599,19 +661,43 @@ filterSet <- function(...) {
 ## ===========================================================================
 ## filterReference
 ## ---------------------------------------------------------------------------
-## References a filter (contained within a filterSet)
+## References a filter (contained within a filterSet). Everything is just
+## passed to the referenced filter. This may be better handled by the type
+## system by having "real" filters inherit from concreteFilter (or something)
+## and then simply having a setAs(), but I think that will be too much work
+## for filter authors.
 ## ---------------------------------------------------------------------------
 setClass("filterReference",
-         representation(name="character", env="environment"),
+         representation=representation(name="character",
+                                       env="environment"),
          contains="filter")
+
+## Constructor from an environment
+setMethod("filterReference",
+          signature("environment", "character"),
+          function(from, name) {
+              new("filterReference", name=name, env=from)
+})
+
+## Constructor from another filterSet
+setMethod("filterReference",
+          signature("filterSet", "character"),
+          function(from,name)
+      {
+          new("filterReference", env=from@env,
+              name=name)
+      })
 
 
 
 ## ===========================================================================
 ## setOperationFilter
 ## ---------------------------------------------------------------------------
+## Superclass for union intersect, complement and subset filter, which all
+## consist of two or more component filters
+## ---------------------------------------------------------------------------
 setClass("setOperationFilter",
-         representation(filters="list"),
+         representation=representation(filters="list"),
          contains="concreteFilter")
 
 
@@ -619,24 +705,75 @@ setClass("setOperationFilter",
 ## ===========================================================================
 ## unionFilter 
 ## ---------------------------------------------------------------------------
+## The union of two filters, .i.e, the logical | operation.
+## A simple optimization would be to linearize the union of a filter and
+## another union filter.
+## ---------------------------------------------------------------------------
 setClass("unionFilter",
-         representation("setOperationFilter"))
+         representation=representation("setOperationFilter"))
+
+## constructor from two filters
+setMethod("|",
+          signature=signature(e1="filter",
+                              e2="filter"),
+          definition=function(e1, e2)
+      {
+          new("unionFilter", filters=list(e1, e2),
+              filterId=paste(identifier(e1), "or", identifier(e2)))
+      })
+
+## constructor from a list of filters and a filter and vice versa
+setMethod("|",
+          signature=signature(e1="list",
+                              e2="filter"),
+          definition=function(e1, e2) lapply(e1, "|", e2=e2))
+setMethod("|",
+          signature=signature(e1="filter",
+                              e2="list"),
+          definition=function(e1, e2) lapply(e2, "|", e1=e1))
 
 
 
 ## ===========================================================================
 ## intersectFilter 
 ## ---------------------------------------------------------------------------
+## The intersection of two filters, i.e, the logical & operation.
+## This is somewhat different from the %subset% operation because
+## some filters depend on the data and would return different results
+## when applied to the full dataset.
+## --------------------------------------------------------------------------
 setClass("intersectFilter",
-         representation("setOperationFilter"))
+         representation=representation("setOperationFilter"))
+
+## constructor from two filters
+setMethod("&",
+          signature=signature(e1="filter",
+                              e2="filter"),
+          definition=function(e1, e2)
+      {
+          new("intersectFilter", filters=list(e1, e2),
+              filterId=paste(identifier(e1), "and", identifier(e2)))
+      })
+
+## constructor from a list of filters and a filter and vice versa
+setMethod("&",
+          signature=signature(e1="list",
+                              e2="filter"),
+          definition=function(e1, e2) lapply(e1, "&", e2=e2))
+setMethod("&",
+          signature=signature(e1="filter",
+                              e2="list"),
+          definition=function(e1, e2) lapply(e2, "&", e1=e1))
 
 
 
 ## ===========================================================================
 ## complementFilter 
 ## ---------------------------------------------------------------------------
+## The complement of a filters, i.e, the logical ! operation.
+## ---------------------------------------------------------------------------
 setClass("complementFilter",
-         representation("setOperationFilter"),
+         representation=representation("setOperationFilter"),
          validity=function(object)
      { 
          if(length(object@filters) != 1) {
@@ -648,12 +785,26 @@ setClass("complementFilter",
      })
 
 
+## constructor
+setMethod("!",
+          signature=signature(x="filter"),
+          definition=function(x)
+      {
+          new("complementFilter",filters=list(x),
+              filterId=paste("not",identifier(x)))
+      })
+
+
 
 ## ===========================================================================
 ## subsetFilter 
 ## ---------------------------------------------------------------------------
+## Combining two filters in a way that the RHS filter  takes the subset
+## of the LHS filter as input. For many cases this is equivalent to an
+## intersection filter, the only differnce is in data-driven filters.
+## ---------------------------------------------------------------------------
 setClass("subsetFilter",
-         representation("setOperationFilter"),
+         representation=representation("setOperationFilter"),
          validity=function(object)
      {
          if(length(object@filters) != 2) {
@@ -663,26 +814,72 @@ setClass("subsetFilter",
          TRUE
      })
 
+## constructor from two filters. %&% is an alias for %subset%
+setMethod("%subset%",
+          signature=signature(e1="filter",
+                              e2="filter"),
+          definition=function(e1, e2)
+      {
+          new("subsetFilter",
+              filters=list(e1, e2), filterId=paste(identifier(e1),"in",
+                                                   identifier(e2)))
+      })
+setMethod("%&%",
+          signature=signature(e1="filter",
+                              e2="filter"),
+          definition=function(e1, e2) e1 %subset% e2)
+
+## constructor from a list of filters and a filter
+setMethod("%subset%",
+          signature=signature(e1="list",
+                              e2="filter"),
+          definition=function(e1, e2) lapply(e1, "%subset%", e2=e2))
+
+## constructor from a filterSet and a filter
+setMethod("%subset%",
+          signature=signature(e1="filterSet",
+                              e2="filter"),
+          definition=function(e1,e2)
+      {
+          ## Make a copy of the filterSet, preserving R semantics
+          x <- as(as(e1, "list"), "filterSet")
+          n <- names(e1)
+          x[[""]] <- e2
+          target <- as.symbol(identifier(e2))
+          for(i in n){
+              x[[""]] <- substitute(~ a %subset% b, list(a=as.symbol(i),
+                                                         b=target))
+          }
+          x
+      })
+
 
 
 ## ===========================================================================
 ## filterResult
 ## ---------------------------------------------------------------------------
-## A container for the results after applying a filter (e.g. gate) 
-## to flow cytometry data with slots 
+## A container for the results after applying a filter to flow cytometry
+## data with slots frameId (identifier of the object) and filterDetails,
+## which is a list containing and further describing the input filter.
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
-         representation(frameId="character", filterDetails="list"),
+         representation=representation(frameId="character",
+                                       filterDetails="list"),
          contains="concreteFilter",
-         prototype=list(frameId=character(0), filterDetails=list()))
+         prototype=list(frameId="Filter Result",
+                        filterDetails=list()))
 
 
 
 ## ===========================================================================
 ## logicalFilterResult
 ## ---------------------------------------------------------------------------
+## Resuls from a filtering operation that only produces a single population.
+## Slot subet is a logical vector indicating the population membership of the
+## data in the gated flowFrame.
+## ---------------------------------------------------------------------------
 setClass("logicalFilterResult",
-         representation(subSet="logical"),
+         representation=representation(subSet="logical"),
          contains="filterResult")
 
 
@@ -690,8 +887,12 @@ setClass("logicalFilterResult",
 ## ===========================================================================
 ## multipleFilterResult
 ## ---------------------------------------------------------------------------
+## Resuls from a filtering operation that produces multiple populations.
+## Slot subet is a factor vector indicating the population membership of the
+## data in the gated flowFrame. Factor names are used as population names.
+## ---------------------------------------------------------------------------
 setClass("multipleFilterResult",
-         representation(subSet="factor"),
+         representation=representation(subSet="factor"),
          contains="filterResult")
 
 
@@ -704,14 +905,15 @@ setClass("multipleFilterResult",
 ## each row contains the results of a single filtering operation.
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
-         representation(subSet="matrix", dependency="ANY"),
+         representation=representation(subSet="matrix",
+                                       dependency="ANY"),
          contains="filterResult")
 
 ##constructor
 manyFilterResult <- function(filters, frameId, dependency=NULL)
 {
     q <- new("manyFilterResult",
-             filterDetails=sapply(filters, slot, "filterDetails"),
+             filterDetails=lapply(filters, slot, "filterDetails"),
              subSet=do.call("cbind", lapply(filters, as, "logical")),
              dependency=dependency)
     colnames(q@subSet) <- sapply(filters, slot, "filterId")
@@ -723,18 +925,63 @@ manyFilterResult <- function(filters, frameId, dependency=NULL)
 ## ===========================================================================
 ## randomFilterResult
 ## ---------------------------------------------------------------------------
+## A result of a filtering operation where the population membership is
+## considered to be stochastic rather than absolute. Currently there is no
+## implementation of a filter that produces such a filterResult, although
+## norm2Filter, curvFilters and the t-mixture filters in flowClust are
+## obvious candidates.
+## ---------------------------------------------------------------------------
 setClass("randomFilterResult",
-         representation(subSet="numeric"),
+         representation=representation(subSet="numeric"),
          contains="filterResult")
+
+
+
+## ===========================================================================
+## filterResultList
+## ---------------------------------------------------------------------------
+## A list of filterResults which typically is generated when applying a
+## filter to a whole flowSet. This is a class union of list and filterResult
+## and mainly exists to allow for method dispatch and sanity checking.
+## FIXME: Do we want to allow for mixed filter classes in the list?
+## ---------------------------------------------------------------------------
+setClass("filterResultList",
+         contains=c("list", "filterResult"))
 
 
 
 ## ===========================================================================
 ## filterSummary
 ## ---------------------------------------------------------------------------
+## A class containing the results of calling summary methods on filterResult.
+## In the case of multipleFilterrResults, the individual slots(except 'count')
+## will be vectors.
+## Slots are:
+##   - name:  The name of the summary, usually this will be set to be the
+##            identifier of the filterResult, or the names of the individual
+##            populations for a multipleFilterResult
+##   - true:  The number of events in the filter (or the individual
+##            populations)
+##   - count: The total number of events the filter was applied on
+##   - p:     The ratio of events within the filter (i.e., true/count)
+## ---------------------------------------------------------------------------
 setClass("filterSummary",
-         representation(name="character", true="numeric",
-                        count="numeric", p="numeric"))
+         representation=representation(name="character",
+                                       true="numeric",
+                                       count="numeric",
+                                       p="numeric"))
+
+
+
+## ===========================================================================
+## filterSummaryList
+## ---------------------------------------------------------------------------
+## A list of filterSummaries which typically is generated when summarizing a
+## filterResultList. This directly extends the list class  and mainly exists
+## to allow for method dispatch.
+## ---------------------------------------------------------------------------
+setClass("filterSummaryList",
+         contains="list")
 
 
 
@@ -742,9 +989,12 @@ setClass("filterSummary",
 ## transform
 ## ---------------------------------------------------------------------------
 ## Parameterize transforms so that we can describe them.
+## FIXME: This should change in the future with the introduction of
+## subclasses for the different types of trasnformations.
 ## ---------------------------------------------------------------------------
 setClass("transform",
-         representation(transformationId="character", "function"))
+         representation=representation(transformationId="character",
+                                       "function"))
 
 ## Linear transform constructor
 linearTransform <- function(transformationId, a=1, b=0)
@@ -823,10 +1073,10 @@ logicleTransform <- function(transformationId, w=0, r=262144, d=5, ...)
     w <- w*log(10)
     d <- d*log(10)
     p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
-            c(.Machine$double.eps, 2*(w+d)))$root
+                                 c(.Machine$double.eps, 2*(w+d)))$root
     t <- new("transform", .Data=biexponentialTransform(transformationId,
-                          a=r*exp(-(d-w)), b=1, c=r*exp(-(d-w))*p^2, d=1/p,
-                          f=p^2-1, w=w, ...))
+                                                       a=r*exp(-(d-w)), b=1, c=r*exp(-(d-w))*p^2, d=1/p,
+                                                       f=p^2-1, w=w, ...))
     t@transformationId <- transformationId
     t
 }
@@ -888,11 +1138,10 @@ arcsinhTransform <- function(transformationId, a=1, b=1, c=0)
 ## ===========================================================================
 ## parameterTransform
 ## ---------------------------------------------------------------------------
-## A class that only applied a parameter transform to a subset of the
-## parameters during an %on% operation.
+## A class used to map parameters of a transform during %on% operations.
 ## ---------------------------------------------------------------------------
 setClass("parameterTransform",
-         representation(parameters="character"),
+         representation=representation(parameters="character"),
          contains="transform")
 
 ## constructor
@@ -909,7 +1158,9 @@ parameterTransform <- function(FUN, params)
 ## know which parameters should be input filters
 ## ---------------------------------------------------------------------------
 setClass("transformMap",
-         representation(output="character", input="character", f="function"))
+         representation=representation(output="character",
+                                       input="character",
+                                       f="function"))
 
 
 
@@ -919,7 +1170,7 @@ setClass("transformMap",
 ## A list of transformMaps
 ## ---------------------------------------------------------------------------
 setClass("transformList",
-         representation(transforms="list"),
+         representation=representation(transforms="list"),
          validity=function(object)
          if(all(sapply(object@transforms, is, "transformMap"))) TRUE else
          stop("All list items of a 'transformList' must be of class ",
@@ -951,6 +1202,885 @@ transformList <- function(from, tfun, to=from)
 ## ===========================================================================
 ## transformFilter
 ## ---------------------------------------------------------------------------
+## FIXME: I have no clue what that is supposed to be but my guess is that it
+## can go away once we have the new transformations in place
+## ---------------------------------------------------------------------------
 setClass("transformFilter",
-         representation(transforms="transformList", filter="filter"),
+         representation=representation(transforms="transformList",
+                                       filter="filter"),
          contains="concreteFilter")
+
+
+
+## ===========================================================================
+## compensation
+## ---------------------------------------------------------------------------
+## A class to define a compensation operation.
+## Slots are:
+##   - compensationId: The identifier of the object
+##   - spillover:      The spillover matrix
+##   - invert:         A logical vector indicating whether the matrix in
+##                     slot spillover is a spillover or a compensation
+##                     matrix.
+## ---------------------------------------------------------------------------
+setClass("compensation",
+         representation(spillover="matrix", invert="logical",
+                        compensationId="character"),
+         prototype=prototype(invert=TRUE, compensationId="default"))
+
+## constructor
+compensation <- function(spillover, invert=TRUE, compensationId="default")
+{
+    if(!is.matrix(spillover) || !is.numeric(spillover) ||
+       ncol(spillover) != nrow(spillover))
+        stop("'spillover' must be numeric matrix with same number of ",
+             "rows and columns", call.=FALSE)
+    if(is.null(colnames(spillover)))
+        stop("Spillover matrix must have colnames", call.=FALSE)
+    checkClass(invert, "logical", 1)
+    checkClass(compensationId, "character", 1)
+    new("compensation", spillover=spillover, invert=invert,
+        compensationId=compensationId)
+}
+
+
+
+## ===========================================================================
+## fcReference
+## ---------------------------------------------------------------------------
+## The general definition of a reference: We have an identifier and an
+## evaluation environment to do the lookup in. In the context of workflows,
+## the environment will live inside the workFlow object.
+## Rather than storing the actual items, the workflow framework will provide
+## a more reference based semantic. To this end, we define a number
+## of different reference classes to be used in the subsequent class
+## definition. Objects of class "fcNullReference" allow to assign
+## empty (hence unresolvable) references without breaking dispatch
+## or class validity.
+## ---------------------------------------------------------------------------
+## Create quasi-random guids. This is only based on the time stamp,
+## not on MAC address or similar.
+guid <- function()
+    as.vector(format.hexmode(as.integer(Sys.time())/
+                             runif(1)*proc.time()["elapsed"]))
+setClass("fcReference", 
+         representation=representation(ID="character",
+                                       env="environment"),
+         prototype=prototype(ID=paste("ref", guid(), sep="_"),
+                             env=new.env(parent=emptyenv()))
+         )
+
+## constructor
+fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
+                        env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcStructureReference
+## ---------------------------------------------------------------------------
+## This only exists to subclass structural parts of the workFlow like views
+## and actionItems to allow for group-wise method dispatch.
+## ---------------------------------------------------------------------------
+setClass("fcStructureReference",
+         contains=list("VIRTUAL",
+                       "fcReference"))
+
+
+
+## ===========================================================================
+## fcTreeReference
+## ---------------------------------------------------------------------------
+## A reference to a graphNEL object representing the workflow tree
+## ---------------------------------------------------------------------------
+setClass("fcTreeReference",
+         contains="fcStructureReference",
+         prototype=prototype(ID=paste("treeRef", guid(), sep="_"))
+         )
+
+## constructor
+fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcTreeReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcDataReference
+## ---------------------------------------------------------------------------
+## A reference to a data type object (a flowSet or flowFrame)
+## ---------------------------------------------------------------------------
+setClass("fcDataReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("dataRef", guid(), sep="_"))
+         )
+
+## constructor
+fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcDataReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcActionReference
+## ---------------------------------------------------------------------------
+## A reference to an action item object (a gate, transformation or
+## compensation)
+## ---------------------------------------------------------------------------
+setClass("fcActionReference",
+         contains="fcStructureReference",
+         prototype=prototype(ID=paste("actionRef", guid(), sep="_"))
+         )
+
+## constructor
+fcActionReference <- function(ID=paste("actionRef", guid(), sep="_"),
+                              env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcActionReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcViewReference
+## ---------------------------------------------------------------------------
+## A reference to a view object. This allows to bind action items to
+## particular views on the data
+## ---------------------------------------------------------------------------
+setClass("fcViewReference",
+         contains="fcStructureReference",
+         prototype=prototype(ID=paste("viewRef", guid(), sep="_"))
+         )
+
+## constructor
+fcViewReference <- function(ID=paste("viewRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcViewReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcFilterResultReference
+## ---------------------------------------------------------------------------
+## A reference to a filterResult object. We need this to store filterResults
+## along with the views the filtering generated, without unnecessarily
+## copying things.
+## ---------------------------------------------------------------------------
+setClass("fcFilterResultReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("fresRef", guid(), sep="_"))
+         )
+
+## constructor
+fcFilterResultReference <- function(ID=paste("fresRef",
+                                             guid(), sep="_"),
+                                    env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcFilterResultReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcFilterReference
+## ---------------------------------------------------------------------------
+## A reference to a filter object. We need this to store filters within 
+## a gateActionItem without unnecessarily copying things.
+## ---------------------------------------------------------------------------
+setClass("fcFilterReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("filterRef", guid(), sep="_"))
+         )
+
+## constructor
+fcFilterReference <- function(ID=paste("filterRef",
+                                       guid(), sep="_"),
+                              env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcFilterReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcCompensateReference
+## ---------------------------------------------------------------------------
+## A reference to a compensation object. We need this to store a compensation
+## within a compensateActionItem without unnecessarily copying things.
+## ---------------------------------------------------------------------------
+setClass("fcCompensateReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("compRef", guid(), sep="_"))
+         )
+
+## constructor
+fcCompensateReference <- function(ID=paste("compRef",
+                                           guid(), sep="_"),
+                                  env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcCompensateReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcTransformReference
+## ---------------------------------------------------------------------------
+## A reference to a transformation object. For now we use transformList
+## objects until transformation is a more usefull class. We need this to
+## store a trasnforamtion within a transformActionItem without unnecessarily
+## copying things.
+## ---------------------------------------------------------------------------
+setClass("fcTransformReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("transRef", guid(), sep="_"))
+         )
+
+## constructor
+fcTransformReference <- function(ID=paste("transRef",
+                                          guid(), sep="_"),
+                                 env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    new("fcTransformReference", ID=ID, env=env)
+}
+
+
+
+## ===========================================================================
+## fcNullReference
+## ---------------------------------------------------------------------------
+## A NULL reference to be used whenever a slot is supposed to be empty
+## ---------------------------------------------------------------------------
+setClass("fcNullReference",
+         contains=c("fcDataReference",
+                    "fcActionReference",
+                    "fcViewReference",
+                    "fcFilterResultReference",
+                    "fcFilterReference",
+                    "fcCompensateReference",
+                    "fcTransformReference",
+                    "fcTreeReference"),
+         prototype=prototype(ID=paste("nullRef", guid(), sep="_"))
+         )
+
+fcNullReference <- function(...) new("fcNullReference")
+
+
+
+## ===========================================================================
+## workFlow
+## ---------------------------------------------------------------------------
+## This class is intended to store all necessary information about a
+## workflow. Since the individual bits and pieces (actionItems, views) know
+## about their inter-relations, it is only the tree that links the
+## individual views and the common evaluation environment containing all
+## stored objects. Nodes in the tree correspond to views, edges to
+## actionItems, stored as references in the edgeData slot. The tree itself
+## is also stored in the environment, which allows for reference-based
+## updating without the necessaty of an assignment method or the like.
+## Note that the environment in the prototype gets created once and all
+## objects created via "new" without explicitely defining "env" will
+## essentially share a common environment. This is fixed in the constructor
+## ---------------------------------------------------------------------------
+setClass("workFlow",
+         representation=representation(name="character",
+                                       tree="fcTreeReference",
+                                       env="environment"),
+         prototype=prototype(name="default",
+                             tree=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+## The constructor takes a flow data object (flowFrame or flowSet) and
+## makes a copy in the evaluation environment.
+workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
+{
+    if(!is(data, "flowFrame") && !is(data, "flowSet"))
+        stop("'data' must be a flow data structure (flowFrame or flowSet)",
+             call.=FALSE)
+    checkClass(name, "character", 1)
+    checkClass(env, "environment")
+    wf <-  new("workFlow", name=name, env=env)
+    dataRef <- assign(value=data, envir=wf)
+    viewRef <- view(workflow=wf, name="base view", data=dataRef) 
+    tree <- new("graphNEL", nodes=identifier(viewRef), edgemode="directed")
+    wf@tree <- assign(value=tree, envir=wf)
+    return(wf)
+}
+
+
+## Create a reference by assigning 'value' to the symbol 'x' in the
+## evaluation environment in 'workflow'. If 'x' is not specified, we
+## create a reasonable unique identifier. These methods return a reference
+## to 'value' for further use.
+## Note that creation of a NULL reference does not result in any assignment
+## to the environment, but still a fcNullReference object is returned.
+## Figure out which reference type to create, based on the class of 'value'
+refType <- function(value)
+{
+    if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
+    else if(is(value, "filterResult")) "fcFilterResultReference"
+    else if(is(value, "filter")) "fcFilterReference"
+    else if(is(value, "actionItem")) "fcActionReference"
+    else if(is(value, "view")) "fcViewReference"
+    else if(is(value, "compensation")) "fcCompensateReference"
+    else if(is(value, "transformList")) "fcTransformReference"
+    else if(is(value, "graphNEL")) "fcTreeReference"
+    else if(is.null(value)) "fcNullReference"
+    else "fcReference"
+}
+
+## Assign any object to a workFlow object, the symbol (as guid) is created
+## automatically
+setMethod("assign",
+          signature=signature(x="missing",
+                              value="ANY",
+                              pos="workFlow",
+                              envir="missing",
+                              inherits="missing",
+                              immediate="missing"),
+          definition=function(value, pos)
+      {
+          a <- do.call(refType(value), list(env=pos@env))
+          if(!isNull(a))
+              assign(identifier(a), value, envir=pos@env)
+          return(a)
+      })
+
+## The same behaviour as above, but allow workflow to be the 'envir' argument
+setMethod("assign",
+          signature=signature(x="missing",
+                              value="ANY",
+                              pos="missing",
+                              envir="workFlow",
+                              inherits="missing",
+                              immediate="missing"),
+          definition=function(value, envir) assign(value=value, pos=envir))
+
+## Assign to a particular symbol (potentially overwriting existing ones)
+setMethod("assign",
+          signature=signature(x="character",
+                              value="ANY",
+                              pos="workFlow",
+                              envir="missing",
+                              inherits="missing",
+                              immediate="missing"),
+          definition=function(x, value, pos)
+      {
+          a <- do.call(refType(value), list(ID=x, env=pos@env))
+          if(!isNull(a)){
+              if(x %in% ls(pos))
+                  warning("Overwriting object in the environment.", call.=FALSE)
+              assign(identifier(a), value, envir=pos@env)
+          }else{
+              rm(list=x, envir=pos@env)
+          }
+          return(a)
+      })
+
+## Assign via existing reference.
+setMethod("assign",
+          signature=signature(x="fcReference",
+                              value="ANY",
+                              pos="workFlow",
+                              envir="missing",
+                              inherits="missing",
+                              immediate="missing"),
+          definition=function(x, value, pos)
+      {
+          Rm(x, rmRef=FALSE)
+          a <- do.call(refType(value), list(ID=identifier(x), env=pos@env))
+          if(!isNull(a))
+              assign(identifier(a), value, envir=pos@env)
+          return(a)
+      })
+
+## The same behaviour as above, but allow workflow to be the 'envir' argument
+setMethod("assign",
+          signature=signature(x="ANY",
+                              value="ANY",
+                              pos="missing",
+                              envir="workFlow",
+                              inherits="missing",
+                              immediate="missing"),
+          definition=function(x, value, envir)
+      {
+          assign(x=x, value=value, pos=envir)
+      })
+
+
+
+## ===========================================================================
+## actionItem
+## ---------------------------------------------------------------------------
+## actionItems are either gates, transformations or compensations that
+## work on a particular view of the data, linked to it by the parentView
+## slot.
+## ---------------------------------------------------------------------------
+setClass("actionItem", 
+         representation=representation("VIRTUAL",
+                                       ID="character",
+                                       name="character",
+                                       parentView="fcViewReference",
+                                       env="environment"),
+         prototype=prototype(ID=paste("actionRef", guid(), sep="_"),
+                             name="",
+                             parentView=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+
+
+## ===========================================================================
+## gateActionItem
+## ---------------------------------------------------------------------------
+## A subclass od actionItem. This contains the definiton of the filter/gate
+## operation
+## ---------------------------------------------------------------------------
+setClass("gateActionItem",
+         contains="actionItem",
+         representation=representation(gate="fcFilterReference",
+                                       filterResult="fcFilterResultReference"),
+         prototype=prototype(ID=paste("gateActionRef", guid(), sep="_"),
+                             gate=fcNullReference(),
+                             filterResult=fcNullReference()))
+
+## The constructor creates the gateActionItem object and directly assigns
+## it to the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+gateActionItem <- function(ID=paste("gateActionRef", guid(), sep="_"),
+                           name="default", parentView, gate, filterResult,
+                           workflow)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(gate, "fcFilterReference")
+    checkClass(parentView, "fcViewReference")
+    if(missing(filterResult))
+        filterResult <-fcNullReference()
+    action <- new("gateActionItem", ID=ID, name=name, gate=gate,
+                  parentView=parentView, env=workflow@env,
+                  filterResult=filterResult)
+    return(assign(x=ID, value=action, envir=workflow))
+}
+
+
+
+## ===========================================================================
+## transformActionItem
+## ---------------------------------------------------------------------------
+## transformation actionItem. This contains the definiton of the
+## transformation, which is not defined yet. For now, we use the
+## transformMapList class for this purpose
+## ---------------------------------------------------------------------------
+setClass("transformActionItem",
+         contains="actionItem",
+         representation=representation(transform="fcTransformReference"))
+
+## The constructor creates the transformActionItem object and directly
+## assigns it to the evaluation ennvironment in 'workflow'. The return
+## value is a reference to that object.
+transformActionItem <- function(ID=paste("transActionRef", guid(), sep="_"),
+                                name="default", parentView, transform,
+                                workflow)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(transform, "fcTransformReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("transformActionItem", ID=ID, name=name,
+                  transform=transform, parentView=parentView,
+                  env=workflow@env)
+    return(assign(x=ID, value=action, envir=workflow))
+}
+
+
+## ===========================================================================
+## compensateActionItem
+## ---------------------------------------------------------------------------
+## compensation actionItem. This contains the definiton of the
+## compensation
+## ---------------------------------------------------------------------------
+setClass("compensateActionItem",
+         contains="actionItem",
+         representation=representation(compensate="fcCompensateReference"))
+
+## The constructor creates the compensateActionItem object and directly
+## assigns it to the evaluation ennvironment in 'workflow'. The return
+## value is a reference to that object.
+compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
+                                 name="default", parentView, compensate,
+                                 workflow)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(compensate, "fcCompensateReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("compensateActionItem", ID=ID, name=name,
+                  compensate=compensate, parentView=parentView,
+                  env=workflow@env)
+    return(assign(x=ID, value=action, envir=workflow))
+}
+
+## ===========================================================================
+## view
+## ---------------------------------------------------------------------------
+## The concept of views in this context does not adhere strictly to the
+## definition. Whenever possible, we try to provide a "real" view on the
+## original (or at least on the parent) data, however operations like
+## compensation or transformation will alter the data values, and unless
+## we want to add new columns to the original data (or make a copy while
+## retaining the original set), there is no simple way around that. Views
+## mainly exist in order to provide a uniform organisational structure
+## for the data after an actionItem has been applied. The first node in
+## the workflow tree is always a view with a NULL action reference, and
+## a non-NULL data reference.
+## ---------------------------------------------------------------------------
+setClass("view", 
+         representation=representation(ID="character",
+                                       name="character",
+                                       action="fcActionReference",
+                                       env="environment",
+                                       data="fcDataReference"),
+         prototype=prototype(ID=paste("view", guid(), sep="_"),
+                             name="",
+                             action=fcNullReference(),
+                             data=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+## The constructor creates the view object and directly assigns it to
+## the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+view <- function(workflow, ID=paste("viewRef", guid(), sep="_"),
+                 name="default", data, action)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    if(missing(data))
+        data <- fcNullReference()
+    if(missing(action))
+        action <- fcNullReference()
+    bv <-  new("view", ID=ID, name=name, env=workflow@env,
+               action=action, data=data)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+
+
+## ===========================================================================
+## gateView
+## ---------------------------------------------------------------------------
+## We need some form of special treatment for gates that produce multiple
+## populations. A gateView will always capture the result for only a single
+## sub-population, however, the whole filterResult is necessary for plotting
+## and a reference to that will be stored along with the view
+## ---------------------------------------------------------------------------
+setClass("gateView",
+         contains="view",
+         representation=representation(indices="logical",
+                                       filterResult="fcFilterResultReference",
+                                       frEntry="character"),
+         prototype=prototype(ID=paste("gateViewRef", guid(), sep="_"),
+                             name="",
+                             filterResult=fcNullReference(),
+                             action=fcNullReference(),
+                             data=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+## The constructor creates the gateView object and directly assigns it to
+## the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
+                     name="default", action, data, indices, 
+                     filterResult, frEntry)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(frEntry, "character", 1)
+    checkClass(indices, "logical")
+    checkClass(action, "fcActionReference")
+    checkClass(filterResult, "fcFilterResultReference")
+    if(missing(data))
+        data <- fcNullReference()
+    bv <- new("gateView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, indices=indices,
+              filterResult=filterResult, frEntry=frEntry)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+## check if the parentView of an actionItem object is the result of a
+## filtering operation and, if that is the case, that the filter has been
+## applied for subsetting (i.e., a new data set has been created)
+applyParentFilter <- function(parent, workflow)
+{
+    pview <- get(parent)
+    dataRef <- Data(pview)
+    if(is.null(dataRef)){
+        parentData <- Data(parent(pview))
+        newData <- parentData[pview@indices,]
+        newDataRef <- assign(value=newData, envir=workflow)
+        pview@data <- newDataRef
+        assign(parent, value=pview, envir=workflow)
+    }
+}
+
+## constructor directly from a filter object. This creates a gateActionItem
+## in the workFlow and from that a gateView which is also directly stored in
+## the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="concreteFilter"),
+          definition=function(wf, action, parent=NULL)
+      {
+          if(is(action, "filterResult"))
+              stop("Don't know how to handle object of class '",
+                   class(action), "'", call.=FALSE)
+          else if(is(action, "filter")){
+              ## assign the filter to the evaluation environment and create
+              ## a reference to it
+              gateRef <- assign(value=action, envir=wf)
+              ## get the parentView. If not explicitely specified, use the
+              ## root node
+              pid <- if(is.null(parent)) names(wf)[[1]] else parent
+              pview <- fcViewReference(ID=pid, env=wf@env)
+              ## create and assign a new gateActionItem
+              actionRef <- gateActionItem(name=identifier(action),
+                                          parentView=pview, gate=gateRef,
+                                          workflow=wf)
+              ## check if the previous filter has been applied for subsetting
+              applyParentFilter(pview, wf)
+              ## now evaluate the filter and assign the result
+              fres <- filter(Data(get(pview)), action)
+              if(is(fres, "filterResultList") &&
+                 length(unique(listLen(fres))) != 1)
+                  stop("Individual filterResults in the filterResultList ",
+                       "don't share the same number of populations.\n",
+                       "Don't know how to proceed.", call.=FALSE)
+              fresRef <-  assign(value=fres, envir=wf)
+              gAction <- get(actionRef)
+              gAction@filterResult <- fresRef
+              assign(actionRef, gAction, wf)
+              ## we need to distinguish between logicalFilterResults and
+              ## multipleFilterResults
+              nodes <- NULL
+              if(!is(fres, "filterResultList")){
+                  len <-
+                      if(is(fres, "logicalFilterResult")) 2
+                      else length(fres)
+                  for(i in seq_len(len)){
+                      vid <- gateView(name=names(fres)[i], workflow=wf,
+                                      action=actionRef, filterResult=fresRef,
+                                      indices=fres[[i]]@subSet,
+                                      frEntry=names(fres)[i])
+                      nodes <- c(nodes, identifier(vid))
+                  }
+              }else{
+                  len <-
+                      if(is(fres[[1]], "logicalFilterResult")) 2
+                      else length(fres[[1]])
+                  for(i in seq_len(len)){
+                       vid <- gateView(name=names(fres)[1,i], workflow=wf,
+                                      action=actionRef, filterResult=fresRef,
+                                      indices=TRUE,
+                                      frEntry=names(fres[[1]])[i])
+                      nodes <- c(nodes, identifier(vid))
+                  }
+              }
+              ## add new nodes and edges to the workflow tree
+              tree <- get(wf@tree)
+              tree <- addNode(nodes, tree)
+              tree <- addEdge(pview@ID, nodes, tree)
+              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+              edgeData(tree, pview@ID, nodes, "actionItem") <-
+                  actionRef
+              assign(x=wf@tree, value=tree, envir=wf)
+              return(wf)
+          } else stop("Don't know how to handle object of class '",
+                      class(action), "'", call.=FALSE)       
+      })
+
+
+
+
+
+## ===========================================================================
+## transformView
+## ---------------------------------------------------------------------------
+## A transfomation makes a copy of the data independent of whether it
+## is a leaf node or not.
+## Do we want to allow to introduce new data columns. My guess is that we
+## have to, but for now let's assume we don't.
+## ---------------------------------------------------------------------------
+setClass("transformView",
+         contains="view",
+         prototype=prototype(ID=paste("transViewRef", guid(), sep="_"),
+                             name="",
+                             action=fcNullReference(),
+                             data=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+## The constructor creates the transformView object and directly assigns it to
+## the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+transformView <- function(workflow, ID=paste("transViewRef", guid(), sep="_"),
+                          name="default", action, data)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("transformView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+## constructor directly from a transformation object. This creates a
+## transformActionItem in the workFlow and from that a transformView
+## which is also directly stored in the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="transformList"),
+          definition=function(wf, action, parent=NULL)
+      {
+          ## assign the transformation to the evaluation environment and
+          ## create a reference to it
+              transRef <- assign(value=action, envir=wf)
+              ## get the parentView. If not explicitely specified, use the
+              ## root node
+              pid <- if(is.null(parent)) names(wf)[[1]] else parent
+              pview <- fcViewReference(ID=pid, env=wf@env)
+              tree <- get(wf@tree)
+              if(length(unlist(adj(tree, pid))))
+                  warning("The selected parent view is not a leaf node.\n",
+                          "Don't know how to update yet.", call.=FALSE)
+              ## create and assign a new transformActionItem
+              actionRef <- transformActionItem(name="no scheme yet",
+                                               parentView=pview,
+                                               transform=transRef,
+                                               workflow=wf)
+              ## check if the previous filter has been applied for subsetting
+              applyParentFilter(pview, wf)
+              ## now transform the data and assign the result
+              tData <- action %on% Data(get(pview))
+              dataRef <- assign(value=tData, envir=wf)
+              vid <- transformView(name="no scheme yet", workflow=wf,
+                                   action=actionRef, data=dataRef)
+              
+              ## add new nodes and edges to the workflow tree
+              nid <- identifier(vid)
+              tree <- addNode(nid, tree)
+              tree <- addEdge(pid, identifier(vid), tree)
+              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+              edgeData(tree, pid , nid, "actionItem") <- actionRef
+              assign(x=wf@tree, value=tree, envir=wf)
+              return(wf)   
+      })
+
+
+
+## ===========================================================================
+## compensateView
+## ---------------------------------------------------------------------------
+## A compensation makes a copy of the data independent of whether it
+## is a leaf node or not.
+## ---------------------------------------------------------------------------
+setClass("compensateView",
+         contains="view",
+         prototype=prototype(ID=paste("compViewRef", guid(), sep="_"),
+                             name="",
+                             action=fcNullReference(),
+                             data=fcNullReference(),
+                             env=new.env(parent=emptyenv())))
+
+## The constructor creates the compensateView object and directly assigns it
+## to the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
+                           name="default", action, data)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("compensateView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+## constructor directly from a compensation object. This creates a
+## compensateActionItem in the workFlow and from that a compensateView
+## which is also directly stored in the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="compensation"),
+          definition=function(wf, action, parent=NULL)
+      {
+          ## assign the compensation to the evaluation environment and
+          ## create a reference to it
+              compRef <- assign(value=action, envir=wf)
+              ## get the parentView. If not explicitely specified, use the
+              ## root node
+              pid <- if(is.null(parent)) names(wf)[[1]] else parent
+              pview <- fcViewReference(ID=pid, env=wf@env)
+              if(pid != names(wf)[1])
+                  warning("The selected parent view is not a root node.\n",
+                          "Are you sure this is correct?", call.=FALSE)
+              ## create and assign a new ActionItem
+              actionRef <- compensateActionItem(name=identifier(action),
+                                                parentView=pview,
+                                                compensate=compRef,
+                                                workflow=wf)
+              ## check if the previous filter has been applied for subsetting
+              applyParentFilter(pview, wf)
+              ## now transform the data and assign the result
+              tData <- compensate(Data(get(pview)), action)
+              dataRef <- assign(value=tData, envir=wf)
+              vid <- compensateView(name=identifier(action), workflow=wf,
+                                   action=actionRef, data=dataRef)
+              
+              ## add new nodes and edges to the workflow tree
+              nid <- identifier(vid)
+              tree <- get(wf@tree)
+              tree <- addNode(nid, tree)
+              tree <- addEdge(pid, identifier(vid), tree)
+              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+              edgeData(tree, pid , nid, "actionItem") <- actionRef
+              assign(x=wf@tree, value=tree, envir=wf)
+              return(wf)   
+      })
+
+

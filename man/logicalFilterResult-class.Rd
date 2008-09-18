@@ -5,6 +5,7 @@
 \alias{summary,logicalFilterResult-method}
 \alias{names,logicalFilterResult-method}
 \alias{length,logicalFilterResult-method}
+\alias{[[,logicalFilterResult,ANY-method}
 
 \title{Class "logicalFilterResult"}
 \description{Container to store the result of applying a \code{filter} on a

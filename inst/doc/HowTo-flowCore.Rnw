@@ -814,7 +814,7 @@ the usual way:
 
 <<FilterSet3, echo=TRUE, verbatim=TRUE>>=
 
-split(fs[[1]],fset1,flowSet=TRUE)
+split(fs[[1]], fset1, flowSet=TRUE)
 
 @
 

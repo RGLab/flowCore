@@ -39,8 +39,8 @@
 ## We actually split on filterResults and multipleFilterResults, so filters
 ## have to be evaluated first. Note that the 'drop' argument is silently
 ## ignored when splitting by filter since it doesn't have a clear meaning in
-## this application. It does have the expected meaning when splitting by
-## factors.
+## this application. It does have the expected behaviour when splitting by
+## factors, though.
 
 ## Evaluate the filter first and split on the filterResult
 setMethod("split",
@@ -173,14 +173,10 @@ setMethod("split", signature("flowFrame","manyFilterResult"),
                            names=if(is.null(prefix)) nn else
                            paste(prefix,nn,sep=""))
           if(length(flowSet) > 0 && flowSet) {
-              print(data.frame(name=nn, as.data.frame(f)[nn, ], row.names=nn))
-              out <- flowSet(out, phenoData=new("AnnotatedDataFrame",
-                                  data=data.frame(name=I(nn),
-                                  as.data.frame(f)[nn, ],
-                                  row.names=nn),
-                                  varMetadata=data.frame(labelDescription=I(
-                                                         c("Name", "Filter")),
-                                  row.names=c("name", "filter"))))
+              df <- data.frame(name=I(nn), row.names=nn)
+              vm <- data.frame(labelDescription=I("Name"), row.names="name")
+              out <- flowSet(out, phenoData=new("AnnotatedDataFrame", data=df,
+                                                varMetadata=vm))
           }
           return(if(is.list(out) && length(out)==1) out[[1]] else out)
       })
@@ -238,7 +234,10 @@ setMethod("split",
 ## filterResults, but we also need to make sure that this list is valid, i.e.,
 ## only contains filters or filterResults of the same class, using the same
 ## parameters, etc.
-## Splitting a lowSet always returns a list of flowSets.
+## Splitting a flowSet always returns a list of flowSets.
+## FIXME: How do we treat the cases in which multipleFilterResult produce
+## different numbers of populations? We can't collapse to a flowSet any more,
+## do we want lists of lists? Or should this be disallowed completely?
 
 
 ## Try and split a flowSet by whatever comes your way...
@@ -291,6 +290,8 @@ compatibleFilters <- function(f1, f2)
 
 ## Split a flowSet according to a list of filters or filterResults
 ## of equal length, We make sure that this list makes sense.
+## FIXME: Eventually, this function should be deprecated since we represent
+## filterResult for a flowSet in filterResultLists now.
 setMethod("split",signature("flowSet","list"),
           function(x, f, drop=FALSE, population=NULL,
                    prefix=NULL, ...)
@@ -306,7 +307,8 @@ setMethod("split",signature("flowSet","list"),
               stop("Second argument must be list of filterResults or filters,",
                    call.=FALSE)
           lapply(f, compatibleFilters,  f[[1]])
-          ## split everything or just some populations (if multipleFilterResult)
+          ## split everything or just some populations
+          ## (if multipleFilterResult)
           if(is.null(population)){
               if(!is.null(names(f[[1]])))
                   population <- names(f[[1]])
@@ -356,6 +358,17 @@ setMethod("split",signature("flowSet","list"),
                   "population identifier produced by splitting"
           }
           return(finalRes)
+      })
+
+## FIXME: This should replace the above list method completely at some point
+setMethod("split",signature("flowSet","filterResultList"),
+          function(x, f, drop=FALSE, population=NULL,
+                   prefix=NULL, ...)
+      {
+          n <- f@frameId
+          f <- f@.Data
+          names(f) <- n
+          split(x, f, drop=drop, population=NULL, prefix=NULL, ...)
       })
 
 ## Split by frames of flowSet according to a factor, character or numeric.
