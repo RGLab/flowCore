@@ -12,7 +12,8 @@
 # Compose two rectangle gates together into a higher dimensional cube.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("*",
-          signature(e1="rectangleGate", e2="rectangleGate"),
+          signature(e1="rectangleGate",
+                    e2="rectangleGate"),
           function(e1, e2)
       {
           if(any(parameters(e1) %in% parameters(e2)))
@@ -26,7 +27,8 @@ setMethod("*",
 ## subsetting by parameter name 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("[",
-          signature=signature("rectangleGate", "character"),
+          signature=signature(x="rectangleGate",
+                              i="character"),
           definition=function(x, i, j, ..., drop=FALSE)
       {
           if(drop)
@@ -44,7 +46,7 @@ setMethod("[",
 
 
 setMethod("[",
-          signature=signature("rectangleGate"),
+          signature=signature(x="rectangleGate"),
           definition=function(x, i, j, ..., drop=FALSE)
           stop("rectangleGates may only be subset by parameter name",
                call.=FALSE)

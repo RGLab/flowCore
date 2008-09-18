@@ -13,7 +13,8 @@
 ## Constructor for a transformFilter for a transform
 ## ---------------------------------------------------------------------------
 setMethod("%on%",
-          signature=signature(e1="filter", e2="transform"),
+          signature=signature(e1="filter",
+                              e2="transform"),
           definition=function(e1, e2)
       {
           new("transformFilter",
@@ -28,7 +29,8 @@ setMethod("%on%",
 ## Wrapper for a flowFrame. We transform on the actual raw data
 ## ---------------------------------------------------------------------------
 setMethod("%on%",
-          signature=signature(e1="transform", e2="flowFrame"),
+          signature=signature(e1="transform",
+                              e2="flowFrame"),
           definition=function(e1, e2)
       {
           exprs(e2) <- e1(exprs(e2))
@@ -41,7 +43,8 @@ setMethod("%on%",
 ## Constructor for a transformFilter from a parameterTransform
 ## ---------------------------------------------------------------------------
 setMethod("%on%",
-          signature=signature(e1="filter", e2="parameterTransform"),
+          signature=signature(e1="filter",
+                              e2="parameterTransform"),
           definition=function(e1, e2)
       {
           new("transformFilter",
@@ -57,7 +60,8 @@ setMethod("%on%",
 ## Wrapper for a flowFrame. We transform on the actual raw data
 ## ---------------------------------------------------------------------------
 setMethod("%on%",
-          signature=signature(e1="parameterTransform", e2="flowFrame"),
+          signature=signature(e1="parameterTransform",
+                              e2="flowFrame"),
           definition=function(e1, e2)
       {
           params <- if(length(e1@parameters)) colnames(e2) else e1@parameters
@@ -71,7 +75,8 @@ setMethod("%on%",
 ## Constructor for a transformFilter from a transformList
 ## ---------------------------------------------------------------------------
 setMethod("%on%",
-          signature=signature(e1="filter", e2="transformList"),
+          signature=signature(e1="filter",
+                              e2="transformList"),
           definition=function(e1,e2)
       {
           new("transformFilter",
@@ -88,7 +93,8 @@ setMethod("%on%",
 ## Eventually, all %on% methods are going to call this.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%on%",
-          signature=signature(e1="transformList", e2="flowFrame"),
+          signature=signature(e1="transformList",
+                              e2="flowFrame"),
           definition=function(e1, e2)
       {
           x <- exprs(e2)
@@ -115,5 +121,6 @@ setMethod("%on%",
 ## fsApply
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("%on%",
-          signature=signature(e1="ANY", e2="flowSet"),
+          signature=signature(e1="ANY",
+                              e2="flowSet"),
           definition=function(e1, e2) fsApply(e2, "%on%", e1=e1))

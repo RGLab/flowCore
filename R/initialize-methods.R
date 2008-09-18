@@ -13,18 +13,18 @@ flowDefaultADF <- function(exprs) {
     new("AnnotatedDataFrame", pd, vm)
 }
 
-setMethod("initialize", "flowFrame",
-          function(.Object,
-                   exprs,
-                   parameters,
-                   description=list(note="empty"), ...){
-              if (missing(parameters))
-                parameters <- flowDefaultADF(exprs)
-              
-              callNextMethod(.Object,
-                             exprs=exprs,
-                             parameters=parameters,
-                             description=description,
-                             ...)
-          })
+setMethod("initialize",
+          signature=signature(.Object="flowFrame"),
+          definition=function(.Object, exprs, parameters,
+                              description=list(note="empty"), ...)
+      {
+          if (missing(parameters))
+              parameters <- flowDefaultADF(exprs)
+          
+          callNextMethod(.Object,
+                         exprs=exprs,
+                         parameters=parameters,
+                         description=description,
+                         ...)
+      })
 

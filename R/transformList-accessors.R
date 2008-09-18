@@ -3,12 +3,17 @@
 ## They normaly contain items of class transformMap.
 ## ==========================================================================
 
+
+
+
+
+
 ## ==========================================================================
 ## colnames method: This gives us the parameter names we want to transform
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("colnames",
-          signature("transformList"),
-          function(x, do.NULL=TRUE, prefix="col")
+          signature=signature(x="transformList"),
+          definition=function(x, do.NULL=TRUE, prefix="col")
       {
           unique(sapply(x@transforms, slot, "input"))
       })
@@ -16,10 +21,11 @@ setMethod("colnames",
 
 
 ## ==========================================================================
-## concatenate two transformLists (or one list and a transformList)
+## Concatenate two transformLists (or one list and a transformList)
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("c",
-          signature("transformList"),
-          function(x, ..., recursive=FALSE)
+          signature=signature(x="transformList"),
+          definition=function(x, ..., recursive=FALSE)
       {
           ## Try to coerce everyone to a transformList first
           all.t <- lapply(list(...), as, "transformList")

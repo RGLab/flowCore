@@ -1,7 +1,7 @@
 ## ==========================================================================
 ## Most objects in flowCore have a name or identifier, most prominently
 ## filters, flowFrames and flowSets. Please note that these identifiers
-## don't necessarily have to be unique. identifier methods provide a unified
+## don't necessarily have to be unique. Identifier methods provide a unified
 ## accessor to these IDs.
 ## ==========================================================================
 
@@ -18,7 +18,7 @@
 ## always fill the "GUID" keyword.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("flowFrame"),
+          signature=signature(object="flowFrame"),
           definition=function(object)
       {
           oid <- object@description[["GUID"]]
@@ -33,7 +33,8 @@ setMethod("identifier",
       })
 
 setReplaceMethod("identifier",
-                 signature=signature("flowFrame"),
+                 signature=signature(object="flowFrame",
+                                     value="ANY"),
                  definition=function(object, value)
              {
                  object@description[["GUID"]] <- value
@@ -47,7 +48,7 @@ setReplaceMethod("identifier",
 ## compensationId slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("compensation"),
+          signature=signature(object="compensation"),
           definition=function(object) object@compensationId)
 
 
@@ -56,7 +57,7 @@ setMethod("identifier",
 ## For actionItem objects we can get the ID directly from the ID slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("actionItem"),
+          signature=signature(object="actionItem"),
           definition=function(object) object@ID)
 
 
@@ -75,7 +76,7 @@ setMethod("identifier",
 ## and use the next available method.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("filterReference"),
+          signature=signature(object="filterReference"),
           definition=function(object)
       {
           if(exists(object@name, env=object@env))
@@ -91,7 +92,7 @@ setMethod("identifier",
 ## The setter simply replaces this value.
 ## --------------------------------------------------------------------------
 setMethod("identifier",
-          signature=signature("filter"),
+          signature=signature(object="filter"),
           definition=function(object) object@filterId)
 
 setReplaceMethod("identifier",
@@ -108,7 +109,7 @@ setReplaceMethod("identifier",
 ## For filterSet objects we can get the ID directly from the name slot
 ## --------------------------------------------------------------------------
 setMethod("identifier",
-          signature=signature("filterSet"),
+          signature=signature(object="filterSet"),
           definition=function(object) object@name)
 
 
@@ -117,7 +118,7 @@ setMethod("identifier",
 ## For view objects we can get the ID directly from the ID slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("view"),
+          signature=signature(object="view"),
           definition=function(object) object@ID)
 
 
@@ -126,5 +127,5 @@ setMethod("identifier",
 ## We need this to avoid type-checking
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("identifier",
-          signature=signature("NULL"),
+          signature=signature(object="NULL"),
           definition=function(object) NULL)

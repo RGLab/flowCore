@@ -13,7 +13,8 @@
 ## By default, we just add a single list item, which is the filter
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature("filterResult", "filter"),
+          signature(result="filterResult",
+                    filter="filter"),
           definition=function(result, filter)
       {
           list(filter=filter)
@@ -25,7 +26,8 @@ setMethod("summarizeFilter",
 ## Add parameters to the filterDetails list if we have them.
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("filterResult", "parameterFilter"),
+          signature=signature(result="filterResult",
+                              filter="parameterFilter"),
           definition=function(result, filter)
       {
           ret <- callNextMethod()
@@ -40,7 +42,8 @@ setMethod("summarizeFilter",
 ## summarize that
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("filterResult", "filterReference"),
+          signature=signature(result="filterResult",
+                              filter="filterReference"),
           definition=function(result, filter)
           summarizeFilter(result, as(filter, "concreteFilter")))
 
@@ -51,7 +54,8 @@ setMethod("summarizeFilter",
 ## slot as the population item.
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("multipleFilterResult", "parameterFilter"),
+          signature=signature(result="multipleFilterResult",
+                              filter="parameterFilter"),
           definition=function(result, filter)
       {
           ret <- callNextMethod()
@@ -66,7 +70,8 @@ setMethod("summarizeFilter",
 ## from the filter name
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("logicalFilterResult", "parameterFilter"),
+          signature=signature(result="logicalFilterResult",
+                              filter="parameterFilter"),
           definition=function(result, filter)
       {
           ret <- callNextMethod()
@@ -81,7 +86,8 @@ setMethod("summarizeFilter",
 ## i.e., the boundaries of the high density regions and the fsObj obects.
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("multipleFilterResult","curv1Filter"),
+          signature=signature(result="multipleFilterResult",
+                              filter="curv1Filter"),
           definition=function(result,filter)
       {
           ret <- callNextMethod()
@@ -97,7 +103,8 @@ setMethod("summarizeFilter",
 ## i.e., the boundaries of the high density regions and the fsObj obects.
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("multipleFilterResult","curv2Filter"),
+          signature=signature(result="multipleFilterResult",
+                              filter="curv2Filter"),
           definition=function(result,filter)
       {
           ret <- callNextMethod()
@@ -114,7 +121,8 @@ setMethod("summarizeFilter",
 ## distribution
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("logicalFilterResult", "norm2Filter"),
+          signature=signature(result="logicalFilterResult",
+                              filter="norm2Filter"),
           definition=function(result, filter)
       {
           ret <- callNextMethod()
@@ -130,7 +138,8 @@ setMethod("summarizeFilter",
 ## For a subsetFilter we need to grab things from the attributes
 ## ---------------------------------------------------------------------------
 setMethod("summarizeFilter",
-          signature=signature("filterResult","subsetFilter"),
+          signature=signature(result="filterResult",
+                              filter="subsetFilter"),
           definition=function(result,filter)
       {
           ret <- callNextMethod()

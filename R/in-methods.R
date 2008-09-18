@@ -36,7 +36,8 @@ popNames <- function(x, table)
 ## filter is fully vectorized and should be quite fast.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame",table="quadGate"),
+          signature=signature(x="flowFrame",
+                              table="quadGate"),
           definition=function(x,table)
       {
           e <-  exprs(x)[,table@parameters, drop=FALSE]
@@ -59,7 +60,8 @@ setMethod("%in%",
 ## reasons.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="rectangleGate"),
+          signature=signature(x="flowFrame",
+                              table="rectangleGate"),
           definition=function(x, table)
       {       
           e <- exprs(x)[,table@parameters, drop=FALSE]
@@ -89,7 +91,8 @@ setMethod("%in%",
 ## only a single dimension we fall back to a method using 'cut'.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="polygonGate"),
+          signature=signature(x="flowFrame",
+                              table="polygonGate"),
           definition=function(x,table)
       {
           ndim <- length(table@parameters)
@@ -112,7 +115,8 @@ setMethod("%in%",
 
 ## R wrapper for C function inPolygon
 ## checks for input arguments and makes sure that the polygon is closed
-inpolygon <- function(points, vertices){
+inpolygon <- function(points, vertices)
+{
     ## check validity of arguments
     dp <- dim(points)
     if(!is.matrix(points) || dp[1]<1 | dp[2]!=2)
@@ -139,7 +143,8 @@ inpolygon <- function(points, vertices){
 ## of these axes.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="ellipsoidGate"),
+          signature=signature(x="flowFrame",
+                              table="ellipsoidGate"),
           definition=function(x,table)
       {
           e <- exprs(x)[,table@parameters, drop=FALSE] 
@@ -156,7 +161,8 @@ setMethod("%in%",
 ## the cutoff in the Mahalanobis distance.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("flowFrame", table="norm2Filter"),
+          signature=signature("flowFrame",
+                              table="norm2Filter"),
           definition=function(x,table)
       {
           if(length(table@parameters) != 2)
@@ -209,7 +215,8 @@ setMethod("%in%",
 ## gives us the factors, so no need to further evaluate
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="kmeansFilter"),
+          signature=signature(x="flowFrame",
+                              table="kmeansFilter"),
           definition=function(x,table)
       {
           ## We accomplish the actual filtering via K-means
@@ -234,7 +241,8 @@ setMethod("%in%",
 ## all data points not within one of the high density areas 
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="curv1Filter"),
+          signature=signature(x="flowFrame",
+                              table="curv1Filter"),
           definition=function(x, table)
       {
           ## We accomplish the actual filtering via Matt Wands feature
@@ -288,7 +296,8 @@ setMethod("%in%",
 ## all data points not within one of the high density areas 
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="curv2Filter"),
+          signature=signature(x="flowFrame",
+                              table="curv2Filter"),
           definition=function(x, table)
       {
           ## We accomplish the actual filtering via Matt Wands feature
@@ -345,7 +354,8 @@ setMethod("%in%",
 ## be combined with rectangleGates...
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="timeFilter"),
+          signature=signature(x="flowFrame",
+                              table="timeFilter"),
           definition=function(x,table)
       {
           ## We first bin the data and compute summary statistics
@@ -410,7 +420,8 @@ setMethod("%in%",
 ## and compute a location measure locM as well as variances varM for each bin.
 ## The result of this function will be the input to the plotting functions
 ## and the basis for the quality score.
-prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad){
+prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad)
+{
     xx <- x[, time]
     ord <- order(xx)
     xx <- xx[ord]
@@ -481,7 +492,8 @@ findTimeChannel <- function(xx)
 ## complementFilter -- Returns TRUE when the input filter is FALSE.
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="complementFilter"),
+          signature=signature(x="flowFrame",
+                              table="complementFilter"),
           definition=function(x,table)
       {
           r <-  filter(x,table@filters[[1]])
@@ -516,7 +528,8 @@ setMethod("%in%",
 ## intersectFilter -- only returns TRUE if ALL the member filters are TRUE.
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="intersectFilter"),
+          signature=signature(x="flowFrame",
+                              table="intersectFilter"),
           definition=function(x,table)
       {
           fr <- sapply(table@filters, filter, x=x)
@@ -539,7 +552,8 @@ setMethod("%in%",
 ## norm2Filter. The result is still relative to the ENTIRE flowFrame however.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="subsetFilter"),
+          signature=signature(x="flowFrame",
+                              table="subsetFilter"),
           definition=function(x, table)
       {
           y <- filter(x,table@filters[[2]])
@@ -581,7 +595,8 @@ setMethod("%in%",
 ## sampleFilter -- We randomly subsample events here.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="sampleFilter"),
+          signature=signature(x="flowFrame",
+                              table="sampleFilter"),
           definition=function(x, table)
       {
           n <- if(table@size > nrow(x)) nrow(x) else table@size
@@ -597,7 +612,8 @@ setMethod("%in%",
 ## or a factor
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="expressionFilter"),
+          signature=signature(x="flowFrame",
+                              table="expressionFilter"),
           definition=function(x, table)
       {
           data <- flowFrame2env(x)
@@ -610,7 +626,8 @@ setMethod("%in%",
 
 ## function to convert a flowframe into an environment, so we
 ## can subsequently eval() things in it.
-flowFrame2env <- function(ff){
+flowFrame2env <- function(ff)
+{
     ffdata <- exprs(ff)
     e <- new.env()
     cn <- colnames(ff)
@@ -627,7 +644,8 @@ flowFrame2env <- function(ff){
 ## transformFilter -- We transform the data prior to gating
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="transformFilter"),
+          signature=signature(x="flowFrame",
+                              table="transformFilter"),
           definition=function(x, table)
       {
           (table@transforms %on% x) %in% table@filter
@@ -640,7 +658,8 @@ setMethod("%in%",
 ## evaluate on that
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature("ANY", "filterReference"),
+          signature=signature(x="ANY",
+                              table="filterReference"),
           definition=function(x, table) x %in% as(table, "concreteFilter"))
 
 
@@ -650,7 +669,8 @@ setMethod("%in%",
 ## but only as long as we have a logicalFilterResult or randomFilterResult
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame", table="filterResult"),
+          signature=signature(x="flowFrame",
+                              table="filterResult"),
           definition=function(x, table) as(table, "logical"))
 
 
@@ -660,7 +680,8 @@ setMethod("%in%",
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="ANY", table="manyFilterResult"),
+          signature=signature(x="ANY",
+                              table="manyFilterResult"),
           definition=function(x, table)
           stop("manyFilterResult: You must specify a subpopulation."))
 
@@ -671,6 +692,7 @@ setMethod("%in%",
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="ANY", table="multipleFilterResult"),
+          signature=signature(x="ANY",
+                              table="multipleFilterResult"),
           definition=function(x, table)
           stop("multipleFilterResult: You must specify a subpopulation."))

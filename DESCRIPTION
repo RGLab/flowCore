@@ -26,7 +26,6 @@ Collate: AllGeneric.R
 	 parameters-methods.R
 	 view-accessors.R
 	 initialize-methods.R
-	 polytopeGate-accessors.R
 	 filterResult-accessors.R
 	 in-methods.R
 	 rectangleGate-accessors.R
@@ -34,8 +33,9 @@ Collate: AllGeneric.R
 	 filterResultList-accessors.R
 	 IO.R
 	 show-methods.R
+	 length-methods.R
+	 names-methods.R
 	 filterSet-accessors.R
-	 kmeansFilter-accessors.R
 	 split-methods.R
 License: The Artistic License, Version 2.0
 biocViews:  Infrastructure, Flowcytometry, CellBasedAssays

@@ -36,24 +36,6 @@ setMethod("[[",
 
 
 ## ==========================================================================
-## Essentially the number of populations (in a multipleFilterResult)
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("length",
-          signature=signature(x="filterSummary"),
-          definition=function(x) length(x@name))
-
-
-
-## ==========================================================================
-## The names of the populations (in a multipleFilterResult)
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setMethod("names",
-          signature=signature("filterSummary"),
-          definition=function(x) x@name)
-
-
-
-## ==========================================================================
 ## This allows for a list-like accessor to the slots (and more...)
 ## Valid values are 'n', 'count', 'true', 'false', 'name', 'p' and 'q'
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
