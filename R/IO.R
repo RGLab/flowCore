@@ -270,7 +270,12 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
         }
     }
     
-    
+    if(bitwidth==10){
+        warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
+                "Coulter's CPX software.\nThe data might be corrupted if produced ",
+                "by another software.", call.=FALSE)
+        bitwidth <- 16
+    }
     size <- bitwidth/8
     if (!size %in% c(1, 2, 4, 8))
         stop(paste("Don't know how to deal with bitwidth", bitwidth))
