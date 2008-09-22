@@ -440,7 +440,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     if(!missing(name.keyword))
         names(flowSet) <- sapply(flowSet,keyword,name.keyword)
     else
-        names(flowSet) <- file.names
+        names(flowSet) <- make.unique(file.names)
     flowSet = as(flowSet,"flowSet")
     if(!is.null(phenoFrame))
         phenoData(flowSet) <- phenoFrame
@@ -471,6 +471,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     guids <- unlist(fsApply(flowSet, identifier))
     if(any(guids=="anonymous") || !missing(name.keyword))
         guids <- sampleNames(flowSet)
+    if(any(duplicated(guids)))
+        guids <- make.unique(guids)
     if("GUID" %in% names(description(flowSet[[1]])))
         flowSet <- fsApply(flowSet, function(x){
             keyword(x) <- c(GUID.original=as.character(keyword(x, "GUID")))
