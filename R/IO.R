@@ -388,8 +388,13 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             ## file names and we try to guess them from the input
             fnams <- grep("name|file|filename", varLabels(phenoData),
                           ignore.case=TRUE)
-            if(length(fnams))
-                sampleNames(phenoData) <- unlist(pData(phenoData[,fnams[1]]))
+            if(length(fnams)){
+                fn <- unlist(pData(phenoData[,fnams[1]]))
+                if(any(duplicated(fn)))
+                    stop("The file names supplied as part of the ",
+                         "phenoData are not unique", call.=FALSE)
+                sampleNames(phenoData) <- fn
+            }
             phenoFrame = phenoData
         }else if(is(phenoData,"AnnotatedDataFrame")){
             phenoFrame = phenoData
