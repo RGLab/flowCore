@@ -270,7 +270,7 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
         }
     }
     
-    if(bitwidth==10 && gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cpx"){
+    if(bitwidth==10 && gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp"){
         warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
                 "Coulter's CPX software.\nThe data might be corrupted if produced ",
                 "by another software.", call.=FALSE)
