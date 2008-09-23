@@ -422,10 +422,14 @@ setMethod("%in%",
 ## and the basis for the quality score.
 prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad)
 {
-    xx <- x[, time]
+    exp <- exprs(x)
+    ## remove the margin events first
+    r <- range(x, parm)
+    sel <- exp[,parm]>r["min",] & exp[,parm]<r["max",]
+    xx <- exp[sel, time]
     ord <- order(xx)
     xx <- xx[ord]
-    yy <- x[ord, parm]
+    yy <- exp[sel, parm][ord]
     lenx <- length(xx)
     nrBins <- floor(lenx/binSize)
     ## how many events per time tick
