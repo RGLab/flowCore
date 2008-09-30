@@ -6,6 +6,7 @@
 \alias{compensation}
 \alias{compensate,flowFrame,compensation-method}
 \alias{identifier,compensation-method}
+\alias{identifier<-,compensation,character-method}
 \alias{show,compensation-method}
 
 \title{Class "compensation"}
@@ -69,8 +70,9 @@ compensation(spillover, invert = TRUE, compensationId = "default")
     \item{compensate}{\code{signature(x = "flowFrame", spillover =
 	"compensation")}: Apply the compensation on a flowFrame. }
     
-    \item{identifier}{\code{signature(object = "compensation")}:
-      Accessor method to the \code{compensationId} slot. }
+    \item{identifier, identifier<-}{\code{signature(object =
+      "compensation")}: Accessor and replacement methods for the
+      \code{compensationId} slot. }
     
     \item{show}{\code{signature(object = "compensation")}: Print details
       about the object. }

@@ -27,6 +27,10 @@
 \alias{plot,workFlow,missing-method}
 \alias{Rm,character,workFlow,character-method}
 \alias{show,workFlow-method}
+\alias{views}
+\alias{views,workFlow-method}
+\alias{actions}
+\alias{actions,workFlow-method}
 \alias{summary,workFlow-method}
 
 \title{Class "workFlow"}
@@ -165,7 +169,9 @@ workFlow(data, name = "default", env = new.env(parent = emptyenv()))
       \code{x} from the environment in the \code{workFlow}. }
 
     \item{names}{\code{signature(x = "workFlow")}: List the identifiers
-      for all \code{\link[view-class]{views}} in the \code{workFlow}. }
+      for all \code{\link[view-class]{views}} and
+      \code{\link[actionItem-class]{actionItems}} in the
+      \code{workFlow}. }
 
     \item{plot}{\code{signature(x = "workFlow", y = "missing")}: Plot
       the structure of the \code{workFlow} tree. }
@@ -179,9 +185,18 @@ workFlow(data, name = "default", env = new.env(parent = emptyenv()))
     
     \item{summary}{\code{signature(object = "workFlow")}: Summarize a
       view in the \code{workFlow}. }
+
+    \item{actions}{\code{signature(x = "workFlow")}: List the names of
+      the \code{\link[actionItem-class]{actionItems}} in the
+      \code{workFlow}. }
+
+    \item{views}{\code{signature(x = "workFlow")}: List the names of
+      only the \code{\link[view-class]{views}} in the
+      \code{workFlow}. }
       
   }
 }
+
 \details{
 
   \code{workFlow} objects organize standard flow data analysis

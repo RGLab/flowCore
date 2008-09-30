@@ -546,7 +546,10 @@ setMethod("print",
           if(indent>0)
               ind <- paste(ind, "  ", collapse="")
           cat(ind, ifelse(b, " Basic view", "View"), " '", x@name,
-              "'\n", ind, " (ID=", x@ID, ")\n", sep="")
+              "'\n", sep="")
+          ## Only add the ID when the alias is non-unique
+          if(!uniqueAlias(names(x), x))
+              cat(ind, " (ID=", x@ID, ")\n", sep="")
           if(b){
               cat(ind, " on a ", class(Data(x)), " \n", sep="")
               cat(ind, " not associated to a particular ",
@@ -576,8 +579,10 @@ setMethod("print",
               ind <- paste(rep("     ", indent), collapse="")
               if(indent>0)
                   ind <- paste(ind, "  ", collapse="")
-              cat("compensation action item '", x@name,
-                  "'\n", ind, " (ID=", x@ID, ")\n", sep="")
+              cat("compensation action item '", x@name, "'\n", sep="")
+              ## Only add the ID when the alias is non-unique
+              if(!uniqueAlias(names(x), x))
+                  cat(ind, " (ID=", x@ID, ")\n", sep="")
               if(parent)
                   cat(ind, " applied to view '", get(x@parentView)@name,
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
@@ -599,8 +604,10 @@ setMethod("print",
               ind <- paste(rep("     ", indent), collapse="")
               if(indent>0)
                   ind <- paste(ind, "  ", collapse="")
-              cat("gate action item '", x@name,
-                  "'\n", ind, " (ID=", x@ID, ")\n", sep="")
+              cat("gate action item '", x@name, "'\n", sep="")
+              ## Only add the ID when the alias is non-unique
+              if(!uniqueAlias(names(x), x))
+                  cat(ind, " (ID=", x@ID, ")\n", sep="")
               if(parent)
                   cat(ind, " applied to view '", get(x@parentView)@name,
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
@@ -622,8 +629,10 @@ setMethod("print",
               ind <- paste(rep("     ", indent), collapse="")
               if(indent>0)
                   ind <- paste(ind, "  ", collapse="")
-              cat("transform action item '", x@name,
-                  "'\n", ind, " (ID=", x@ID, ")\n", sep="")
+              cat("transform action item '", x@name, "'\n", sep="")
+              ## Only add the ID when the alias is non-unique
+              if(!uniqueAlias(names(x), x))
+                  cat(ind, " (ID=", x@ID, ")\n", sep="")
               if(parent)
                   cat(ind, " applied to view '", get(x@parentView)@name,
                       "' (ID=",identifier(x@parentView), ")\n", sep="")

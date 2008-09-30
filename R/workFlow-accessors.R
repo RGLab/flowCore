@@ -20,16 +20,23 @@ setMethod("get",
           envir="missing", mode="missing", inherits="missing"),
           definition=function(x, pos)
       {
-          if(!x %in% ls(pos@env)){
-              mess <- paste("Unable to resolve reference to object '",
-                            x, "'", sep="")
-              if(!is.na(w <- pmatch(tolower(x), 
-                                    tolower(ls(pos@env))))) 
-                  mess <- paste(mess, sprintf("Perhaps you meant %s?",
-                            sQuote(ls(pos@env)[w])), sep="\n")
-              stop(mess, call.=FALSE)
+          checkClass(x, "character", 1)
+          allNames <- c(ls(pos), ls(alias(pos)))
+          if (!x %in% allNames) {
+              mess <- paste("Unable to resolve reference to object '", 
+                            x, "'", sep = "")
+              if (!is.na(w <- pmatch(tolower(x), tolower(allNames)))) 
+                  mess <- paste(mess, sprintf("Perhaps you meant %s?", 
+                                              sQuote(ls(pos@env)[w])), sep = "\n")
+              stop(mess, call. = FALSE)
           }
-          get(x, envir=pos@env)
+          id <- if (!x %in% ls(pos)) 
+              alias(pos)[[x]]
+          else x
+          if (length(id) != 1) 
+              stop("The alias '", x, "' is not unique.\n Unable to resolve", 
+                   " to ID.", call. = FALSE)
+          get(id, envir = pos@env)
       })
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
@@ -121,7 +128,7 @@ setMethod("[",
 setMethod("$",
           signature=signature(x="workFlow",
                               name="character"),
-          definition=function(x,name) x@env[[name]])
+          definition=function(x,name) x[[name]])
           
 
 
@@ -139,10 +146,12 @@ traverseEdge <- function(g, node=nodes(g)[1], result=NULL)
                 split(children, sapply(edgeData(g, from=node,
                                                 attr="actionItem"),
                                        identifier))
+            if(length(grps)>2)
+                subGraphs[["node"]] <<- grps
             for(j in grps){
                 lg <- length(j)
                 result <- rbind(result, c(from=node,
-                                          to=j[ceiling(lc/2)]))
+                                          to=as.vector(j[ceiling(lg/2)])))
             }
             for(i in children)
                 result <- traverseEdge(g, i, result=result)
@@ -156,46 +165,141 @@ setMethod("plot",
                               y="missing"),
           definition=function(x, y, ...)
       {
-          if(!suppressWarnings(require(Rgraphviz)))
-              stop("You need to have Rgraphviz installed for this feature",
+          if (!suppressWarnings(require(Rgraphviz))) 
+              stop("You need to have Rgraphviz installed for this feature", 
                    call.=FALSE)
           tree <- get(x@tree)
-          labels <- gsub("_", "_\n", names(x))
-          labels <- paste(sapply(mget(names(x), x), names), labels,
-                          sep="\n")
-          col <- as.integer(factor(sapply(names(x),
-                                          function(y) class(get(y, x)))))
-          names(labels) <- names(col) <- names(x)
-         
-          nodeRenderInfo(tree) <- list(shape="rect", fixedSize=FALSE,
-                                       label=labels, col=col, lwd=1,
-                                       fontsize=13, textCol=col,
-                                       fill="lightgray")
+          labels <- gsub("_", "_\n", views(x))
+          cmatch <- cbind(c("view", "compensateView", "transformView", 
+                            "gateView"), c("black", "green", "blue", "red"))
+          mt <- match(sapply(views(x), function(y) class(get(y, x))), 
+                      cmatch)
+          col <- cmatch[mt, 2]
+          nn <- views(x)
+          names(labels) <- names(col) <- getAlias(nn, x)
+          nodeRenderInfo(tree) <- list(shape="rect", fixedSize=FALSE, 
+                                       label=labels, col=col, lwd=1, fontsize=16,
+                                       textCol=col, fill="lightgray")
+          subGraphs <- list()
           tmp <- traverseEdge(tree)
           nAttrs <- list()
-          if(!is.null(tmp)){
-              elabels <-  mapply(function(...)
-                                 identifier(edgeData(..., at="actionItem")[[1]]),
-                                 from=tmp[,1], to=tmp[,2],
-                                 MoreArgs=list(self=tree))
-              elabels <-  gsub("_", "_\n", elabels)
+          if (!is.null(tmp)) {
+              elabels <- id2Alias(mapply(function(...)
+                                         identifier(edgeData(..., at="actionItem")[[1]]),
+                                         from=tmp[, 1], to=tmp[, 2],
+                                         MoreArgs=list(self=tree)), x)
+              elabels <- gsub("_", "_\n", elabels)
               names(elabels) <- apply(tmp, 1, paste, collapse="~")
-              edgeRenderInfo(tree) <- list(label=elabels, lwd=2, fontsize=10,
-                                       textCol="gray", col="gray")
-              width <- rep(1.5, length(names(x)))
-              height <- rep(0.8, length(names(x)))
-              names(width) <- names(height) <- names(x)
+              edgeRenderInfo(tree) <- list(label=elabels, lwd=2, 
+                                           fontsize=10, textCol="gray", col="gray")
+              width <- rep(1.5, length(nn))
+              height <- rep(0.8, length(nn))
+              names(width) <- names(height) <- nn
               nAttrs <- list(width=width, height=height)
-              g <- Rgraqphviz:::layoutGraph(tree, layoutType="dot", nodeAttrs=nAttrs)  
-              Rgraqphviz:::renderGraph(g)
+              g <- Rgraphviz:::layoutGraph(tree, layoutType="dot", 
+                                           nodeAttrs=nAttrs)
+              Rgraphviz:::renderGraph(g)
               return(invisible(g))
-          }else{
+          }
+          else {
               plot(1, 1, type="n", ann=FALSE, axes=FALSE)
-              text(1, 1, sprintf("baseview %s", identifier(x[[names(x)[1]]])))
+              text(1, 1, sprintf("baseview %s", identifier(x[[nn[1]]])))
               return(invisible(tree))
           }
-          
-         
       })
 
 
+
+## nodePositions <- function(wf)
+## {
+##     ## some global variables to be set by the recursive function
+##     tree <- get(wf@tree)
+##     yoffset <- 1
+##     xoffset <- 1
+##     width <- 0
+##     depth <- 0
+##     nodes <- matrix(ncol=5, nrow=length(nodes(tree)),
+##                     dimnames=list(nodes(tree),
+##                                   c("x", "y", "width", "shift", "mids")))
+##     ## return all children of a node
+##     children <- function(node, tree) unlist(adj(tree, node))
+##     ## Called a node is visited the first time in an Euler Tour
+##     firstVisit <- function(node)
+##     {
+##         nodes[node, "x"] <<- width
+##         nodes[node, "y"] <<- depth
+##         depth <<- depth+yoffset
+##     }
+##     ## Called a node is visited the last time in an Euler Tour
+##     lastVisit <- function(node)
+##     {
+##         ##textWidth <- max(strwidth(id2Alias(node, wf)), xoffset)
+##         textWidth <- xoffset
+##         shift <- 0
+##         x <- nodes[node, "x"]
+##         boxWidth <- width-x
+##         if(textWidth > boxWidth){
+##             delta <- textWidth-boxWidth
+##             boxWidth <- textWidth
+##             width <<- width+delta
+##             shift <- delta/2
+##         } 
+##         nodes[node, "width"] <<- boxWidth
+##         nodes[node, "mids"] <<- as.integer(x+(boxWidth/2))
+##         nodes[node, "shift"] <<- shift
+##         depth <<- depth-yoffset
+##     }
+##     ## Called if the node is a leaf node
+##     externalVisit <- function(node)
+##     {
+##         ## textWidth <- max(strwidth(id2Alias(node, wf)), xoffset)
+##         textWidth <- xoffset
+##         nodes[node, "x"] <<- width
+##         nodes[node, "y"] <<- depth
+##         nodes[node, "width"] <<- textWidth
+##         nodes[node, "mids"] <<- as.integer(width+(textWidth/2))
+##         width <<- width+textWidth
+##         nodes[node, "shift"] <<- 0
+##     }
+##     ## recursive function to calculate the bounding box for each node
+##     boundBox <- function(g, node=nodes(g)[1])
+##     {
+##         child <- children(node, g)
+##         lc <- length(child)
+##         if(!lc) externalVisit(node)
+##         firstVisit(node)
+##         for(i in child)
+##             boundBox(g, i)
+##         lastVisit(node)
+##     }
+##     boundBox(tree)
+##     nodes[, "x"] <- nodes[, "x"] - nodes[, "shift"]
+##     nodes[, "shift"] <- nodes[, "x"] + nodes[, "width"]
+##     nodes[, "y"] <- abs(nodes[, "y"] - max(nodes[, "y"]))
+##     colnames(nodes)[c(1,4)] <- c("x1", "x2")
+##     rownames(nodes) <- id2Alias(rownames(nodes), wf)
+##     return(nodes)
+## }
+
+
+## nodes <- nodePositions(wf)
+## plot(1,1, xlim=c(0, max(apply(nodes[, c(1,3)], 1, sum))),
+##      ylim=c(0, max(nodes[,"y"])+1), type="n", axes=FALSE, ann=FALSE)
+## #plot(1,1, xlim=0:1, ylim=0:1, type="n", axes=FALSE, ann=FALSE)
+## par(mar=rep(0.5,4))
+## #rect(nodes[,"x1"], nodes[,"y"],
+## #     nodes[,"x2"], nodes[,"y"]+1,
+## #     col=seq_len(nrow(nodes))+1)
+## #rect(nodes[,"x"], nodes[,"y"],
+## #     nodes[,"x"]+nodes[,"width"], nodes[,"y"]+1,
+## #     col=seq_len(nrow(nodes)))
+## cex <- 0.5
+## xmids <- nodes[,"x1"]+(nodes[,"width"])/2
+## ymids <- nodes[,"y"]+0.5
+## #text(xmids, nodes[,"y"]+0.5, rownames(nodes), cex=cex)
+## sw <- strwidth(rownames(nodes), cex=cex)*1.2
+## sh <- strheight(rownames(nodes), cex=cex)*5
+## #rect(xmids-(sw/2), ymids+(sh/2),
+## #     xmids+(sw/2), ymids-(sh/2))
+## points(xmids, ymids, col="#00000090", pch=20, cex=2)
+## abline(v=0:100, col="#00000050")

@@ -66,8 +66,9 @@
 
 \usage{
 
-gateActionItem(ID = paste("gateActionRef", guid(), sep = "_"), name = "default", 
-    parentView, gate, filterResult, workflow)
+gateActionItem(ID = paste("gateActionRef", guid(), sep = "_"), name =
+paste("action", identifier(get(gate)), sep = "_"), parentView, gate,
+filterResult, workflow)
 
 }
 

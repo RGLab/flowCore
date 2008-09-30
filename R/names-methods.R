@@ -123,17 +123,61 @@ setMethod("names",
 
 
 ## ==========================================================================
-## The names of only the views in the workFlow object. Note that this method
-## also affects completion for workFlow objects, as only the view are
-## available for that. 
+## The names of only the views and actionItems in the workFlow object. Note
+## that this method also affects completion for workFlow objects, as only
+## view and actionItem references are being completed. Use 'views' or
+## 'action', respectively to only get on of the type. 'ls' will give you
+## all the symbols from the environment.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Find alias for an identifier
+id2Alias <- function(id, workflow)
+{
+    checkClass(id, "character")
+    checkClass(workflow, "workFlow")
+    workflow <- alias(workflow)
+    fun <- function(y){
+        ind <- names(which(sapply(as.list(workflow), function(x)
+                                  y %in% x)==TRUE))
+        if(length(ind)==1 && length(workflow[[ind]])==1)
+            ind
+        else
+            y
+    }
+    as.vector(sapply(id, fun))
+}
+
 setMethod("names",
           signature=signature(x="workFlow"),
           definition=function(x)
       {
           nam <- nodes(get(x@tree))
-          names(nam) <- sapply(nam, function(y, wf)
-                               identifier(action(get(y, x))), x)
-          return(nam)
+          acts <- unique(unlist(sapply(nam, function(y)
+                                       identifier(action(get(y, x))))))
+          return(id2Alias(c(nam, acts), x))
           
+      })
+
+
+
+## ==========================================================================
+## The names of only the views in the workFlow object
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("views",
+          signature=signature(x="workFlow"),
+          definition=function(x)
+          return(id2Alias(nodes(get(x@tree)), x)))    
+
+
+
+## ==========================================================================
+## The names of only the actioItems in the workFlow object
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("actions",
+          signature=signature(x="workFlow"),
+          definition=function(x)
+      {
+          nam <- nodes(get(x@tree))
+          acts <- unique(unlist(sapply(nam, function(y)
+                                       identifier(action(get(y, x))))))
+          return(id2Alias(acts, x))
       })
