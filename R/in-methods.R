@@ -370,7 +370,7 @@ setMethod("%in%",
           bs <- table@binSize
           if(!length(bs))
               bs <- min(max(1, floor(nrow(x)/100)), 500)
-          binned <- prepareSet(ex, param, time, bs,
+          binned <- prepareSet(x, param, time, bs,
                                locM=median, varM=mad)         
           ## Standardize to compute meaningful scale-free scores.
           ## This is done by substracing the mean values of each

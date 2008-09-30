@@ -6,6 +6,8 @@
 \alias{view}
 \alias{action,view-method}
 \alias{action}
+\alias{alias}
+\alias{alias,view-method}
 \alias{Data,view-method}
 \alias{Data}
 \alias{names,view-method}
@@ -68,6 +70,8 @@ Data(object)
 
 action(object)
 
+alias(object, \dots)
+
 }
 
 \arguments{
@@ -85,6 +89,8 @@ action(object)
   
   \item{data, action}{ References to the data and
     \code{\link[actionItem-class]{actionItem}} objects, respectively. }
+
+  \item{\dots}{ Further arguments that get passed to the generic. }
 
 }
 
@@ -111,6 +117,9 @@ action(object)
     
     \item{names}{\code{signature(x = "view")}: Accessor to the
       \code{name} slot. }
+
+    \item{alias}{\code{signature(object = "view")}: Get the alias table
+      from a \code{view}. }
     
     \item{parent}{\code{signature(object = "view")}: The parent view,
       i.e., the view based on which the current view was created. }

@@ -257,3 +257,27 @@ setGeneric("Rm", function(symbol, envir, subSymbol, ...)
 ## ---------------------------------------------------------------------------
 setGeneric("Data", function(object)
            standardGeneric("Data"))
+
+
+
+## ===========================================================================
+## Generic to access the alias table of a workFlow
+## ---------------------------------------------------------------------------
+setGeneric("alias", function(object, ...)
+           standardGeneric("alias"))
+
+
+
+## ===========================================================================
+## Generic to return all views of the workFlow object
+## ---------------------------------------------------------------------------
+setGeneric("views", function(x, ...)
+           standardGeneric("views"))
+
+
+
+## ===========================================================================
+## Generic to return all actionItems of the workFlow object
+## ---------------------------------------------------------------------------
+setGeneric("actions", function(x, ...)
+           standardGeneric("actions"))

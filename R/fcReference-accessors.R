@@ -21,13 +21,14 @@ setMethod("Rm",
           definition=function(symbol, subSymbol, rmRef=TRUE)
       {
           rm(list=identifier(symbol), envir=symbol@env)
+          rmAlias(identifier(symbol), symbol)
           ## This doesn't work because the name space is messing up the
           ## evaluation environment tree.
           ## rm(list=subSymbol, inherits=TRUE)
           ## Instead we are rather bold and remove the reference from the
           ## global env if it exists.
-          if(subSymbol %in% ls(globalenv(), all.names=TRUE) &&
-             is(get(subSymbol), globalenv()))
+          if(rmRef && subSymbol %in% ls(globalenv(), all.names=TRUE) &&
+             is(get(subSymbol, globalenv()), "fcReference"))
               rm(list=subSymbol, envir=globalenv())
       })
 

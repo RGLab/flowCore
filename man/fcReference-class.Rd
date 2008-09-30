@@ -7,6 +7,8 @@
 \alias{fcStructureReference-class}
 \alias{fcTreeReference-class}
 \alias{fcTreeReference}
+\alias{fcAliasReference-class}
+\alias{fcAliasReference}
 \alias{fcDataReference-class}
 \alias{fcDataReference}
 \alias{fcActionReference-class}
@@ -58,6 +60,12 @@
   Class \code{"\linkS4class{fcReference}"}, by class
   "fcStructureReference", distance 2.
 
+  \code{fcAliasReference}:
+  
+  Class \code{"\linkS4class{fcStructureReference}"}, directly.
+  Class \code{"\linkS4class{fcReference}"}, by class
+  "fcStructureReference", distance 2.
+
   \code{fcDataReference}:
   
   Class \code{"\linkS4class{fcReference}"}, directly.
@@ -100,6 +108,7 @@
   Class \code{"\linkS4class{fcCompensateReference}"}, directly.
   Class \code{"\linkS4class{fcTransformReference}"}, directly.
   Class \code{"\linkS4class{fcTreeReference}"}, directly.
+  Class \code{"\linkS4class{fcAliasReference}"}, directly.
   Class \code{"\linkS4class{fcReference}"}, by class "fcDataReference",
   distance2.
   Class \code{"\linkS4class{fcStructureReference}"}, by class
@@ -159,6 +168,9 @@ fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
                         env=new.env(parent=emptyenv()))
 
 fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+
+fcAliasReference <- function(ID=paste("aliasRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 
 fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),

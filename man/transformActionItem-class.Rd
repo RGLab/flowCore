@@ -61,8 +61,8 @@ Class \code{"\linkS4class{actionItem}"}, directly.
 
 \usage{
 
-transformActionItem(ID = paste("transActionRef", guid(), sep = "_"), name = "default", 
-    parentView, transform, workflow)
+transformActionItem(ID = paste("transActionRef", guid(), sep = "_"),
+    name = "no scheme yet", parentView, transform, workflow)
 
 }
 

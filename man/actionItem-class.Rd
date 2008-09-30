@@ -5,6 +5,7 @@
 \alias{actionItem-class}
 \alias{identifier,actionItem-method}
 \alias{names,actionItem-method}
+\alias{alias,actionItem-method}
 \alias{parent,actionItem-method}
 \alias{Rm,actionItem,workFlow,character-method}
 
@@ -51,6 +52,9 @@ cytometry workflow. }
     \item{parent}{\code{signature(object = "actionItem")}: Accessor for
       the \code{parentView} slot. Note that the reference is resolved,
       i.e., the \code{\link{view}} object is returned. }
+    
+    \item{alias}{\code{signature(object = "actionItem")}: Get the alias table
+      from a \code{actionItem}. }
     
     \item{Rm}{\code{signature(symbol = "actionItem", envir = "workFlow",
 	subSymbol = "character")}:  Remove a \code{actionItem} from a

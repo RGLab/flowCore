@@ -13,7 +13,7 @@
 ##  Some helpers
 ## ---------------------------------------------------------------------------
 ## Check for the class of object x and its length and cast error if wrong
-checkClass <- function(x, class, length=NULL)
+checkClass <- function(x, class, length=NULL, verbose=FALSE)
 {
     msg <- paste("'", substitute(x), "' must be object of class '",
                  class, "'", sep="")
@@ -22,7 +22,7 @@ checkClass <- function(x, class, length=NULL)
         fail <- TRUE
         msg <- paste(msg, "of length", length)
     }
-    if(fail) stop(msg, call.=FALSE) else invisible(NULL)     
+    if(fail) stop(msg, call.=verbose) else invisible(NULL)     
 }
 
 
@@ -1256,7 +1256,10 @@ compensation <- function(spillover, invert=TRUE, compensationId="default")
 ## of different reference classes to be used in the subsequent class
 ## definition. Objects of class "fcNullReference" allow to assign
 ## empty (hence unresolvable) references without breaking dispatch
-## or class validity.
+## or class validity. The taks of creating the correct reference type is
+## handled by the workFlow-specific assign methods, however these only call
+## the appropriate fcReference constructors, so those need to make sure that
+## all necesary side-effects take place.
 ## ---------------------------------------------------------------------------
 ## Create quasi-random guids. This is only based on the time stamp,
 ## not on MAC address or similar.
@@ -1270,13 +1273,88 @@ setClass("fcReference",
                              env=new.env(parent=emptyenv()))
          )
 
+## Set a value in the alias table of the workFlow 
+setAlias <- function(alias, value, workflow)
+{
+    checkClass(alias, "character", 1)
+    checkClass(value, "character", 1)
+    checkClass(workflow, "workFlow")
+    workflow <- alias(workflow)
+    workflow[[alias]] <- unique(c(workflow[[alias]], value))
+    return(invisible(NULL))
+}
+
+## Get a value from the alias table of the workFlow 
+getAlias <- function(alias, workflow)
+{
+    checkClass(alias, "character")
+    checkClass(workflow, "workFlow")
+    fun <- function(x)
+        if(x %in% ls(workflow)) x else alias(workflow)[[x]]
+    return(as.vector(sapply(alias, fun)))
+}
+
+## remove alias for an identifier
+rmAlias <- function(value, workflow)
+{
+   checkClass(value, "character", 1)
+   checkClass(workflow, "workFlow")
+   workflow <- alias(workflow)
+   ind <- names(which(sapply(as.list(workflow), function(x)
+                             value %in% x)==TRUE))
+   for(i in ind){
+       tmp <- workflow[[i]]
+       tmp <- setdiff(tmp, value)
+       if(!length(tmp))
+           rm(list=i, envir=workflow)
+       else
+           workflow[[i]] <- tmp
+   }
+   return(invisible(NULL))
+}
+
+## Figure out which reference type to create, based on the class of 'value'
+refType <- function(value)
+{
+    if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
+    else if(is(value, "filterResult")) "fcFilterResultReference"
+    else if(is(value, "filter")) "fcFilterReference"
+    else if(is(value, "actionItem")) "fcActionReference"
+    else if(is(value, "view")) "fcViewReference"
+    else if(is(value, "compensation")) "fcCompensateReference"
+    else if(is(value, "transformList")) "fcTransformReference"
+    else if(is(value, "graphNEL")) "fcTreeReference"
+    else if(is(value, "environment")) "fcAliasReference"
+    else if(is.null(value)) "fcNullReference"
+    else "fcReference"
+}
+
+## Create useful identifiers for references
+refName <- function(value)
+{
+    prefix <- if(is(value, "flowFrame") || is(value, "flowSet")) "dataRef"
+    else if(is(value, "filterResult")) "fresRef"
+    else if(is(value, "filter")) "filterRef"
+    else if(is(value, "actionItem")) "actionRef"
+    else if(is(value, "view")) "viewRef"
+    else if(is(value, "compensation")) "compRef"
+    else if(is(value, "transformList")) "transRef"
+    else if(is(value, "graphNEL")) "treeRef"
+    else if(is(value, "environment")) "aliasRef"
+    else if(is.null(value)) "nullRef"
+    else "genericRef"
+    return(paste(prefix, guid(), sep="_"))
+}
+
 ## constructor
 fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
                         env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
     checkClass(env, "environment")
-    new("fcReference", ID=ID, env=env)
+    ref <- new("fcReference", ID=ID, env=env)
+    setAlias(substitute(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1308,8 +1386,31 @@ fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcTreeReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcTreeReference", ID=ID, env=env@env)
+    setAlias("tree", identifier(ref), env)
+    return(ref)
+}
+
+
+
+## ===========================================================================
+## fcAliasReference
+## ---------------------------------------------------------------------------
+## A reference to an environment object representing the alias table
+## ---------------------------------------------------------------------------
+setClass("fcAliasReference",
+         contains="fcStructureReference",
+         prototype=prototype(ID=paste("aliasRef", guid(), sep="_"))
+         )
+
+## constructor
+fcAliasReference <- function(ID=paste("aliasRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    new("fcAliasReference", ID=ID, env=env@env)
 }
 
 
@@ -1329,8 +1430,10 @@ fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcDataReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcDataReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1351,8 +1454,10 @@ fcActionReference <- function(ID=paste("actionRef", guid(), sep="_"),
                               env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcActionReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcActionReference", ID=ID, env=env@env)
+    setAlias(names(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1373,8 +1478,10 @@ fcViewReference <- function(ID=paste("viewRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcViewReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcViewReference", ID=ID, env=env@env)
+    setAlias(names(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1397,8 +1504,10 @@ fcFilterResultReference <- function(ID=paste("fresRef",
                                     env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcFilterResultReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcFilterResultReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1420,8 +1529,10 @@ fcFilterReference <- function(ID=paste("filterRef",
                               env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcFilterReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcFilterReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1443,8 +1554,10 @@ fcCompensateReference <- function(ID=paste("compRef",
                                   env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcCompensateReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcCompensateReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1468,8 +1581,10 @@ fcTransformReference <- function(ID=paste("transRef",
                                  env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    new("fcTransformReference", ID=ID, env=env)
+    checkClass(env, "workFlow")
+    ref <- new("fcTransformReference", ID=ID, env=env@env)
+    setAlias("no scheme yet", identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1487,7 +1602,8 @@ setClass("fcNullReference",
                     "fcFilterReference",
                     "fcCompensateReference",
                     "fcTransformReference",
-                    "fcTreeReference"),
+                    "fcTreeReference",
+                    "fcAliasReference"),
          prototype=prototype(ID=paste("nullRef", guid(), sep="_"))
          )
 
@@ -1506,6 +1622,11 @@ fcNullReference <- function(...) new("fcNullReference")
 ## actionItems, stored as references in the edgeData slot. The tree itself
 ## is also stored in the environment, which allows for reference-based
 ## updating without the necessaty of an assignment method or the like.
+## In addition to the tree we store an alias table in the environment.
+## Internally, all objects are referenced by their guid, but we allow for
+## more human readble aliases (usually the "name" slot) which can ge used
+## to identify objects if they are unique. Whenever possible we try to plot
+## these readable names and those are also available for completion.
 ## Note that the environment in the prototype gets created once and all
 ## objects created via "new" without explicitely defining "env" will
 ## essentially share a common environment. This is fixed in the constructor
@@ -1513,23 +1634,35 @@ fcNullReference <- function(...) new("fcNullReference")
 setClass("workFlow",
          representation=representation(name="character",
                                        tree="fcTreeReference",
+                                       alias="fcAliasReference",
                                        env="environment"),
          prototype=prototype(name="default",
                              tree=fcNullReference(),
+                             alias=fcNullReference(),
                              env=new.env(parent=emptyenv())))
 
 ## The constructor takes a flow data object (flowFrame or flowSet) and
-## makes a copy in the evaluation environment.
+## makes a copy in the evaluation environment. It also sets up the views
+## graph and the alias table in the environment
 workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 {
     if(!is(data, "flowFrame") && !is(data, "flowSet"))
         stop("'data' must be a flow data structure (flowFrame or flowSet)",
              call.=FALSE)
+    ## some sanity checks up front
     checkClass(name, "character", 1)
     checkClass(env, "environment")
     wf <-  new("workFlow", name=name, env=env)
+    ## set up the alias table as an environment in the workFlow
+    aliasTable <- new.env(hash=TRUE, parent=emptyenv())
+    id <- refName(aliasTable)
+    assign("alias", id, aliasTable)
+    assign(id, aliasTable, wf@env)
+    wf@alias <- new("fcAliasReference", env=wf@env, ID=id)
+    ## Assign the data to the workFlow and create a base view
     dataRef <- assign(value=data, envir=wf)
-    viewRef <- view(workflow=wf, name="base view", data=dataRef) 
+    viewRef <- view(workflow=wf, name="base view", data=dataRef)
+    ## Set up the views tree
     tree <- new("graphNEL", nodes=identifier(viewRef), edgemode="directed")
     wf@tree <- assign(value=tree, envir=wf)
     return(wf)
@@ -1542,20 +1675,7 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 ## to 'value' for further use.
 ## Note that creation of a NULL reference does not result in any assignment
 ## to the environment, but still a fcNullReference object is returned.
-## Figure out which reference type to create, based on the class of 'value'
-refType <- function(value)
-{
-    if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
-    else if(is(value, "filterResult")) "fcFilterResultReference"
-    else if(is(value, "filter")) "fcFilterReference"
-    else if(is(value, "actionItem")) "fcActionReference"
-    else if(is(value, "view")) "fcViewReference"
-    else if(is(value, "compensation")) "fcCompensateReference"
-    else if(is(value, "transformList")) "fcTransformReference"
-    else if(is(value, "graphNEL")) "fcTreeReference"
-    else if(is.null(value)) "fcNullReference"
-    else "fcReference"
-}
+
 
 ## Assign any object to a workFlow object, the symbol (as guid) is created
 ## automatically
@@ -1568,9 +1688,10 @@ setMethod("assign",
                               immediate="missing"),
           definition=function(value, pos)
       {
-          a <- do.call(refType(value), list(env=pos@env))
-          if(!isNull(a))
-              assign(identifier(a), value, envir=pos@env)
+          id <- refName(value)
+          if(!is.null(value))
+              assign(id, value, envir=pos)
+          a <- do.call(refType(value), list(ID=id, env=pos))
           return(a)
       })
 
@@ -1594,15 +1715,15 @@ setMethod("assign",
                               immediate="missing"),
           definition=function(x, value, pos)
       {
-          a <- do.call(refType(value), list(ID=x, env=pos@env))
-          if(!isNull(a)){
+          rmAlias(x, pos)
+          if(!is.null(value)){
               if(x %in% ls(pos))
                   warning("Overwriting object in the environment.", call.=FALSE)
-              assign(identifier(a), value, envir=pos@env)
+              assign(x, value, envir=pos@env)
           }else{
               rm(list=x, envir=pos@env)
           }
-          return(a)
+          do.call(refType(value), list(ID=x, env=pos))     
       })
 
 ## Assign via existing reference.
@@ -1615,11 +1736,13 @@ setMethod("assign",
                               immediate="missing"),
           definition=function(x, value, pos)
       {
-          Rm(x, rmRef=FALSE)
-          a <- do.call(refType(value), list(ID=identifier(x), env=pos@env))
-          if(!isNull(a))
-              assign(identifier(a), value, envir=pos@env)
-          return(a)
+          rmAlias(identifier(x), pos)
+          if(is.null(value)){
+              Rm(x, rmRef=FALSE)
+          }else{
+              assign(identifier(x), value, envir=pos@env)  
+          }
+          do.call(refType(value), list(ID=identifier(x), env=pos))
       })
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
@@ -1649,10 +1772,12 @@ setClass("actionItem",
                                        ID="character",
                                        name="character",
                                        parentView="fcViewReference",
+                                       alias="fcAliasReference",
                                        env="environment"),
          prototype=prototype(ID=paste("actionRef", guid(), sep="_"),
                              name="",
                              parentView=fcNullReference(),
+                             alias=fcNullReference(),
                              env=new.env(parent=emptyenv())))
 
 
@@ -1675,8 +1800,8 @@ setClass("gateActionItem",
 ## it to the evaluation ennvironment in 'workflow'. The return value is a
 ## reference to that object.
 gateActionItem <- function(ID=paste("gateActionRef", guid(), sep="_"),
-                           name="default", parentView, gate, filterResult,
-                           workflow)
+                           name=paste("action", identifier(get(gate)), sep="_"),
+                           parentView, gate, filterResult, workflow)
 {
     checkClass(workflow, "workFlow")
     checkClass(ID, "character", 1)
@@ -1687,7 +1812,7 @@ gateActionItem <- function(ID=paste("gateActionRef", guid(), sep="_"),
         filterResult <-fcNullReference()
     action <- new("gateActionItem", ID=ID, name=name, gate=gate,
                   parentView=parentView, env=workflow@env,
-                  filterResult=filterResult)
+                  filterResult=filterResult, alias=workflow@alias)
     return(assign(x=ID, value=action, envir=workflow))
 }
 
@@ -1708,7 +1833,7 @@ setClass("transformActionItem",
 ## assigns it to the evaluation ennvironment in 'workflow'. The return
 ## value is a reference to that object.
 transformActionItem <- function(ID=paste("transActionRef", guid(), sep="_"),
-                                name="default", parentView, transform,
+                                name="no scheme yet", parentView, transform,
                                 workflow)
 {
     checkClass(workflow, "workFlow")
@@ -1718,7 +1843,7 @@ transformActionItem <- function(ID=paste("transActionRef", guid(), sep="_"),
     checkClass(parentView, "fcViewReference")
     action <- new("transformActionItem", ID=ID, name=name,
                   transform=transform, parentView=parentView,
-                  env=workflow@env)
+                  env=workflow@env, alias=workflow@alias)
     return(assign(x=ID, value=action, envir=workflow))
 }
 
@@ -1737,7 +1862,9 @@ setClass("compensateActionItem",
 ## assigns it to the evaluation ennvironment in 'workflow'. The return
 ## value is a reference to that object.
 compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
-                                 name="default", parentView, compensate,
+                                 name=paste("action", identifier(get(compensate)),
+                                            sep="_"),
+                                 parentView, compensate,
                                  workflow)
 {
     checkClass(workflow, "workFlow")
@@ -1747,7 +1874,7 @@ compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
     checkClass(parentView, "fcViewReference")
     action <- new("compensateActionItem", ID=ID, name=name,
                   compensate=compensate, parentView=parentView,
-                  env=workflow@env)
+                  env=workflow@env, alias=workflow@alias)
     return(assign(x=ID, value=action, envir=workflow))
 }
 
@@ -1770,10 +1897,12 @@ setClass("view",
                                        name="character",
                                        action="fcActionReference",
                                        env="environment",
+                                       alias="fcAliasReference",
                                        data="fcDataReference"),
          prototype=prototype(ID=paste("view", guid(), sep="_"),
                              name="",
                              action=fcNullReference(),
+                             alias=fcNullReference(),
                              data=fcNullReference(),
                              env=new.env(parent=emptyenv())))
 
@@ -1791,7 +1920,7 @@ view <- function(workflow, ID=paste("viewRef", guid(), sep="_"),
     if(missing(action))
         action <- fcNullReference()
     bv <-  new("view", ID=ID, name=name, env=workflow@env,
-               action=action, data=data)
+               action=action, data=data, alias=workflow@alias)
     ref <- assign(identifier(bv), bv, workflow)
     return(ref)
 }
@@ -1836,7 +1965,8 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
         data <- fcNullReference()
     bv <- new("gateView", ID=ID, name=name, env=workflow@env,
               action=action, data=data, indices=indices,
-              filterResult=filterResult, frEntry=frEntry)
+              filterResult=filterResult, frEntry=frEntry,
+              alias=workflow@alias)
     ref <- assign(identifier(bv), bv, workflow)
     return(ref)
 }
@@ -1873,11 +2003,11 @@ setMethod("add",
               gateRef <- assign(value=action, envir=wf)
               ## get the parentView. If not explicitely specified, use the
               ## root node
-              pid <- if(is.null(parent)) names(wf)[[1]] else parent
-              pview <- fcViewReference(ID=pid, env=wf@env)
+              pid <- if(is.null(parent)) views(wf)[[1]] else parent
+              pid <- getAlias(pid, wf)
+              pview <- fcViewReference(ID=pid, env=wf)
               ## create and assign a new gateActionItem
-              actionRef <- gateActionItem(name=identifier(action),
-                                          parentView=pview, gate=gateRef,
+              actionRef <- gateActionItem(parentView=pview, gate=gateRef,
                                           workflow=wf)
               ## check if the previous filter has been applied for subsetting
               applyParentFilter(pview, wf)
@@ -1891,7 +2021,6 @@ setMethod("add",
               fresRef <-  assign(value=fres, envir=wf)
               gAction <- get(actionRef)
               gAction@filterResult <- fresRef
-              assign(actionRef, gAction, wf)
               ## we need to distinguish between logicalFilterResults and
               ## multipleFilterResults
               nodes <- NULL
@@ -1918,6 +2047,13 @@ setMethod("add",
                       nodes <- c(nodes, identifier(vid))
                   }
               }
+              ## update the filter and filterResult IDs
+              identifier(action) <- paste("filter", identifier(action),
+                                          sep="_")
+              identifier(fres) <- paste("fres", identifier(fres),
+                                        sep="_")
+              assign(gateRef, action, wf)
+              assign(fresRef, fres, wf)
               ## add new nodes and edges to the workflow tree
               tree <- get(wf@tree)
               tree <- addNode(nodes, tree)
@@ -1963,7 +2099,7 @@ transformView <- function(workflow, ID=paste("transViewRef", guid(), sep="_"),
     checkClass(action, "fcActionReference")
     checkClass(data, "fcDataReference")
     bv <- new("transformView", ID=ID, name=name, env=workflow@env,
-              action=action, data=data)
+              action=action, data=data, alias=workflow@alias)
     ref <- assign(identifier(bv), bv, workflow)
     return(ref)
 }
@@ -1980,15 +2116,15 @@ setMethod("add",
               transRef <- assign(value=action, envir=wf)
               ## get the parentView. If not explicitely specified, use the
               ## root node
-              pid <- if(is.null(parent)) names(wf)[[1]] else parent
-              pview <- fcViewReference(ID=pid, env=wf@env)
+              pid <- if(is.null(parent)) views(wf)[[1]] else parent
+              pid <- getAlias(pid, wf)
+              pview <- fcViewReference(ID=pid, env=wf)
               tree <- get(wf@tree)
               if(length(unlist(adj(tree, pid))))
                   warning("The selected parent view is not a leaf node.\n",
                           "Don't know how to update yet.", call.=FALSE)
               ## create and assign a new transformActionItem
-              actionRef <- transformActionItem(name="no scheme yet",
-                                               parentView=pview,
+              actionRef <- transformActionItem(parentView=pview,
                                                transform=transRef,
                                                workflow=wf)
               ## check if the previous filter has been applied for subsetting
@@ -2037,7 +2173,7 @@ compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
     checkClass(action, "fcActionReference")
     checkClass(data, "fcDataReference")
     bv <- new("compensateView", ID=ID, name=name, env=workflow@env,
-              action=action, data=data)
+              action=action, data=data, alias=workflow@alias)
     ref <- assign(identifier(bv), bv, workflow)
     return(ref)
 }
@@ -2051,36 +2187,40 @@ setMethod("add",
       {
           ## assign the compensation to the evaluation environment and
           ## create a reference to it
-              compRef <- assign(value=action, envir=wf)
-              ## get the parentView. If not explicitely specified, use the
-              ## root node
-              pid <- if(is.null(parent)) names(wf)[[1]] else parent
-              pview <- fcViewReference(ID=pid, env=wf@env)
-              if(pid != names(wf)[1])
-                  warning("The selected parent view is not a root node.\n",
+          compRef <- assign(value=action, envir=wf)
+          ## get the parentView. If not explicitely specified, use the
+          ## root node
+          pid <- if(is.null(parent)) views(wf)[[1]] else parent
+          pid <- getAlias(pid, wf)
+          if(pid != getAlias(views(wf), wf)[1])
+              warning("The selected parent view is not a root node.\n",
                           "Are you sure this is correct?", call.=FALSE)
-              ## create and assign a new ActionItem
-              actionRef <- compensateActionItem(name=identifier(action),
-                                                parentView=pview,
-                                                compensate=compRef,
-                                                workflow=wf)
-              ## check if the previous filter has been applied for subsetting
-              applyParentFilter(pview, wf)
-              ## now transform the data and assign the result
-              tData <- compensate(Data(get(pview)), action)
-              dataRef <- assign(value=tData, envir=wf)
-              vid <- compensateView(name=identifier(action), workflow=wf,
+          pview <- fcViewReference(ID=pid, env=wf)
+         
+          ## create and assign a new ActionItem
+          actionRef <- compensateActionItem(parentView=pview,
+                                            compensate=compRef,
+                                            workflow=wf)      
+          ## check if the previous filter has been applied for subsetting
+          applyParentFilter(pview, wf)
+          ## now transform the data and assign the result
+          tData <- compensate(Data(get(pview)), action)
+          dataRef <- assign(value=tData, envir=wf)
+          vid <- compensateView(name=identifier(action), workflow=wf,
                                    action=actionRef, data=dataRef)
-              
-              ## add new nodes and edges to the workflow tree
-              nid <- identifier(vid)
-              tree <- get(wf@tree)
-              tree <- addNode(nid, tree)
+          ## update the identifier of the compensation object
+          identifier(action) <- paste("comp", identifier(action),
+                                      sep="_")
+          assign(compRef, value=action, envir=wf) 
+          ## add new nodes and edges to the workflow tree
+          nid <- identifier(vid)
+          tree <- get(wf@tree)
+          tree <- addNode(nid, tree)
               tree <- addEdge(pid, identifier(vid), tree)
-              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-              edgeData(tree, pid , nid, "actionItem") <- actionRef
-              assign(x=wf@tree, value=tree, envir=wf)
-              return(wf)   
+          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+          edgeData(tree, pid , nid, "actionItem") <- actionRef
+          assign(x=wf@tree, value=tree, envir=wf)
+          return(wf)   
       })
 
 

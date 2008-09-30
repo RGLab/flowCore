@@ -58,6 +58,7 @@ setMethod("Rm",
           Rm(symbol@gate)
           selectMethod("Rm", signature("actionItem",
                                        "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))         
       })
@@ -72,6 +73,7 @@ setMethod("Rm",
           Rm(symbol@transform)
           selectMethod("Rm", signature("actionItem",
                                        "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))
       })
@@ -86,6 +88,16 @@ setMethod("Rm",
           Rm(symbol@compensate)
           selectMethod("Rm", signature("actionItem",
                                        "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))
       })
+
+
+
+## ==========================================================================
+## Get the alias table from an actionItem
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("alias",
+          signature=signature(object="actionItem"),
+          definition=function(object) get(object@alias))

@@ -59,8 +59,9 @@ Class \code{"\linkS4class{actionItem}"}, directly.
 
 \usage{
 
-compensateActionItem(ID = paste("compActionRef", guid(), sep = "_"), name = "default", 
-    parentView, compensate, workflow)
+compensateActionItem(ID = paste("compActionRef", guid(), sep = "_"),
+name = paste("action", identifier(get(compensate)), sep = "_"),
+parentView, compensate, workflow)
 
 }
 

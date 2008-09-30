@@ -51,6 +51,14 @@ setMethod("identifier",
           signature=signature(object="compensation"),
           definition=function(object) object@compensationId)
 
+setReplaceMethod("identifier",
+                 signature=signature("compensation","character"),
+                 definition=function(object,value)
+             {
+                 object@compensationId <- value
+                 object
+             })
+
 
 
 ## ==========================================================================

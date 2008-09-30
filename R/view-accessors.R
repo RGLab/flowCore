@@ -92,6 +92,7 @@ setMethod("Rm",
           selectMethod("Rm", signature("view", "workFlow", "character"))(symbol, envir)
           if(!length(relatedViews(symbol, envir)))
               Rm(symbol@filterResult)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))
       })
@@ -104,6 +105,7 @@ setMethod("Rm",
           definition=function(symbol, envir, subSymbol, rmRef=TRUE)
       {
           selectMethod("Rm", signature("view", "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))
       })
@@ -117,6 +119,16 @@ setMethod("Rm",
           definition=function(symbol, envir, subSymbol, rmRef=TRUE)
       {
           selectMethod("Rm", signature("view", "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
           rm(list=identifier(symbol), envir=envir@env)
           return(invisible(NULL))
       })
+
+
+
+## ==========================================================================
+## Get the alias table from a view
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("alias",
+          signature=signature(object="view"),
+          definition=function(object) get(object@alias))
