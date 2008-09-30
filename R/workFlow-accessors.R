@@ -133,6 +133,17 @@ setMethod("$",
 
 
 ## ==========================================================================
+## Get the alias table from a workFlow
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+uniqueAlias <- function(x, wf) length(alias(wf)[[x]])==1
+
+setMethod("alias",
+          signature=signature(object="workFlow"),
+          definition=function(object) get(object@alias))
+
+
+
+## ==========================================================================
 ## Plot the workflow tree using Rgraphviz
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## Find common action items for each tree level
