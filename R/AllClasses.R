@@ -97,7 +97,11 @@ flowFrame <- function(exprs, parameters, description=list())
 ## ---------------------------------------------------------------------------
 ## A collection of several cytoFrames making up one experiment. Slots 
 ## frames, phenoData, colnames. Frames contains the cytoFrame objects,
-## phenoData the experiment meta data and colnames the channel names. 
+## phenoData the experiment meta data and colnames the channel names.
+## An additional character scalar _.name._ is stored in the environment
+## which holds a name of the object that will be used in the workFlows.
+## By storing it in the environment we don't have to add an additional
+## slot and defunct old serialized flowSet objects.
 ## ---------------------------------------------------------------------------
 setClass("flowSet",                   
          representation=representation(frames="environment",
@@ -136,7 +140,7 @@ setClass("flowSet",
          })
 
 ## constructor
-flowSet <- function(..., phenoData)
+flowSet <- function(..., phenoData, name)
 {
     x <- list(...)
     if(length(x) == 1 && is.list(x[[1]]))
@@ -145,7 +149,9 @@ flowSet <- function(..., phenoData)
         stop("All additional arguments must be flowFrames")
     f <- as(x, "flowSet")
     if(!missing(phenoData))
-        phenoData(f) = phenoData
+        phenoData(f) <- phenoData
+    if(!missing(name))
+        identifier(f) <- name
     f
 }
 
@@ -948,6 +954,36 @@ setClass("randomFilterResult",
 setClass("filterResultList",
          contains=c("list", "filterResult"))
 
+## Check if a filterResultList matches a flowSet. If strict=TRUE, the
+## function will also check whether all items in the filterResultSet
+## are of equal type and produce the same number of populations.
+validFilterResultList <- function(fres, set, strict=TRUE)
+{
+    res <- TRUE
+    checkClass(fres, "filterResultList")
+    checkClass(strict, "logical", 1)
+    if(!missing(set)){
+        checkClass(set, "flowSet")
+        if(res <- !all(names(fres) == sampleNames(set)))
+            warning("Sample names don't match between flowSet and ",
+                    "filterResultList", call.=FALSE)
+    }
+    if(strict){
+        fTypes <- sapply(fres, function(x) class(x))
+        if(length(unique(fTypes)) != 1){
+            warning("Not all filterResults in the list are of equal",
+                    " type.", call.=FALSE)
+            res <- FALSE
+        }
+        nrPops <- sapply(fres, function(x) length(x))
+        if(length(unique(nrPops)) != 1){
+            warning("Not all filterResults in the list share the",
+                    " same number of sub-populations.", call.=FALSE)
+            res <- FALSE
+        }
+        return(res)
+    }
+}
 
 
 ## ===========================================================================
@@ -1930,14 +1966,18 @@ view <- function(workflow, ID=paste("viewRef", guid(), sep="_"),
 ## ===========================================================================
 ## gateView
 ## ---------------------------------------------------------------------------
+## Gate views store indices of the gating result for further subsetting as a
+## list, where each list item contains indices for a single flowFrame. No
+## subset will be produced unless another actionItem is applied to the view.
 ## We need some form of special treatment for gates that produce multiple
 ## populations. A gateView will always capture the result for only a single
 ## sub-population, however, the whole filterResult is necessary for plotting
-## and a reference to that will be stored along with the view
+## and a reference to that and the index in the filterResult (i.e., the
+## subpopulation) will be stored along with the view . 
 ## ---------------------------------------------------------------------------
 setClass("gateView",
          contains="view",
-         representation=representation(indices="logical",
+         representation=representation(indices="list",
                                        filterResult="fcFilterResultReference",
                                        frEntry="character"),
          prototype=prototype(ID=paste("gateViewRef", guid(), sep="_"),
@@ -1958,7 +1998,7 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
     checkClass(ID, "character", 1)
     checkClass(name, "character", 1)
     checkClass(frEntry, "character", 1)
-    checkClass(indices, "logical")
+    checkClass(indices, "list")
     checkClass(action, "fcActionReference")
     checkClass(filterResult, "fcFilterResultReference")
     if(missing(data))
@@ -1980,7 +2020,13 @@ applyParentFilter <- function(parent, workflow)
     dataRef <- Data(pview)
     if(is.null(dataRef)){
         parentData <- Data(parent(pview))
-        newData <- parentData[pview@indices,]
+        if(is(parentData, "flowFrame"))
+            newData <- parentData[pview@indices[[1]],]
+        else{
+            newData <- parentData[1:length(parentData)]
+            for(i in seq_along(pview@indices))
+                newData[[i]] <- newData[[i]][pview@indices[[i]],]
+        }
         newDataRef <- assign(value=newData, envir=workflow)
         pview@data <- newDataRef
         assign(parent, value=pview, envir=workflow)
@@ -2012,15 +2058,14 @@ setMethod("add",
               ## check if the previous filter has been applied for subsetting
               applyParentFilter(pview, wf)
               ## now evaluate the filter and assign the result
+              browser()
               fres <- filter(Data(get(pview)), action)
-              if(is(fres, "filterResultList") &&
-                 length(unique(listLen(fres))) != 1)
-                  stop("Individual filterResults in the filterResultList ",
-                       "don't share the same number of populations.\n",
-                       "Don't know how to proceed.", call.=FALSE)
+              if(!validFilterResultList(fres))
+                  stop("Don't know how to proceed.", call.=FALSE)
               fresRef <-  assign(value=fres, envir=wf)
               gAction <- get(actionRef)
               gAction@filterResult <- fresRef
+              assign(actionRef, gAction) 
               ## we need to distinguish between logicalFilterResults and
               ## multipleFilterResults
               nodes <- NULL
@@ -2031,7 +2076,7 @@ setMethod("add",
                   for(i in seq_len(len)){
                       vid <- gateView(name=names(fres)[i], workflow=wf,
                                       action=actionRef, filterResult=fresRef,
-                                      indices=fres[[i]]@subSet,
+                                      indices=list(fres[[i]]@subSet),
                                       frEntry=names(fres)[i])
                       nodes <- c(nodes, identifier(vid))
                   }
@@ -2040,9 +2085,9 @@ setMethod("add",
                       if(is(fres[[1]], "logicalFilterResult")) 2
                       else length(fres[[1]])
                   for(i in seq_len(len)){
-                       vid <- gateView(name=names(fres)[1,i], workflow=wf,
+                       vid <- gateView(name=names(fres[[1]])[i], workflow=wf,
                                       action=actionRef, filterResult=fresRef,
-                                      indices=TRUE,
+                                      indices=lapply(fres, function(y) y[[i]]@subSet),
                                       frEntry=names(fres[[1]])[i])
                       nodes <- c(nodes, identifier(vid))
                   }

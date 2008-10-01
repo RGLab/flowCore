@@ -15,6 +15,8 @@
 \alias{length,flowSet-method}
 \alias{colnames,flowSet-method}
 \alias{colnames<-,flowSet-method}
+\alias{identifier,flowSet-method}
+\alias{identifier<-,flowSet,ANY-method}
 \alias{compensate,flowSet,ANY-method}
 \alias{sampleNames,flowSet-method}
 \alias{sampleNames<-,flowSet,ANY-method}
@@ -63,11 +65,12 @@ quantitative cell-based assays}
   of flowFrames, either as a list or directly as arguments, along with
   an optional
   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for
-  the \code{phenoData} slot.
+  the \code{phenoData} slot and a \code{character} scalar for the
+  \code{name} by which the object can be referenced.
 
-  \code{flowFrame(..., phenoData)}
+  \code{flowSet(..., phenoData)}
 
-  Alternatively, \code{flowSet}s can be coerced from \code{list} and
+  Alternatively, \code{flowSets} can be coerced from \code{list} and
   \code{environment} objects.
 
   \code{as(list("A"=frameA,"B"=frameB),"flowSet")}
@@ -98,6 +101,7 @@ quantitative cell-based assays}
     \item{\code{colnames}:}{A \code{character} object with the (common)
       column names of all the data matrices in the
       \code{\linkS4class{flowFrame}}s.}
+    
   }
 }
 
@@ -142,6 +146,18 @@ quantitative cell-based assays}
       \code{   colnames(flowSet) <- value}
       
     }
+
+    \item{identifier, identifier<-}{Extract or replace the \code{name}
+      item from the environment.
+      
+      \emph{Usage:}
+      
+      \code{   identifier(flowSet)}
+      
+      \code{   identifier(flowSet) <- value}
+      
+    }
+    
     
     \item{phenoData, phenoData<-}{Extract or replace the
       \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
@@ -402,6 +418,10 @@ flowSet(s5a01=GvHD[[1]], s5a02=GvHD[[2]],phenoData=pd)
 colnames(set)
 colnames(set) <- make.names(colnames(set))
 
+## object name
+identifier(set)
+identifier(set) <- "test"
+
 ## phenoData
 pd <- phenoData(set)
 pd
@@ -466,4 +486,3 @@ rbind2(set[[4]], set[1:2])
 }
 
 \keyword{classes}
-

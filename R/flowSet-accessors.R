@@ -563,3 +563,25 @@ setMethod("plot",
           message("For plotting, please attach the 'flowViz' package.\n",
                   "   i.e., 'library(flowViz)'")
       })
+
+
+## ==========================================================================
+## Set and replace the identifier from the environment
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature(object="flowSet"),
+          definition=function (object)
+      {
+          if(!"_.name._" %in% ls(object@frames))
+              "anonymous"
+          else
+              object@frames[["_.name._"]]
+      })
+
+setReplaceMethod("identifier",
+                 signature=signature(object="flowSet"),
+                 definition=function (object, value) 
+             {
+                 object@frames[["_.name._"]] <- value
+                 object
+             })
