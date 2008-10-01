@@ -31,6 +31,7 @@
 \alias{views,workFlow-method}
 \alias{actions}
 \alias{actions,workFlow-method}
+\alias{alias,workFlow-method}
 \alias{summary,workFlow-method}
 
 \title{Class "workFlow"}
@@ -193,6 +194,9 @@ workFlow(data, name = "default", env = new.env(parent = emptyenv()))
     \item{views}{\code{signature(x = "workFlow")}: List the names of
       only the \code{\link[view-class]{views}} in the
       \code{workFlow}. }
+
+    \item{alias}{\code{signature(object = "workFlow")}: Return the alias
+      table for the \code{workFlow}.}
       
   }
 }

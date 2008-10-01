@@ -373,7 +373,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation = "linearize", which.lines=NULL,
                          debug = FALSE,  column.pattern = NULL, decades=0,
-                         sep="\t", ...)
+                         sep="\t", name, ...)
 {
     ## A frame of phenoData information
     phenoFrame = NULL
@@ -484,6 +484,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             x
         })
     sampleNames(flowSet) <- guids
+    if(!missing(name))
+        identifier(flowSet) <- name
     flowSet
 }
 

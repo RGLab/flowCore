@@ -281,3 +281,14 @@ setGeneric("views", function(x, ...)
 ## ---------------------------------------------------------------------------
 setGeneric("actions", function(x, ...)
            standardGeneric("actions"))
+
+
+## ===========================================================================
+## Generic to evaluate transformations and friends
+## ---------------------------------------------------------------------------
+setGeneric("eval", function(expr, envir=parent.frame(),
+                            enclos=if(is.list(envir) || is.pairlist(envir))
+                            parent.frame() else baseenv())
+           standardGeneric("eval"))
+
+

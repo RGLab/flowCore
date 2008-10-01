@@ -34,6 +34,23 @@ setAs(from="gateView", to="filterResult", def=function(from)
       return(fres)
   })
 
+setAs(from="list", to="filterResultList",
+      def=function(from)
+  {
+      if(is.null(names(from)))
+          stop("Can only coerce a named list to a filterResultList",
+               call.=FALSE)
+      new("filterResultList", .Data=from, frameId=names(from),
+          filterId="default")
+  })
+
+setAs(from="filterResultList", to="list",
+      def=function(from)
+  {
+      names(from@.Data) <- names(from)
+      from@.Data
+  })
+
 
 
 ## ==========================================================================
