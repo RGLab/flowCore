@@ -105,6 +105,8 @@ setAs(from="filterReference", to="concreteFilter", def=function(from)
       x
   })
 
+
+
 setAs(from="formula", to="filter", def=function(from)
   {
       f <- as(from[[length(from)]], "filter")
@@ -328,6 +330,53 @@ setAs(from="list", to="transformList", def=function(from)
       new("transformList", transforms=from))
 
 
+
+
+## ==========================================================================
+## coerce from a transform object to characters (if possible). This needs
+## to be recursive because parameters of transforms can again be transforms.
+## We return NULL if we don
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## We know how to coerce a unitytransform
+setAs(from="unitytransform", to="character", def=function(from){
+  tmp <- from@parameters
+  tmp
+})
+
+## We can't coerce the ratio transformation in any case, so we return a
+## nullParameter
+setAs(from="ratio", to="character", def=function(from){
+  from <- new("nullParameter")
+  selectMethod("coerce", c("transform", "character"))(from)
+})
+
+## Coercing a nullParameter gives us NA
+setAs(from="nullParameter", to="character", def=function(from){
+  tmp <- NA
+  tmp
+})
+
+## recursively coerce the parameters slot
+setAs(from="transform", to="character", def=function(from)
+      {
+        p <- parameters(from)
+        if(is.character(p)){
+          if(length(p)==1){
+            return(p)
+          }else
+          return(new("nullParameter"))
+        }else{
+          return(sapply(p, as, "character"))
+        }
+      })
+          
+      
+
+setAs(from="parameters", to="character", def=function(from){
+      tmp <- sapply(from, as, "character")
+      tmp
+    })
+    
 
 
 

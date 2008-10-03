@@ -19,9 +19,9 @@
 ## ---------------------------------------------------------------------------
 popNames <- function(x, table)
 {
-    mt <- match(table@parameters, parameters(x, names=TRUE))
+    mt <- match(parameters(table), parameters(x, names=TRUE))
     desc <- pData(parameters(x))[mt, "desc"]
-    names(desc) <- table@parameters
+    names(desc) <- parameters(table)
     noName <- which(is.na(desc) | desc=="")
     desc[noName] <- parameters(x)$name[mt][noName]
     return(desc)
@@ -40,7 +40,7 @@ setMethod("%in%",
                               table="quadGate"),
           definition=function(x,table)
       {
-          e <-  exprs(x)[,table@parameters, drop=FALSE]
+          e <-  exprs(x)[,parameters(table), drop=FALSE]
           desc <- popNames(x,table)
           lev <- c(sprintf("%s+%s+", desc[1], desc[2]),
                    sprintf("%s-%s+", desc[1], desc[2]),
@@ -60,28 +60,42 @@ setMethod("%in%",
 ## reasons.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame",
-                              table="rectangleGate"),
+          signature=signature(x="flowFrame",table="rectangleGate"),
           definition=function(x, table)
-      {       
-          e <- exprs(x)[,table@parameters, drop=FALSE]
-          tmp <- sapply(seq(along=table@parameters), function(i) {
-              if(table@min[i] >= table@max[i]){
-                  print(i)
-                  e[,i]
-              } else {
-                  !is.na(cut(e[, i], c(table@min[i], table@max[i]),
-                             labels=FALSE, right=FALSE))}
-          })
-          if(nrow(e)){
-              dim(tmp) <- c(nrow(e), length(table@parameters))
-              tmp <- apply(tmp, 1, all)
-          }else{
-              tmp <- FALSE
+          {   
+              parameters=unlist(parameters(table))   
+              e <- exprs(x)[,parameters, drop=FALSE]
+              tmp <- sapply(seq(along=parameters),
+                            function(i) 
+                            {
+                                if(table@min[i] > table@max[i])
+                                {
+                                    print(i)
+                                    e[,i]
+                                } else if(table@min[i] == table@max[i]){
+                                  rep(FALSE, nrow(e))
+                                } else 
+                                {
+                                    !is.na(cut(e[, i], 
+                                               c(table@min[i],table@max[i]),
+                                               labels=FALSE,
+                                               right=FALSE
+                                              )
+                                          )
+                                }
+                            }
+                           )
+              if(nrow(e))
+              {   
+                  dim(tmp) <- c(nrow(e), length(parameters))
+                  apply(tmp, 1, all)
+              }
+              else
+              {
+                  return(FALSE)
+              }
           }
-          return(tmp)
-      })
-
+         )
 
 
 ## ==========================================================================
@@ -91,22 +105,20 @@ setMethod("%in%",
 ## only a single dimension we fall back to a method using 'cut'.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame",
-                              table="polygonGate"),
+          signature=signature(x="flowFrame", table="polygonGate"),
           definition=function(x,table)
-      {
-          ndim <- length(table@parameters)
+      {   
+          parameters=unlist(parameters(table))
+          ndim <- length(parameters)
           ## If there is only a single dimension then we have
           ## a degenerate case.
           if(ndim==1) 
-              !is.na(cut(exprs(x)[,table@parameters[[1]]],
+              !is.na(cut(exprs(x)[,parameters[[1]]],
                          range(table@boundaries[,1]), labels=FALSE,
                          right=FALSE))
           else if(ndim==2) {
-              tmp <-
-                  as.logical(flowCore:::inpolygon(exprs(x)[,table@parameters],
-                                                  table@boundaries))
-              return(tmp)
+              as.logical(inpolygon(exprs(x)[,parameters,drop=FALSE],
+                                              table@boundaries))
           } else 
           stop("Polygonal gates only support 1 or 2 dimensional gates.\n",
                "Use polytope gates for a n-dimensional represenation.",
@@ -133,8 +145,24 @@ inpolygon <- function(points, vertices)
     .Call("inPolygon", points, vertices, package="flowCore")
 }
 
+## ==========================================================================
+## 
+## Polytope gate 
+## Add stuff
+## 
+## 
+## ---------------------------------------------------------------------------
+setMethod("%in%",
+          signature=signature(x="flowFrame", table="polytopeGate"),
+          definition=function(x,table)
+      {   
+          parameters=unlist(parameters(table))
+          ndim <- length(parameters)
+           
+          temp=table@a %*% exprs(x)[,parameters]+table@b  
+          as.logical(temp<=0)
 
-
+      })
 ## ==========================================================================
 ## ellipsoidGate -- as a logical filter, this returns a logical vector.
 ## We use a covariance matrix / mean representation for ellipsoids here,
@@ -143,16 +171,13 @@ inpolygon <- function(points, vertices)
 ## of these axes.
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="flowFrame",
-                              table="ellipsoidGate"),
+          signature=signature(x="flowFrame", table="ellipsoidGate"),
           definition=function(x,table)
-      {
-          e <- exprs(x)[,table@parameters, drop=FALSE] 
+      {   parameters=unlist(parameters(table))
+          e <- exprs(x)[,parameters, drop=FALSE] 
           W <- t(e)-table@mean
-          colSums((qr.solve(table@cov) %*% W) * W) <= 1
+          colSums((qr.solve(table@cov*table@distance) %*% W) * W) <= 1
       })
-
-
 
 ## ==========================================================================
 ## norm2Filter -- as a logical filter, this returns a logical vector.
@@ -165,17 +190,17 @@ setMethod("%in%",
                               table="norm2Filter"),
           definition=function(x,table)
       {
-          if(length(table@parameters) != 2)
+          if(length(parameters(table)) != 2)
               stop("norm2 filters require exactly two parameters.")
           y <- {if(length(table@transformation)>0){
               tmp <- do.call("transform", c(x,table@transformation))
-              exprs(tmp)[,table@parameters]   
+              exprs(tmp)[,parameters(table)]   
           }else{
               tmp <- x
-              exprs(x)[,table@parameters]
+              exprs(x)[,parameters(table)]
           }}
           ## drop data that has piled up on the measurement ranges         
-          r <- range(tmp, table@parameters)
+          r <- range(tmp, parameters(table))
           sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
                   y[,2] > r[1,2] & y[,2] < r[2,2])
           values <- y[sel, ]
@@ -220,7 +245,7 @@ setMethod("%in%",
           definition=function(x,table)
       {
           ## We accomplish the actual filtering via K-means
-          param <- table@parameters[1]
+          param <- parameters(table)[1]
           values <- exprs(x)[, param]
           npop <- length(table@populations)
           km <- kmeans(values, centers=quantile(values, (1:npop)/(npop+1)))
@@ -247,7 +272,7 @@ setMethod("%in%",
       {
           ## We accomplish the actual filtering via Matt Wands feature
           ## software
-          param <- table@parameters
+          param <- parameters(table)
           ovalues <- exprs(x)[, param]
           bwFac <- table@bwFac
           gridsize <- table@gridsize
@@ -302,7 +327,7 @@ setMethod("%in%",
       {
           ## We accomplish the actual filtering via Matt Wands feature
           ## software
-          param <- table@parameters
+          param <- parameters(table)
           ovalues <- exprs(x)[, param]
           bwFac <- table@bwFac
           gridsize <- table@gridsize
@@ -516,7 +541,9 @@ setMethod("%in%",
           function(x,table)
       {	
           fr <- sapply(table@filters, filter, x=x)
-          res <- apply(sapply(fr, as, "logical"), 1, any)
+          res <- apply(matrix(sapply(fr, as, "logical"),
+                       ncol=length(table@filters)), 1, any
+                      )
           details <- list()
           for(i in fr) { 
               fd <- filterDetails(i)
@@ -535,17 +562,22 @@ setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="intersectFilter"),
           definition=function(x,table)
-      {
-          fr <- sapply(table@filters, filter, x=x)
-          res <- apply(sapply(fr, as, "logical"), 1, all)
-          details <- list()
-	for(i in fr) { 
-            fd <- filterDetails(i)
-            details[names(fd)] <- fd
-	}
-          attr(res,'filterDetails') <- details
-          res})
-
+          {   
+              fr <- sapply(table@filters, filter, x=x)
+              
+              res <- apply(matrix(sapply(fr, as, "logical"),
+                           ncol=length(table@filters)), 1, all
+                          )
+              details <- list()
+              for(i in fr) 
+              { 
+                  fd <- filterDetails(i)
+                  details[names(fd)] <- fd
+              }
+              attr(res,'filterDetails') <- details
+              res
+          }
+         )
 
 
 ## ==========================================================================
@@ -592,8 +624,6 @@ setMethod("%in%",
           attr(z,'filterDetails') <- filterDetails(y)
           z
       })
-
-
 
 ## ==========================================================================
 ## sampleFilter -- We randomly subsample events here.
@@ -642,8 +672,6 @@ flowFrame2env <- function(ff)
     e
 }
 
-
-
 ## ==========================================================================
 ## transformFilter -- We transform the data prior to gating
 ## ---------------------------------------------------------------------------
@@ -662,11 +690,34 @@ setMethod("%in%",
 ## evaluate on that
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
-          signature=signature(x="ANY",
-                              table="filterReference"),
-          definition=function(x, table) x %in% as(table, "concreteFilter"))
-
-
+          signature=signature(x="ANY",table="filterReference"),
+          definition=function(x, table) 
+                     {
+                      #x %in% as(table@env[[table@name]], "concreteFilter")
+                      filter=as(table, "concreteFilter")
+                      parameters=slot(filter,"parameters")
+                      len=length(parameters)
+                      charParam=list()
+                      while(len>0)
+                      {
+                          if(class(parameters[[len]])!="unitytransform")  
+                          {   ## process all transformed parameters
+                              charParam[[len]]=sprintf("_NEWCOL%03d_",len) 
+                              newCol=eval(parameters[[len]])(data)
+                              colnames(newCol)=sprintf("_NEWCOL%03d_",len) 
+                              data <- cbind(data, newCol)
+                          } 
+                          else
+                          {
+                              charParam[[len]]=slot(parameters[[len]],"parameters")
+                          
+                          }                
+                          len=len-1                               
+                      }
+                      slot(filter,"parameters")=new("parameters",.Data=charParam)
+                      x %in% filter
+                      }
+         )
 
 ## ==========================================================================
 ## filterResult -- Lets us filter by filterResults, rather than filters,

@@ -108,9 +108,10 @@ read.FCS <- function(filename,
         colnames(spmat) <- cnames
         description[[spID]] <- spmat
     }
-    
-    return(new("flowFrame", exprs=mat, description= description,
-               parameters=params))
+    tmp <- new("flowFrame", exprs=mat, description= description,
+               parameters=params)
+    identifier(tmp) <- basename(identifier(tmp))
+    return(tmp)
 }
 
 

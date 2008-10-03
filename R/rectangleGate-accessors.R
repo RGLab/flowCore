@@ -40,7 +40,7 @@ setMethod("[",
                    paste("  ", i[!mt], collapse="\n"), call.=FALSE)
           x@min <- x@min[i]
           x@max <- x@max[i]
-          x@parameters <- i
+          parameters(x) <- i
           x
       })
 

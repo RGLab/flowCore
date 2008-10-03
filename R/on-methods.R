@@ -49,9 +49,9 @@ setMethod("%on%",
       {
           new("transformFilter",
               filterId=paste(e1@filterId," on transformed values of ",
-              paste(e2@parameters, sep=","),collapse=" "),
+              paste(parameters(e2), sep=","),collapse=" "),
               transforms=e2, filter=e1,
-              parameters=unique(c(e1@parameters, e2@parameters)))
+              parameters=unique(c(parameters(e1), parameters(e1))))
 })
 
 
@@ -63,11 +63,12 @@ setMethod("%on%",
           signature=signature(e1="parameterTransform",
                               e2="flowFrame"),
           definition=function(e1, e2)
-      {
-          params <- if(length(e1@parameters)) colnames(e2) else e1@parameters
-          exprs(e2)[,params] <- e1(exprs(e2))[,params]
-          e2
-      })
+          {
+            params <- if(length(parameters(e1))) colnames(e2) else
+            parameters(e1)
+            exprs(e2)[,params] <- e1(exprs(e2))[,params]
+            e2
+          })
 
 
 

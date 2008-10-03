@@ -26,8 +26,107 @@ setMethod("parameters",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("parameters",
           signature=signature(object="parameterFilter"),
-          definition=function(object) object@parameters)
+          definition=function(object){
+            tmp <- unlist(sapply(object@parameters, as, "character"))
+            if(all(sapply(tmp, is.character)))
+              tmp
+            else
+              NULL
+          })
 
+
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="parameterFilter",
+                   value="character"),
+                 definition=function(object, value)
+                 {
+                   value <- sapply(value, unitytransform)   
+                   object@parameters <- new("parameters",
+                                            .Data=value)
+                   object
+                 })
+
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="parameterFilter",
+                   value="transform"),
+                 definition=function(object, value)
+                 {
+                   object@parameters <- new("parameters",
+                                            .Data=value)
+                   object
+                 })
+
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="parameterFilter",
+                   value="list"),
+                 definition=function(object, value)
+                 {
+                   value <- unlist(value)
+                   chars <- sapply(value, is.character)
+                   if(!is.null(chars) && any(chars))
+                     value[chars] <- sapply(value[chars],
+                                              unitytransform)
+                   if(!all(sapply(value, is, "transform")))
+                     stop("Items in the list need to be characters or ",
+                          "trasnforms.", call.=FALSE)
+                   object@parameters <- new("parameters",
+                                            .Data=value)
+                   object
+                 })
+
+
+## ==========================================================================
+## For transformations
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("parameters",
+          signature=signature(object="transform"),
+          definition=function(object){
+            tmp <- unlist(sapply(object@parameters, as, "character"))
+            tmp
+          })
+
+setMethod("parameters",
+          signature=signature(object="ratio"),
+          definition=function(object) NA)
+
+
+setMethod("parameters",
+          signature=signature(object="nullParameter"),
+          definition=function(object) NA) 
+
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="singleParameterTransform",
+                   value="transform"),
+                 definition=function(object, value)
+                 {
+                   object@parameters <- value
+                   object
+                 })
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="dg1polynomial",
+                   value="transform"),
+                 definition=function(object, value)
+                 {
+                   object@parameters <- new("parameters",
+                                            .Data=list(value))
+                   object
+                 })
+
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="singleParameterTransform",
+                   value="character"),
+                 definition=function(object, value)
+                 {
+                   value <- unitytransform(value)   
+                   object@parameters <- value
+                   object
+                 })
 
 
 ## ==========================================================================

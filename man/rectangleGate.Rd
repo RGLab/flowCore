@@ -184,7 +184,7 @@ package="flowCore"))
 rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600), "SSC-H"=c(0, 400))
 
 #To facilitate programmatic construction we also have the following
-rg <- rectangleGate(filterId="myRectGate", .gate=list("FSC-H"=c(200, 600),
+rg <- rectangleGate(filterId="myRectGate", list("FSC-H"=c(200, 600),
 "SSC-H"=c(0, 400)))
 mat <- matrix(c(200, 600, 0, 400), ncol=2, dimnames=list(c("min", "max"),
 c("FSC-H", "SSC-H")))

@@ -155,9 +155,11 @@ setGeneric("summary", function(object,...) standardGeneric("summary"))
 ## Generics for spillover and compensate
 ## ---------------------------------------------------------------------------
 setGeneric("spillover", function(x,...) standardGeneric("spillover"))
-setGeneric("compensate", function(x,spillover, inv=TRUE, ...)
-           standardGeneric("compensate"))
-
+# setGeneric("compensate", function(x,spillover, inv=TRUE, ...)
+#            standardGeneric("compensate"))
+setGeneric("compensate", 
+            function(x, compensation, ...)
+            standardGeneric("compensate"))
 
 
 ## ===========================================================================
@@ -283,12 +285,96 @@ setGeneric("actions", function(x, ...)
            standardGeneric("actions"))
 
 
+
 ## ===========================================================================
-## Generic to evaluate transformations and friends
+## Generic function eval for all the transformations
 ## ---------------------------------------------------------------------------
-setGeneric("eval", function(expr, envir=parent.frame(),
-                            enclos=if(is.list(envir) || is.pairlist(envir))
-                            parent.frame() else baseenv())
-           standardGeneric("eval"))
+setGeneric("eval",
+            def=function(expr,
+                        envir = parent.frame(),
+                        enclos = if (is.list(envir) ||is.pairlist(envir))    
+                                      parent.frame() 
+                                 else 
+                                      baseenv()) 
+            standardGeneric("eval"),
+            useAsDefault=function(expr,envir=new.env(),enclos)
+ 	    {
+           	stop("'eval' not defined on class '",class(object), "'")
+            }
+ 	  )
+
+## ===========================================================================
+## Generic function for unitytransform
+## ---------------------------------------------------------------------------
+setGeneric("unitytransform",def=function(parameters,...)
+	   standardGeneric("unitytransform"))
+
+## ===========================================================================
+## Generic function for Polynomial transformation of degree 1 
+## ---------------------------------------------------------------------------
+setGeneric("dg1polynomial",def=function(parameters,a,b,...)
+	   standardGeneric("dg1polynomial"))
+
+
+## ===========================================================================
+## Generic function for Ratio transformation
+## ---------------------------------------------------------------------------
+setGeneric("ratio",def=function(numerator,denominator,...)standardGeneric("ratio"))
+
+
+## ===========================================================================
+## Generic function for Quadratic transformation
+## ---------------------------------------------------------------------------
+setGeneric("quadratic",def=function(parameters,...)standardGeneric("quadratic"))
+
+## ===========================================================================
+## Generic function for Squareroot transformation
+## ---------------------------------------------------------------------------
+setGeneric("squareroot",def=function(parameters,...)standardGeneric("squareroot"))
+
+## ===========================================================================
+## Log transformation
+## ---------------------------------------------------------------------------
+setGeneric("logarithm",def=function(parameters,...)standardGeneric("logarithm"))
+
+## ===========================================================================
+## Exponential transformation
+## ---------------------------------------------------------------------------
+setGeneric("exponential",def=function(parameters,...)standardGeneric("exponential"))
+
+
+## ===========================================================================
+## Inverse hyperbolic sin transformation
+## ---------------------------------------------------------------------------
+setGeneric("asinht",def=function(parameters,...)standardGeneric("asinht"))
+
+## ===========================================================================
+## Hyperbolic sin transformation
+## ---------------------------------------------------------------------------
+setGeneric("sinht",def=function(parameters,...)standardGeneric("sinht"))
+
+## ===========================================================================
+## Hyperlog transformation
+## ---------------------------------------------------------------------------
+setGeneric("hyperlog",def=function(parameters,...)standardGeneric("hyperlog"))
+
+## ===========================================================================
+## Splitscale transformation
+## ---------------------------------------------------------------------------
+setGeneric("splitscale",def=function(parameters,...)
+standardGeneric("splitscale"))
+
+## ===========================================================================
+## invsplitscale transformation
+## ---------------------------------------------------------------------------
+setGeneric("invsplitscale",def=function(parameters,...)
+standardGeneric("invsplitscale"))
+
+## ===========================================================================
+## Transformation reference
+## ---------------------------------------------------------------------------
+setGeneric("transformReference",def=function(referenceId,searchEnv) 
+           standardGeneric("transformReference")
+          )
 
 

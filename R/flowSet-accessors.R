@@ -274,9 +274,9 @@ setMethod("fsApply",
 ## ---------------------------------------------------------------------------
 setMethod("compensate",
           signature=signature(x="flowSet",
-                              spillover="ANY"),
-          definition=function(x, spillover, inv=TRUE, ...)
-          fsApply(x, compensate, spillover, inv=inv, ...))
+                              compensation="ANY"),
+          definition=function(x, compensation, ...)
+          fsApply(x, compensate, compensation, ...))
 
 
 
