@@ -28,3 +28,33 @@ setMethod("initialize",
                          ...)
       })
 
+
+## Make sure that the old filter class constructors still work with
+## the new 'parameter' slot.
+setMethod("initialize",
+          signature=signature(.Object="parameterFilter"),
+          definition=function(.Object, parameters, ...)
+          {
+            parameters(.Object) <- parameters
+            callNextMethod(.Object, ...)
+          })
+
+setMethod("initialize",
+          signature=signature(.Object="singleParameterTransform"),
+          definition=function(.Object, parameters, ...)
+          {
+            parameters(.Object) <- parameters
+            callNextMethod(.Object, ...)
+          })
+
+
+setMethod("initialize",
+          signature=signature(.Object="dg1polynomial"),
+          definition=function(.Object, parameters, ...)
+          {
+            parameters(.Object) <- parameters
+            callNextMethod(.Object, ...)
+          })
+
+
+

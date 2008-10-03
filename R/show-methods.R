@@ -55,10 +55,11 @@ setMethod("show",
               cat("Compensation object '", object@compensationId,
                   "':\n", sep="")
               if(ncol(object@spillover)){
-                  if(!object@invert)
-                      print(object@spillover)
-                  else
-                      print(solve(object@spillover/max(object@spillover)))
+#                   if(!object@invert)
+#                       print(object@spillover)
+#                   else
+#                       print(solve(object@spillover/max(object@spillover)))
+                      ;
               }else{
                   cat("The spillover matrix is empty\n")
               }
@@ -298,10 +299,14 @@ setMethod("print",
 setMethod("show",
           signature=signature(object="curv1Filter"),
           definition=function(object)
-      {
-          msg <- paste("1D curvature filter '",object@filterId,
-                       "' in dimension ",
-                       object@parameters, "\nwith settings:",
+          {
+            parms <- as.character(parameters(object))
+            na  <-  is.na(parms)
+            if(any(na))
+              parms[na] <- "internal transformation"
+            msg <- paste("1D curvature filter '",object@filterId,
+                         "' in dimension ",
+                         parms, "\nwith settings:",
                        "\n  bwFac=", object@bwFac, "\n  gridsize=",
                        paste(object@gridsize, collapse=",", sep=""),
                        sep="")
@@ -318,18 +323,22 @@ setMethod("show",
 setMethod("show",
           signature=signature(object="curv2Filter"),
           definition=function(object)
-      {
-          msg <- paste("2D curvature filter '",
-                       object@filterId,"' in dimensions ",
-                       paste(object@parameters, collapse=" and "),
-                       "\nwith settings:",
-                       "\n  bwFac=", object@bwFac, "\n  gridsize=",
-                       paste(object@gridsize, collapse=",", sep=""),
-                       sep="")
-          cat(msg)
-          cat("\n")
-          invisible(msg)
-      })
+          {
+            parms <- as.character(parameters(object))
+            na  <-  is.na(parms)
+            if(any(na))
+              parms[na] <- "internal transformation"
+            msg <- paste("2D curvature filter '",
+                         object@filterId,"' in dimensions ",
+                         paste(parms, collapse=" and "),
+                         "\nwith settings:",
+                         "\n  bwFac=", object@bwFac, "\n  gridsize=",
+                         paste(object@gridsize, collapse=",", sep=""),
+                         sep="")
+            cat(msg)
+            cat("\n")
+            invisible(msg)
+          })
 
 
 
@@ -357,10 +366,14 @@ setMethod("show",
           signature=signature(object="ellipsoidGate"),
           definition=function(object)
       {
-          cat("Ellipsoid gate '", identifier(object),
-              "' in dimensions ", sep="")
-          cat(paste(object@parameters, sep="", collapse=" and "))
-          cat("\n")
+        parms <- as.character(parameters(object))
+        na  <-  is.na(parms)
+        if(any(na))
+          parms[na] <- "internal transformation"
+        cat("Ellipsoid gate '", identifier(object),
+            "' in dimensions ", sep="")
+        cat(paste(parms, sep="", collapse=" and "))
+        cat("\n")
       })
 
 
@@ -372,14 +385,18 @@ setMethod("show",
           signature=signature(object="kmeansFilter"),
           definition=function(object)
       {
-          msg <- paste("k-means filter '", object@filterId,
-                       "' in dimension ", object@parameters[1],
-                       "\nwith ", length(object), " populations (",
-                       paste(object@populations, collapse=","),
-                       ")", sep="")
-          cat(msg)
-          cat("\n")
-          invisible(msg)
+        parms <- as.character(parameters(object))
+        na  <-  is.na(parms)
+        if(any(na))
+          parms[na] <- "internal transformation"
+        msg <- paste("k-means filter '", object@filterId,
+                     "' in dimension ", parms[1],
+                     "\nwith ", length(object), " populations (",
+                     paste(object@populations, collapse=","),
+                     ")", sep="")
+        cat(msg)
+        cat("\n")
+        invisible(msg)
       })
 
 
@@ -390,17 +407,21 @@ setMethod("show",
 setMethod("show",
           signature=signature(object="norm2Filter"),
           definition=function(object)
-      {
-          cat(ifelse(length(object@transformation), "transformed", ""),
-              "norm2Filter '", identifier(object),
-              "' in dimensions ", sep="")
-          cat(paste(object@parameters, sep="", collapse=" and "),
-              "with parameters:\n")
-          cat("  method:", object@method, "\n")
-          cat("  scale.factor:", object@scale.factor, "\n")
-          cat("  n:", object@n, "\n")
-          cat("\n")
-      })
+          {
+            parms <- as.character(parameters(object))
+            na  <-  is.na(parms)
+            if(any(na))
+              parms[na] <- "internal transformation"
+            cat(ifelse(length(object@transformation), "transformed", ""),
+                "norm2Filter '", identifier(object),
+                "' in dimensions ", sep="")
+            cat(paste(parms, sep="", collapse=" and "),
+                "with parameters:\n")
+            cat("  method:", object@method, "\n")
+            cat("  scale.factor:", object@scale.factor, "\n")
+            cat("  n:", object@n, "\n")
+            cat("\n")
+          })
 
 
 
@@ -410,14 +431,18 @@ setMethod("show",
 setMethod("show",
           signature=signature(object="polygonGate"),
           definition=function(object)
-      {
-          nb <-  nrow(object@boundaries)
-          cat("Polygonal gate '", identifier(object) ,"' with ",
-              ifelse(all(is.na(object@boundaries)), 0, nb),
-              " vertices in dimensions ", sep="")
-          cat(paste(object@parameters, sep="", collapse=" and "))
-          cat("\n")
-      })
+          {
+            parms <- as.character(parameters(object))
+            na  <-  is.na(parms)
+            if(any(na))
+              parms[na] <- "internal transformation"
+            nb <-  nrow(object@boundaries)
+            cat("Polygonal gate '", identifier(object) ,"' with ",
+                ifelse(all(is.na(object@boundaries)), 0, nb),
+                " vertices in dimensions ", sep="")
+            cat(paste(parms, sep="", collapse=" and "))
+            cat("\n")
+          })
 
 
 
@@ -428,15 +453,19 @@ setMethod("show",
           signature=signature(object="quadGate"),
           definition=function(object)
       {
-          cat("Quadrant gate '", identifier(object),
-              "' with dimensions:\n", sep="")
-          for(i in seq(along=object@parameters)) {
-              cat("  ")
-              cat(object@parameters[i])
-              cat(": ")
-              cat(object@boundary[i])
-              cat("\n")
-          }
+        parms <- as.character(parameters(object))
+        na  <-  is.na(parms)
+        if(any(na))
+          parms[na] <- "internal transformation"
+        cat("Quadrant gate '", identifier(object),
+            "' with dimensions:\n", sep="")
+        for(i in seq(along=parameters(object))) {
+          cat("  ")
+          cat(parms[i])
+          cat(": ")
+          cat(object@boundary[i])
+          cat("\n")
+        }
       })
 
 
@@ -448,7 +477,10 @@ setMethod("show",
           signature=signature(object="rectangleGate"),
           definition=function(object)
       {
-          parms <- parameters(object)
+          parms <- as.character(parameters(object))
+          na  <-  is.na(parms)
+          if(any(na))
+            parms[na] <- "internal transformation"
           cat("Rectangular gate '", identifier(object),
               "' with dimensions:\n", sep="")
           for(i in seq_along(parms)){
@@ -473,7 +505,8 @@ setMethod("show",
           function(object)
       {
           msg <- paste("sample filter '", object@filterId,
-                       "' returning objects with ", object@size," rows", sep="")
+                       "' returning objects with ", object@size," rows",
+                       sep="")
           cat(msg)
           cat("\n")
           invisible(msg)
@@ -511,8 +544,9 @@ setMethod("show",
               cat("A flow cytometry workflow called '", object@name,
                   "'\n", sep="")
               tree <- get(object@tree)
-              nodes <- nodes(tree)
-              if(length(nodes)>0){
+              if(!is.null(tree)){
+                nodes <- nodes(tree)
+                if(length(nodes)>0){
                   traverseShow <- function(g, node, object, indent=1)
                   {
                       if(length(node)){
@@ -528,7 +562,9 @@ setMethod("show",
                   cat("The following data views are provided:\n\n")
                   print(get(nodes[1], object))
                   traverseShow(tree, nodes[1], object)
+                }
               }
+              cat("There is no view specified.\n")
           })
 
 

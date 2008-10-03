@@ -167,7 +167,7 @@ split(dat, fres)
 
 ## We can limit the splitting to one or several sub-populations
 split(dat, fres, population="rest")
-split(dat, fres, population=list(keep=c("area 3", "area 4")))
+split(dat, fres, population=list(keep=c("area 2", "area 3")))
 
 
 curv2Filter("FSC-H", "SSC-H", filterId="test filter")
