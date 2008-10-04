@@ -40,61 +40,50 @@ solveEH<-function(args,a,b,df)
 ## with slot parameter referencing the columns in the modified flowframe
 ## ---------------------------------------------------------------------------
 resolveTransforms<-function(x,filter)
-{
-
-  data=exprs(x)
-  recCoerce <- function(y){
-    if(is(y, "filterReference")){
-      y <- as(y, "concreteFilter")
-      recCoerce(y)
-    }else
-    y
-  }  
-  filter <- recCoerce(filter)
-  if(class(filter)!="intersectFilter" & class(filter)!="complementFilter" &
-     class(filter)!="unionFilter" & class(filter)!="expressionFilter" &
-     class(filter)!="subsetFilter")
-    {
-      parameters <- filter@parameters
-      len <- length(parameters)
-      charParam <- list()
-      
-      while(len>0)
-        {
-          if(class(parameters[[len]])!="unitytransform") 
-            {   
-              ## process all transformed parameters
-              charParam[[len]]=sprintf("_NEWCOL%03d_",len) 
-
-              if (class(eval(parameters[[len]]))=="compensatedParameter") 
-                {   ##deals with compensated parameter
-                  newCol=eval(eval(parameters[[len]]))(x)
-                }
-              else if(class(parameters[[len]])=="transformReference")    
-                {   ##deals with transform references
-                  temp=parameters[[len]]
-                  newCol=resolveTransformReference(parameters[[len]],data)
-                }
-              else                           
-                {   ##deals with all other transforms
-                  newCol=eval(parameters[[len]])(data)
-                }
-              
-              newCol=as.matrix(newCol)
-              colnames(newCol)=sprintf("_NEWCOL%03d_",len) 
-              data <- cbind(data, newCol)
-            } 
-          else
-            {
-              charParam[[len]]=slot(parameters[[len]],"parameters")
-            }                
-          len=len-1                               
+{    
+    data <- exprs(x)
+    ## Filters need to be fully realized for this to work and we have to
+    ## resolve all filterReferences
+    recCoerce <- function(y){
+        if(is(y, "filterReference")){
+            y <- as(y, "concreteFilter")
+            recCoerce(y)
+        }else
+        y
+    }  
+    filter <- recCoerce(filter)
+    if(is(filter, "parameterFilter")){
+        parameters <- filter@parameters
+        charParam <- list()
+        for(len in seq_along(parameters)){
+            if(!is(parameters[[len]], "unitytransform")){   
+                ## process all transformed parameters
+                charParam[[len]] <- sprintf("_NEWCOL%03d_", len) 
+                if (is(eval(parameters[[len]]), "compensatedParameter")){
+                    ##deals with compensated parameter
+                    newCol <- eval(eval(parameters[[len]]))(x)
+                }else if(is(parameters[[len]], "transformReference")){
+                    ##deals with transform references
+                    temp <- parameters[[len]]
+                    newCol <- resolveTransformReference(parameters[[len]], data)
+                }else{
+                    ##deals with all other transforms
+                    newCol <- eval(parameters[[len]])(data)
+                }               
+                newCol <- as.matrix(newCol)
+                colnames(newCol) <- sprintf("_NEWCOL%03d_", len) 
+                data <- cbind(data, newCol)
+            }else
+               charParam[[len]] <- slot(parameters[[len]], "parameters")
         }
-      
-      parameters(filter) <- charParam
+        parameters(filter) <- charParam
     } 
-  
-  y <- flowFrame(data)
-  identifier(y) <- identifier(x)
-  return(list(y,filter))
+    ## We need to make sure that all information is copied from the original flowFrame
+    ## to the dummy.
+    y <- flowFrame(data)
+    parms <- parameters(y)
+    pData(parms)[seq_len(ncol(x)),] <- pData(parameters(x))
+    y@parameters <- parms
+    y@description <- x@description
+    return(list(data=y, filter=filter))
 }

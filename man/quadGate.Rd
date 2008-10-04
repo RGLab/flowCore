@@ -151,7 +151,8 @@ quadGate(filterId="myQuadGate1", "FSC-H"=100, "SSC-H"=400)
 
 ## To facilitate programmatic construction we also have the following
 quadGate(filterId="myQuadGate2", list("FSC-H"=100, "SSC-H"=400))
-quadGate(filterId="myQuadGate3", .gate=c("FSC-H"=100, "SSC-H"=400))
+## FIXME: Do we want this?
+##quadGate(filterId="myQuadGate3", .gate=c("FSC-H"=100, "SSC-H"=400))
 
 ## Filtering using quadGates
 qg <- quadGate(filterId="quad", "FSC-H"=600, "SSC-H"=400)

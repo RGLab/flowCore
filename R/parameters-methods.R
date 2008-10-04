@@ -78,16 +78,6 @@ setReplaceMethod("parameters",
                  })
 
 
-## sampleFilter don't have parameters, but this saves us some conditioning in
-## other places
-setReplaceMethod("parameters", 
-                 signature=signature(object="sampleFilter",
-                   value="ANY"),
-                 definition=function(object, value)
-                 {
-                   object
-                 })
-
 ## ==========================================================================
 ## For transformations
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
