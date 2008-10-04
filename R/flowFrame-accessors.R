@@ -482,15 +482,14 @@ setMethod("filter",
                               filter="filter"),
           definition=function(x, filter)
       {
-        temp <- resolveTransforms(x, filter)
-        x <- temp[[1]]
-          filter <- temp[[2]]
+          temp <- resolveTransforms(x, filter)
+          x <- temp[["data"]]
+          filter <- temp[["filter"]]
           allPar <- parameters(filter) %in% colnames(x)
           if(!all(allPar))
               stop("The following parameter(s) are not present in this ",
                    "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
                                          collapse="\n"), call.=FALSE)
-
           result <- as(x %in% filter, "filterResult")
           identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter

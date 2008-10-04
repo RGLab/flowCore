@@ -236,7 +236,7 @@ parseDots <- function(dl, collapseFirst=FALSE){
         if(is(x[[i]], "transform"))
             x[[i]]
         else{
-            if(is.null(names(x)[i]))
+            if(!is.matrix(x[i]) && is.null(names(x)[i]))
                 stop("Additional arguments have to be named.", call.=FALSE)
             unitytransform(names(x)[[i]])
         }
@@ -289,10 +289,8 @@ parConst <- function(.gate, ...){
 ## constructor
 rectangleGate <- function(..., .gate, filterId="Rectangle Gate")
 {
-  parms <- parConst(.gate, ...)
-  
+  parms <- parConst(.gate, ...)  
   parms$gate <- apply(parms$gate, 2, sort)
-
   new("rectangleGate", filterId = filterId, parameters=parms$parameters,
       min=parms$gate[1, ], max=parms$gate[2, ])
 }

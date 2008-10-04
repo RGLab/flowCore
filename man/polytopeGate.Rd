@@ -68,42 +68,6 @@ polytopeGate(filterId = "Polytope Gate", .gate, \dots)
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 
 \examples{
-data(GvHD)
-
-#Create directly. Most likely from a command line
-rectangleGate(filterId="rectangleI", "FSC-H"=c(1, 50), "SSC-H"=c(50, 800))
-quadGate(filterId="quadI", "FSC-H"=100, "SSC-H"=400)
-
-#To facilitate programmatic construction we also have the following
-rectangleGate(filterId="rectangleII", list("FSC-H"=c(1, 50),
-"SSC-H"=c(50, 800)))
-quadGate(filterId="quadII", list("FSC-H"=100, "SSC-H"=400))
-
-m <- matrix(c(50,100,50,700),ncol=2)
-colnames(m) <- c("FSC-H","SSC-H")
-rect <- rectangleGate(filterId="rectangleGate", m)
-pop1 <- filter(GvHD[1],rect)
-sub1 <- Subset(GvHD[1], pop1)
-
-## Multiply rectangle gates
-rect2 <- rectangleGate(filterId="FSC-", "FSC-H"=c(-Inf, 50)) *
-rectangleGate(filterId="SSC+", "SSC-H"=c(50, Inf))
-pop2 <- filter(GvHD[1],rect2)
-sub2 <- Subset(GvHD[1], pop2)
-
-
-## PolygonGate
-sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
-colnames(sqrcut) <- c("FSC-H","SSC-H")
-pg <- polygonGate(filterId="nonDebris", boundaries= sqrcut)
-pg
-pop3 <- filter(GvHD[1], pg)
-sub3 <- Subset(GvHD[1], pop3)
-
-## QuadGate
-qg <- quadGate(filterId="quad", "FSC-H"=100, "SSC-H"=400)
-pop4 <- filter(GvHD[1], qg)
-sub4 <- split(GvHD[1], pop4)
 
 
 }
