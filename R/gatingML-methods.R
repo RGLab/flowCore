@@ -55,9 +55,9 @@ resolveTransforms<-function(x,filter)
      class(filter)!="unionFilter" & class(filter)!="expressionFilter" &
      class(filter)!="subsetFilter")
     {
-      parameters=slot(filter,"parameters")
-      len=length(parameters)
-      charParam=list()
+      parameters <- filter@parameters
+      len <- length(parameters)
+      charParam <- list()
       
       while(len>0)
         {
@@ -90,7 +90,8 @@ resolveTransforms<-function(x,filter)
             }                
           len=len-1                               
         }
-      slot(filter,"parameters")=new("parameters",.Data=charParam)
+      
+      parameters(filter) <- charParam
     } 
   
   y <- flowFrame(data)

@@ -31,7 +31,7 @@ setMethod("parameters",
             if(all(sapply(tmp, is.character)))
               tmp
             else
-              NULL
+              NA
           })
 
 
@@ -54,7 +54,7 @@ setReplaceMethod("parameters",
                  definition=function(object, value)
                  {
                    object@parameters <- new("parameters",
-                                            .Data=value)
+                                            .Data=list(value))
                    object
                  })
 
@@ -77,6 +77,16 @@ setReplaceMethod("parameters",
                    object
                  })
 
+
+## sampleFilter don't have parameters, but this saves us some conditioning in
+## other places
+setReplaceMethod("parameters", 
+                 signature=signature(object="sampleFilter",
+                   value=""),
+                 definition=function(object, value)
+                 {
+                   object
+                 })
 
 ## ==========================================================================
 ## For transformations

@@ -228,20 +228,22 @@ setClass("rectangleGate",
            max=Inf)
          )
 
-## parse '...'
-parseDots <- function(dl){
-  parseItem <- function(i, x){
-    if(is(x[[i]], "transform"))
-      x[[i]]
-    else{
-      if(is.null(names(x)[i]))
-        stop("Need named arguments for numerics", call.=FALSE)
-      unitytransform(names(x)[[i]])
+## parse '...' argument of a gate constructor
+parseDots <- function(dl, collapseFirst=FALSE){
+    if(collapseFirst && length(dl) && is.list(dl[[1]]))
+        dl <- dl[[1]]
+    parseItem <- function(i, x){
+        if(is(x[[i]], "transform"))
+            x[[i]]
+        else{
+            if(is.null(names(x)[i]))
+                stop("Additional arguments have to be named.", call.=FALSE)
+            unitytransform(names(x)[[i]])
+        }
     }
-  }
-  parms <- sapply(seq_along(dl), parseItem, dl)
-  names(parms) <- names(dl)
-  return(parms)
+    parms <- sapply(seq_along(dl), parseItem, dl)
+    names(parms) <- names(dl)
+    return(parms)
 }
 
 ## helper function for gate constructors
@@ -483,17 +485,28 @@ setClass("kmeansFilter",
          representation=representation(populations="character"),
          contains="parameterFilter")
 
-## contructor
-kmeansFilter <- function(..., .gate, filterId="kmeans")
+## Constructor. We allow for the following inputs:
+##  ..1 is transform and .2 is some vector that can be coerced to character
+##  ..1 is some vector that can be coerced to character
+kmeansFilter <- function(..., filterId="defaultKmeansFilter")
 {
-  if(is.list(.1))
-    .1 <- unlist(.1)
-  parms <- parConst(.gate, ...)
-  if(length(parms$parameters)>1)
-    stop("k-means filters only operate on a single parameter.",
-         call.=FALSE)
-    new("kmeansFilter", parameters=parms$parameters,
-        populations=as.vector(parms$gate), filterId=filterId)
+    if(length(list(...))){
+        n <- names(list(...))[1]
+        if(is.list(..1)){
+            n <- names(..1)[1]
+            "..1" <- unlist(..1, recursive=FALSE)
+        }
+        parameter <- if(is(..1, "transform")) ..1 else n
+        populations <- if(is(parameter, "transform")){
+            if(length(list(...))==1)
+                stop("List of populations needs to be provided as ",
+                     "an additional argument.", call.=FALSE) 
+            as.character(unlist(..2))} else as.character(unlist(..1))
+    }else{
+       stop("No arguments provided.", .call=FALSE)
+    }
+    new("kmeansFilter", parameters=parameter,
+        populations=populations, filterId=filterId)
 }
 
 
@@ -2132,14 +2145,13 @@ setMethod("add",
               ## check if the previous filter has been applied for subsetting
               applyParentFilter(pview, wf)
               ## now evaluate the filter and assign the result
-              browser()
               fres <- filter(Data(get(pview)), action)
               if(!validFilterResultList(fres))
                 stop("Don't know how to proceed.", call.=FALSE)
               fresRef <-  assign(value=fres, envir=wf)
               gAction <- get(actionRef)
               gAction@filterResult <- fresRef
-              assign(actionRef, gAction) 
+              assign(actionRef, gAction, wf) 
               ## we need to distinguish between logicalFilterResults and
               ## multipleFilterResults
               nodes <- NULL
