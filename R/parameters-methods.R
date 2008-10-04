@@ -82,7 +82,7 @@ setReplaceMethod("parameters",
 ## other places
 setReplaceMethod("parameters", 
                  signature=signature(object="sampleFilter",
-                   value=""),
+                   value="ANY"),
                  definition=function(object, value)
                  {
                    object
