@@ -207,12 +207,12 @@ split(samp, fres, flowSet=TRUE)
 
 ## only keep one population
 names(fres)
-split(samp, fres, population="FSC-Height+SSC-Height+")
+##split(samp, fres, population="FSC-Height+SSC-Height+")
 
 
 ## split the whole set, only keep two populations
-split(GvHD, qGate, population=c("FSC-Height+SSC-Height+",
-"FSC-Height-SSC-Height+"))
+##split(GvHD, qGate, population=c("FSC-Height+SSC-Height+",
+##"FSC-Height-SSC-Height+"))
 
 ## now split the flowSet according to a factor
 split(GvHD, pData(GvHD)$Patient)
