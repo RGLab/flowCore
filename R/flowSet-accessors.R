@@ -411,6 +411,24 @@ setMethod("Subset",
 
 setMethod("Subset",
           signature=signature(x="flowSet",
+                              subset="filterResultList"),
+          definition=function(x, subset, select, ...)
+      {
+          flowCore:::validFilterResultList(subset, x, strict=FALSE)
+          res <- as(structure(if(missing(select))
+                              lapply(names(subset), function(i) Subset(x[[i]],
+                                                                       subset[[i]],...))
+          else
+                              lapply(names(subset), function(i)
+                                     Subset(x[[i]], subset[[i]], select, ...)),
+                              names=sampleNames(x)), "flowSet")
+          phenoData(res) <- phenoData(x)
+          return(res)
+      })
+
+
+setMethod("Subset",
+          signature=signature(x="flowSet",
                               subset="list"),
           definition=function(x, subset, select, ...)
       {

@@ -678,3 +678,40 @@ setMethod(">=",
           signature=signature(e1="flowFrame",
                               e2="ANY"),
           definition=function(e1, e2) exprs(e1) >= e2)
+
+
+
+## ==========================================================================
+## add data columns to a flowFrame
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("cbind2",
+          signature=signature(x="flowFrame", y="matrix"),
+          definition=function(x, y)
+      {
+          nx <- nrow(x)
+          ny <- nrow(y)
+          if(mode(y) != "numeric")
+              stop("'y' must be numeric matrix.", call.=FALSE)
+          cn <- colnames(y)
+          if(is.null(cn) || any(cn %in% colnames(x)))
+              stop("Invalid or missing colnames in 'y'", call.=FALSE)
+          exp <- cbind(exprs(x), y)
+          parms <- parameters(x)
+          parm <- pData(parms)
+          range <- t(apply(y, 2, range))
+          colnames(range) <- c("minRange", "maxRange")
+          parm <- rbind(parm, data.frame(name=cn, desc=NA, range=NA, range))
+          pData(parms) <- parm
+          x@parameters <- parms
+          for(i in seq_along(cn)){
+              tmp <- list(cn[i])
+              names(tmp) <- sprintf("$P%dN", i+ncol(x))
+              description(x) <- tmp
+          }
+          return(x)
+      })
+
+setMethod("cbind2",
+          signature=signature(x="flowFrame", y="numeric"),
+          definition=function(x, y)
+          stop("'y' has to be numeric matrix with colnames.", call.=FALSE))

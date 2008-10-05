@@ -41,7 +41,6 @@ solveEH<-function(args,a,b,df)
 ## ---------------------------------------------------------------------------
 resolveTransforms<-function(x,filter)
 {    
-    data <- exprs(x)
     ## Filters need to be fully realized for this to work and we have to
     ## resolve all filterReferences
     recCoerce <- function(y){
@@ -72,18 +71,11 @@ resolveTransforms<-function(x,filter)
                 }               
                 newCol <- as.matrix(newCol)
                 colnames(newCol) <- sprintf("_NEWCOL%03d_", len) 
-                data <- cbind(data, newCol)
+                x <- cbind(x, newCol)
             }else
-               charParam[[len]] <- slot(parameters[[len]], "parameters")
+               charParam[[len]] <- parameters(parameters[[len]])
         }
         parameters(filter) <- charParam
     } 
-    ## We need to make sure that all information is copied from the original flowFrame
-    ## to the dummy.
-    y <- flowFrame(data)
-    parms <- parameters(y)
-    pData(parms)[seq_len(ncol(x)),] <- pData(parameters(x))
-    y@parameters <- parms
-    y@description <- x@description
-    return(list(data=y, filter=filter))
+    return(list(data=x, filter=filter))
 }
