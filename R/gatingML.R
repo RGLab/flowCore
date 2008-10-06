@@ -1,39 +1,38 @@
+## recursively resolve transformation references until we get to a
+## realized transform object
 resolveTransformReference<-function(trans,df)
 {  
-  if(class(trans)=="transformReference")
-    {   trans=eval(trans,trans@searchEnv)
-        
-        trans=resolveTransformReference(trans,df)
-      }
-  else
-    {  
-      if(class(trans)!="function") 
-      trans=eval(trans)(df)
+    if(is(trans=="transformReference")){
+        trans <- eval(trans,trans@searchEnv)
+        trans <- resolveTransformReference(trans, df)
+    }else{  
+        if(!is(trans, "function")) 
+            trans <- eval(trans)(df)
     }
     trans
 }
 
 
-EH<-function(y,a,b,argument)
+## FIXME NG: Please document
+EH <- function(y, a, b, argument)
 {
-  if(y>=0)
-    return(10^(y/a)+b*y/a-1-argument)
-  else
-    return(-10^(-y/a)+b*y/a+1-argument)
+    if(y>=0)
+        return(10^(y/a)+b*y/a-1-argument)
+    else
+        return(-10^(-y/a)+b*y/a+1-argument)
 }
 
 solveEH<-function(args,a,b,df)
 {
-  temp=eval(args)(df)
-  len=length(temp)
-  result=0;
+  temp <- eval(args)(df)
+  len <- length(temp)
+  result <- 0
   while(len!=0)
-    {
+  {
       result[len]=uniroot(EH,c(-100,100),tol=0.001,a=a,b=b,temp[len])$root
-      len=len-1
-    }
+      len <- len-1
+  }
   return(result)
-                                        #return(uniroot(EH,c(-10000,10000),tol=0.001,a=a,b=b,eval(args[[1]])(df)))
 }
 
 
