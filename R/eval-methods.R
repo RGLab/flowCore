@@ -3,220 +3,175 @@
 ## ---------------------------------------------------------------------------
 
 
+## Helper function to fully resolve all transformationReferences
+resolve <- function(x, df)
+{
+    if(!is(x, "transformReference"))
+        eval(x)(df) else resolveTransformReference(x, df)  
+}
+
+
+
 ## ===========================================================================
 ## Unity transformation
 ## ---------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="unitytransform",envir="missing",
-            enclos="missing"),
-          function(expr,envir,enclos)
-          {        
-              function(df)
-                {
-                  return(df[,expr@parameters,drop=FALSE])
-                }
-            }
-          )
+          signature=signature(expr="unitytransform",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr,envir,enclos)
+      {        
+          function(df)
+              return(df[, expr@parameters, drop=FALSE])
+          
+      })
+
 
 ## ===========================================================================
 ## Polynomial transformation of degree 1
 ## ---------------------------------------------------------------------------
 
 setMethod("eval", 
-	  signature=signature(expr="dg1polynomial",envir="missing",
-            enclos="missing"),
-	  function(expr,envir,enclos)
-	  {    
-            function(df)
-	      {   
-                  par=slot(expr,"parameters")
-                  temp=sapply(par,function(i)
-                                  {  if(is(i, "function")) return(i)
-                                      if(!is(i, "transformReference")) 
-                                            eval(i)(df) 
-                                      else 
-                                            resolveTransformReference(i,df)
-                                  }
-                              )
-                  pp=matrix(slot(expr,"a"),ncol=length(slot(expr,"parameters")))
-                  rowSums(t(apply(temp,1,function(x) {pp*x})))+slot(expr,"b")
+	  signature=signature(expr="dg1polynomial",
+                              envir="missing",
+                              enclos="missing"),
+	  definition=function(expr, envir, enclos)
+      {    
+          function(df)
+            {   
+                par <- expr@parameters
+                temp <- sapply(par,function(i){
+                    if(is(i, "function")) return(i)
+                    resolve(i, df)
+                })
+                pp <- matrix(expr@a, ncol=length(expr@parameters))
+                rowSums(t(apply(temp, 1, function(x) pp*x)))+expr@b       
+            }
+      })
 
-                      
-              }
-	  }
-          )
 
 ## ===========================================================================
 ## Ratio transformation of two arguments
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="ratio",envir="missing",enclos="missing"),
+          signature=signature(expr="ratio",
+                              envir="missing",
+                              enclos="missing"),
           function(expr,envir,enclos)
-          { 
-            function(df)
-	      {  
-                num=slot(expr,"numerator")
-                den=slot(expr,"denominator")
+      { 
+          function(df)
+          {  
+              num <- resolve(expr@numerator, df)
+              den <- resolve(expr@denominator, df)
+              num/den
+          }
+      })
 
-                if(class(num)!="transformReference")
-                  {
-                    num=eval(num)(df)
-                  }
-                else
-                  {
-                    num=resolveTransformReference(num,df)
-                  }
-                if(class(den)!="transformReference")
-                  {
-                    den=eval(den)(df)
-                  }
-                else
-                  {
-                    den=resolveTransformReference(den,df)
-                  }    
-                result=num/den
-              }
-	  }
-          )
+
 ## ===========================================================================
 ## Quadratic transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature=signature(expr="quadratic",envir="missing",enclos="missing"),
-	  function(expr,envir,enclos)
-          {    
-            function(df)
-              {      
-                parameter=slot(expr,"parameters")
-                if(class(parameter)!="transformReference")
-                  {
-                    parameter=eval(parameter)(df)
-                  }
-                else
-                  {
-                    parameter=resolveTransformReference(parameter,df)
-                  }
-                
-                result=slot(expr,"a")*(parameter)^2
-              }
-	  }
-          )
+	  signature=signature(expr="quadratic",
+                              envir="missing",
+                              enclos="missing"),
+	  definition=function(expr,envir,enclos)
+      {    
+          function(df)
+          {      
+              parameter <- resolve(expr@parameters, df)
+              expr@a*(parameter^2)
+          }
+      })
+
+
 ## ===========================================================================
 ## Squareroot transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature="squareroot",
-	  function(expr,envir,enclos)
-	  {   function(df)
-                {     parameter=slot(expr,"parameters")
-                      if(class(parameter)!="transformReference")
-                        {
-                          parameter=eval(parameter)(df)
-                        }
-                      else
-                        {
-                          parameter=resolveTransformReference(parameter,df)
-                        } 
-                      sqrt(abs(parameter/(slot(expr,"a"))))
-                    }
-            }
-          )
+	  signature=signature(expr="squareroot",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr,envir,enclos)
+      {
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              sqrt(abs(parameter/(expr@a)))
+          }
+      })
+
 
 ## ===========================================================================
 ## Log transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature="logarithm",
-	  function(expr,envir,enclos)
-	  {    
-            function(df)
-              {   
-                parameter=slot(expr,"parameters")
-                if(class(parameter)!="transformReference")
-                  {
-                    parameter=eval(parameter)(df)
-                  }
-                else
-                  {
-                    parameter=resolveTransformReference(parameter,df)
-                  }
+	  signature=signature(expr="logarithm",
+                              envir="missing",
+                              enclos="missing"),
+	  definition=function(expr, envir, enclos)
+      {    
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              temp <- expr@a*parameter
+              result <- vector(mode="numeric", length=length(temp))
+              result[temp>0] <- log(temp[temp>0])*expr@
+              return(result)
+          }
+      })  
 
-                temp=slot(expr,"a")*parameter
-                result=vector(mode="numeric",length=length(temp))
-                result[temp>0]=log(temp[temp>0])*slot(expr,"b")
-                return(result)
-	      }
-	  }
-          )  
 
 ## ===========================================================================
 ## Exponential transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature="exponential",
-          function(expr,envir,enclos)
-          {    function(df)
-                 {   
-                   parameter=slot(expr,"parameters")
-                   if(class(parameter)!="transformReference")
-                     {
-                       parameter=eval(parameter)(df)
-                     }
-                   else
-                     {
-                       parameter=resolveTransformReference(parameter,df)
-                     }   
-                   result=exp(parameter/slot(expr,"b"))/slot(expr,"a")
-                 }
-             }
-          )
+          signature=signature(expr="exponential",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr, envir, enclos)
+      {
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              exp(parameter/expr@b)/expr@a
+          }
+      })
+
 
 ## ===========================================================================
 ## Inverse hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature="asinht",
-          function(expr,envir,enclos)
-          {    
-            function(df)
-              {
-                parameter=slot(expr,"parameters")
-                if(class(parameter)!="transformReference")
-                  {
-                    parameter=eval(parameter)(df)
-                  }
-                else
-                  {
-                    parameter=resolveTransformReference(parameter,df)
-                  }   
-                result=slot(expr,"b")*asinh(slot(expr,"a")*parameter)
-              }
+          signature=signature(expr="asinht",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr, envir, enclos)
+      {    
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              expr@b*asinh(expr@a*parameter)
           }
-          )
+      })
+
 
 ## ===========================================================================
 ## Hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature="sinht",
-          function(expr,envir,enclos)
-          {    function(df)
-                 {
-                   parameter=slot(expr,"parameters")
-                   if(class(parameter)!="transformReference")
-                     {
-                       parameter=eval(parameter)(df)
-                     }
-                   else
-                     {
-                       parameter=resolveTransformReference(parameter,df)
-                     }   
-                   result=(sinh(parameter/
-                                (slot(expr,"a"))))/(slot(expr,"b"))
-                   return(result)
-                 }
-             }
-          ) 
+          signature=signature(expr="sinht",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr, envir, enclos)
+      {
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              sinh(parameter/(expr@a))/expr@b
+          }
+      }) 
+
 
 ## ===========================================================================
 ## Hyperlog transformation 
@@ -224,132 +179,98 @@ setMethod("eval",
 
 
 setMethod("eval", 
-	  signature="hyperlog",
-	  function(expr,envir,enclos)
+	  signature=signature(expr="hyperlog",
+                              envir="missing",
+                              enclos="missing"),
+	  definition=function(expr, envir, enclos)
 	  {    
             function(df)
-              {  parameter=slot(expr,"parameters")
-                 if(class(parameter)!="transformReference")
-                   {
-                     parameter=eval(parameter)(df)
-                   }
-                 else
-                   {
-                     parameter=resolveTransformReference(parameter,df)
-                   }       
-                 args=parameters
-                 a=slot(expr,"a")
-                 b=slot(expr,"b")
-                 solveEH(args,a,b,df)
+              {
+                  parameter <- resolve(expr@parameters, df)
+                  solveEH(expr@parameters , expr@a ,expr@b, df)
                }
-	  }
-          )
+	  })
+
 
 ## ===========================================================================
 ## Splitscale transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature="splitscale",
-          function(expr,envir,enclos)
-          {    
-            function(df)
-              {   	
-                parameter=slot(expr,"parameters")
-                if(class(parameter)!="transformReference")
-                  {
-                    parameter=eval(parameter)(df)
-                  }
-                else
-                  {
-                    parameter=resolveTransformReference(parameter,df)
-                  }     
-                args=parameter
-                
-                transitionChannel=slot(expr,"transitionChannel")
-                r=slot(object,"r")
-                maxValue=slot(object,"maxValue")
-                
-                
-                b=transitionChannel/2
-                d=2*r*log10(2.71828)/transitionChannel
-                log10t= -2*log10(2.71828)*r/transitionChannel +log10(maxValue)
-                t=10^(log10t)
-                a=transitionChannel/(2*t)
-                
-                log10ct= (a*t+b)*d/r
-                c=(10^log10ct)/t
-                
-                idx <- which(args <= t)
-                idx2 <- which(args > t)
-                if(length(idx2)>0)
+          signature=signature(expr="splitscale",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr, envir, enclos)
+      {    
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              args <- expr@parameters
+              transitionChannel <- expr@transitionChannel
+              r <- expr@r
+              maxValue <- expr@maxValue
+              b <- transitionChannel/2
+              d <- 2*r*log10(2.71828)/transitionChannel
+              log10t <- -2*log10(2.71828)*r/transitionChannel +log10(maxValue)
+              t <- 10^(log10t)
+              a <- transitionChannel/(2*t)
+              log10ct <- (a*t+b)*d/r
+              c <- (10^log10ct)/t
+              idx <- which(args <= t)
+              idx2 <- which(args > t)
+              if(length(idx2)>0)
                   args[idx2] <- log10(c*args[idx2])*r/d
-                if(length(idx)>0)
+              if(length(idx)>0)
                   args[idx] <- a*args[idx]+b
-                args
-              }
-	  }
-          )
+              args
+          }
+      })
+
+
 ## ===========================================================================
 ## Inverse Splitscale transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature="invsplitscale",
-          function(expr,envir,enclos)
-          {    
-            function(df)
-              {    
-                parameter=slot(expr,"parameters")
-                if(class(parameter)!="transformReference")
-                  {
-                    parameter=eval(parameter)(df)
-                  }
-                else
-                  {
-                    parameter=resolveTransformReference(parameter,df)
-                  }        	
-                                        #args=slot(object,"parameters")
-                args=parameter
-                transitionChannel=slot(expr,"transitionChannel")
-                r=slot(expr,"r")
-                maxValue=slot(expr,"maxValue")
-                
-                b=transitionChannel/2
-                d=2*r*log10(2.71828)/transitionChannel
-                log10t= -2*log10(2.71828)*r/transitionChannel +log10(maxValue)
-                t=10^(log10t)
-                a=transitionChannel/(2*t)
-                log10ct= (a*t+b)*d/r
-                c=(10^log10ct)/t            
-                
-                thresh=t*a+b
-                args=parameter
-                
-                idx<-which(args<=thresh)
-                idx2<-which(args>thresh)
-                if(length(idx2)>0)
-                  {
-                    args[idx2]= (10^(args[idx2]*(d/r)))/c
-                  }
-                if(length(idx>0))
-                  args[idx]=(args[idx]-b)/a
-                args
-                
+          signature=signature(expr="invsplitscale",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr, envir, enclos)
+      {    
+          function(df)
+          {
+              parameter <- resolve(expr@parameters, df)
+              args <- expr@parameters
+              transitionChannel <- expr@transitionChannel
+              r <- expr@r
+              maxValue <- expr@maxValue
+              b <- transitionChannel/2
+              d <- 2*r*log10(2.71828)/transitionChannel
+              log10t <- -2*log10(2.71828)*r/transitionChannel +log10(maxValue)
+                  t <- 10^(log10t)
+                  a <- transitionChannel/(2*t)
+                  log10ct <- (a*t+b)*d/r
+                  c <- (10^log10ct)/t            
+                  thresh <- t*a+b
+                  idx <- which(args<=thresh)
+                  idx2 <- which(args>thresh)
+                  if(length(idx2)>0)
+                      args[idx2] <- (10^(args[idx2]*(d/r)))/c
+                  if(length(idx>0))
+                      args[idx] <- (args[idx]-b)/a
+                  args
               }
-	  }
-          )
-
+        })
 
 
 ## ===========================================================================
 ## Transformation reference
 ## ---------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="transformReference"),
-	  function(expr,envir,enclos)
-	  { 
-            (slot(expr,"searchEnv")[[slot(expr,"transformationId")]])
-          }
-	 )	
+          signature=signature(expr="transformReference",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr,envir,enclos)
+              expr@searchEnv[[slot(expr,"transformationId")]]
+          )	
 	
 ####----------------------------------------------------------------------------
 #### 
@@ -358,9 +279,9 @@ setMethod("eval",
 ####----------------------------------------------------------------------------
 
 setMethod("eval",
-          signature="filterReference",
-	  function(expr,envir,enclos)
-	  {   
-              slot(expr,"env")[[slot(expr,"name")]]  #retrieved using name instead of the filterId
-          }
-	 )	
+          signature=signature(expr="filterReference",
+                              envir="missing",
+                              enclos="missing"),
+          definition=function(expr,envir,enclos)
+          expr@env[[expr@name]]  #retrieved using name instead of the filterId
+          )	

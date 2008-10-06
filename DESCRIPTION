@@ -38,6 +38,6 @@ Collate: AllGeneric.R
 	 filterSet-accessors.R
 	 split-methods.R
 	 eval-methods.R
-	 gatingML-methods.R
+	 gatingML.R
 License: The Artistic License, Version 2.0
 biocViews:  Infrastructure, Flowcytometry, CellBasedAssays

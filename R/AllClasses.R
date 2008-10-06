@@ -2493,21 +2493,17 @@ setMethod("add",
 ## objects which can be evaluated to retrive the corresponding columns from the
 ## data frame
 ## ---------------------------------------------------------------------------
-
 setClass("unitytransform",
 	 contains=c("transform"),
-	 representation=representation(parameters="character")
-         )
+	 representation=representation(parameters="character"))
 
 setMethod("unitytransform",
           signature(parameters="character"),
 	  function(parameters=character(0),transformationId="NULL")
       {       
           new("unitytransform",parameters=parameters,
-              transformationId=transformationId
-              )
-      }
-          )
+              transformationId=transformationId)
+      })
 
 ## ===========================================================================
 ## Polynomial transformation of degree 1 
@@ -2519,16 +2515,7 @@ setClass("dg1polynomial",
          contains=c("transform"),
          representation=representation(parameters="parameters", a="numeric",
          b="numeric"),
-         prototype=prototype(parameters=new("parameters"),a=1,b=1),
-         validity=function(object) 
-     {
-         msg <- NULL
-                                        #if (length(parameters(object)) + 1 !=length(coefficients(object)))
-                                        #msg <- c(msg,"parameters must be 1 less than coefficients")
-                                        #if (is.null(msg)) TRUE
-                                        #else msg
-     }
-         )
+         prototype=prototype(parameters=new("parameters"),a=1,b=1))
 
 dg1polynomial <- function(parameters, a=1, b=1,
                           transformationId="dg1polynomial")
