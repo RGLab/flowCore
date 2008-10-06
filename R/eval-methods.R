@@ -29,17 +29,19 @@ setMethod("eval",
 	  {    
             function(df)
 	      {   
-                result=slot(object,"b")+
-                  rowSums(slot(object,"a")*
-                          sapply(slot(expr,"parameters"),
-                                 function(i)
-                                 {   
-                                   if(class(i)=="transformReference")
-                                     i=eval(i)
-                                   eval(i)(df)
-                                 }
-                                 ) 
-                          )                  
+                  par=slot(expr,"parameters")
+                  temp=sapply(par,function(i)
+                                  {  if(is(i, "function")) return(i)
+                                      if(!is(i, "transformReference")) 
+                                            eval(i)(df) 
+                                      else 
+                                            resolveTransformReference(i,df)
+                                  }
+                              )
+                  pp=matrix(slot(expr,"a"),ncol=length(slot(expr,"parameters")))
+                  rowSums(t(apply(temp,1,function(x) {pp*x})))+slot(expr,"b")
+
+                      
               }
 	  }
           )
@@ -342,9 +344,9 @@ setMethod("eval",
 ## Transformation reference
 ## ---------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="transformReference",envir="missing",enclos="missing"),
+          signature=signature(expr="transformReference"),
 	  function(expr,envir,enclos)
-	  {
+	  { 
             (slot(expr,"searchEnv")[[slot(expr,"transformationId")]])
           }
 	 )	
