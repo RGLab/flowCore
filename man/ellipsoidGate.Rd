@@ -64,7 +64,7 @@
 
 \usage{
 
-ellipsoidGate(filterId = "Ellipsoid Gate", .gate, mean, distance=1, \dots)
+ellipsoidGate(\dots, .gate, mean, distance=1, filterId="defaultEllipsoidGate")
 
 }
 

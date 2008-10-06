@@ -23,15 +23,23 @@
 \alias{\%in\%,flowFrame,curv2Filter-method}
 \alias{\%in\%,flowFrame,quadGate-method}
 \alias{\%in\%,flowFrame,timeFilter-method}
+\alias{\%in\%,flowFrame,polytopeGate-method}
 
-\title{ Methods for Function \%in\% in Package `flowCore'}
+\title{Filter-specific membership methods}
+
 \description{
-Membership methods must be defined for every object of type \code{filter} with respect to a \code{flowFrame} object.
-The operation is considered to be general and may return a \code{logical}, \code{numeric} or \code{factor} vector that
-will be handled appropriately. The ability to handle logical matrices as well as vectors is also planned but not yet 
-implemented.}
+  
+Membership methods must be defined for every object of type
+\code{filter} with respect to a \code{flowFrame} object.  The operation
+is considered to be general and may return a \code{logical},
+\code{numeric} or \code{factor} vector that will be handled
+appropriately. The ability to handle logical matrices as well as vectors
+is also planned but not yet implemented.
+
+}
 
 
 
-\author{B. Ellis}
+\author{F.Hahne, B. Ellis}
+
 \keyword{methods}

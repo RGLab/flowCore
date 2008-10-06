@@ -56,7 +56,8 @@
 
 
 \usage{
-polygonGate(filterId = "Polygon Gate", boundaries, \dots)
+
+polygonGate(\dots, .gate, boundaries, filterId="defaultPolygonGate")
 
 }
 
@@ -66,8 +67,9 @@ polygonGate(filterId = "Polygon Gate", boundaries, \dots)
   \item{filterId}{ An optional parameter that sets the \code{filterId}
     of this gate. }
   
-  \item{boundaries}{ A definition of the gate. This can be either a list
-    or a named matrix as described below. }
+  \item{.gate, boundaries}{ A definition of the gate. This can be either a list
+    or a named matrix as described below. Note the argument boundaries
+    is deprecated and will go away in the next release.}
   
   
   \item{\dots}{ You can also directly describe a gate without wrapping

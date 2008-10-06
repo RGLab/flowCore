@@ -52,9 +52,8 @@
 
 \usage{
 
-expressionFilter(expr, \dots, filterId)
-char2ExpressionFilter(expr, \dots, filterId)
-
+expressionFilter(expr, ..., filterId="defaultExpressionFilter")
+char2ExpressionFilter(expr, ..., filterId="defaultExpressionFilter")
 
 }
 

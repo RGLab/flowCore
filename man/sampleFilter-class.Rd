@@ -49,7 +49,7 @@
 
 \usage{
 
-sampleFilter(filterId = "sample", size)
+sampleFilter(size, filterId="defaultSampleFilter")
 
 }
 

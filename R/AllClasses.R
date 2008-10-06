@@ -13,16 +13,20 @@
 ##  Some helpers
 ## ---------------------------------------------------------------------------
 ## Check for the class of object x and its length and cast error if wrong
-checkClass <- function(x, class, length=NULL, verbose=FALSE)
+checkClass <- function(x, class, length=NULL, verbose=FALSE,
+                       mandatory=TRUE)
 {
-  msg <- paste("'", substitute(x), "' must be object of class '",
-               class, "'", sep="")
-  fail <- !is(x, class)
-  if(!is.null(length) && length(x) != length){
-    fail <- TRUE
-    msg <- paste(msg, "of length", length)
-  }
-  if(fail) stop(msg, call.=verbose) else invisible(NULL)     
+    if(mandatory && missing(x))
+        stop("Argument '", substitute(x), "' missing with no default",
+             call.=verbose)
+    msg <- paste("'", substitute(x), "' must be object of class '",
+                 class, "'", sep="")
+    fail <- !is(x, class)
+    if(!is.null(length) && length(x) != length){
+        fail <- TRUE
+        msg <- paste(msg, "of length", length)
+    }
+    if(fail) stop(msg, call.=verbose) else invisible(NULL)     
 }
 
 
@@ -37,57 +41,57 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE)
 ## ---------------------------------------------------------------------------
 setClass("flowFrame",                
          representation=representation(exprs="matrix",
-           parameters="AnnotatedDataFrame",
-           description="list"),
+         parameters="AnnotatedDataFrame",
+         description="list"),
          prototype=list(exprs=matrix(numeric(0),
-                          nrow=0,
-                          ncol=0),
-           parameters=new("AnnotatedDataFrame"),
-           description=list(note="empty")))
+                        nrow=0,
+                        ncol=0),
+         parameters=new("AnnotatedDataFrame"),
+         description=list(note="empty")))
 
 ## helper function to create empty AnnotatedDataFrame for the parameters slot
 parDefault <- function(exp)
 {
-  vm <- data.frame(labelDescription=c(name="Name of Parameter",
+    vm <- data.frame(labelDescription=c(name="Name of Parameter",
                      desc="Description of Parameter",
                      range="Range of Parameter",
                      minRange="Minimum Parameter Value after Transformation",
                      maxRange="Maximum Parameter Value after Transformation"))
-  pd <- data.frame(name=colnames(exp), desc=colnames(exp),
-                   range=apply(exp, 2, max, na.rm=TRUE),
-                   minRange=apply(exp, 2, min, na.rm=TRUE),
-                   maxRange=apply(exp, 2, max, na.rm=TRUE))
-  new("AnnotatedDataFrame", pd, vm)
+    pd <- data.frame(name=colnames(exp), desc=colnames(exp),
+                     range=apply(exp, 2, max, na.rm=TRUE),
+                     minRange=apply(exp, 2, min, na.rm=TRUE),
+                     maxRange=apply(exp, 2, max, na.rm=TRUE))
+    new("AnnotatedDataFrame", pd, vm)
 }
 
 ## check parameter AnnotatedDataFrame for validity
 isValidParameters <- function(parameters, exprs)
 {
-  checkClass(parameters, "AnnotatedDataFrame")
-  if(!all(c("name", "desc", "range", "minRange", "maxRange")
-          %in% varLabels(parameters)))
-    stop("The following columns are mandatory:\n  'name', 'desc',",
-         "'range', 'minRange', 'maxRange'", call.=FALSE)
-  if(!missing(exprs))
-    if(!all(colnames(exprs) %in% parameters$name))
-      stop("parameter description doesn't match colnames of the ",
-           "data matrix", call.=FALSE)
-  return(TRUE)
+    checkClass(parameters, "AnnotatedDataFrame")
+    if(!all(c("name", "desc", "range", "minRange", "maxRange")
+            %in% varLabels(parameters)))
+        stop("The following columns are mandatory:\n  'name', 'desc',",
+             "'range', 'minRange', 'maxRange'", call.=FALSE)
+    if(!missing(exprs))
+        if(!all(colnames(exprs) %in% parameters$name))
+            stop("parameter description doesn't match colnames of the ",
+                 "data matrix", call.=FALSE)
+    return(TRUE)
 }
 
 ## constructor
 flowFrame <- function(exprs, parameters, description=list())
 {
-  if(!is.matrix(exprs) || !is.numeric(exprs) || is.null(colnames(exprs)))
-    stop("Argument 'exprs' must be numeric matrix with colnames ",
-         "attribute set", call.=FALSE)
-  if(missing(parameters))
-    parameters <- parDefault(exprs)
-  else
-    isValidParameters(parameters, exprs)
-  checkClass(description, "list")
-  new("flowFrame", exprs=exprs, parameters=parameters,
-      description=description)
+    if(!is.matrix(exprs) || !is.numeric(exprs) || is.null(colnames(exprs)))
+        stop("Argument 'exprs' must be numeric matrix with colnames ",
+             "attribute set", call.=FALSE)
+    if(missing(parameters))
+        parameters <- parDefault(exprs)
+    else
+        isValidParameters(parameters, exprs)
+    checkClass(description, "list")
+    new("flowFrame", exprs=exprs, parameters=parameters,
+        description=description)
 }
 
 
@@ -105,54 +109,54 @@ flowFrame <- function(exprs, parameters, description=list())
 ## ---------------------------------------------------------------------------
 setClass("flowSet",                   
          representation=representation(frames="environment",
-           phenoData="AnnotatedDataFrame",
-           colnames="character"),
+         phenoData="AnnotatedDataFrame",
+         colnames="character"),
          prototype=list(frames=new.env(hash=TRUE, parent=emptyenv()),
-           phenoData=new("AnnotatedDataFrame",
-             data=data.frame(),
-             varMetadata=data.frame()),
-           colnames=character(0)),
+         phenoData=new("AnnotatedDataFrame",
+         data=data.frame(),
+         varMetadata=data.frame()),
+         colnames=character(0)),
          validity=function(object){
-           nc <- length(colnames(object))
-           ## Make sure that all of our samples list
-           name.check <- is.na(match(sampleNames(object), ls(object@frames,
-                                                             all.names=TRUE)))
-           if(any(name.check)) {
-             name.list <- paste(sampleNames(object)[name.check], sep=",")
-             return(paste("These objects are not in the data environment:",
-                          name.list))
-           }
-           ##Ensure that all frames match our colnames
-           if(!all(sapply(sampleNames(object), function(i) {
-             x <- get(i, env=object@frames)
-             if(all(object@colnames %in% colnames(x))){
-               TRUE
-             }else{ 
-               return(paste(i, "failing colnames check: ",
-                            paste(object@colnames, sep=","),
-                            "vs", paste(colnames(x), sep=",")))
+             nc <- length(colnames(object))
+             ## Make sure that all of our samples list
+             name.check <- is.na(match(sampleNames(object), ls(object@frames,
+                                                               all.names=TRUE)))
+             if(any(name.check)) {
+                 name.list <- paste(sampleNames(object)[name.check], sep=",")
+                 return(paste("These objects are not in the data environment:",
+                              name.list))
              }
-           }))){
-             return(paste("Some items identified in the data environment",
-                          "either have the wrong dimension or type."))
-           }
-           return(TRUE)
+             ##Ensure that all frames match our colnames
+             if(!all(sapply(sampleNames(object), function(i) {
+                 x <- get(i, env=object@frames)
+                 if(all(object@colnames %in% colnames(x))){
+                     TRUE
+                 }else{ 
+                     return(paste(i, "failing colnames check: ",
+                                  paste(object@colnames, sep=","),
+                                  "vs", paste(colnames(x), sep=",")))
+                 }
+             }))){
+                 return(paste("Some items identified in the data environment",
+                              "either have the wrong dimension or type."))
+             }
+             return(TRUE)
          })
 
 ## constructor
 flowSet <- function(..., phenoData, name)
 {
-  x <- list(...)
-  if(length(x) == 1 && is.list(x[[1]]))
-    x <- x[[1]]
-  if(!all(sapply(x, is, "flowFrame")))
-    stop("All additional arguments must be flowFrames")
-  f <- as(x, "flowSet")
-  if(!missing(phenoData))
-    phenoData(f) <- phenoData
-  if(!missing(name))
-    identifier(f) <- name
-  f
+    x <- list(...)
+    if(length(x) == 1 && is.list(x[[1]]))
+        x <- x[[1]]
+    if(!all(sapply(x, is, "flowFrame")))
+        stop("All additional arguments must be flowFrames")
+    f <- as(x, "flowSet")
+    if(!missing(phenoData))
+        phenoData(f) <- phenoData
+    if(!missing(name))
+        identifier(f) <- name
+    f
 }
 
 
@@ -164,7 +168,7 @@ flowSet <- function(..., phenoData, name)
 ## ---------------------------------------------------------------------------
 setClass("transform",
          representation=representation(transformationId="character",
-                                       .Data="function"),
+         .Data="function"),
          prototype=prototype(transformationId=""))
 
 setClass("parameters", contains="list")
@@ -195,7 +199,7 @@ setClass("nullParameter",
 ## ---------------------------------------------------------------------------
 setClass("filter", 
          representation=representation("VIRTUAL",
-           filterId="character"),
+         filterId="character"),
          prototype=prototype(filterId=""))
 
 setClass("concreteFilter",
@@ -221,78 +225,129 @@ setClass("parameterFilter",
 ## ---------------------------------------------------------------------------
 setClass("rectangleGate",
          representation=representation(min="numeric",
-           max="numeric"),
+         max="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="Rectangle Gate",
-           min=-Inf,
-           max=Inf)
+         prototype=list(filterId="defaultRectangleGate",
+         min=-Inf,
+         max=Inf)
          )
 
-## parse '...' argument of a gate constructor
-parseDots <- function(dl, collapseFirst=FALSE){
-    if(collapseFirst && length(dl) && is.list(dl[[1]]))
-        dl <- dl[[1]]
-    parseItem <- function(i, x){
-        if(is(x[[i]], "transform"))
-            x[[i]]
-        else{
-            if(!is.matrix(x[i]) && is.null(names(x)[i]))
-                stop("Additional arguments have to be named.", call.=FALSE)
-            unitytransform(names(x)[[i]])
+## parse '...' argument of a gate constructor. The return value is a list
+## with parameters (as transforms) and values.
+parseDots <- function(dl, collapseFirst=TRUE, len=NULL){
+    parseItem <- function(i, x, len){
+        ## We can return transforms directly
+        y <- x[[i]]
+        if(is(y, "transform")){
+            dl[[i]] <<- NA
+            y
+        }else{
+            li <- length(y)
+            if(!is.character(y) && !is.null(len) && li!=len)
+                stop("All additional arguments must be of length ",
+                     len, call.=FALSE)
+            if(!is.character(y) && li!=allLen)
+                stop("All additional arguments must be of equal length ",
+                     call.=FALSE)     
+            if(!is.character(y) && is.null(names(x)[i]))
+                stop("Additional arguments have to be named.",
+                     call.=FALSE)
+            if(is.character(y)){
+                ## We return character scalars as unitytransforms
+                dl[[i]] <<- NA
+                unitytransform(y) 
+            }else{
+                ## For eerything else we make unitytransforms from the
+                ## argument names
+                unitytransform(names(x)[i])
+            }
         }
     }
-    parms <- sapply(seq_along(dl), parseItem, dl)
-    names(parms) <- names(dl)
-    return(parms)
-}
-
-## helper function for gate constructors
-parConst <- function(.gate, ...){
-  dl <- list(...)
-  if(length(dl)>1 && length(unique(sapply(dl, class)))!=1)
-    stop("Don't know how to deal with mixed classes in '...'",
-         call.=FALSE)
-  if(length(dl) && is.list(dl[[1]]))
-    dl <- dl[[1]]
-  checkItem <- function(x){
-    if(!(is(x, "transform") || is.numeric(x) || is.character(x)))
-      stop("Items in '...' must be of class transform or ",
-           "numeric or lists of such items.", call.=FALSE)
-  }
-  sapply(dl, checkItem)
-  parms <- 
-    if(!missing(.gate)){
-      if(!is.null(colnames(.gate))){
-        sapply(colnames(.gate), unitytransform)
-      }else{
-        parms <- parseDots(dl)
-        try(colnames(.gate) <- sapply(parms, parameters),
-            silent=TRUE)
-        parms
-      }
-    }else{
-      tmp <- parseDots(dl)
-      if(!all(sapply(tmp, is, "unitytransform")))
-        stop("You need to provide gate limits.",
-             call.=FALSE)
-      .gate <- matrix(sapply(dl, function(x){
-         if(length(x) ==2)
-          x <- sort(x)
-        x}), ncol=length(tmp))
-      tmp
+    ## We only parse ..1 if it is a list and drop all other arguments
+    if(collapseFirst && length(dl) && is.list(dl[[1]]))
+        dl <- dl[[1]]
+    if(length(dl)){
+        ## If ..1 is a character vector we return unitytransforms only
+        if(is.character(dl[[1]]) && length(dl[[1]])>1)
+            return(list(parameters=sapply(dl[[1]], unitytransform,
+                        simplify=FALSE),
+                        values=as.list(rep(NA, length(dl[[1]])))))
+        ## If ..1 is a matrix we return unitytransforms and the matrix
+        if(is.matrix(dl[[1]])){
+            if(is.null(colnames(dl[[1]])))
+                stop("Matrix of gate boundaries must have colnames.",
+                     call.=FALSE)
+            return(list(parameters=sapply(colnames(dl[[1]]), unitytransform,
+                        simplify=FALSE), values=dl[[1]]))
+        }
+        ## All items in dl must be of equal length
+        allLen <- if(is.character(dl[[1]])) length(dl[[min(length(dl), 2)]]) 
+        else length(dl[[1]])
+       
     }
-  if(length(parms) != ncol(.gate))
-    stop("'.gate' needs to have colnames.", call.=FALSE)
-  return(list(parameters=parms, gate=.gate))
+    parms <- sapply(seq_along(dl), parseItem, dl, len, simplify=FALSE)
+    return(list(parameters=parms, values=dl))
 }
 
-## constructor
-rectangleGate <- function(..., .gate, filterId="Rectangle Gate")
+## Further process the output of parseDots to collapse individual arguments
+prepareInputs <- function(parsed, .gate, ...)
 {
-  parms <- parConst(.gate, ...)  
-  parms$gate <- apply(parms$gate, 2, sort)
-  new("rectangleGate", filterId = filterId, parameters=parms$parameters,
-      min=parms$gate[1, ], max=parms$gate[2, ])
+    parms <- parsed$parameters
+    values <- parsed$values
+    if(missing(.gate)){
+        if(any(sapply(values, is.na)))
+            stop("The gate boundaries has to be provides as argument",
+                 " '.gate'", call.=FALSE)
+        if(!is.matrix(values)){
+            sel <- sapply(values, is, "numeric")
+            if(any(sel)){
+                values <- matrix(sapply(values[sel], function(x){
+                    if(length(x) ==2)
+                        x <- sort(x)
+                    x}), ncol=length(parms))
+                parms <- parms[sel]
+                colnames(values) <- sapply(parms, parameters)
+            }
+            return(list(parameters=parms, values=values))
+        }
+        if(!length(parms))
+            stop("No arguments provided.", call.=FALSE)
+        return(parsed)
+    }else{
+        if(is.matrix(.gate) && !is.null(colnames(.gate)))
+            return(parseDots(list(.gate), ...))
+        if(any(sapply(values, is.na))){
+            if(ncol(.gate) != length(parms))
+                stop("Number of parameters and dimensions of supplied",
+                     " gate boundaries don't match.", call.=FALSE)
+            return(list(parameters=parms, values=.gate))
+        }
+        if(!length(parms) || !all(sapply(parms, is, "unityTranform"))){
+            return(prepareInputs(parseDots(list(.gate), ...)))
+        }else{
+            return(parsed)
+        }
+    }
+}
+
+
+## Constructor. We allow for the following inputs:
+##  ... are named numerics, each of length 2
+##  ... are transforms or a mix of transforms and characters, .gate is
+##      the associated matrix of min and max values
+##  ..1 is a named list of numerics
+##  ..1 is a list of transformations or characters and .gate is the
+##      associated matrix of min and max values, each of length 2
+##  .gate is a matrix of min and max values with colnames = parameters
+##  .gate is a named list of numerics, each of lenght 2
+rectangleGate <- function(..., .gate, filterId="defaultRectangleGate")
+{
+    checkClass(filterId, "character", 1)
+    parms <- parseDots(list(...), len=2)
+    parms <- prepareInputs(parms, .gate, len=2)
+    parms$values <- apply(parms$values, 2, sort)
+    new("rectangleGate", filterId = filterId, parameters=parms$parameters,
+        min=parms$value[1, ], max=parms$value[2, ])
 }
 
 
@@ -307,20 +362,28 @@ rectangleGate <- function(..., .gate, filterId="Rectangle Gate")
 setClass("quadGate",
          representation=representation(boundary="numeric"),        
          contains="parameterFilter",
-         prototype=list(filterId="Quadrant Gate",
-           boundary=c(Inf, Inf)))
+         prototype=list(filterId="defaultQuadGate",
+         boundary=c(Inf, Inf)))
 
-## constructor
-quadGate <- function(..., .gate, filterId="Quadrant Gate")
+## Constructor. We allow for the following inputs:
+##  ..1 and ..2 are named numerics of length 1
+##  ..1 and ..2 are transforms or a mix of transforms and characters, .gate
+##      is the associated numeric vector of boundary values of length 2
+##  ..1 is a named list of numerics of length 1
+##  ..1 is a list of transformations or characters and .gate is the
+##      associated numeric vector of boundary values of length 2
+##  .gate is a named list of numerics, each of lenght 1
+quadGate <- function(..., .gate, filterId="defaultQuadGate")
 {
-  if(!missing(.gate)&& !is.matrix(.gate))
-    .gate <- matrix(.gate, nrow=1)
-  parms <- parConst(.gate, ...)
-  if(length(parms$parameters) !=2 || nrow(parms$gate)!=1)
-    stop("Expecting two named arguments or a single named vector\n",
-         "of length 2 as input for gate boundaries.", call.=FALSE)
-  new("quadGate", filterId=filterId, parameters=parms$parameters,
-      boundary=as.numeric(parms$gate))
+    checkClass(filterId, "character", 1)
+    if(!missing(.gate) && !is.list(.gate) && !is.matrix(.gate))
+        .gate <- matrix(.gate, nrow=1)
+    parms <- prepareInputs(parseDots(list(...), len=1), .gate, len=1)
+    if(length(parms$parameters) !=2 || nrow(parms$value)!=1)
+        stop("Expecting two named arguments or a single named vector\n",
+             "of length 2 as input for gate boundaries.", call.=FALSE)
+    new("quadGate", filterId=filterId, parameters=parms$parameters,
+        boundary=as.numeric(parms$value))
 }
 
 
@@ -334,32 +397,43 @@ quadGate <- function(..., .gate, filterId="Quadrant Gate")
 setClass("polygonGate",
          representation(boundaries="matrix"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", boundaries=matrix(ncol=2, nrow=3)),
+         prototype=list(filterId="defaultPolygonGate",
+         boundaries=matrix(ncol=2, nrow=3)),
          validity=function(object)
-         {
-           msg <- TRUE
-           if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3 ||
-              ncol(object@boundaries)!=2
-              )
+     {
+         msg <- TRUE
+         if(!is.matrix(object@boundaries) || nrow(object@boundaries)<3 ||
+            ncol(object@boundaries)!=2
+            )
              msg <- paste("\nslot 'boundaries' must be a numeric matrix",
                           "of at least 3 rows and exactly 2 columns")
-           return(msg)
-         }
-         )
+         return(msg)
+     })
 
-
-## constructor
-polygonGate <- function(..., .gate, boundaries, filterId="Polygon Gate")
+## Constructor. We allow for the following inputs:
+##  ..1 and ..2 are named numerics, each of the same length
+##  ..1 and ..2  are transforms or a mix of transforms and characters, .gate is
+##      the associated matrix of polygon vertices of ncol=2
+##  ..1 is a named list of numerics, each of the same length
+##  ..1 is a list of transformations or characters and .gate is the
+##      associated matrix of polygon vertices of ncol=2
+##  .gate is a matrix of polygon vertices of ncol=2, colnames = parameters
+##  .gate is a named list of two numerics, both of the same length
+polygonGate <- function(..., .gate, boundaries, filterId="defaultPolygonGate")
 {
-  if(missing(.gate))
-    if(!missing(boundaries)){
-      .Deprecated(msg=paste("The 'boundaries' argument is deprecated,",
-                    "please use '.gate' instead."))
-      .gate=boundaries
-    }     
-  parms <- parConst(.gate, ...)
-  new("polygonGate", filterId=filterId, parameters=parms$parameters,
-      boundaries=parms$gate)
+    checkClass(filterId, "character", 1)
+    if(missing(.gate))
+        if(!missing(boundaries)){
+            .Deprecated(msg=paste("The 'boundaries' argument is deprecated,",
+                        "please use '.gate' instead."))
+            .gate=boundaries
+        }     
+    parms <- prepareInputs(parseDots(list(...)), .gate)
+    if(length(parms$parameters) !=2)
+        stop("Polygon gates are only defined in two dimensions.",
+             call.=FALSE)
+    new("polygonGate", filterId=filterId, parameters=parms$parameters,
+        boundaries=parms$values)
 }
 
 
@@ -367,21 +441,33 @@ polygonGate <- function(..., .gate, boundaries, filterId="Polygon Gate")
 ## ===========================================================================
 ## Polytope gate
 ## ---------------------------------------------------------------------------
-## A class describing a nD polytope region in the parameter space. Slot
-## boundary holds the vertices of the polygon in a n colum matrix
+## A class describing a nD polytope region in the parameter space. Slot a
+## holds the coefficients of the linear equations for m halfspaces in n
+## dimensions and b is a vector of m intercepts.
 ## ---------------------------------------------------------------------------
 setClass("polytopeGate",
          representation(a="matrix",b="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="NULL", a=matrix(), b=1))
+         prototype=list(filterId="defaultPolytopeGate", a=matrix(), b=1))
 
-## constructor
-polytopeGate <- function(..., a, b, filterId="Polytope Gate")
+## Constructor. We allow for the following inputs:
+##  b is always a numeric of length = ncol(a)
+##  ... are named numerics, each of the same length
+##  ...  are transforms or a mix of transforms and characters, a is
+##      the associated matrix of coefficients
+##  ..1 is a named list of numerics, each of the same length
+##  ..1 is a list of transformations or characters and a is the
+##      associated matrix of coefficients
+##  a   is a matrix of coefficients , colnames = parameters
+##  a   is a named list of numerics, all of the same length
+polytopeGate <- function(..., .gate, b, filterId="defaultPolytopeGate")
 {
-  parms <- parConst(.gate=a, ...)
-  colnames(a) <- sapply(parms$parameters, parameters)
-  new("polytopeGate", filterId=filterId, parameters=parms$parameters,
-      a=a, b=b)
+    checkClass(filterId, "character", 1)
+    checkClass(b, "numeric")
+    parms <- prepareInputs(parseDots(list(...)), .gate)
+    names(b) <- colnames(parms$values) <- sapply(parms$parameters, parameters)
+    new("polytopeGate", filterId=filterId, parameters=parms$parameters,
+        a=parms$values, b=b)
 }
 
 
@@ -399,31 +485,44 @@ setClass("ellipsoidGate",
                         cov="matrix",
 			distance="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="ALL", mean=numeric(), cov=matrix(),
-           distance=1),
+         prototype=list(filterId="defaultEllipsoidGate",
+         mean=numeric(), cov=matrix(), distance=1),
          validity=function(object){
-           msg <- TRUE
-           if(!is.matrix(object@cov) ||
-              nrow(object@cov) != ncol(object@cov) ||
-              nrow(object@cov) < 2) 
-             msg <- "\nslot 'cov' must be a symmetric matrix of at least 2 rows"
-           if(!is.numeric(object@mean) ||
-              length(object@mean) != nrow(object@cov))
-             msg <- paste("\nslot 'mean' must be numeric vector of",
-                          "same length as dimensions in 'cov'")
-           if(!is.numeric(object@distance) ||	length(object@distance)!=1)
-             msg <- "'distance' must be numeric of length 1"      
-           return(msg)
+             msg <- TRUE
+             if(!is.matrix(object@cov) ||
+                nrow(object@cov) != ncol(object@cov) ||
+                nrow(object@cov) < 2) 
+                 msg <- "\nslot 'cov' must be a symmetric matrix of at least 2 rows"
+             if(!is.numeric(object@mean) ||
+                length(object@mean) != nrow(object@cov))
+                 msg <- paste("\nslot 'mean' must be numeric vector of",
+                              "same length as dimensions in 'cov'")
+             if(!is.numeric(object@distance) ||	length(object@distance)!=1)
+                 msg <- "'distance' must be numeric of length 1"      
+             return(msg)
          })
 
-
-## constructor
+## Constructor. We allow for the following inputs:
+##  mean always is a numeric of the same length as number of dimensions,
+##  distance is always a vector of length 1
+##  ... are named numerics, each of the same length
+##  ...  are transforms or a mix of transforms and characters, .gate is
+##      the associated covariance matrix
+##  ..1 is a named list of numerics, each of the same length
+##  ..1 is a list of transformations or characters and .gate is the
+##      associated covariance matrix
+##  .gate is the covariance matrix, colnames=parameters
+##  .gate is a named list of numerics, each of the same length
 ellipsoidGate <- function(..., .gate, mean, distance=1,
-                          filterId="Ellipsoid Gate") {
-  parms <- parConst(.gate, ...)
-  names(mean) <- sapply(parms$parameters, parameters)
-  new("ellipsoidGate", filterId=filterId, parameters=parms$parameters,
-      cov=parms$gate, mean=mean, distance=distance)
+                          filterId="defaultEllipsoidGate")
+{
+    checkClass(filterId, "character", 1)
+    checkClass(mean, "numeric")
+    checkClass(distance, "numeric", 1)
+    parms <- prepareInputs(parseDots(list(...)), .gate)
+    names(mean) <- sapply(parms$parameters, parameters)
+    new("ellipsoidGate", filterId=filterId, parameters=parms$parameters,
+        cov=parms$values, mean=mean, distance=distance)
 }
 
 
@@ -438,36 +537,41 @@ ellipsoidGate <- function(..., .gate, mean, distance=1,
 ## giving transformations, if applicable that are applied to the data
 ## before gating. n is the number of points used in the subsampling step.
 ## ---------------------------------------------------------------------------
-## FIXME" transformation slot has to go once the new transformation
-## infrastructure is in place
 setClass("norm2Filter",
          representation=representation(method="character",
-           scale.factor="numeric",
-           transformation="list",
-           n="numeric"),
+         scale.factor="numeric",
+         n="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="Norm2 Filter",
-           scale.factor=1,
-           transformation=list(),
-           method="covMcd",
-           n=50000))
+         prototype=list(filterId="defaultNorm2Filter",
+         scale.factor=1,
+         transformation=list(),
+         method="covMcd",
+         n=50000))
 
-## constructor
+## Constructor. We allow for the following inputs:
+##  method is always a character and scale.factor and n both are always
+##     numerics, all of length 1
+##  x and y are characters of length 1 or a mix of characters and
+##     transformations
+##  x is a character of length 2 and y is missing
+##  x is a list of characters and/or transformations, y is missing
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
-                        filterId="Norm2 Filter", n=50000)
+                        n=50000, filterId="defaultNorm2Filter")
 {
-  if(is.list(x))
-    x <- unlist(x)
-  if(missing(y)) {
-    if(length(x)==1)
-      stop("You must specify two parameters for a norm2 gate.")
-    if(length(x)>2)
-      warning("Only the first two parameters will be used.")
-    y=x[2]
-    x=x[1]
-  }
-  new("norm2Filter", parameters=c(x, y), method=method,
-      scale.factor=scale.factor, filterId=filterId, n=n)
+    checkClass(method, "character", 1)
+    checkClass(scale.factor, "numeric", 1)
+    checkClass(n, "numeric", 1)
+    checkClass(filterId, "character", 1)
+    if(missing(y)) {
+        if(length(x)==1)
+            stop("You must specify two parameters for a norm2 gate.")
+        if(length(x)>2)
+            warning("Only the first two parameters will be used.")
+        y=x[[2]]
+        x=x[[1]]
+    }
+    new("norm2Filter", parameters=c(x, y), method=method,
+        scale.factor=scale.factor, filterId=filterId, n=n)
 }
 
 
@@ -481,6 +585,7 @@ norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
 ## ---------------------------------------------------------------------------
 setClass("kmeansFilter",
          representation=representation(populations="character"),
+         prototype=list(filterId="defaultKmeansFilter"),
          contains="parameterFilter")
 
 ## Constructor. We allow for the following inputs:
@@ -488,20 +593,22 @@ setClass("kmeansFilter",
 ##  ..1 is some vector that can be coerced to character
 kmeansFilter <- function(..., filterId="defaultKmeansFilter")
 {
-    if(length(list(...))){
-        n <- names(list(...))[1]
-        if(is.list(..1)){
-            n <- names(..1)[1]
-            "..1" <- unlist(..1, recursive=FALSE)
+    checkClass(filterId, "character", 1)
+    ll <- list(...)
+    if(length(ll)){
+        n <- names(ll)[1]
+        if(is.list(ll[[1]])){
+            n <- names(ll[[1]])[1]
+            ll[[1]] <- unlist(ll[[1]], recursive=FALSE)
         }
-        parameter <- if(is(..1, "transform")) ..1 else n
+        parameter <- if(is(ll[[1]], "transform")) ll[[1]] else n
         populations <- if(is(parameter, "transform")){
-            if(length(list(...))==1)
+            if(length(ll)==1)
                 stop("List of populations needs to be provided as ",
                      "an additional argument.", call.=FALSE) 
-            as.character(unlist(..2))} else as.character(unlist(..1))
+            as.character(unlist(ll[[2]]))} else as.character(unlist(ll[[1]]))
     }else{
-       stop("No arguments provided.", .call=FALSE)
+        stop("No arguments provided.", .call=FALSE)
     }
     new("kmeansFilter", parameters=parameter,
         populations=populations, filterId=filterId)
@@ -518,23 +625,24 @@ kmeansFilter <- function(..., filterId="defaultKmeansFilter")
 ## ---------------------------------------------------------------------------
 setClass("curv1Filter",
          representation=representation(bwFac="numeric",
-           gridsize="numeric"),
+         gridsize="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="Curv1 Filter",
-           bwFac=1.2,
-           gridsize=rep(151, 2)))
+         prototype=list(filterId="defaultCurv1Filter",
+         bwFac=1.2,
+         gridsize=rep(151, 2)))
 
-##constructor
-curv1Filter <- function(x, filterId="Curv1 Filter",
-                        bwFac=1.2,
-                        gridsize=rep(151, 2))
+## Constructor. We allow for the following inputs:
+##  bwFac is always a numeric of length 1 and gridsize is always a numeric
+##     of length 2
+##  x is either a character or a transformation
+curv1Filter <- function(x, bwFac=1.2, gridsize=rep(151, 2),
+                        filterId="defaultCurv1Filter")
 {
-  if(!is.numeric(bwFac) || length(bwFac)!=1)
-    stop("'bwFac must be numeric skalar")
-  if(!is.numeric(gridsize) || length(gridsize)!=2)
-    stop("'gridsize must be numeric skalar")
-  new("curv1Filter", parameters=x, bwFac=bwFac,
-      gridsize=gridsize, filterId=as.character(filterId))
+    checkClass(filterId, "character", 1)
+    checkClass(bwFac, "numeric", 1)
+    checkClass(gridsize, "numeric", 2)
+    new("curv1Filter", parameters=x, bwFac=bwFac,
+        gridsize=gridsize, filterId=as.character(filterId))
 }
 
 
@@ -548,31 +656,37 @@ curv1Filter <- function(x, filterId="Curv1 Filter",
 ## ---------------------------------------------------------------------------
 setClass("curv2Filter",
          representation=representation(bwFac="numeric",
-           gridsize="numeric"),
+         gridsize="numeric"),
          contains="parameterFilter",
-         prototype=list(filterId="Curv1 Filter",
-           bwFac=1.2,
-           gridsize=rep(151, 2)))
+         prototype=list(filterId="defaultCurv2Filter",
+         bwFac=1.2,
+         gridsize=rep(151, 2)))
 
-##constructor
-curv2Filter <-
-  function(x, y, filterId="curv2Filter", bwFac=1.2,
-           gridsize=rep(151, 2))
+## Constructor. We allow for the following inputs:
+##  bwFac is always a numeric of length 1 and gridsize is always a numeric
+##     of length 2
+##  x and y are characters of length 1 or a mix of characters and
+##     transformations
+##  x is a character of length 2 and y is missing
+##  x is a list of characters and/or transformations, y is missing
+curv2Filter <- function(x, y, filterId="defaultCurv2Filter",
+                        bwFac=1.2, gridsize=rep(151, 2))
 {
-  checkClass(bwFac, "numeric", 1)
-  checkClass(gridsize, "numeric", 2)
-  if(missing(y)) {
-    if(length(x)==1)
-      stop("You must specify two parameters for a curv2Filter.",
-           call.=FALSE)
-    if(length(x)>2)
-      warning("Only using parameters '", x[1], "' and '", x[2],
-              "'.", call.=FALSE)
-    y=x[2]
-    x=x[1]
-  }
-  new("curv2Filter", parameters=list(x,y), bwFac=bwFac,
-      gridsize=gridsize, filterId=as.character(filterId))
+    checkClass(filterId, "character", 1)
+    checkClass(bwFac, "numeric", 1)
+    checkClass(gridsize, "numeric", 2) 
+    if(missing(y)) {
+        if(length(x)==1)
+            stop("You must specify two parameters for a curv2Filter.",
+                 call.=FALSE)
+        if(length(x)>2)
+            warning("Only using parameters '", x[1], "' and '", x[2],
+                    "'.", call.=FALSE)
+        y=x[[2]]
+        x=x[[1]]
+    }
+    new("curv2Filter", parameters=list(x,y), bwFac=bwFac,
+        gridsize=gridsize, filterId=as.character(filterId))
 }
 
 
@@ -585,11 +699,16 @@ curv2Filter <-
 setClass("sampleFilter",
          representation=representation(size="numeric"),
          contains="concreteFilter",
-         prototype=list(size=10000))
+         prototype=list(size=10000, filterId="defaultSampleFilter"))
 
-##constructor
-sampleFilter <- function(filterId="sample", size)
-  new("sampleFilter", filterId=filterId, size=size)
+##Constructor: We allow for the following inputs:
+##  size is always a numeric of length 1
+sampleFilter <- function(size, filterId="defaultSampleFilter")
+{
+    checkClass(filterId, "character", 1)
+    checkClass(size, "numeric", 1)
+    new("sampleFilter", filterId=filterId, size=size)
+}
 
 
 
@@ -604,35 +723,42 @@ sampleFilter <- function(filterId="sample", size)
 ## ---------------------------------------------------------------------------
 setClass("expressionFilter",
          representation=representation(expr="expression",
-           args="list",
-           deparse="character"),
+         args="list",
+         deparse="character"),
          contains="concreteFilter",
-         prototype=list(filterId="Expression Filter",
-           exprs=expression(rep(TRUE, length(get(ls()[1])))),
-           args=list(),
-           deparse="default"))
+         prototype=list(filterId="defaultExpressionFilter",
+         exprs=expression(rep(TRUE, length(get(ls()[1])))),
+         args=list(),
+         deparse="default"))
 
-## constructor
-expressionFilter <- function(expr, ..., filterId)
+## Constructor: We allow for the following inputs:
+##  expr is always an expression
+##  ... are further arguments to the expression
+expressionFilter <- function(expr, ..., filterId="defaultExpressionFilter")
 {
-  subs <- substitute(expr)
-  if(missing(filterId)){
-    filterId <- deparse(subs)
-    if(length(filterId)>1)
-      filterId <- paste(gsub("^ *", "", filterId[2]), "...", sep="")
-  }
-  new("expressionFilter", filterId=filterId, expr=as.expression(subs),
-      args=list(...), deparse=deparse(subs))
+    subs <- substitute(expr)
+    if(missing(filterId)){
+        filterId <- deparse(subs)
+        if(length(filterId)>1)
+            filterId <- paste(gsub("^ *", "", filterId[2]), "...", sep="")
+    }else checkClass(filterId, "character", 1)
+    new("expressionFilter", filterId=filterId, expr=as.expression(subs),
+        args=list(...), deparse=deparse(subs))
 }
 
-## construct expression by parsing a character string
-char2ExpressionFilter <- function(expr, ..., filterId)
+## Constructor from a character string: We allow for the following inputs:
+##  expr is always a character string
+char2ExpressionFilter <- function(expr, ...,
+                                  filterId="defaultExpressionFilter")
 {
-  subs <- parse(text=expr)
-  if(missing(filterId))
-    filterId <- expr
-  new("expressionFilter", filterId=filterId, expr=subs,
-      args=list(...), deparse=expr)
+    checkClass(expr, "character", 1)
+    subs <- parse(text=expr)
+    if(missing(filterId))
+        filterId <- expr
+    else
+        checkClass(filterId, "character", 1)
+    new("expressionFilter", filterId=filterId, expr=subs,
+        args=list(...), deparse=expr)
 }
 
 
@@ -650,31 +776,38 @@ char2ExpressionFilter <- function(expr, ..., filterId)
 ## ---------------------------------------------------------------------------
 setClass("timeFilter",
          representation=representation(bandwidth="numeric",
-           binSize="numeric",
-           timeParameter="character"),
+         binSize="numeric",
+         timeParameter="character"),
          contains="parameterFilter",
-         prototype=list(filterId="Time Filter",
-           bandwidth=0.75,
-           binSize=NULL,
-           timeParameter=NULL))
+         prototype=list(filterId="defaultTimeFilter",
+         bandwidth=0.75,
+         binSize=NULL,
+         timeParameter=NULL))
 
-## contructor
-timeFilter <- function(..., filterId="Time Filter", bandwidth=0.75,
-                       binSize=NULL, timeParameter=NULL)
+## Constructor: We allow for the following inputs:
+##  bandwidth and binSize are always numerics of lenght 1, timeParameter
+##      is always a character of length 1
+##  ..1 is a character
+##  ..1 is a list of character and/or transformations
+##  ... are characters and/or transformations
+timeFilter <- function(..., bandwidth=0.75, binSize, timeParameter,
+                       filterId="defaultTimeFilter")
 {
-  x <- ..1
-  if(is.list(x))
-    pars <- unlist(x)
-  else if (is.character(x) && length(x)>1)
-    pars <- x
-  else
-    pars <- unlist(list(...))
-  if(!all(is.character(pars)))
-    stop("Only know how to deal with character data for the parameter ",
-         "definition.", call.=FALSE)
-  new("timeFilter", parameters=pars,
-      bandwidth=bandwidth, binSize=as.numeric(binSize),
-      timeParameter=as.character(timeParameter), filterId=filterId)
+    checkClass(bandwidth, "numeric", 1)
+    
+    if(!missing(binSize))
+        checkClass(binSize, "numeric", 1)
+    else
+        binSize <- NULL
+    if(!missing(timeParameter))
+        checkClass(timeParameter, "character", 1)
+    else
+        timeParameter <- NULL
+    checkClass(filterId, "character", 1)
+    parms <- parseDots(list(...))
+    new("timeFilter", parameters=parms$parameters,
+        bandwidth=bandwidth, binSize=as.numeric(binSize),
+        timeParameter=as.character(timeParameter), filterId=filterId)
 }
 
 
@@ -688,24 +821,24 @@ timeFilter <- function(..., filterId="Time Filter", bandwidth=0.75,
 ## ---------------------------------------------------------------------------
 setClass("filterSet",
          representation=representation(env="environment",
-           name="character"),
+         name="character"),
          prototype=prototype(env=new.env(hash=TRUE, parent=emptyenv()),
-           name="Filter Set"))
+         name="Filter Set"))
 
 ## constructor
 filterSet <- function(..., name="default") {
-  filters <- list(...)
-  ## Allow the list(x, y, z) format as well.
-  if(length(filters)==1 && is.list(filters[[1]]))
-    filters <- filters[[1]]
-  if(length(filters) == 0)
-    new("filterSet", env=new.env(parent=emptyenv()), name=name)
-  else{
-    tmp <- as(filters, "filterSet")
-    tmp@name <- name
-    tmp
-  }
-  
+    filters <- list(...)
+    ## Allow the list(x, y, z) format as well.
+    if(length(filters)==1 && is.list(filters[[1]]))
+        filters <- filters[[1]]
+    if(length(filters) == 0)
+        new("filterSet", env=new.env(parent=emptyenv()), name=name)
+    else{
+        tmp <- as(filters, "filterSet")
+        tmp@name <- name
+        tmp
+    }
+    
 }
 
 
@@ -721,24 +854,24 @@ filterSet <- function(..., name="default") {
 ## ---------------------------------------------------------------------------
 setClass("filterReference",
          representation=representation(name="character",
-           env="environment"),
+         env="environment"),
          contains="filter")
 
 ## Constructor from an environment
 setMethod("filterReference",
           signature("environment", "character"),
           function(from, name) {
-            new("filterReference", name=name, env=from)
+              new("filterReference", name=name, env=from)
           })
 
 ## Constructor from another filterSet
 setMethod("filterReference",
           signature("filterSet", "character"),
           function(from,name)
-          {
-            new("filterReference", env=from@env,
-                name=name)
-          })
+      {
+          new("filterReference", env=from@env,
+              name=name)
+      })
 
 
 
@@ -767,21 +900,21 @@ setClass("unionFilter",
 ## constructor from two filters
 setMethod("|",
           signature=signature(e1="filter",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2)
-          {
-            new("unionFilter", filters=list(e1, e2),
-                filterId=paste(identifier(e1), "or", identifier(e2)))
-          })
+      {
+          new("unionFilter", filters=list(e1, e2),
+              filterId=paste(identifier(e1), "or", identifier(e2)))
+      })
 
 ## constructor from a list of filters and a filter and vice versa
 setMethod("|",
           signature=signature(e1="list",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2) lapply(e1, "|", e2=e2))
 setMethod("|",
           signature=signature(e1="filter",
-            e2="list"),
+          e2="list"),
           definition=function(e1, e2) lapply(e2, "|", e1=e1))
 
 
@@ -800,21 +933,21 @@ setClass("intersectFilter",
 ## constructor from two filters
 setMethod("&",
           signature=signature(e1="filter",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2)
-          {
-            new("intersectFilter", filters=list(e1, e2),
-                filterId=paste(identifier(e1), "and", identifier(e2)))
-          })
+      {
+          new("intersectFilter", filters=list(e1, e2),
+              filterId=paste(identifier(e1), "and", identifier(e2)))
+      })
 
 ## constructor from a list of filters and a filter and vice versa
 setMethod("&",
           signature=signature(e1="list",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2) lapply(e1, "&", e2=e2))
 setMethod("&",
           signature=signature(e1="filter",
-            e2="list"),
+          e2="list"),
           definition=function(e1, e2) lapply(e2, "&", e1=e1))
 
 
@@ -827,24 +960,24 @@ setMethod("&",
 setClass("complementFilter",
          representation=representation("setOperationFilter"),
          validity=function(object)
-         { 
-           if(length(object@filters) != 1) {
+     { 
+         if(length(object@filters) != 1) {
              warning("Complement filters can only operate on a ",
                      "single filter")
              return(FALSE)
-           }
-           TRUE
-         })
+         }
+         TRUE
+     })
 
 
 ## constructor
 setMethod("!",
           signature=signature(x="filter"),
           definition=function(x)
-          {
-            new("complementFilter",filters=list(x),
-                filterId=paste("not",identifier(x)))
-          })
+      {
+          new("complementFilter",filters=list(x),
+              filterId=paste("not",identifier(x)))
+      })
 
 
 
@@ -858,52 +991,52 @@ setMethod("!",
 setClass("subsetFilter",
          representation=representation("setOperationFilter"),
          validity=function(object)
-         {
-           if(length(object@filters) != 2) {
+     {
+         if(length(object@filters) != 2) {
              warning("Subset filters are only defined as binary operators")
              return(FALSE)
-           }
-           TRUE
-         })
+         }
+         TRUE
+     })
 
 ## constructor from two filters. %&% is an alias for %subset%
 setMethod("%subset%",
           signature=signature(e1="filter",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2)
-          {
-            new("subsetFilter",
-                filters=list(e1, e2), filterId=paste(identifier(e1),"in",
-                                        identifier(e2)))
-          })
+      {
+          new("subsetFilter",
+              filters=list(e1, e2), filterId=paste(identifier(e1),"in",
+                                    identifier(e2)))
+      })
 setMethod("%&%",
           signature=signature(e1="filter",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2) e1 %subset% e2)
 
 ## constructor from a list of filters and a filter
 setMethod("%subset%",
           signature=signature(e1="list",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1, e2) lapply(e1, "%subset%", e2=e2))
 
 ## constructor from a filterSet and a filter
 setMethod("%subset%",
           signature=signature(e1="filterSet",
-            e2="filter"),
+          e2="filter"),
           definition=function(e1,e2)
-          {
-            ## Make a copy of the filterSet, preserving R semantics
-            x <- as(as(e1, "list"), "filterSet")
-            n <- names(e1)
-            x[[""]] <- e2
-            target <- as.symbol(identifier(e2))
-            for(i in n){
+      {
+          ## Make a copy of the filterSet, preserving R semantics
+          x <- as(as(e1, "list"), "filterSet")
+          n <- names(e1)
+          x[[""]] <- e2
+          target <- as.symbol(identifier(e2))
+          for(i in n){
               x[[""]] <- substitute(~ a %subset% b, list(a=as.symbol(i),
                                                          b=target))
-            }
-            x
-          })
+          }
+          x
+      })
 
 
 
@@ -916,10 +1049,10 @@ setMethod("%subset%",
 ## ---------------------------------------------------------------------------
 setClass("filterResult",
          representation=representation(frameId="character",
-           filterDetails="list"),
+         filterDetails="list"),
          contains="concreteFilter",
          prototype=list(frameId="Filter Result",
-           filterDetails=list()))
+         filterDetails=list()))
 
 
 
@@ -958,18 +1091,18 @@ setClass("multipleFilterResult",
 ## ---------------------------------------------------------------------------
 setClass("manyFilterResult",
          representation=representation(subSet="matrix",
-           dependency="ANY"),
+         dependency="ANY"),
          contains="filterResult")
 
 ##constructor
 manyFilterResult <- function(filters, frameId, dependency=NULL)
 {
-  q <- new("manyFilterResult",
-           filterDetails=lapply(filters, slot, "filterDetails"),
-           subSet=do.call("cbind", lapply(filters, as, "logical")),
-           dependency=dependency)
-  colnames(q@subSet) <- sapply(filters, slot, "filterId")
-  q
+    q <- new("manyFilterResult",
+             filterDetails=lapply(filters, slot, "filterDetails"),
+             subSet=do.call("cbind", lapply(filters, as, "logical")),
+             dependency=dependency)
+    colnames(q@subSet) <- sapply(filters, slot, "filterId")
+    q
 }
 
 
@@ -1005,30 +1138,30 @@ setClass("filterResultList",
 ## are of equal type and produce the same number of populations.
 validFilterResultList <- function(fres, set, strict=TRUE)
 {
-  res <- TRUE
-  checkClass(fres, "filterResultList")
-  checkClass(strict, "logical", 1)
-  if(!missing(set)){
-    checkClass(set, "flowSet")
-    if(res <- !all(names(fres) == sampleNames(set)))
-      warning("Sample names don't match between flowSet and ",
-              "filterResultList", call.=FALSE)
-  }
-  if(strict){
-    fTypes <- sapply(fres, function(x) class(x))
-    if(length(unique(fTypes)) != 1){
-      warning("Not all filterResults in the list are of equal",
-              " type.", call.=FALSE)
-      res <- FALSE
+    res <- TRUE
+    checkClass(fres, "filterResultList")
+    checkClass(strict, "logical", 1)
+    if(!missing(set)){
+        checkClass(set, "flowSet")
+        if(res <- !all(names(fres) == sampleNames(set)))
+            warning("Sample names don't match between flowSet and ",
+                    "filterResultList", call.=FALSE)
     }
-    nrPops <- sapply(fres, function(x) length(x))
-    if(length(unique(nrPops)) != 1){
-      warning("Not all filterResults in the list share the",
-              " same number of sub-populations.", call.=FALSE)
-      res <- FALSE
+    if(strict){
+        fTypes <- sapply(fres, function(x) class(x))
+        if(length(unique(fTypes)) != 1){
+            warning("Not all filterResults in the list are of equal",
+                    " type.", call.=FALSE)
+            res <- FALSE
+        }
+        nrPops <- sapply(fres, function(x) length(x))
+        if(length(unique(nrPops)) != 1){
+            warning("Not all filterResults in the list share the",
+                    " same number of sub-populations.", call.=FALSE)
+            res <- FALSE
+        }
+        return(res)
     }
-    return(res)
-  }
 }
 
 
@@ -1049,9 +1182,9 @@ validFilterResultList <- function(fres, set, strict=TRUE)
 ## ---------------------------------------------------------------------------
 setClass("filterSummary",
          representation=representation(name="character",
-           true="numeric",
-           count="numeric",
-           p="numeric"))
+         true="numeric",
+         count="numeric",
+         p="numeric"))
 
 
 
@@ -1075,138 +1208,138 @@ setClass("filterSummaryList",
 ## polynomial transform constructor
 linearTransform <- function(transformationId, a=1, b=0)
 {
-  if(!is.double(a)) 
-    stop("a must be numeric")
-  if(!is.double(b))
-    stop("b must be numeric")
-  t <- new("transform", .Data=function(x)  x <- a*x+b)
-  t@transformationId <- transformationId
-  t
+    if(!is.double(a)) 
+        stop("a must be numeric")
+    if(!is.double(b))
+        stop("b must be numeric")
+    t <- new("transform", .Data=function(x)  x <- a*x+b)
+    t@transformationId <- transformationId
+    t
 }
 
 ## Quadratic transformation constructor
 quadraticTransform <- function(transformationId, a=1, b=1, c=0)
 {
-  if(!is.double(a)) 
-    stop("a must be numeric")
-  if(!is.double(b))
-    stop("b must be numeric")
-  if(!is.double(c))
-    stop("c must be numeric")
-  t <- new("transform", .Data=function(x) x <- a*x^2 + b*x + c)
-  t@transformationId <- transformationId
-  t
+    if(!is.double(a)) 
+        stop("a must be numeric")
+    if(!is.double(b))
+        stop("b must be numeric")
+    if(!is.double(c))
+        stop("c must be numeric")
+    t <- new("transform", .Data=function(x) x <- a*x^2 + b*x + c)
+    t@transformationId <- transformationId
+    t
 }
 
 ## Natural logarithm transformation constructor
 lnTransform <- function(transformationId, r=1, d=1)
 {
-  if(!is.double(r) || r <= 0)
-    stop("r must be numeric and positive")
-  if(!is.double(d) || d <=0)
-    stop("d must be numeric")
-  t <- new("transform", .Data=function(x)
-           x<-log(x)*(r/d))
-  t@transformationId <- transformationId
-  t
+    if(!is.double(r) || r <= 0)
+        stop("r must be numeric and positive")
+    if(!is.double(d) || d <=0)
+        stop("d must be numeric")
+    t <- new("transform", .Data=function(x)
+             x<-log(x)*(r/d))
+    t@transformationId <- transformationId
+    t
 }
 
 ## Logarithm transformation constructor
 logTransform <- function(transformationId, logbase=10, r=1, d=1)
 {
-  if(!is.double(r) || r <= 0)
-    stop("r must be numeric and positive")
-  if(!is.double(d) || d <=0)
-    stop("d must be numeric")
-  if(!is.double(r) || r <=0)
-    stop("r must be numeric and positive")
-  if(!is.double(logbase) || logbase <= 1)
-    stop("logabse must be a pnumeric greater than 1")
-  t <- new("transform", .Data=function(x) x <- log(x, logbase)*(r/d))
-  t@transformationId <- transformationId
-  t
+    if(!is.double(r) || r <= 0)
+        stop("r must be numeric and positive")
+    if(!is.double(d) || d <=0)
+        stop("d must be numeric")
+    if(!is.double(r) || r <=0)
+        stop("r must be numeric and positive")
+    if(!is.double(logbase) || logbase <= 1)
+        stop("logabse must be a pnumeric greater than 1")
+    t <- new("transform", .Data=function(x) x <- log(x, logbase)*(r/d))
+    t@transformationId <- transformationId
+    t
 }
 
 
 ## General biexponential transformation constructor
 biexponentialTransform <-
-  function(transformationId, a=.5, b=1, c=.5, d=1, f=0, w=0,
-           tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
+    function(transformationId, a=.5, b=1, c=.5, d=1, f=0, w=0,
+             tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
 {
-  t <- new("transform", .Data=function(x)
-           x <- .Call(biexponential_transform, x, a, b, c,
-                      d, f, w, tol, maxit))
-  t@transformationId <- transformationId
-  t
+    t <- new("transform", .Data=function(x)
+             x <- .Call(biexponential_transform, x, a, b, c,
+                        d, f, w, tol, maxit))
+    t@transformationId <- transformationId
+    t
 }
 
 ## Logicle transformation constructor
 logicleTransform <- function(transformationId, w=0, r=262144, d=5, ...)
 {
-  if(w>d)
-    stop("Negative range decades must be smaller than total ",
-         "number of decades")
-  w <- w*log(10)
-  d <- d*log(10)
-  p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
+    if(w>d)
+        stop("Negative range decades must be smaller than total ",
+             "number of decades")
+    w <- w*log(10)
+    d <- d*log(10)
+    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
             c(.Machine$double.eps, 2*(w+d)))$root
-  t <- new("transform", .Data=biexponentialTransform(transformationId,
+    t <- new("transform", .Data=biexponentialTransform(transformationId,
                           a=r*exp(-(d-w)), b=1, c=r*exp(-(d-w))*p^2, d=1/p,
                           f=p^2-1, w=w, ...))
-  t@transformationId <- transformationId
-  t
+    t@transformationId <- transformationId
+    t
 }
 
 ## Truncation transformation constructor
 truncateTransform <- function(transformationId, a=1)
 {
-  t <- new("transform", .Data=function(x){
-    x[x<=a] <- a
-    x
-  })
-  t@transformationId <- transformationId
-  t
+    t <- new("transform", .Data=function(x){
+        x[x<=a] <- a
+        x
+    })
+    t@transformationId <- transformationId
+    t
 }
 
 ## Scale transformation constructor
 scaleTransform <- function(transformationId, a=1, b=10^4)
 {
-  t <- new("transform", .Data=function(x) (x-a)/(b-a))
-  t@transformationId <- transformationId
-  t
+    t <- new("transform", .Data=function(x) (x-a)/(b-a))
+    t@transformationId <- transformationId
+    t
 }
 
 ## Split-scale transformation constructor
 splitScaleTransform <- function(transformationId, maxValue=1023,
                                 transitionChannel=64, r=192)
 {
-  maxChannel <- r + transitionChannel
-  b <- transitionChannel/2
-  d <- 2*log10(exp(1))*r/transitionChannel
-  logt <- -2*log10(exp(1))*r/transitionChannel + log10(maxValue)
-  t <- 10^logt
-  a <- transitionChannel/(2*t)
-  logCT <- (a*t+b)*d/r
-  c <- 10^logCT/t
-  tr <- new("transform", .Data= function(x){
-    idx <- which(x <= t)
-    idx2 <- which(x > t)
-    if(length(idx2)>0)
-      x[idx2] <- log10(c*x[idx2])*r/d
-    if(length(idx)>0)
-      x[idx] <- a*x[idx]+b
-    x
-  })
-  tr@transformationId <- transformationId
-  tr
+    maxChannel <- r + transitionChannel
+    b <- transitionChannel/2
+    d <- 2*log10(exp(1))*r/transitionChannel
+    logt <- -2*log10(exp(1))*r/transitionChannel + log10(maxValue)
+    t <- 10^logt
+    a <- transitionChannel/(2*t)
+    logCT <- (a*t+b)*d/r
+    c <- 10^logCT/t
+    tr <- new("transform", .Data= function(x){
+        idx <- which(x <= t)
+        idx2 <- which(x > t)
+        if(length(idx2)>0)
+            x[idx2] <- log10(c*x[idx2])*r/d
+        if(length(idx)>0)
+            x[idx] <- a*x[idx]+b
+        x
+    })
+    tr@transformationId <- transformationId
+    tr
 }
 
 ## Hyperbolic Arcsin transformation constructor
 arcsinhTransform <- function(transformationId, a=1, b=1, c=0)
 {
-  t <- new("transform", .Data=function(x) asinh(a+b*x)+c)
-  t@transformationId <- transformationId
-  t
+    t <- new("transform", .Data=function(x) asinh(a+b*x)+c)
+    t@transformationId <- transformationId
+    t
 }
 
 
@@ -1222,8 +1355,8 @@ setClass("parameterTransform",
 
 ## constructor
 parameterTransform <- function(FUN, params)
-  new("parameterTransform", .Data=as.function(FUN),
-      parameters=as.character(params))
+    new("parameterTransform", .Data=as.function(FUN),
+        parameters=as.character(params))
 
 
 
@@ -1235,8 +1368,8 @@ parameterTransform <- function(FUN, params)
 ## ---------------------------------------------------------------------------
 setClass("transformMap",
          representation=representation(output="character",
-           input="character",
-           f="function"))
+         input="character",
+         f="function"))
 
 
 
@@ -1255,22 +1388,22 @@ setClass("transformList",
 ## constructor
 transformList <- function(from, tfun, to=from)
 {
-  from <- unique(from)
-  to <- unique(to)
-  if(!is.character(from) || !is.character(to) || length(from) != length(to))
-    stop("'from' and 'to' must be character vectors of equal length.",
-         call.=FALSE)
-  if(is.character(tfun))
-    tfun <- lapply(tfun, get)
-  if(!is.list(tfun)) tfun <- list(tfun)
-  if(!all(sapply(tfun, is, "function")))
-    stop("'tfun' must be a list of functions or a character vector ",
-         "with the function names.", call.=FALSE)
-  tfun <- rep(tfun, length(from))
-  tlist <- mapply(function(x, y, z)
-                  new("transformMap", input=x, output=y, f=z),
-                  from, to, tfun[1:length(from)])
-  return(as(tlist, "transformList"))
+    from <- unique(from)
+    to <- unique(to)
+    if(!is.character(from) || !is.character(to) || length(from) != length(to))
+        stop("'from' and 'to' must be character vectors of equal length.",
+             call.=FALSE)
+    if(is.character(tfun))
+        tfun <- lapply(tfun, get)
+    if(!is.list(tfun)) tfun <- list(tfun)
+    if(!all(sapply(tfun, is, "function")))
+        stop("'tfun' must be a list of functions or a character vector ",
+             "with the function names.", call.=FALSE)
+    tfun <- rep(tfun, length(from))
+    tlist <- mapply(function(x, y, z)
+                    new("transformMap", input=x, output=y, f=z),
+                    from, to, tfun[1:length(from)])
+    return(as(tlist, "transformList"))
 }
 
 
@@ -1283,7 +1416,7 @@ transformList <- function(from, tfun, to=from)
 ## ---------------------------------------------------------------------------
 setClass("transformFilter",
          representation=representation(transforms="transformList",
-           filter="filter"),
+         filter="filter"),
          contains="concreteFilter")
 
 
@@ -1324,46 +1457,46 @@ setClass("compensation",
                         parameters="parameters"
                         ),
          prototype=prototype(spillover=matrix(),
-           compensationId="default",
-           parameters=new("parameters",.Data="")
-           )
+         compensationId="default",
+         parameters=new("parameters",.Data="")
+         )
          )
 
 ## constructor
 compensation <- function(spillover, compensationId="default",...)
 { 
-  if(class(...)=="list")
+    if(class(...)=="list")
     {
-      parameters=(...)
+        parameters=(...)
 
-      len=length(parameters)
-      charParam=list()
-      
-      while(len>0)
+        len=length(parameters)
+        charParam=list()
+        
+        while(len>0)
         {
-          if(class(parameters[[len]])=="unitytransform")  
+            if(class(parameters[[len]])=="unitytransform")  
             {   
-              charParam[[len]]=slot(parameters[[len]],"parameters")
+                charParam[[len]]=slot(parameters[[len]],"parameters")
             } 
-          else if(class(parameters[[len]])=="transformReference")
+            else if(class(parameters[[len]])=="transformReference")
             {
-              charParam[[len]]=slot(parameters[[len]],"transformationId")
+                charParam[[len]]=slot(parameters[[len]],"transformationId")
             }                
-          len=len-1                               
+            len=len-1                               
         }
-      colnames(spillover)=unlist(charParam)
+        colnames(spillover)=unlist(charParam)
     } 
-  
-  if(!is.matrix(spillover) || !is.numeric(spillover) ||
-     ncol(spillover) != nrow(spillover))
-    stop("'spillover' must be numeric matrix with same number of ",
-         "rows and columns", call.=FALSE)
-  if(is.null(colnames(spillover)))
-    stop("Spillover matrix must have colnames", call.=FALSE)
-  ##checkClass(invert, "logical", 1)
-  checkClass(compensationId, "character", 1)
-  new("compensation", spillover=spillover, 
-      compensationId=compensationId,parameters=new("parameters",.Data=(...)))
+    
+    if(!is.matrix(spillover) || !is.numeric(spillover) ||
+       ncol(spillover) != nrow(spillover))
+        stop("'spillover' must be numeric matrix with same number of ",
+             "rows and columns", call.=FALSE)
+    if(is.null(colnames(spillover)))
+        stop("Spillover matrix must have colnames", call.=FALSE)
+    ##checkClass(invert, "logical", 1)
+    checkClass(compensationId, "character", 1)
+    new("compensation", spillover=spillover, 
+        compensationId=compensationId,parameters=new("parameters",.Data=(...)))
 }
 
 ## ===========================================================================
@@ -1385,97 +1518,97 @@ compensation <- function(spillover, compensationId="default",...)
 ## Create quasi-random guids. This is only based on the time stamp,
 ## not on MAC address or similar.
 guid <- function()
-  as.vector(format.hexmode(as.integer(Sys.time())/
-                           runif(1)*proc.time()["elapsed"]))
+    as.vector(format.hexmode(as.integer(Sys.time())/
+                             runif(1)*proc.time()["elapsed"]))
 setClass("fcReference", 
          representation=representation(ID="character",
-           env="environment"),
+         env="environment"),
          prototype=prototype(ID=paste("ref", guid(), sep="_"),
-           env=new.env(parent=emptyenv()))
+         env=new.env(parent=emptyenv()))
          )
 
 ## Set a value in the alias table of the workFlow 
 setAlias <- function(alias, value, workflow)
 {
-  checkClass(alias, "character", 1)
-  checkClass(value, "character", 1)
-  checkClass(workflow, "workFlow")
-  workflow <- alias(workflow)
-  workflow[[alias]] <- unique(c(workflow[[alias]], value))
-  return(invisible(NULL))
+    checkClass(alias, "character", 1)
+    checkClass(value, "character", 1)
+    checkClass(workflow, "workFlow")
+    workflow <- alias(workflow)
+    workflow[[alias]] <- unique(c(workflow[[alias]], value))
+    return(invisible(NULL))
 }
 
 ## Get a value from the alias table of the workFlow 
 getAlias <- function(alias, workflow)
 {
-  checkClass(alias, "character")
-  checkClass(workflow, "workFlow")
-  fun <- function(x)
-    if(x %in% ls(workflow)) x else alias(workflow)[[x]]
-  return(as.vector(sapply(alias, fun)))
+    checkClass(alias, "character")
+    checkClass(workflow, "workFlow")
+    fun <- function(x)
+        if(x %in% ls(workflow)) x else alias(workflow)[[x]]
+    return(as.vector(sapply(alias, fun)))
 }
 
 ## remove alias for an identifier
 rmAlias <- function(value, workflow)
 {
-  checkClass(value, "character", 1)
-  checkClass(workflow, "workFlow")
-  workflow <- alias(workflow)
-  ind <- names(which(sapply(as.list(workflow), function(x)
-                            value %in% x)==TRUE))
-  for(i in ind){
-    tmp <- workflow[[i]]
-    tmp <- setdiff(tmp, value)
-    if(!length(tmp))
-      rm(list=i, envir=workflow)
-    else
-      workflow[[i]] <- tmp
-  }
-  return(invisible(NULL))
+    checkClass(value, "character", 1)
+    checkClass(workflow, "workFlow")
+    workflow <- alias(workflow)
+    ind <- names(which(sapply(as.list(workflow), function(x)
+                              value %in% x)==TRUE))
+    for(i in ind){
+        tmp <- workflow[[i]]
+        tmp <- setdiff(tmp, value)
+        if(!length(tmp))
+            rm(list=i, envir=workflow)
+        else
+            workflow[[i]] <- tmp
+    }
+    return(invisible(NULL))
 }
 
 ## Figure out which reference type to create, based on the class of 'value'
 refType <- function(value)
 {
-  if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
-  else if(is(value, "filterResult")) "fcFilterResultReference"
-  else if(is(value, "filter")) "fcFilterReference"
-  else if(is(value, "actionItem")) "fcActionReference"
-  else if(is(value, "view")) "fcViewReference"
-  else if(is(value, "compensation")) "fcCompensateReference"
-  else if(is(value, "transformList")) "fcTransformReference"
-  else if(is(value, "graphNEL")) "fcTreeReference"
-  else if(is(value, "environment")) "fcAliasReference"
-  else if(is.null(value)) "fcNullReference"
-  else "fcReference"
+    if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
+    else if(is(value, "filterResult")) "fcFilterResultReference"
+    else if(is(value, "filter")) "fcFilterReference"
+    else if(is(value, "actionItem")) "fcActionReference"
+    else if(is(value, "view")) "fcViewReference"
+    else if(is(value, "compensation")) "fcCompensateReference"
+    else if(is(value, "transformList")) "fcTransformReference"
+    else if(is(value, "graphNEL")) "fcTreeReference"
+    else if(is(value, "environment")) "fcAliasReference"
+    else if(is.null(value)) "fcNullReference"
+    else "fcReference"
 }
 
 ## Create useful identifiers for references
 refName <- function(value)
 {
-  prefix <- if(is(value, "flowFrame") || is(value, "flowSet")) "dataRef"
-  else if(is(value, "filterResult")) "fresRef"
-  else if(is(value, "filter")) "filterRef"
-  else if(is(value, "actionItem")) "actionRef"
-  else if(is(value, "view")) "viewRef"
-  else if(is(value, "compensation")) "compRef"
-  else if(is(value, "transformList")) "transRef"
-  else if(is(value, "graphNEL")) "treeRef"
-  else if(is(value, "environment")) "aliasRef"
-  else if(is.null(value)) "nullRef"
-  else "genericRef"
-  return(paste(prefix, guid(), sep="_"))
+    prefix <- if(is(value, "flowFrame") || is(value, "flowSet")) "dataRef"
+    else if(is(value, "filterResult")) "fresRef"
+    else if(is(value, "filter")) "filterRef"
+    else if(is(value, "actionItem")) "actionRef"
+    else if(is(value, "view")) "viewRef"
+    else if(is(value, "compensation")) "compRef"
+    else if(is(value, "transformList")) "transRef"
+    else if(is(value, "graphNEL")) "treeRef"
+    else if(is(value, "environment")) "aliasRef"
+    else if(is.null(value)) "nullRef"
+    else "genericRef"
+    return(paste(prefix, guid(), sep="_"))
 }
 
 ## constructor
 fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
                         env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "environment")
-  ref <- new("fcReference", ID=ID, env=env)
-  setAlias(substitute(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "environment")
+    ref <- new("fcReference", ID=ID, env=env)
+    setAlias(substitute(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1488,7 +1621,7 @@ fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
 ## ---------------------------------------------------------------------------
 setClass("fcStructureReference",
          contains=list("VIRTUAL",
-           "fcReference"))
+         "fcReference"))
 
 
 
@@ -1506,11 +1639,11 @@ setClass("fcTreeReference",
 fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcTreeReference", ID=ID, env=env@env)
-  setAlias("tree", identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcTreeReference", ID=ID, env=env@env)
+    setAlias("tree", identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1529,9 +1662,9 @@ setClass("fcAliasReference",
 fcAliasReference <- function(ID=paste("aliasRef", guid(), sep="_"),
                              env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  new("fcAliasReference", ID=ID, env=env@env)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    new("fcAliasReference", ID=ID, env=env@env)
 }
 
 
@@ -1550,11 +1683,11 @@ setClass("fcDataReference",
 fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcDataReference", ID=ID, env=env@env)
-  setAlias(identifier(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcDataReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1574,11 +1707,11 @@ setClass("fcActionReference",
 fcActionReference <- function(ID=paste("actionRef", guid(), sep="_"),
                               env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcActionReference", ID=ID, env=env@env)
-  setAlias(names(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcActionReference", ID=ID, env=env@env)
+    setAlias(names(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1598,11 +1731,11 @@ setClass("fcViewReference",
 fcViewReference <- function(ID=paste("viewRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcViewReference", ID=ID, env=env@env)
-  setAlias(names(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcViewReference", ID=ID, env=env@env)
+    setAlias(names(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1621,14 +1754,14 @@ setClass("fcFilterResultReference",
 
 ## constructor
 fcFilterResultReference <- function(ID=paste("fresRef",
-                                      guid(), sep="_"),
+                                    guid(), sep="_"),
                                     env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcFilterResultReference", ID=ID, env=env@env)
-  setAlias(identifier(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcFilterResultReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1646,14 +1779,14 @@ setClass("fcFilterReference",
 
 ## constructor
 fcFilterReference <- function(ID=paste("filterRef",
-                                guid(), sep="_"),
+                              guid(), sep="_"),
                               env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcFilterReference", ID=ID, env=env@env)
-  setAlias(identifier(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcFilterReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1671,14 +1804,14 @@ setClass("fcCompensateReference",
 
 ## constructor
 fcCompensateReference <- function(ID=paste("compRef",
-                                    guid(), sep="_"),
+                                  guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcCompensateReference", ID=ID, env=env@env)
-  setAlias(identifier(get(ref)), identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcCompensateReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1698,14 +1831,14 @@ setClass("fcTransformReference",
 
 ## constructor
 fcTransformReference <- function(ID=paste("transRef",
-                                   guid(), sep="_"),
+                                 guid(), sep="_"),
                                  env=new.env(parent=emptyenv()))
 {
-  checkClass(ID, "character", 1)
-  checkClass(env, "workFlow")
-  ref <- new("fcTransformReference", ID=ID, env=env@env)
-  setAlias("no scheme yet", identifier(ref), env)
-  return(ref)
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcTransformReference", ID=ID, env=env@env)
+    setAlias("no scheme yet", identifier(ref), env)
+    return(ref)
 }
 
 
@@ -1717,14 +1850,14 @@ fcTransformReference <- function(ID=paste("transRef",
 ## ---------------------------------------------------------------------------
 setClass("fcNullReference",
          contains=c("fcDataReference",
-           "fcActionReference",
-           "fcViewReference",
-           "fcFilterResultReference",
-           "fcFilterReference",
-           "fcCompensateReference",
-           "fcTransformReference",
-           "fcTreeReference",
-           "fcAliasReference"),
+         "fcActionReference",
+         "fcViewReference",
+         "fcFilterResultReference",
+         "fcFilterReference",
+         "fcCompensateReference",
+         "fcTransformReference",
+         "fcTreeReference",
+         "fcAliasReference"),
          prototype=prototype(ID=paste("nullRef", guid(), sep="_"))
          )
 
@@ -1754,39 +1887,39 @@ fcNullReference <- function(...) new("fcNullReference")
 ## ---------------------------------------------------------------------------
 setClass("workFlow",
          representation=representation(name="character",
-           tree="fcTreeReference",
-           alias="fcAliasReference",
-           env="environment"),
+         tree="fcTreeReference",
+         alias="fcAliasReference",
+         env="environment"),
          prototype=prototype(name="default",
-           tree=fcNullReference(),
-           alias=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         tree=fcNullReference(),
+         alias=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 ## The constructor takes a flow data object (flowFrame or flowSet) and
 ## makes a copy in the evaluation environment. It also sets up the views
 ## graph and the alias table in the environment
 workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 {
-  if(!is(data, "flowFrame") && !is(data, "flowSet"))
-    stop("'data' must be a flow data structure (flowFrame or flowSet)",
-         call.=FALSE)
-  ## some sanity checks up front
-  checkClass(name, "character", 1)
-  checkClass(env, "environment")
-  wf <-  new("workFlow", name=name, env=env)
-  ## set up the alias table as an environment in the workFlow
-  aliasTable <- new.env(hash=TRUE, parent=emptyenv())
-  id <- refName(aliasTable)
-  assign("alias", id, aliasTable)
-  assign(id, aliasTable, wf@env)
-  wf@alias <- new("fcAliasReference", env=wf@env, ID=id)
-  ## Assign the data to the workFlow and create a base view
-  dataRef <- assign(value=data, envir=wf)
-  viewRef <- view(workflow=wf, name="base view", data=dataRef)
-  ## Set up the views tree
-  tree <- new("graphNEL", nodes=identifier(viewRef), edgemode="directed")
-  wf@tree <- assign(value=tree, envir=wf)
-  return(wf)
+    if(!is(data, "flowFrame") && !is(data, "flowSet"))
+        stop("'data' must be a flow data structure (flowFrame or flowSet)",
+             call.=FALSE)
+    ## some sanity checks up front
+    checkClass(name, "character", 1)
+    checkClass(env, "environment")
+    wf <-  new("workFlow", name=name, env=env)
+    ## set up the alias table as an environment in the workFlow
+    aliasTable <- new.env(hash=TRUE, parent=emptyenv())
+    id <- refName(aliasTable)
+    assign("alias", id, aliasTable)
+    assign(id, aliasTable, wf@env)
+    wf@alias <- new("fcAliasReference", env=wf@env, ID=id)
+    ## Assign the data to the workFlow and create a base view
+    dataRef <- assign(value=data, envir=wf)
+    viewRef <- view(workflow=wf, name="base view", data=dataRef)
+    ## Set up the views tree
+    tree <- new("graphNEL", nodes=identifier(viewRef), edgemode="directed")
+    wf@tree <- assign(value=tree, envir=wf)
+    return(wf)
 }
 
 
@@ -1802,82 +1935,82 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 ## automatically
 setMethod("assign",
           signature=signature(x="missing",
-            value="ANY",
-            pos="workFlow",
-            envir="missing",
-            inherits="missing",
-            immediate="missing"),
+          value="ANY",
+          pos="workFlow",
+          envir="missing",
+          inherits="missing",
+          immediate="missing"),
           definition=function(value, pos)
-          {
-            id <- refName(value)
-            if(!is.null(value))
+      {
+          id <- refName(value)
+          if(!is.null(value))
               assign(id, value, envir=pos)
-            a <- do.call(refType(value), list(ID=id, env=pos))
-            return(a)
-          })
+          a <- do.call(refType(value), list(ID=id, env=pos))
+          return(a)
+      })
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
 setMethod("assign",
           signature=signature(x="missing",
-            value="ANY",
-            pos="missing",
-            envir="workFlow",
-            inherits="missing",
-            immediate="missing"),
+          value="ANY",
+          pos="missing",
+          envir="workFlow",
+          inherits="missing",
+          immediate="missing"),
           definition=function(value, envir) assign(value=value, pos=envir))
 
 ## Assign to a particular symbol (potentially overwriting existing ones)
 setMethod("assign",
           signature=signature(x="character",
-            value="ANY",
-            pos="workFlow",
-            envir="missing",
-            inherits="missing",
-            immediate="missing"),
+          value="ANY",
+          pos="workFlow",
+          envir="missing",
+          inherits="missing",
+          immediate="missing"),
           definition=function(x, value, pos)
-          {
-            rmAlias(x, pos)
-            if(!is.null(value)){
+      {
+          rmAlias(x, pos)
+          if(!is.null(value)){
               if(x %in% ls(pos))
-                warning("Overwriting object in the environment.", call.=FALSE)
+                  warning("Overwriting object in the environment.", call.=FALSE)
               assign(x, value, envir=pos@env)
-            }else{
+          }else{
               rm(list=x, envir=pos@env)
-            }
-            do.call(refType(value), list(ID=x, env=pos))     
-          })
+          }
+          do.call(refType(value), list(ID=x, env=pos))     
+      })
 
 ## Assign via existing reference.
 setMethod("assign",
           signature=signature(x="fcReference",
-            value="ANY",
-            pos="workFlow",
-            envir="missing",
-            inherits="missing",
-            immediate="missing"),
+          value="ANY",
+          pos="workFlow",
+          envir="missing",
+          inherits="missing",
+          immediate="missing"),
           definition=function(x, value, pos)
-          {
-            rmAlias(identifier(x), pos)
-            if(is.null(value)){
+      {
+          rmAlias(identifier(x), pos)
+          if(is.null(value)){
               Rm(x, rmRef=FALSE)
-            }else{
+          }else{
               assign(identifier(x), value, envir=pos@env)  
-            }
-            do.call(refType(value), list(ID=identifier(x), env=pos))
-          })
+          }
+          do.call(refType(value), list(ID=identifier(x), env=pos))
+      })
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
 setMethod("assign",
           signature=signature(x="ANY",
-            value="ANY",
-            pos="missing",
-            envir="workFlow",
-            inherits="missing",
-            immediate="missing"),
+          value="ANY",
+          pos="missing",
+          envir="workFlow",
+          inherits="missing",
+          immediate="missing"),
           definition=function(x, value, envir)
-          {
-            assign(x=x, value=value, pos=envir)
-          })
+      {
+          assign(x=x, value=value, pos=envir)
+      })
 
 
 
@@ -1890,16 +2023,16 @@ setMethod("assign",
 ## ---------------------------------------------------------------------------
 setClass("actionItem", 
          representation=representation("VIRTUAL",
-           ID="character",
-           name="character",
-           parentView="fcViewReference",
-           alias="fcAliasReference",
-           env="environment"),
+         ID="character",
+         name="character",
+         parentView="fcViewReference",
+         alias="fcAliasReference",
+         env="environment"),
          prototype=prototype(ID=paste("actionRef", guid(), sep="_"),
-           name="",
-           parentView=fcNullReference(),
-           alias=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         name="",
+         parentView=fcNullReference(),
+         alias=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 
 
@@ -1912,10 +2045,10 @@ setClass("actionItem",
 setClass("gateActionItem",
          contains="actionItem",
          representation=representation(gate="fcFilterReference",
-           filterResult="fcFilterResultReference"),
+         filterResult="fcFilterResultReference"),
          prototype=prototype(ID=paste("gateActionRef", guid(), sep="_"),
-           gate=fcNullReference(),
-           filterResult=fcNullReference()))
+         gate=fcNullReference(),
+         filterResult=fcNullReference()))
 
 ## The constructor creates the gateActionItem object and directly assigns
 ## it to the evaluation ennvironment in 'workflow'. The return value is a
@@ -1924,17 +2057,17 @@ gateActionItem <- function(ID=paste("gateActionRef", guid(), sep="_"),
                            name=paste("action", identifier(get(gate)), sep="_"),
                            parentView, gate, filterResult, workflow)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(gate, "fcFilterReference")
-  checkClass(parentView, "fcViewReference")
-  if(missing(filterResult))
-    filterResult <-fcNullReference()
-  action <- new("gateActionItem", ID=ID, name=name, gate=gate,
-                parentView=parentView, env=workflow@env,
-                filterResult=filterResult, alias=workflow@alias)
-  return(assign(x=ID, value=action, envir=workflow))
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(gate, "fcFilterReference")
+    checkClass(parentView, "fcViewReference")
+    if(missing(filterResult))
+        filterResult <-fcNullReference()
+    action <- new("gateActionItem", ID=ID, name=name, gate=gate,
+                  parentView=parentView, env=workflow@env,
+                  filterResult=filterResult, alias=workflow@alias)
+    return(assign(x=ID, value=action, envir=workflow))
 }
 
 
@@ -1957,15 +2090,15 @@ transformActionItem <- function(ID=paste("transActionRef", guid(), sep="_"),
                                 name="no scheme yet", parentView, transform,
                                 workflow)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(transform, "fcTransformReference")
-  checkClass(parentView, "fcViewReference")
-  action <- new("transformActionItem", ID=ID, name=name,
-                transform=transform, parentView=parentView,
-                env=workflow@env, alias=workflow@alias)
-  return(assign(x=ID, value=action, envir=workflow))
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(transform, "fcTransformReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("transformActionItem", ID=ID, name=name,
+                  transform=transform, parentView=parentView,
+                  env=workflow@env, alias=workflow@alias)
+    return(assign(x=ID, value=action, envir=workflow))
 }
 
 
@@ -1984,19 +2117,19 @@ setClass("compensateActionItem",
 ## value is a reference to that object.
 compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
                                  name=paste("action", identifier(get(compensate)),
-                                   sep="_"),
+                                 sep="_"),
                                  parentView, compensate,
                                  workflow)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(compensate, "fcCompensateReference")
-  checkClass(parentView, "fcViewReference")
-  action <- new("compensateActionItem", ID=ID, name=name,
-                compensate=compensate, parentView=parentView,
-                env=workflow@env, alias=workflow@alias)
-  return(assign(x=ID, value=action, envir=workflow))
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(compensate, "fcCompensateReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("compensateActionItem", ID=ID, name=name,
+                  compensate=compensate, parentView=parentView,
+                  env=workflow@env, alias=workflow@alias)
+    return(assign(x=ID, value=action, envir=workflow))
 }
 
 ## ===========================================================================
@@ -2015,17 +2148,17 @@ compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
 ## ---------------------------------------------------------------------------
 setClass("view", 
          representation=representation(ID="character",
-           name="character",
-           action="fcActionReference",
-           env="environment",
-           alias="fcAliasReference",
-           data="fcDataReference"),
+         name="character",
+         action="fcActionReference",
+         env="environment",
+         alias="fcAliasReference",
+         data="fcDataReference"),
          prototype=prototype(ID=paste("view", guid(), sep="_"),
-           name="",
-           action=fcNullReference(),
-           alias=fcNullReference(),
-           data=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         name="",
+         action=fcNullReference(),
+         alias=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 ## The constructor creates the view object and directly assigns it to
 ## the evaluation ennvironment in 'workflow'. The return value is a
@@ -2033,17 +2166,17 @@ setClass("view",
 view <- function(workflow, ID=paste("viewRef", guid(), sep="_"),
                  name="default", data, action)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  if(missing(data))
-    data <- fcNullReference()
-  if(missing(action))
-    action <- fcNullReference()
-  bv <-  new("view", ID=ID, name=name, env=workflow@env,
-             action=action, data=data, alias=workflow@alias)
-  ref <- assign(identifier(bv), bv, workflow)
-  return(ref)
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    if(missing(data))
+        data <- fcNullReference()
+    if(missing(action))
+        action <- fcNullReference()
+    bv <-  new("view", ID=ID, name=name, env=workflow@env,
+               action=action, data=data, alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
 }
 
 
@@ -2063,14 +2196,14 @@ view <- function(workflow, ID=paste("viewRef", guid(), sep="_"),
 setClass("gateView",
          contains="view",
          representation=representation(indices="list",
-           filterResult="fcFilterResultReference",
-           frEntry="character"),
+         filterResult="fcFilterResultReference",
+         frEntry="character"),
          prototype=prototype(ID=paste("gateViewRef", guid(), sep="_"),
-           name="",
-           filterResult=fcNullReference(),
-           action=fcNullReference(),
-           data=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         name="",
+         filterResult=fcNullReference(),
+         action=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 ## The constructor creates the gateView object and directly assigns it to
 ## the evaluation ennvironment in 'workflow'. The return value is a
@@ -2079,21 +2212,21 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
                      name="default", action, data, indices, 
                      filterResult, frEntry)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(frEntry, "character", 1)
-  checkClass(indices, "list")
-  checkClass(action, "fcActionReference")
-  checkClass(filterResult, "fcFilterResultReference")
-  if(missing(data))
-    data <- fcNullReference()
-  bv <- new("gateView", ID=ID, name=name, env=workflow@env,
-            action=action, data=data, indices=indices,
-            filterResult=filterResult, frEntry=frEntry,
-            alias=workflow@alias)
-  ref <- assign(identifier(bv), bv, workflow)
-  return(ref)
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(frEntry, "character", 1)
+    checkClass(indices, "list")
+    checkClass(action, "fcActionReference")
+    checkClass(filterResult, "fcFilterResultReference")
+    if(missing(data))
+        data <- fcNullReference()
+    bv <- new("gateView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, indices=indices,
+              filterResult=filterResult, frEntry=frEntry,
+              alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
 }
 
 ## check if the parentView of an actionItem object is the result of a
@@ -2101,21 +2234,21 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
 ## applied for subsetting (i.e., a new data set has been created)
 applyParentFilter <- function(parent, workflow)
 {
-  pview <- get(parent)
-  dataRef <- Data(pview)
-  if(is.null(dataRef)){
-    parentData <- Data(parent(pview))
-    if(is(parentData, "flowFrame"))
-      newData <- parentData[pview@indices[[1]],]
-    else{
-      newData <- parentData[1:length(parentData)]
-      for(i in seq_along(pview@indices))
-        newData[[i]] <- newData[[i]][pview@indices[[i]],]
+    pview <- get(parent)
+    dataRef <- Data(pview)
+    if(is.null(dataRef)){
+        parentData <- Data(parent(pview))
+        if(is(parentData, "flowFrame"))
+            newData <- parentData[pview@indices[[1]],]
+        else{
+            newData <- parentData[1:length(parentData)]
+            for(i in seq_along(pview@indices))
+                newData[[i]] <- newData[[i]][pview@indices[[i]],]
+        }
+        newDataRef <- assign(value=newData, envir=workflow)
+        pview@data <- newDataRef
+        assign(parent, value=pview, envir=workflow)
     }
-    newDataRef <- assign(value=newData, envir=workflow)
-    pview@data <- newDataRef
-    assign(parent, value=pview, envir=workflow)
-  }
 }
 
 ## constructor directly from a filter object. This creates a gateActionItem
@@ -2124,11 +2257,11 @@ applyParentFilter <- function(parent, workflow)
 setMethod("add",
           signature=signature(wf="workFlow", action="concreteFilter"),
           definition=function(wf, action, parent=NULL)
-          {
-            if(is(action, "filterResult"))
+      {
+          if(is(action, "filterResult"))
               stop("Don't know how to handle object of class '",
                    class(action), "'", call.=FALSE)
-            else if(is(action, "filter")){
+          else if(is(action, "filter")){
               ## assign the filter to the evaluation environment and create
               ## a reference to it
               gateRef <- assign(value=action, envir=wf)
@@ -2145,7 +2278,7 @@ setMethod("add",
               ## now evaluate the filter and assign the result
               fres <- filter(Data(get(pview)), action)
               if(!validFilterResultList(fres))
-                stop("Don't know how to proceed.", call.=FALSE)
+                  stop("Don't know how to proceed.", call.=FALSE)
               fresRef <-  assign(value=fres, envir=wf)
               gAction <- get(actionRef)
               gAction@filterResult <- fresRef
@@ -2154,27 +2287,27 @@ setMethod("add",
               ## multipleFilterResults
               nodes <- NULL
               if(!is(fres, "filterResultList")){
-                len <-
-                  if(is(fres, "logicalFilterResult")) 2
-                  else length(fres)
-                for(i in seq_len(len)){
-                  vid <- gateView(name=names(fres)[i], workflow=wf,
-                                  action=actionRef, filterResult=fresRef,
-                                  indices=list(fres[[i]]@subSet),
-                                  frEntry=names(fres)[i])
-                  nodes <- c(nodes, identifier(vid))
-                }
+                  len <-
+                      if(is(fres, "logicalFilterResult")) 2
+                      else length(fres)
+                  for(i in seq_len(len)){
+                      vid <- gateView(name=names(fres)[i], workflow=wf,
+                                      action=actionRef, filterResult=fresRef,
+                                      indices=list(fres[[i]]@subSet),
+                                      frEntry=names(fres)[i])
+                      nodes <- c(nodes, identifier(vid))
+                  }
               }else{
-                len <-
-                  if(is(fres[[1]], "logicalFilterResult")) 2
-                  else length(fres[[1]])
-                for(i in seq_len(len)){
-                  vid <- gateView(name=names(fres[[1]])[i], workflow=wf,
-                                  action=actionRef, filterResult=fresRef,
-                                  indices=lapply(fres, function(y) y[[i]]@subSet),
-                                  frEntry=names(fres[[1]])[i])
-                  nodes <- c(nodes, identifier(vid))
-                }
+                  len <-
+                      if(is(fres[[1]], "logicalFilterResult")) 2
+                      else length(fres[[1]])
+                  for(i in seq_len(len)){
+                      vid <- gateView(name=names(fres[[1]])[i], workflow=wf,
+                                      action=actionRef, filterResult=fresRef,
+                                      indices=lapply(fres, function(y) y[[i]]@subSet),
+                                      frEntry=names(fres[[1]])[i])
+                      nodes <- c(nodes, identifier(vid))
+                  }
               }
               ## update the filter and filterResult IDs
               identifier(action) <- paste("filter", identifier(action),
@@ -2189,12 +2322,12 @@ setMethod("add",
               tree <- addEdge(pview@ID, nodes, tree)
               edgeDataDefaults(tree, "actionItem") <- fcNullReference()
               edgeData(tree, pview@ID, nodes, "actionItem") <-
-                actionRef
+                  actionRef
               assign(x=wf@tree, value=tree, envir=wf)
               return(wf)
-            } else stop("Don't know how to handle object of class '",
-                        class(action), "'", call.=FALSE)       
-          })
+          } else stop("Don't know how to handle object of class '",
+                      class(action), "'", call.=FALSE)       
+      })
 
 
 
@@ -2211,10 +2344,10 @@ setMethod("add",
 setClass("transformView",
          contains="view",
          prototype=prototype(ID=paste("transViewRef", guid(), sep="_"),
-           name="",
-           action=fcNullReference(),
-           data=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         name="",
+         action=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 ## The constructor creates the transformView object and directly assigns it to
 ## the evaluation ennvironment in 'workflow'. The return value is a
@@ -2222,15 +2355,15 @@ setClass("transformView",
 transformView <- function(workflow, ID=paste("transViewRef", guid(), sep="_"),
                           name="default", action, data)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(action, "fcActionReference")
-  checkClass(data, "fcDataReference")
-  bv <- new("transformView", ID=ID, name=name, env=workflow@env,
-            action=action, data=data, alias=workflow@alias)
-  ref <- assign(identifier(bv), bv, workflow)
-  return(ref)
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("transformView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
 }
 
 ## constructor directly from a transformation object. This creates a
@@ -2239,40 +2372,40 @@ transformView <- function(workflow, ID=paste("transViewRef", guid(), sep="_"),
 setMethod("add",
           signature=signature(wf="workFlow", action="transformList"),
           definition=function(wf, action, parent=NULL)
-          {
-            ## assign the transformation to the evaluation environment and
-            ## create a reference to it
-            transRef <- assign(value=action, envir=wf)
-            ## get the parentView. If not explicitely specified, use the
-            ## root node
-            pid <- if(is.null(parent)) views(wf)[[1]] else parent
-            pid <- getAlias(pid, wf)
-            pview <- fcViewReference(ID=pid, env=wf)
-            tree <- get(wf@tree)
-            if(length(unlist(adj(tree, pid))))
+      {
+          ## assign the transformation to the evaluation environment and
+          ## create a reference to it
+          transRef <- assign(value=action, envir=wf)
+          ## get the parentView. If not explicitely specified, use the
+          ## root node
+          pid <- if(is.null(parent)) views(wf)[[1]] else parent
+          pid <- getAlias(pid, wf)
+          pview <- fcViewReference(ID=pid, env=wf)
+          tree <- get(wf@tree)
+          if(length(unlist(adj(tree, pid))))
               warning("The selected parent view is not a leaf node.\n",
                       "Don't know how to update yet.", call.=FALSE)
-            ## create and assign a new transformActionItem
-            actionRef <- transformActionItem(parentView=pview,
-                                             transform=transRef,
-                                             workflow=wf)
-            ## check if the previous filter has been applied for subsetting
-            applyParentFilter(pview, wf)
-            ## now transform the data and assign the result
-            tData <- action %on% Data(get(pview))
-            dataRef <- assign(value=tData, envir=wf)
-            vid <- transformView(name="no scheme yet", workflow=wf,
-                                 action=actionRef, data=dataRef)
-            
-            ## add new nodes and edges to the workflow tree
-            nid <- identifier(vid)
-            tree <- addNode(nid, tree)
-            tree <- addEdge(pid, identifier(vid), tree)
-            edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-            edgeData(tree, pid , nid, "actionItem") <- actionRef
-            assign(x=wf@tree, value=tree, envir=wf)
-            return(wf)   
-          })
+          ## create and assign a new transformActionItem
+          actionRef <- transformActionItem(parentView=pview,
+                                           transform=transRef,
+                                           workflow=wf)
+          ## check if the previous filter has been applied for subsetting
+          applyParentFilter(pview, wf)
+          ## now transform the data and assign the result
+          tData <- action %on% Data(get(pview))
+          dataRef <- assign(value=tData, envir=wf)
+          vid <- transformView(name="no scheme yet", workflow=wf,
+                               action=actionRef, data=dataRef)
+          
+          ## add new nodes and edges to the workflow tree
+          nid <- identifier(vid)
+          tree <- addNode(nid, tree)
+          tree <- addEdge(pid, identifier(vid), tree)
+          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+          edgeData(tree, pid , nid, "actionItem") <- actionRef
+          assign(x=wf@tree, value=tree, envir=wf)
+          return(wf)   
+      })
 
 
 
@@ -2285,10 +2418,10 @@ setMethod("add",
 setClass("compensateView",
          contains="view",
          prototype=prototype(ID=paste("compViewRef", guid(), sep="_"),
-           name="",
-           action=fcNullReference(),
-           data=fcNullReference(),
-           env=new.env(parent=emptyenv())))
+         name="",
+         action=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
 
 ## The constructor creates the compensateView object and directly assigns it
 ## to the evaluation ennvironment in 'workflow'. The return value is a
@@ -2296,15 +2429,15 @@ setClass("compensateView",
 compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
                            name="default", action, data)
 {
-  checkClass(workflow, "workFlow")
-  checkClass(ID, "character", 1)
-  checkClass(name, "character", 1)
-  checkClass(action, "fcActionReference")
-  checkClass(data, "fcDataReference")
-  bv <- new("compensateView", ID=ID, name=name, env=workflow@env,
-            action=action, data=data, alias=workflow@alias)
-  ref <- assign(identifier(bv), bv, workflow)
-  return(ref)
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("compensateView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
 }
 
 ## constructor directly from a compensation object. This creates a
@@ -2313,44 +2446,44 @@ compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
 setMethod("add",
           signature=signature(wf="workFlow", action="compensation"),
           definition=function(wf, action, parent=NULL)
-          {
-            ## assign the compensation to the evaluation environment and
-            ## create a reference to it
-            compRef <- assign(value=action, envir=wf)
-            ## get the parentView. If not explicitely specified, use the
-            ## root node
-            pid <- if(is.null(parent)) views(wf)[[1]] else parent
-            pid <- getAlias(pid, wf)
-            if(pid != getAlias(views(wf), wf)[1])
+      {
+          ## assign the compensation to the evaluation environment and
+          ## create a reference to it
+          compRef <- assign(value=action, envir=wf)
+          ## get the parentView. If not explicitely specified, use the
+          ## root node
+          pid <- if(is.null(parent)) views(wf)[[1]] else parent
+          pid <- getAlias(pid, wf)
+          if(pid != getAlias(views(wf), wf)[1])
               warning("The selected parent view is not a root node.\n",
                       "Are you sure this is correct?", call.=FALSE)
-            pview <- fcViewReference(ID=pid, env=wf)
-            
-            ## create and assign a new ActionItem
-            actionRef <- compensateActionItem(parentView=pview,
-                                              compensate=compRef,
-                                              workflow=wf)      
-            ## check if the previous filter has been applied for subsetting
-            applyParentFilter(pview, wf)
-            ## now transform the data and assign the result
-            tData <- compensate(Data(get(pview)), action)
-            dataRef <- assign(value=tData, envir=wf)
-            vid <- compensateView(name=identifier(action), workflow=wf,
-                                  action=actionRef, data=dataRef)
-            ## update the identifier of the compensation object
-            identifier(action) <- paste("comp", identifier(action),
-                                        sep="_")
-            assign(compRef, value=action, envir=wf) 
-            ## add new nodes and edges to the workflow tree
-            nid <- identifier(vid)
-            tree <- get(wf@tree)
-            tree <- addNode(nid, tree)
-            tree <- addEdge(pid, identifier(vid), tree)
-            edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-            edgeData(tree, pid , nid, "actionItem") <- actionRef
-            assign(x=wf@tree, value=tree, envir=wf)
-            return(wf)   
-          })
+          pview <- fcViewReference(ID=pid, env=wf)
+          
+          ## create and assign a new ActionItem
+          actionRef <- compensateActionItem(parentView=pview,
+                                            compensate=compRef,
+                                            workflow=wf)      
+          ## check if the previous filter has been applied for subsetting
+          applyParentFilter(pview, wf)
+          ## now transform the data and assign the result
+          tData <- compensate(Data(get(pview)), action)
+          dataRef <- assign(value=tData, envir=wf)
+          vid <- compensateView(name=identifier(action), workflow=wf,
+                                action=actionRef, data=dataRef)
+          ## update the identifier of the compensation object
+          identifier(action) <- paste("comp", identifier(action),
+                                      sep="_")
+          assign(compRef, value=action, envir=wf) 
+          ## add new nodes and edges to the workflow tree
+          nid <- identifier(vid)
+          tree <- get(wf@tree)
+          tree <- addNode(nid, tree)
+          tree <- addEdge(pid, identifier(vid), tree)
+          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+          edgeData(tree, pid , nid, "actionItem") <- actionRef
+          assign(x=wf@tree, value=tree, envir=wf)
+          return(wf)   
+      })
 
 
 ## ===========================================================================
@@ -2369,11 +2502,11 @@ setClass("unitytransform",
 setMethod("unitytransform",
           signature(parameters="character"),
 	  function(parameters=character(0),transformationId="NULL")
-          {       
-            new("unitytransform",parameters=parameters,
-                transformationId=transformationId
-                )
-          }
+      {       
+          new("unitytransform",parameters=parameters,
+              transformationId=transformationId
+              )
+      }
           )
 
 ## ===========================================================================
@@ -2385,22 +2518,22 @@ setMethod("unitytransform",
 setClass("dg1polynomial", 		
          contains=c("transform"),
          representation=representation(parameters="parameters", a="numeric",
-           b="numeric"),
+         b="numeric"),
          prototype=prototype(parameters=new("parameters"),a=1,b=1),
          validity=function(object) 
-         {
-           msg <- NULL
+     {
+         msg <- NULL
                                         #if (length(parameters(object)) + 1 !=length(coefficients(object)))
                                         #msg <- c(msg,"parameters must be 1 less than coefficients")
                                         #if (is.null(msg)) TRUE
                                         #else msg
-         }
+     }
          )
 
 dg1polynomial <- function(parameters, a=1, b=1,
                           transformationId="dg1polynomial")
-  new("dg1polynomial", parameters=parameters, a=a, b=b,
-      transformationId=transformationId)
+    new("dg1polynomial", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
 
 
 ## ===========================================================================
@@ -2415,34 +2548,34 @@ setClass("ratio",
          representation(numerator="transformation",
                         denominator="transformation"),
 	 prototype=prototype(numerator=unitytransform(""),
-           denominator=unitytransform("")),
+         denominator=unitytransform("")),
 	 validity=function(object)
-         {	
-           msg<-NULL
-           msg
-         }
+     {	
+         msg<-NULL
+         msg
+     }
          )
 
 ratio <- function(numerator=unitytransform(" "),
                   denominator=unitytransform(" "),
                   transformationId="NULL")
-          { 
-            if(class(numerator)=="character")
-              {   
-                if(length(numerator)!=1)
-                  stop("Numerator is defined for one parameter")
-                numerator=unitytransform(numerator)
-              }  
-            if(class(denominator)=="character")
-              {   
-                if(length(denominator)!=1)
-                  stop("Denominator is defined for one parameter")
-                denominator=unitytransform(denominator)
-              }  
-            new("ratio", numerator=numerator, denominator=denominator,
-                transformationId=transformationId,
-                ".Data"=function(x, y) x/y)
-          }
+{ 
+    if(class(numerator)=="character")
+    {   
+        if(length(numerator)!=1)
+            stop("Numerator is defined for one parameter")
+        numerator=unitytransform(numerator)
+    }  
+    if(class(denominator)=="character")
+    {   
+        if(length(denominator)!=1)
+            stop("Denominator is defined for one parameter")
+        denominator=unitytransform(denominator)
+    }  
+    new("ratio", numerator=numerator, denominator=denominator,
+        transformationId=transformationId,
+        ".Data"=function(x, y) x/y)
+}
 
 
 ## ===========================================================================
@@ -2456,36 +2589,36 @@ setClass("quadratic",
          representation=representation(a="numeric"),
          prototype=prototype(parameters=unitytransform("NULL"),a=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Quadratic transform is defined for one 
+             msg<-c(msg,"Quadratic transform is defined for one 
                                       parameter")
-             }
-           
-           if(length(slot(object,"a"))!=1)
-             {
-               msg<-c(msg,"Only one coefficient is defined for 
-                                      quadratic transform")
-             }
-           
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"a should be non zero")
-             }
-           msg
          }
+         
+         if(length(slot(object,"a"))!=1)
+         {
+             msg<-c(msg,"Only one coefficient is defined for 
+                                      quadratic transform")
+         }
+         
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"a should be non zero")
+         }
+         msg
+     }
          )
 
 setMethod("quadratic",
           signature(parameters="characterOrTransformation"),
 	  function(parameters="NULL",a=1,transformationId="NULL")
-	  {      
-            new("quadratic",parameters=parameters,a=a,
-                transformationId=transformationId)
-            
-	  }
+      {      
+          new("quadratic",parameters=parameters,a=a,
+              transformationId=transformationId)
+          
+      }
           
           )
 ## ===========================================================================
@@ -2499,28 +2632,28 @@ setClass("squareroot",
          representation=representation(a="numeric"),
          prototype=prototype(parameters=unitytransform("NULL"),a=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Square root transform is defined 
+             msg<-c(msg,"Square root transform is defined 
                                        for one parameter"
-                      )
-             }
-           if(length(slot(object,"a"))!=1)
-             {
-               msg<-c(msg,"Only one coefficient is defined
-                                       for quadratic transform"
-                      )
-               
-             }
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"Coefficient should be non zero")
-               
-             }
-           msg
+                    )
          }
+         if(length(slot(object,"a"))!=1)
+         {
+             msg<-c(msg,"Only one coefficient is defined
+                                       for quadratic transform"
+                    )
+             
+         }
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"Coefficient should be non zero")
+             
+         }
+         msg
+     }
          )
 
 
@@ -2528,11 +2661,11 @@ setClass("squareroot",
 
 setMethod("squareroot",signature(parameters="characterOrTransformation"),
 	  function(parameters=" ",a=1,transformationId="NULL")
-	  {         
-            new("squareroot",parameters=parameters,a=a,
-                transformationId=transformationId)
-            
-	  }
+      {         
+          new("squareroot",parameters=parameters,a=a,
+              transformationId=transformationId)
+          
+      }
           
           )
 
@@ -2549,36 +2682,36 @@ setClass("logarithm",
          representation=representation(a="numeric",b="numeric"),
          prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Logarithm transform is defined for 
+             msg<-c(msg,"Logarithm transform is defined for 
                                  one parameter"
-                      )
-             }
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"a should be a non zero number")
-               
-             }
-           if(slot(object,"b")==0)
-             {
-               msg<-c(msg,"b should be a non zero number")
-             }
-           msg
+                    )
          }
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"a should be a non zero number")
+             
+         }
+         if(slot(object,"b")==0)
+         {
+             msg<-c(msg,"b should be a non zero number")
+         }
+         msg
+     }
          )
 
 setMethod("logarithm",
           signature(parameters="characterOrTransformation"),
           function(parameters="NULL",a=1,b=1,transformationId="NULL")
-          {        		
-            new("logarithm",parameters=parameters,a=a,b=b,
-                transformationId=transformationId
-                )
-            
-          }
+      {        		
+          new("logarithm",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+          
+      }
           )
 ## ===========================================================================
 ##  Exponential Transformation 
@@ -2590,39 +2723,39 @@ setMethod("logarithm",
 setClass("exponential", 		
          contains="singleParameterTransform",
          representation=representation(a="numeric",
-           b="numeric"
-           ),
+         b="numeric"
+         ),
          prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Exponential transform is defined 
+             msg<-c(msg,"Exponential transform is defined 
                                  for one parameter"
-                      )
-             }  
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"a should be a non zero number")
-               
-             }
-           if(slot(object,"b")==0)
-             {
-               msg<-c(msg,"b should be a non zero number")
-             }
-           msg  
+                    )
+         }  
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"a should be a non zero number")
+             
          }
+         if(slot(object,"b")==0)
+         {
+             msg<-c(msg,"b should be a non zero number")
+         }
+         msg  
+     }
          )
 
 setMethod("exponential",
           signature(parameters="characterOrTransformation"),
           function(parameters="NULL",a=1,b=1,transformationId="NULL")
-          {  	    
-            new("exponential",parameters=parameters,a=a,b=b,
-                transformationId=transformationId
-                )
-          }
+      {  	    
+          new("exponential",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+      }
           )
 ## ===========================================================================
 ##  Inverse hyperbolic sin Transformation 
@@ -2633,37 +2766,37 @@ setMethod("exponential",
 setClass("asinht", 		
          contains=c("singleParameterTransform"),
          representation=representation(a="numeric",
-           b="numeric"
-           ),
+         b="numeric"
+         ),
          prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Inverse hypberbolic transform is defined 
+             msg<-c(msg,"Inverse hypberbolic transform is defined 
                                 for one parameter"
-                      )
-             }
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"a should be a non zero number")
-             }
-           if(slot(object,"b")==0)
-             {
-               msg<-c(msg,"b should be a non zero number")
-             }
-           msg
+                    )
          }
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"a should be a non zero number")
+         }
+         if(slot(object,"b")==0)
+         {
+             msg<-c(msg,"b should be a non zero number")
+         }
+         msg
+     }
          )
 
 setMethod("asinht",signature(parameters="characterOrTransformation"),
           function(parameters="NULL",a=1,b=1,transformationId="NULL")
-          {       			
-            new("asinht",parameters=parameters,a=a,b=b,
-                transformationId=transformationId
-                )
-          }
+      {       			
+          new("asinht",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+      }
           )
 
 ## ===========================================================================
@@ -2677,35 +2810,35 @@ setClass("sinht",
          representation=representation(a="numeric",b="numeric"),
          prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Hypberbolic transform is defined for 
+             msg<-c(msg,"Hypberbolic transform is defined for 
                                           one parameter"
-                      )
-             }
-           if(slot(object,"a")==0)
-             {
-               msg<-c(msg,"a should be a non zero number")
-               
-             }
-           if(slot(object,"b")==0)
-             {
-               msg<-c(msg,"b should be a non zero number")
-               
-             }
-           msg
+                    )
          }
+         if(slot(object,"a")==0)
+         {
+             msg<-c(msg,"a should be a non zero number")
+             
+         }
+         if(slot(object,"b")==0)
+         {
+             msg<-c(msg,"b should be a non zero number")
+             
+         }
+         msg
+     }
          )
 
 setMethod("sinht",signature(parameters="characterOrTransformation"),
           function(parameters="NULL",a=1,b=1,transformationId="NULL")
-          {  
-            new("sinht",parameters=parameters,a=a,b=b,
-                transformationId=transformationId
-                )
-          }
+      {  
+          new("sinht",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+      }
           )
 
 ## ===========================================================================
@@ -2717,39 +2850,39 @@ setMethod("sinht",signature(parameters="characterOrTransformation"),
 setClass("hyperlog", 		
          contains=c("singleParameterTransform"),
          representation=representation(a="numeric",
-           b="numeric"
-           ),
+         b="numeric"
+         ),
          prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Hyperlog transform is 
+             msg<-c(msg,"Hyperlog transform is 
                                       defined for one parameter"
-                      )
-             }
-           if(slot(object,"a")<=0)
-             {
-               msg<-c(msg,"a should be greater than zero")
-               
-             }
-           if(slot(object,"b")<=0)
-             {
-               msg<-c(msg,"b should be greater than zero")
-               
-             }
-           msg
+                    )
          }
+         if(slot(object,"a")<=0)
+         {
+             msg<-c(msg,"a should be greater than zero")
+             
+         }
+         if(slot(object,"b")<=0)
+         {
+             msg<-c(msg,"b should be greater than zero")
+             
+         }
+         msg
+     }
          )
 
 setMethod("hyperlog",signature(parameters="characterOrTransformation"),
           function(parameters="NULL",a=1,b=1,transformationId="NULL")
-          {   
-            new("hyperlog",parameters=parameters,a=a,b=b,
-                transformationId=transformationId
-                )
-          }
+      {   
+          new("hyperlog",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+      }
           )
 
 
@@ -2763,50 +2896,50 @@ setMethod("hyperlog",signature(parameters="characterOrTransformation"),
 setClass("splitscale", 		
          contains=c("singleParameterTransform"),
          representation=representation(r="numeric",
-           maxValue="numeric",
-           transitionChannel="numeric"
-           ),
+         maxValue="numeric",
+         transitionChannel="numeric"
+         ),
          prototype=prototype(parameters=unitytransform("NULL"),
-           r=1,maxValue=1,transitionChannel=4
-           ),
+         r=1,maxValue=1,transitionChannel=4
+         ),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Split scale transform is defined for
+             msg<-c(msg,"Split scale transform is defined for
                                       one parameter")
-             }
-           
-           if(slot(object,"r")<=0)
-             {
-               msg<-c(msg,"r should be a greater than zero")
-             }
-           
-           if(slot(object,"maxValue")<=0)
-             {
-               msg<-c(msg,"maxValue should be a greater than zero")
-               
-             }
-           if(slot(object,"transitionChannel")<0)
-             {
-               msg<-c(msg,"transitionChannel should be a non negative")
-               
-             }
-           msg
          }
+         
+         if(slot(object,"r")<=0)
+         {
+             msg<-c(msg,"r should be a greater than zero")
+         }
+         
+         if(slot(object,"maxValue")<=0)
+         {
+             msg<-c(msg,"maxValue should be a greater than zero")
+             
+         }
+         if(slot(object,"transitionChannel")<0)
+         {
+             msg<-c(msg,"transitionChannel should be a non negative")
+             
+         }
+         msg
+     }
          )
 
 setMethod("splitscale",signature(parameters="characterOrTransformation"),
           function(parameters="NULL",r=1,maxValue=1,transitionChannel=4,
                    transformationId="NULL")
-          {       
-            new("splitscale",
-                parameters=parameters,r=r,maxValue=maxValue,
-                transitionChannel=transitionChannel,
-                transformationId=transformationId
-                )
-          }
+      {       
+          new("splitscale",
+              parameters=parameters,r=r,maxValue=maxValue,
+              transitionChannel=transitionChannel,
+              transformationId=transformationId
+              )
+      }
           )
 ## ===========================================================================
 ##  Inverse Splitscale Transformation 
@@ -2817,51 +2950,51 @@ setMethod("splitscale",signature(parameters="characterOrTransformation"),
 setClass("invsplitscale", 		
          contains=c("singleParameterTransform"),
          representation=representation(r="numeric",maxValue="numeric",
-           transitionChannel="numeric"
-           ),
+         transitionChannel="numeric"
+         ),
          prototype=prototype(parameters=unitytransform("NULL"),r=1,maxValue=1,
-           transitionChannel=4
-           ),
+         transitionChannel=4
+         ),
          validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
          {
-           msg<-NULL
-           if(length(slot(object,"parameters"))!=1)
-             {
-               msg<-c(msg,"Split scale transform is defined for 
+             msg<-c(msg,"Split scale transform is defined for 
                                       one parameter"
-                      )
-             }
-           
-           if(slot(object,"r")<=0)
-             {
-               msg<-c(msg,"r should be a greater than zero")
-               
-             }
-           
-           if(slot(object,"maxValue")<=0)
-             {
-               msg<-c(msg,"maxValue should be a greater than zero")
-               
-             }
-           if(slot(object,"transitionChannel")<0)
-             {
-               msg<-c(msg,"transitionChannel should be a non negative")
-               
-             }
-           msg
+                    )
          }
+         
+         if(slot(object,"r")<=0)
+         {
+             msg<-c(msg,"r should be a greater than zero")
+             
+         }
+         
+         if(slot(object,"maxValue")<=0)
+         {
+             msg<-c(msg,"maxValue should be a greater than zero")
+             
+         }
+         if(slot(object,"transitionChannel")<0)
+         {
+             msg<-c(msg,"transitionChannel should be a non negative")
+             
+         }
+         msg
+     }
          )
 
 setMethod("invsplitscale",signature(parameters="characterOrTransformation"),
           function(parameters="NULL",r=1,maxValue=1,
                    transitionChannel=4,transformationId="NULL")
-          {       
-            new("invsplitscale",
-                parameters=parameters,r=r,maxValue=maxValue,
-                transitionChannel=transitionChannel,
-                transformationId=transformationId
-                )
-          })
+      {       
+          new("invsplitscale",
+              parameters=parameters,r=r,maxValue=maxValue,
+              transitionChannel=transitionChannel,
+              transformationId=transformationId
+              )
+      })
 
 
 ## ===========================================================================
@@ -2877,8 +3010,8 @@ setClass("transformReference",contains="transform",
 setMethod("transformReference",
           signature(referenceId="character",searchEnv="environment"),
           function(referenceId="NULL",searchEnv=flowEnv)
-          {
-            new("transformReference",
-                transformationId=referenceId,searchEnv=searchEnv)
-          }	
+      {
+          new("transformReference",
+              transformationId=referenceId,searchEnv=searchEnv)
+      }	
           )

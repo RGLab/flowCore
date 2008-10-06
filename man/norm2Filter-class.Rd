@@ -71,8 +71,8 @@
 
 \usage{
 
-norm2Filter(x, y, method="covMcd", scale.factor=1,
-                        filterId="Norm2 Filter", n=50000)
+norm2Filter(x, y, method="covMcd", scale.factor=1, n=50000,
+filterId="defaultNorm2Filter")
 
 }
 

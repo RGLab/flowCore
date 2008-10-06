@@ -59,7 +59,8 @@
 
 \usage{
 
-curv1Filter(x, filterId="Curv1 Filter", bwFac=1.2, gridsize=rep(151, 2))
+curv1Filter(x, bwFac=1.2, gridsize=rep(151, 2),
+filterId="defaultCurv1Filter")
 
 }
 

@@ -11,6 +11,16 @@
 \alias{parameters,flowFrame-method}
 \alias{parameters<-}
 \alias{parameters<-,flowFrame,AnnotatedDataFrame-method}
+\alias{parameters<-,dg1polynomial,transform-method}
+\alias{parameters<-,parameterFilter,character-method}
+\alias{parameters<-,parameterFilter,list-method}
+\alias{parameters<-,parameterFilter,transform-method}
+\alias{parameters<-,singleParameterTransform,character-method}
+\alias{parameters<-,singleParameterTransform,transform-method}
+\alias{parameters,nullParameter-method}
+\alias{parameters,ratio-method}
+\alias{parameters,transform-method}
+
 
 \title{Obtain information about parameters for flow cytometry objects.}
 

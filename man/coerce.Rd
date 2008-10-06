@@ -34,33 +34,52 @@
 \alias{coerce,flowSet,flowFrame-method}
 \alias{coerce,flowFrame,flowSet-method}
 \alias{coerce,flowFrame,filterSet-method}
+\alias{coerce,nullParameter,character-method}
+\alias{coerce,parameters,character-method}
+\alias{coerce,ratio,character-method}
+\alias{coerce,transform,character-method}
+\alias{coerce,unitytransform,character-method}
 
-\title{Force an Object to Belong to a Class}
-\description{ These functions manage the relations that allow coercing an object
-     to a given class.
+
+
+\title{Convert an object to another class}
+
+\description{
+
+  These functions manage the relations that allow coercing an object to
+  a given class.
+
 }
 
 \arguments{
-  \item{from, to}{The classes between which 'def' performs coercion.
-    (In the case of the 'coerce' function these are objects from
-    the classes, not the names of the classes, but you're not
-    expected to call 'coerce' directly.)}
+  
+  \item{from, to}{The classes between which \code{def} performs
+    coercion.  (In the case of the \code{coerce} function, these are
+    objects from the classes, not the names of the classes, but you're
+    not expected to call \code{coerce} directly.)}
+  
  }
 
-\details{
-  The function supplied as the third argument is to be
-  called to implement 'as(x, to)' when 'x' has class 'from'.
-  Need we add that the function should return a suitable object
-  with class 'to'.
+ \details{
+   
+  The function supplied as the third argument is to be called to
+  implement \code{as(x, to)} when \code{x} has class \code{from}.  Need
+  we add that the function should return a suitable object with class
+  \code{to}.
+  
 }
 
 
-\author{B. Ellis}
+\author{F. Hahne, B. Ellis}
+
 \examples{
+
  samp1 <- read.FCS(system.file("extdata","0877408774.E07", package="flowCore"))
  samp2 <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
  samples <-list("sample1"=samp1,"sample2"=samp2)
  experiment <- as(samples,"flowSet")
+
 }
+
 \keyword{methods}  
 
