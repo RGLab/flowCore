@@ -37,6 +37,8 @@
 \alias{names,flowFrame-method}
 \alias{range}
 \alias{range,flowFrame-method}
+\alias{cbind2,flowFrame,matrix-method}
+\alias{cbind2,flowFrame,numeric-method}
 \alias{transform,flowFrame-method}
 \alias{compensate,flowFrame,matrix-method}
 \alias{==,flowFrame,filterResult-method}
@@ -392,6 +394,21 @@
       \code{   Subset(flowFrame, logical)}
       
     }
+
+    \item{cbind2}{Expand a \code{flowFrame} by the data in a
+      \code{numeric matrix} of the same length. The \code{matrix} must
+      have column names different from those of the
+      \code{flowFrame}. The additional method for \code{numerics} only
+      raises a useful error message.
+
+      \emph{Usage:}
+      
+      \code{   cbind2(flowFrame, matrix)}
+
+      \code{   cbind2(flowFrame, numeric)}
+      
+    }
+    
 
     \item{compensate}{Apply a compensation matrix on a \code{flowFrame}
       object.

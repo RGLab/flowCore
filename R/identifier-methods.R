@@ -137,3 +137,11 @@ setMethod("identifier",
 setMethod("identifier",
           signature=signature(object="NULL"),
           definition=function(object) NULL)
+
+
+## ==========================================================================
+## Transform objects have an ID slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature(object="transform"),
+          definition=function(object) object@transformationId)

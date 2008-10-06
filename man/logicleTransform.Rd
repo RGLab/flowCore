@@ -3,7 +3,9 @@
 
 \title{Compute a transform using the 'logicle' function}
 \description{
-  Logicle transformation create a subset of \code{\link[flowCore]biexponential}
+  
+  Logicle transformation create a subset of \code{\link{biexponentialTransform}}
+
 }
 \usage{
 logicleTransform(transformationId, w = 0, r = 262144, d = 5, ...)

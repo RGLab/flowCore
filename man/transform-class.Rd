@@ -4,6 +4,7 @@
 \alias{transform,missing-method}
 \alias{transform-class}
 \alias{summary,transform-method}
+\alias{show,transform-method}
 
 \title{'transform': a class for transforming flow-cytometry data by
   applying scale factors.}

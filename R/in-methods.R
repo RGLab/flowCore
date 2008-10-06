@@ -62,40 +62,30 @@ setMethod("%in%",
 setMethod("%in%",
           signature=signature(x="flowFrame",table="rectangleGate"),
           definition=function(x, table)
-          {   
-              parameters=unlist(parameters(table))   
-              e <- exprs(x)[,parameters, drop=FALSE]
-              tmp <- sapply(seq(along=parameters),
-                            function(i) 
-                            {
-                                if(table@min[i] > table@max[i])
-                                {
-                                    print(i)
-                                    e[,i]
-                                } else if(table@min[i] == table@max[i]){
-                                  rep(FALSE, nrow(e))
-                                } else 
-                                {
-                                    !is.na(cut(e[, i], 
-                                               c(table@min[i],table@max[i]),
-                                               labels=FALSE,
-                                               right=FALSE
-                                              )
-                                          )
-                                }
-                            }
-                           )
-              if(nrow(e))
-              {   
-                  dim(tmp) <- c(nrow(e), length(parameters))
-                  apply(tmp, 1, all)
-              }
-              else
-              {
-                  return(FALSE)
-              }
+      {   
+          parameters=unlist(parameters(table))   
+          e <- exprs(x)[,parameters, drop=FALSE]
+          tmp <- sapply(seq(along=parameters),
+                        function(i){
+                            if(table@min[i] > table@max[i]){
+                                print(i)
+                                e[,i]
+                            }else if(table@min[i] == table@max[i]){
+                                rep(FALSE, nrow(e))
+                            }else{
+                                !is.na(cut(e[, i],
+                                           c(table@min[i],table@max[i]),
+                                           labels=FALSE,
+                                           right=FALSE
+                                           ))
+                            }})
+          if(nrow(e)){   
+              dim(tmp) <- c(nrow(e), length(parameters))
+              apply(tmp, 1, all)
+          }else{
+              return(FALSE)
           }
-         )
+      })
 
 
 ## ==========================================================================
@@ -188,19 +178,13 @@ setMethod("%in%",
 setMethod("%in%",
           signature=signature("flowFrame",
                               table="norm2Filter"),
-          definition=function(x,table)
+          definition=function(x, table)
       {
           if(length(parameters(table)) != 2)
               stop("norm2 filters require exactly two parameters.")
-          y <- {if(length(table@transformation)>0){
-              tmp <- do.call("transform", c(x,table@transformation))
-              exprs(tmp)[,parameters(table)]   
-          }else{
-              tmp <- x
-              exprs(x)[,parameters(table)]
-          }}
+          y <- exprs(x)[,parameters(table)]
           ## drop data that has piled up on the measurement ranges         
-          r <- range(tmp, parameters(table))
+          r <- range(x, parameters(table))
           sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
                   y[,2] > r[1,2] & y[,2] < r[2,2])
           values <- y[sel, ]

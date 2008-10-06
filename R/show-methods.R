@@ -485,12 +485,12 @@ setMethod("show",
               "' with dimensions:\n", sep="")
           for(i in seq_along(parms)){
               cat("  ")
-              if(is.character(parms[i]))
+              if(!is.na(parms[i]))
                   cat(parms[i])
               else
                   cat("anonymous parameter")
               cat(": (")
-              cat(paste(object@min[],object@max[i],sep=","))
+              cat(paste(object@min[i],object@max[i],sep=","))
               cat(")\n")
 	}
       })
@@ -703,3 +703,24 @@ setMethod("show",
               cat(class(object), " to ", class(get(object)),
                   " object '", object@ID, "'\n", sep="")
       })
+
+
+## ==========================================================================
+## transform
+## ---------------------------------------------------------------------------
+setMethod("show",
+          signature=signature(object="transform"),
+          definition=function(object)
+      {
+          cat("transform object '", identifier(object), "'\n", sep="")
+      })
+
+
+setMethod("show",
+          signature=signature(object="unitytransform"),
+          definition=function(object)
+      {
+          cat("unitytransform on parameter '", parameters(object), "'\n",
+              sep="")
+      })
+

@@ -3,6 +3,7 @@
 \alias{identifier}
 \alias{identifier-methods}
 \alias{identifier,filter-method}
+\alias{identifier,transform-method}
 \alias{identifier,filterReference-method}
 \alias{identifier,filterResult-method}
 \alias{identifier,flowFrame-method}
@@ -41,7 +42,10 @@ identifier(object)
     \code{\linkS4class{filterReference}} object.}
     
     \item{object = "filterResult"}{Return identifier of a
-    \code{\linkS4class{filterResult}} object.}
+      \code{\linkS4class{filterResult}} object.}
+
+    \item{object = "tansform"}{Return identifier of a
+    \code{\linkS4class{transform}} object.}
     
     \item{object = "flowFrame"}{Return GUID from the \code{description}
       slot of a \code{\linkS4class{flowFrame}} object or, alternatively,

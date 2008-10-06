@@ -59,7 +59,8 @@
 
 \usage{
 
-curv2Filter(x, y, filterId="curv2Filter", bwFac=1.2, gridsize=rep(151, 2))
+curv2Filter(x, y, filterId="defaultCurv2Filter", bwFac=1.2,
+gridsize=rep(151, 2))
 
 }
 

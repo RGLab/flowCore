@@ -15,7 +15,8 @@ Convenience methods to facilitate the construction of
 }
 
 \usage{
-polytopeGate(filterId = "Polytope Gate", .gate, \dots)
+
+polytopeGate(\dots, .gate, b, filterId="defaultPolytopeGate")
 
 }
 
@@ -26,6 +27,8 @@ polytopeGate(filterId = "Polytope Gate", .gate, \dots)
   
   \item{.gate}{ A definition of the gate. This can be either a list,
     vector or matrix, described below. }
+
+  \item{b}{Need documentation }
   
   
   \item{\dots}{ You can also directly describe a gate without wrapping

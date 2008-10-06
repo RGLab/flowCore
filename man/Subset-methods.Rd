@@ -5,6 +5,7 @@
 \alias{Subset,flowFrame-method}
 \alias{Subset,flowFrame,logical-method}
 \alias{Subset,flowSet,list-method}
+\alias{Subset,flowSet,filterResultList-method}
 \alias{Subset,flowSet,ANY}
 
 \title{Subset a flowFrame or a flowSet}

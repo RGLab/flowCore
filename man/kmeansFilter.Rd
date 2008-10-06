@@ -62,7 +62,7 @@
 
 \usage{
 
-  kmeansFilter(\dots, filterId = "defaultKmeansFilter")
+kmeansFilter(\dots, filterId="defaultKmeansFilter")
 
 }
 
