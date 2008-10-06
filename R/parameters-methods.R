@@ -117,6 +117,16 @@ setReplaceMethod("parameters",
                    object
                  })
 
+setReplaceMethod("parameters", 
+                 signature=signature(object="dg1polynomial",
+                   value="parameters"),
+                 definition=function(object, value)
+                 {
+                   object@parameters <-value 
+                                            
+                   object
+                 })
+
 
 setReplaceMethod("parameters", 
                  signature=signature(object="singleParameterTransform",

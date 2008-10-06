@@ -1,13 +1,16 @@
 resolveTransformReference<-function(trans,df)
-{   
+{  
   if(class(trans)=="transformReference")
-    {   trans=eval(trans)
+    {   trans=eval(trans,trans@searchEnv)
+        
         trans=resolveTransformReference(trans,df)
       }
   else
-    {   
+    {  
+      if(class(trans)!="function") 
       trans=eval(trans)(df)
     }
+    trans
 }
 
 

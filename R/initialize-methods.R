@@ -51,7 +51,7 @@ setMethod("initialize",
 setMethod("initialize",
           signature=signature(.Object="dg1polynomial"),
           definition=function(.Object, parameters, ...)
-          {
+          { 
             parameters(.Object) <- parameters
             callNextMethod(.Object, ...)
           })
