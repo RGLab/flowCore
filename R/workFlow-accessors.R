@@ -146,36 +146,35 @@ setMethod("alias",
 ## ==========================================================================
 ## Plot the workflow tree using Rgraphviz
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## Find common action items for each tree level
-traverseEdge <- function(g, node=nodes(g)[1], result=NULL)
-{
-    if(length(node)){
-        children <- unlist(adj(g, node))
-        lc <- length(children)
-        if(lc){
-            grps <-
-                split(children, sapply(edgeData(g, from=node,
-                                                attr="actionItem"),
-                                       identifier))
-            if(length(grps)>2)
-                subGraphs[["node"]] <<- grps
-            for(j in grps){
-                lg <- length(j)
-                result <- rbind(result, c(from=node,
-                                          to=as.vector(j[ceiling(lg/2)])))
-            }
-            for(i in children)
-                result <- traverseEdge(g, i, result=result)
-        }
-    }
-    return(result)
-}
-
 setMethod("plot",
           signature=signature(x="workFlow",
                               y="missing"),
           definition=function(x, y, ...)
       {
+          ## Find common action items for each tree level
+          traverseEdge <- function(g, node=nodes(g)[1], result=NULL)
+          {
+              if(length(node)){
+                  children <- unlist(adj(g, node))
+                  lc <- length(children)
+                  if(lc){
+                      grps <-
+                          split(children, sapply(edgeData(g, from=node,
+                                                          attr="actionItem"),
+                                                 identifier))
+                      if(length(grps)>2)
+                          subGraphs[["node"]] <<- grps
+                      for(j in grps){
+                          lg <- length(j)
+                          result <- rbind(result, c(from=node,
+                                                    to=as.vector(j[ceiling(lg/2)])))
+                      }
+                      for(i in children)
+                          result <- traverseEdge(g, i, result=result)
+                  }
+              }
+              return(result)
+          }
           if (!suppressWarnings(require(Rgraphviz))) 
               stop("You need to have Rgraphviz installed for this feature", 
                    call.=FALSE)
