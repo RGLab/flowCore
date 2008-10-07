@@ -31,23 +31,26 @@ setMethod("eval",
 ## Polynomial transformation of degree 1
 ## ---------------------------------------------------------------------------
 
-setMethod("eval", 
+setMethod("eval",
 	  signature=signature(expr="dg1polynomial",
-                              envir="missing",
-                              enclos="missing"),
+            envir="missing",
+            enclos="missing"),
 	  definition=function(expr, envir, enclos)
-      {    
-          function(df)
-            {   
+          {    
+            function(df)
+              {   
                 par <- expr@parameters
                 temp <- sapply(par,function(i){
-                    if(is(i, "function")) return(i)
-                    resolve(i, df)
+                  if(is(i, "function")) return(i)
+                  resolve(i, df)
                 })
-                pp <- matrix(expr@a, ncol=length(expr@parameters))
-                rowSums(t(apply(temp, 1, function(x) pp*x)))+expr@b       
-            }
-      })
+                coeff <- expr@a
+                res <- 0
+                for(i in seq_along(expr@parameters))
+                  res <- res + temp[,i,drop=FALSE]*coeff[i]
+                res <- res+expr@b
+              }
+          })
 
 
 ## ===========================================================================
@@ -102,6 +105,7 @@ setMethod("eval",
       })
 
 
+
 ## ===========================================================================
 ## Log transformation 
 ## ---------------------------------------------------------------------------
@@ -134,7 +138,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              exp(parameter/expr@b)/expr@a
+              exp(parameter/expr@a)/expr@b
           }
       })
 
@@ -273,15 +277,43 @@ setMethod("eval",
           )	
 	
 ####----------------------------------------------------------------------------
-#### 
 #### Reference to a predefined gate 
-#### 
 ####----------------------------------------------------------------------------
 
 setMethod("eval",
           signature=signature(expr="filterReference",
-                              envir="missing",
-                              enclos="missing"),
+            envir="missing",
+            enclos="missing"),
           definition=function(expr,envir,enclos)
           expr@env[[expr@name]]  #retrieved using name instead of the filterId
           )	
+
+
+####----------------------------------------------------------------------------
+#### Eval transforms for compensations
+####----------------------------------------------------------------------------
+setMethod("eval",
+          signature=signature(expr="compensatedParameter",
+            envir="missing",
+            enclos="missing"),
+          function(expr, envir, enclos)
+          {    function(df)
+                 {      
+                   parameter <- expr@parameters
+                   compObj <- expr@searchEnv[[expr@spillRefId]]
+                   spillMat <- compObj@spillover
+                   e <- exprs(df)
+                   cols <- colnames(spillMat)
+                   trans <- compObj@parameters
+                   for(i in trans){
+                     if(is(i, "transformReference")){
+                       newCol <- resolveTransformReference(i, exprs(df))
+                       colnames(newCol) <- i@transformationId
+                       e<-cbind(e,newCol)
+                     }
+                   }
+                   t(solve(spillMat)[parameter,]%*%t(e[,cols])) 
+                   
+                 }
+             })
+

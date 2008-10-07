@@ -1498,6 +1498,24 @@ compensation <- function(spillover, compensationId="default",...)
         compensationId=compensationId,parameters=new("parameters",.Data=(...)))
 }
 
+setClass("compensatedParameter",
+          contains=c("transform"),
+          representation=representation(parameters="character",spillRefId="character",
+                                        searchEnv="environment"
+                                       )
+        )
+
+compensatedParameter<-function(parameters="NULL",spillRefId="NULL",transformationId="NULL",
+                    searchEnv=flowEnv)
+	   {       
+	       new("compensatedParameter",
+                    parameters=parameters,
+                    spillRefId=spillRefId,
+                    transformationId=transformationId,searchEnv=searchEnv
+                  )
+      	   }
+    	 
+
 ## ===========================================================================
 ## fcReference
 ## ---------------------------------------------------------------------------
