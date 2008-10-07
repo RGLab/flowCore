@@ -1201,17 +1201,16 @@ setClass("filterSummaryList",
 
 
 ## ===========================================================================
-## transform child classes
+## transform functions
 ## ---------------------------------------------------------------------------
-## Parameterize transforms so that we can describe them.
+## Constructors for the different varieties of transforms. All of these
+## create objects of the basic class 'transform', unless stated otherwise.
 ## ---------------------------------------------------------------------------
-## polynomial transform constructor
+## linear (polynomial) transform constructor
 linearTransform <- function(transformationId, a=1, b=0)
 {
-    if(!is.double(a)) 
-        stop("a must be numeric")
-    if(!is.double(b))
-        stop("b must be numeric")
+    checkClass(a, "numeric")
+    checkClass(b, "numeric")
     t <- new("transform", .Data=function(x)  x <- a*x+b)
     t@transformationId <- transformationId
     t
@@ -2529,34 +2528,23 @@ dg1polynomial <- function(parameters, a=1, b=1,
 ## Ratio of two arguments defined in the transformation
 ##
 ## ---------------------------------------------------------------------------
-
 setClass("ratio",
          contains=c("transform"),
          representation(numerator="transformation",
                         denominator="transformation"),
 	 prototype=prototype(numerator=unitytransform(""),
-         denominator=unitytransform("")),
-	 validity=function(object)
-     {	
-         msg<-NULL
-         msg
-     }
-         )
+         denominator=unitytransform("")))
 
 ratio <- function(numerator=unitytransform(" "),
                   denominator=unitytransform(" "),
-                  transformationId="NULL")
-{ 
-    if(class(numerator)=="character")
-    {   
-        if(length(numerator)!=1)
-            stop("Numerator is defined for one parameter")
-        numerator=unitytransform(numerator)
-    }  
-    if(class(denominator)=="character")
-    {   
-        if(length(denominator)!=1)
-            stop("Denominator is defined for one parameter")
+                  transformationId="ratioTransform")
+{
+    if(!is(numerator, "transform")){
+        checkClass(numerator, "character", 1)
+        numerator <- unitytransform(numerator)
+    }
+    if(!is(denominator, "transform")){
+        checkClass(denominator, "character", 1)
         denominator=unitytransform(denominator)
     }  
     new("ratio", numerator=numerator, denominator=denominator,
