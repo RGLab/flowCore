@@ -1505,7 +1505,7 @@ setClass("compensatedParameter",
         )
 
 compensatedParameter<-function(parameters="NULL",spillRefId="NULL",transformationId="NULL",
-                    searchEnv=flowEnv)
+                    searchEnv)
 	   {       
 	       new("compensatedParameter",
                     parameters=parameters,
@@ -2894,7 +2894,7 @@ setClass("transformReference",
          representation(searchEnv="environment"))
 
 transformReference <- function(referenceId="defaultTransformReference",
-                               searchEnv=flowEnv)
+                               searchEnv)
     new("transformReference",
         transformationId=referenceId, searchEnv=searchEnv)
     
