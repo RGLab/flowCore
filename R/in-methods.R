@@ -166,7 +166,7 @@ setMethod("%in%",
       {   parameters=unlist(parameters(table))
           e <- exprs(x)[,parameters, drop=FALSE] 
           W <- t(e)-table@mean
-          colSums((qr.solve(table@cov*table@distance) %*% W) * W) <= 1
+          colSums((solve(table@cov)%*% W) * W <= table@distance)
       })
 
 ## ==========================================================================
@@ -687,7 +687,7 @@ setMethod("%in%",
                           if(class(parameters[[len]])!="unitytransform")  
                           {   ## process all transformed parameters
                               charParam[[len]]=sprintf("_NEWCOL%03d_",len) 
-                              newCol=eval(parameters[[len]])(data)
+                              newCol=eval(parameters[[len]])(exprs(x))
                               colnames(newCol)=sprintf("_NEWCOL%03d_",len) 
                               data <- cbind(data, newCol)
                           } 

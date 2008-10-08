@@ -2,9 +2,12 @@
 ## realized transform object
 resolveTransformReference<-function(trans,df)
 {  
-    if(is(trans=="transformReference")){
-        trans <- eval(trans,trans@searchEnv)
-        trans <- resolveTransformReference(trans, df)
+    if(is(trans, "transformReference")){
+        trans <- eval(trans)
+        if(!is(trans, "compensatedParameter"))
+          trans <- resolveTransformReference(trans, df)
+        else
+          trans <- eval(trans)(df)
     }else{  
         if(!is(trans, "function")) 
             trans <- eval(trans)(df)
@@ -22,26 +25,35 @@ EH <- function(y, a, b, argument)
         return(-10^(-y/a)+b*y/a+1-argument)
 }
 
-solveEH<-function(args,a,b,df)
-{
-  temp <- eval(args)(df)
-  len <- length(temp)
-  result <- 0
-  while(len!=0)
-  {
-      result[len]=uniroot(EH,c(-100,100),tol=0.001,a=a,b=b,temp[len])$root
-      len <- len-1
-  }
-  return(result)
-}
+solveEH<-function(args,a,b)
+{  
+    #temp=eval(args)(df)
+    len=length(args)
+    result=0;
+    
+    while(len!=0)
+    {
+        step<-2
+        checkme<-EH(-step,a,b,args[len])*EH(step,a,b,args[len])
+        while(checkme>0)
+        {
+          step<-step*2
+          checkme<-EH(-step,a,b,args[len])*EH(step,a,b,args[len])
+        } 
+        result[len]=uniroot(EH,c(-step,step),tol=0.001,a=a,b=b,args[len])$root
+        len=len-1
+            
+    }
 
+    return(result)
+}
 
 ## ===========================================================================
 ## Evaluates all the transformations in the parameter slot of the filter 
 ## and returns a list containing the modified flowFrame and a modified filter 
 ## with slot parameter referencing the columns in the modified flowframe
 ## ---------------------------------------------------------------------------
-resolveTransforms<-function(x,filter)
+resolveTransforms <- function(x, filter)
 {    
     ## Filters need to be fully realized for this to work and we have to
     ## resolve all filterReferences
@@ -60,20 +72,22 @@ resolveTransforms<-function(x,filter)
             if(!is(parameters[[len]], "unitytransform")){   
                 ## process all transformed parameters
                 charParam[[len]] <- sprintf("_NEWCOL%03d_", len) 
-                if (is(eval(parameters[[len]]), "compensatedParameter")){
+                if (is(parameters[[len]], "compensatedParameter")){
                     ##deals with compensated parameter
-                    newCol <- eval(eval(parameters[[len]]))(x)
+                    ##newCol <- eval(eval(parameters[[len]]))(x)
+                    newCol <- resolveTransformReference(parameters[[len]],
+                                                        exprs(x))
                 }else if(is(parameters[[len]], "transformReference")){
                     ##deals with transform references
-                    temp <- parameters[[len]]
-                    newCol <- resolveTransformReference(parameters[[len]], data)
+                    newCol <- resolveTransformReference(parameters[[len]],
+                                                        exprs(x))
                 }else{
                     ##deals with all other transforms
-                    newCol <- eval(parameters[[len]])(data)
+                    newCol <- eval(parameters[[len]])(exprs(x))
                 }               
                 newCol <- as.matrix(newCol)
                 colnames(newCol) <- sprintf("_NEWCOL%03d_", len) 
-                x <- cbind(x, newCol)
+                x <- cbind2(x, newCol)
             }else
                charParam[[len]] <- parameters(parameters[[len]])
         }

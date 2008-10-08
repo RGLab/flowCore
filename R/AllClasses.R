@@ -458,14 +458,14 @@ setClass("polytopeGate",
 ##  ..1 is a named list of numerics, each of the same length
 ##  ..1 is a list of transformations or characters and a is the
 ##      associated matrix of coefficients
-##  a   is a matrix of coefficients , colnames = parameters
-##  a   is a named list of numerics, all of the same length
+##  .gate is a matrix of coefficients , colnames = parameters
+##  .gate is a named list of numerics, all of the same length
 polytopeGate <- function(..., .gate, b, filterId="defaultPolytopeGate")
 {
     checkClass(filterId, "character", 1)
     checkClass(b, "numeric")
     parms <- prepareInputs(parseDots(list(...)), .gate)
-    names(b) <- colnames(parms$values) <- sapply(parms$parameters, parameters)
+    colnames(parms$values) <- sapply(parms$parameters, parameters)
     new("polytopeGate", filterId=filterId, parameters=parms$parameters,
         a=parms$values, b=b)
 }
@@ -2878,7 +2878,48 @@ setMethod("hyperlog",signature(parameters="characterOrTransformation"),
       }
           )
 
+## ===========================================================================
+##  EH Transformation 
+## ---------------------------------------------------------------------------
+## inputs a,b of type numeric and parameter of type transformation or character
+##
+## --------------------------------------------------------------------------- 
+setClass("EHtrans", 		
+         contains=c("singleParameterTransform"),
+         representation=representation(a="numeric",
+         b="numeric"
+         ),
+         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+         validity=function(object) 
+     {
+         msg<-NULL
+         if(length(slot(object,"parameters"))!=1)
+         {
+             msg<-c(msg,"EH transform is 
+                                      defined for one parameter"
+                    )
+         }
+         if(slot(object,"a")<=0)
+         {
+             msg<-c(msg,"a should be greater than zero")
+             
+         }
+         if(slot(object,"b")<=0)
+         {
+             msg<-c(msg,"b should be greater than zero")
+             
+         }
+         msg
+     }
+         )
 
+EHtrans<-function(parameters="NULL",a=1,b=1,transformationId="NULL")
+      {   
+          new("EHtrans",parameters=parameters,a=a,b=b,
+              transformationId=transformationId
+              )
+      }
+          
 
 ## ===========================================================================
 ##  Splitscale Transformation 
