@@ -168,16 +168,16 @@ flowSet <- function(..., phenoData, name)
 ## ---------------------------------------------------------------------------
 setClass("transform",
          representation=representation(transformationId="character",
-         .Data="function"),
+                                       .Data="function"),
          prototype=prototype(transformationId=""))
 
 setClass("parameters", contains="list")
 
-setClassUnion("transformation","transform")
+setClassUnion("transformation", "transform")
 
-setClassUnion("characterOrTransformation",c("character","transformation"))
+setClassUnion("characterOrTransformation", c("character","transformation"))
 
-setClassUnion("characterOrParameters",c("character","parameters"))
+setClassUnion("characterOrParameters", c("character","parameters"))
 
 setClass("singleParameterTransform",
          representation=representation(parameters="transformation"),
@@ -185,7 +185,6 @@ setClass("singleParameterTransform",
 
 setClass("nullParameter",
          representation=representation(dummy="numeric"))
-
 
 
 
@@ -1462,7 +1461,8 @@ setClass("compensation",
          )
 
 ## constructor
-compensation <- function(spillover, compensationId="default",...)
+##FIXME: The whole ... stuff doesn't make sense
+compensation <- function(..., spillover, invert=TRUE, compensationId="defaultCompensation")
 { 
     if(class(...)=="list")
     {
@@ -1492,10 +1492,9 @@ compensation <- function(spillover, compensationId="default",...)
              "rows and columns", call.=FALSE)
     if(is.null(colnames(spillover)))
         stop("Spillover matrix must have colnames", call.=FALSE)
-    ##checkClass(invert, "logical", 1)
     checkClass(compensationId, "character", 1)
     new("compensation", spillover=spillover, 
-        compensationId=compensationId,parameters=new("parameters",.Data=(...)))
+        compensationId=compensationId, parameters=new("parameters",.Data=(...)))
 }
 
 setClass("compensatedParameter",
@@ -2511,16 +2510,20 @@ setMethod("add",
 ## data frame
 ## ---------------------------------------------------------------------------
 setClass("unitytransform",
-	 contains=c("transform"),
+	 contains="transform",
 	 representation=representation(parameters="character"))
 
-setMethod("unitytransform",
-          signature(parameters="character"),
-	  function(parameters=character(0),transformationId="NULL")
-      {       
-          new("unitytransform",parameters=parameters,
-              transformationId=transformationId)
-      })
+unitytransform <- function(parameters,
+                           transformationId="defaultUnityTransform")
+{
+    checkClass(transformationId, "character", 1)
+    if(missing(parameters))
+        parameters <- character()
+    new("unitytransform", parameters=parameters,
+        transformationId=transformationId)
+}
+
+
 
 ## ===========================================================================
 ## Polynomial transformation of degree 1 
@@ -2529,33 +2532,41 @@ setMethod("unitytransform",
 ## transformation
 ## ---------------------------------------------------------------------------
 setClass("dg1polynomial", 		
-         contains=c("transform"),
-         representation=representation(parameters="parameters", a="numeric",
-         b="numeric"),
-         prototype=prototype(parameters=new("parameters"),a=1,b=1))
+         contains="transform",
+         representation=representation(parameters="parameters",
+                                       a="numeric",
+                                       b="numeric"),
+         prototype=prototype(parameters=new("parameters"),
+                             a=1,
+                             b=1))
 
 dg1polynomial <- function(parameters, a=1, b=1,
-                          transformationId="dg1polynomial")
+                          transformationId="defaultDg1polynomialTransform")
+{
+    checkClass(a, "numeric", 1)
+    checkClass(b, "numeric", 1)
+    checkClass(transformationId, "character", 1)
     new("dg1polynomial", parameters=parameters, a=a, b=b,
         transformationId=transformationId)
+}
+
 
 
 ## ===========================================================================
 ## Ratio transformation
 ## ---------------------------------------------------------------------------
 ## Ratio of two arguments defined in the transformation
-##
 ## ---------------------------------------------------------------------------
 setClass("ratio",
-         contains=c("transform"),
+         contains="transform",
          representation(numerator="transformation",
                         denominator="transformation"),
-	 prototype=prototype(numerator=unitytransform(""),
-         denominator=unitytransform("")))
+	 prototype=prototype(numerator=unitytransform(),
+                             denominator=unitytransform()))
 
-ratio <- function(numerator=unitytransform(" "),
-                  denominator=unitytransform(" "),
-                  transformationId="ratioTransform")
+ratio <- function(numerator=unitytransform(),
+                  denominator=unitytransform(),
+                  transformationId="defaultRatioTransform")
 {
     if(!is(numerator, "transform")){
         checkClass(numerator, "character", 1)
@@ -2566,486 +2577,324 @@ ratio <- function(numerator=unitytransform(" "),
         denominator=unitytransform(denominator)
     }  
     new("ratio", numerator=numerator, denominator=denominator,
-        transformationId=transformationId,
-        ".Data"=function(x, y) x/y)
+        transformationId=transformationId)
 }
+
 
 
 ## ===========================================================================
 ## Quadratic transformation
 ## ---------------------------------------------------------------------------
-## 
-##
-## ---------------------------------------------------------------------------
 setClass("quadratic", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(a="numeric"),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1),
+         prototype=prototype(parameters=unitytransform(),
+                             a=1),
          validity=function(object) 
      {
          msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Quadratic transform is defined for one 
-                                      parameter")
-         }
-         
-         if(length(slot(object,"a"))!=1)
-         {
-             msg<-c(msg,"Only one coefficient is defined for 
-                                      quadratic transform")
-         }
-         
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"a should be non zero")
-         }
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Quadratic transform is defined for one parameter")
+         if(length(object@a)!=1)
+             msg <- c(msg, "Only one coefficient is defined for quadratic transform")
+         if(object@a==0)
+             msg <- c(msg, "'a' should be non zero")
          msg
-     }
-         )
+     })
 
-setMethod("quadratic",
-          signature(parameters="characterOrTransformation"),
-	  function(parameters="NULL",a=1,transformationId="NULL")
-      {      
-          new("quadratic",parameters=parameters,a=a,
-              transformationId=transformationId)
+quadratic <- function(parameters="NULL", a=1,
+                      transformationId="defaultQuadraticTransform")
+    new("quadratic",parameters=parameters,a=a,
+        transformationId=transformationId)
+
           
-      }
-          
-          )
+
 ## ===========================================================================
 ## Squareroot transformation
 ## ---------------------------------------------------------------------------
-## 
-##
-## ---------------------------------------------------------------------------
 setClass("squareroot", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(a="numeric"),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1),
+         prototype=prototype(parameters=unitytransform(), a=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Square root transform is defined 
-                                       for one parameter"
-                    )
-         }
-         if(length(slot(object,"a"))!=1)
-         {
-             msg<-c(msg,"Only one coefficient is defined
-                                       for quadratic transform"
-                    )
-             
-         }
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"Coefficient should be non zero")
-             
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Square root transform is defined for one parameter")
+         if(length(object@a)!=1)
+             msg <- c(msg, "Only one coefficient is defined for quadratic transform")
+         if(object@a==0)
+             msg <- c(msg, "Coefficient should be non zero")
          msg
-     }
-         )
+     })
 
+squareroot <- function(parameters, a=1,
+                       transformationId="defaultSquarerootTransform")
+    new("squareroot", parameters=parameters, a=a,
+        transformationId=transformationId)
 
-
-
-setMethod("squareroot",signature(parameters="characterOrTransformation"),
-	  function(parameters=" ",a=1,transformationId="NULL")
-      {         
-          new("squareroot",parameters=parameters,a=a,
-              transformationId=transformationId)
-          
-      }
-          
-          )
 
 
 ## ===========================================================================
 ##  Loarithmical Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## ---------------------------------------------------------------------------
-
 setClass("logarithm",
-         contains=c("singleParameterTransform"),
-         representation=representation(a="numeric",b="numeric"),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+         contains="singleParameterTransform",
+         representation=representation(a="numeric", b="numeric"),
+         prototype=prototype(parameters=unitytransform(), a=1, b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Logarithm transform is defined for 
-                                 one parameter"
-                    )
-         }
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"a should be a non zero number")
-             
-         }
-         if(slot(object,"b")==0)
-         {
-             msg<-c(msg,"b should be a non zero number")
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Logarithm transform is defined for one parameter")
+         if(object@a==0)
+             msg <- c(msg, "'a' should be a non zero number")
+         if(object@b==0)
+             msg <- c(msg, "'b' should be a non zero number")
          msg
-     }
-         )
+     })
 
-setMethod("logarithm",
-          signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {        		
-          new("logarithm",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-          
-      }
-          )
+logarithm <- function(parameters, a=1, b=1,
+                      transformationId="defaultLogarithmTransform")
+    new("logarithm", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+
+
+
 ## ===========================================================================
 ##  Exponential Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## ---------------------------------------------------------------------------
 
 setClass("exponential", 		
          contains="singleParameterTransform",
          representation=representation(a="numeric",
-         b="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+                                       b="numeric"),
+         prototype=prototype(parameters=unitytransform(),
+                             a=1,
+                             b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Exponential transform is defined 
-                                 for one parameter"
-                    )
-         }  
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"a should be a non zero number")
-             
-         }
-         if(slot(object,"b")==0)
-         {
-             msg<-c(msg,"b should be a non zero number")
-         }
+         msg < -NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Exponential transform is defined for one parameter")
+         if(object@a==0)
+             msg<-c(msg,"'a' should be a non zero number")
+         if(object@b==0)
+             msg <- c(msg,"'b' should be a non zero number")
          msg  
-     }
-         )
+     })
 
-setMethod("exponential",
-          signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {  	    
-          new("exponential",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-      }
-          )
+exponential <- function(parameters, a=1, b=1,
+                        transformationId="defaultExponentialTransformation")
+    new("exponential", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+
+
+
 ## ===========================================================================
 ##  Inverse hyperbolic sin Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## ---------------------------------------------------------------------------
 setClass("asinht", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(a="numeric",
-         b="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+                                       b="numeric"),
+         prototype=prototype(parameters=unitytransform(), a=1, b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Inverse hypberbolic transform is defined 
-                                for one parameter"
-                    )
-         }
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"a should be a non zero number")
-         }
-         if(slot(object,"b")==0)
-         {
-             msg<-c(msg,"b should be a non zero number")
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Inverse hypberbolic transform is defined for one parameter")
+         if(object@a==0)
+             msg <- c(msg, "'a' should be a non zero number")
+         if(object@b==0)
+             msg <- c(msg, "'b' should be a non zero number")
          msg
-     }
-         )
+     })
 
-setMethod("asinht",signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {       			
-          new("asinht",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-      }
-          )
+asinht <- function(parameters="NULL", a=1, b=1,
+                   transformationId="defaultAsinhTransform")
+    new("asinht", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+
+
 
 ## ===========================================================================
 ##  Inverse hyperbolic sin Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## ---------------------------------------------------------------------------
 setClass("sinht", 		
-         contains=c("singleParameterTransform"),
-         representation=representation(a="numeric",b="numeric"),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+         contains="singleParameterTransform",
+         representation=representation(a="numeric",
+                                       b="numeric"),
+         prototype=prototype(parameters=unitytransform(),
+                             a=1,
+                             b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Hypberbolic transform is defined for 
-                                          one parameter"
-                    )
-         }
-         if(slot(object,"a")==0)
-         {
-             msg<-c(msg,"a should be a non zero number")
-             
-         }
-         if(slot(object,"b")==0)
-         {
-             msg<-c(msg,"b should be a non zero number")
-             
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Hypberbolic transform is defined for one parameter")
+         if(object@a==0)
+             msg <- c(msg, "'a' should be a non zero number")
+         if(object@b==0)
+             msg <- c(msg, "'b' should be a non zero number")
          msg
-     }
-         )
+     })
 
-setMethod("sinht",signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {  
-          new("sinht",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-      }
-          )
+sinht <- function(parameters, a=1, b=1,
+                  transformationId="defaultSinhtTransform")
+    new("sinht", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+
+
 
 ## ===========================================================================
 ##  Hyperlog Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## --------------------------------------------------------------------------- 
 setClass("hyperlog", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(a="numeric",
-         b="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+                                       b="numeric"),
+         prototype=prototype(parameters=unitytransform(), a=1, b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Hyperlog transform is 
-                                      defined for one parameter"
-                    )
-         }
-         if(slot(object,"a")<=0)
-         {
-             msg<-c(msg,"a should be greater than zero")
-             
-         }
-         if(slot(object,"b")<=0)
-         {
-             msg<-c(msg,"b should be greater than zero")
-             
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Hyperlog transform is defined for one parameter")
+         if(object@a<=0)
+             msg <- c(msg, "'a' should be greater than zero")
+         if(object@b<=0)
+             msg <- c(msg, "'b' should be greater than zero")
          msg
-     }
-         )
+     })
 
-setMethod("hyperlog",signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {   
-          new("hyperlog",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-      }
-          )
+hyperlog <- function(parameters="NULL", a=1, b=1,
+                     transformationId="defaultHyperlogTransform")
+    new("hyperlog", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+
+
 
 ## ===========================================================================
 ##  EH Transformation 
 ## ---------------------------------------------------------------------------
 ## inputs a,b of type numeric and parameter of type transformation or character
-##
 ## --------------------------------------------------------------------------- 
 setClass("EHtrans", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(a="numeric",
-         b="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),a=1,b=1),
+                                       b="numeric"),
+         prototype=prototype(parameters=unitytransform(), a=1, b=1),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"EH transform is 
-                                      defined for one parameter"
-                    )
-         }
-         if(slot(object,"a")<=0)
-         {
-             msg<-c(msg,"a should be greater than zero")
-             
-         }
-         if(slot(object,"b")<=0)
-         {
-             msg<-c(msg,"b should be greater than zero")
-             
-         }
+         msg < -NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "EH transform is defined for one parameter")
+         if(object@a<=0)
+             msg<-c(msg, "'a' should be greater than zero")
+         if(object@b<=0)
+             msg<-c( msg, "'b' should be greater than zero")
          msg
-     }
-         )
+     })
 
-EHtrans<-function(parameters="NULL",a=1,b=1,transformationId="NULL")
-      {   
-          new("EHtrans",parameters=parameters,a=a,b=b,
-              transformationId=transformationId
-              )
-      }
+EHtrans <- function(parameters, a=1, b=1,
+                    transformationId="defaultEHtransTransform")
+    new("EHtrans", parameters=parameters, a=a, b=b,
+        transformationId=transformationId)
+      
           
 
 ## ===========================================================================
 ##  Splitscale Transformation 
 ## ---------------------------------------------------------------------------
-## 
-##
-## --------------------------------------------------------------------------- 
 setClass("splitscale", 		
-         contains=c("singleParameterTransform"),
+         contains="singleParameterTransform",
          representation=representation(r="numeric",
-         maxValue="numeric",
-         transitionChannel="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),
-         r=1,maxValue=1,transitionChannel=4
-         ),
+                                       maxValue="numeric",
+                                       transitionChannel="numeric"),
+         prototype=prototype(parameters=unitytransform(),
+                             r=1,
+                             maxValue=1,
+                             transitionChannel=4),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Split scale transform is defined for
-                                      one parameter")
-         }
-         
-         if(slot(object,"r")<=0)
-         {
-             msg<-c(msg,"r should be a greater than zero")
-         }
-         
-         if(slot(object,"maxValue")<=0)
-         {
-             msg<-c(msg,"maxValue should be a greater than zero")
-             
-         }
-         if(slot(object,"transitionChannel")<0)
-         {
-             msg<-c(msg,"transitionChannel should be a non negative")
-             
-         }
+         msg < -NULL
+         if(length(object@parameters)!=1)
+             msg<-c(msg, "Split scale transform is defined for one parameter")
+         if(object@r<=0)
+             msg <- c(msg, "'r' should be a greater than zero")
+         if(object@maxValue<=0)
+             msg <- c(msg, "maxValue should be a greater than zero")
+         if(object@transitionChannel<0)
+             msg <- c(msg, "transitionChannel should be a non negative")
          msg
-     }
-         )
+     })
 
-setMethod("splitscale",signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",r=1,maxValue=1,transitionChannel=4,
-                   transformationId="NULL")
-      {       
-          new("splitscale",
-              parameters=parameters,r=r,maxValue=maxValue,
-              transitionChannel=transitionChannel,
-              transformationId=transformationId
-              )
-      }
-          )
+splitscale <- function(parameters="NULL", r=1, maxValue=1, transitionChannel=4,
+                       transformationId="defaultSplitscaleTransform")
+    new("splitscale",
+        parameters=parameters, r=r, maxValue=maxValue,
+        transitionChannel=transitionChannel,
+        transformationId=transformationId)
+
+
+
 ## ===========================================================================
 ##  Inverse Splitscale Transformation 
 ## ---------------------------------------------------------------------------
-## 
-##
-## --------------------------------------------------------------------------- 
 setClass("invsplitscale", 		
-         contains=c("singleParameterTransform"),
-         representation=representation(r="numeric",maxValue="numeric",
-         transitionChannel="numeric"
-         ),
-         prototype=prototype(parameters=unitytransform("NULL"),r=1,maxValue=1,
-         transitionChannel=4
-         ),
+         contains="singleParameterTransform",
+         representation=representation(r="numeric",
+                                       maxValue="numeric",
+                                       transitionChannel="numeric"),
+         prototype=prototype(parameters=unitytransform(),
+                             r=1,
+                             maxValue=1,
+                             transitionChannel=4),
          validity=function(object) 
      {
-         msg<-NULL
-         if(length(slot(object,"parameters"))!=1)
-         {
-             msg<-c(msg,"Split scale transform is defined for 
-                                      one parameter"
-                    )
-         }
-         
-         if(slot(object,"r")<=0)
-         {
-             msg<-c(msg,"r should be a greater than zero")
-             
-         }
-         
-         if(slot(object,"maxValue")<=0)
-         {
-             msg<-c(msg,"maxValue should be a greater than zero")
-             
-         }
-         if(slot(object,"transitionChannel")<0)
-         {
-             msg<-c(msg,"transitionChannel should be a non negative")
-             
-         }
+         msg <- NULL
+         if(length(object@parameters)!=1)
+             msg <- c(msg, "Split scale transform is defined for one parameter")
+         if(object@r<=0)
+             msg <- c(msg, "'r' should be a greater than zero")
+         if(object@maxValue<=0)
+             msg <- c(msg, "'maxValue' should be a greater than zero")
+         if(object@transitionChannel<0)
+             msg <- c(msg, "'transitionChannel' should be a non negative")
          msg
-     }
-         )
-
-setMethod("invsplitscale",signature(parameters="characterOrTransformation"),
-          function(parameters="NULL",r=1,maxValue=1,
-                   transitionChannel=4,transformationId="NULL")
-      {       
-          new("invsplitscale",
-              parameters=parameters,r=r,maxValue=maxValue,
-              transitionChannel=transitionChannel,
-              transformationId=transformationId
-              )
-      })
+     })
+       
+invsplitscale <- function(parameters, r=1, maxValue=1,
+                          transitionChannel=4,
+                          transformationId="defaultInvsplitscaleTransforms")
+    new("invsplitscale",
+        parameters=parameters, r=r, maxValue=maxValue,
+        transitionChannel=transitionChannel,
+        transformationId=transformationId)
+      
 
 
 ## ===========================================================================
 ## Transformation reference
 ## ---------------------------------------------------------------------------
 ## Reference to a transformation defined previously
-##
 ## ---------------------------------------------------------------------------
-setClass("transformReference",contains="transform",
-         representation(searchEnv="environment")
-         )
+setClass("transformReference",
+         contains="transform",
+         representation(searchEnv="environment"))
 
-setMethod("transformReference",
-          signature(referenceId="character",searchEnv="environment"),
-          function(referenceId="NULL",searchEnv=flowEnv)
-      {
-          new("transformReference",
-              transformationId=referenceId,searchEnv=searchEnv)
-      }	
-          )
+transformReference <- function(referenceId="defaultTransformReference",
+                               searchEnv=flowEnv)
+    new("transformReference",
+        transformationId=referenceId, searchEnv=searchEnv)
+    
