@@ -23,8 +23,11 @@ setMethod("initialize",
       {
           if (missing(parameters))
               parameters <- flowDefaultADF(exprs)
-          
-          callNextMethod()
+          callNextMethod(.Object,
+                         exprs=exprs,
+                         parameters=parameters,
+                         description=description,
+                         ...)
       })
 
 
