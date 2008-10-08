@@ -435,39 +435,33 @@ setMethod("transform",
           nc <- colnames(transformed)[-c(1:ncol(x@exprs))]
           colnames(transformed) <- c(colnames(x), nc)
           if(ncol(transformed) > ncol(x@exprs)) {
-              ## Add any new parameter values, there might be a more elegant
-              ## way to do that other than poking around in the deparsed
-              ## arguments...
-              args <- strsplit(gsub("^list\\(", "",
-                                    unlist(strsplit(deparse(e), ","))), "=")
-              nCol <- gsub(" *\"|\" *| *'|' *|` *|` *", "",
-                           sapply(args,function(x) x[1]))
-              nCol <- gsub(" ", "", nCol)
-              oCol <- sapply(strsplit(sapply(args, function(x) x[2]),
-                                      "`"), function(x) x[2])
-              names(oCol) <- make.names(nCol)
+              ## Add new parameter descriptions if there are any
+              oCol <- lapply(e[2:length(e)], all.vars)
+              nCol <- nc
               oparFrame <- pData(par)
               mt <- match(oCol[nc], oparFrame$name)
-              nparFrame <- data.frame(name=names(oCol[nc]),
-                                      desc=paste("derived from ",
-                                      "transformation of", oCol[nc]),
+              nparFrame <- data.frame(name=nc,
+                                      desc=paste("derived from",
+                                                 "transformation of",
+                                                 sapply(oCol[nc], paste,
+                                                        collapse=" and ")),
                                       range=oparFrame[mt, "range"],
                                       minRange=tranges[1, nc],
                                       maxRange=tranges[2,nc])
+              rownames(nparFrame) <- sprintf("$P%d", seq_len(nrow(nparFrame))+
+                                             nrow(oparFrame))
               pData(par) <- rbind(oparFrame, nparFrame)
-              }
-              else {
+          }
+          else {
                   cnames <- colnames(x)
                   par$minRange <- tranges[1,]
                   par$maxRange <- tranges[2,]
               }
-              
-              
-              new("flowFrame",
-                  exprs=transformed, 
-                  parameters=par,#[,params$name],
-                  description=description(x))
-          })
+          new("flowFrame",
+              exprs=transformed, 
+              parameters=par,
+              description=description(x))
+      })
 
 
 

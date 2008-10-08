@@ -126,12 +126,24 @@ setReplaceMethod("parameters",
                    object
                  })
 
+
 setReplaceMethod("parameters", 
                  signature=signature(object="dg1polynomial",
-                   value="parameters"),
+                   value="transform"),
                  definition=function(object, value)
                  {
-                   object@parameters <-value 
+                   object@parameters <- new("parameters",
+                                            .Data=list(value))
+                   object
+                 })
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="dg1polynomial",
+                   value="character"),
+                 definition=function(object, value)
+                 {
+                      value <- new("parameters", .Data=list(unitytransform(value))) 
+                      object@parameters <- value 
                                             
                    object
                  })
