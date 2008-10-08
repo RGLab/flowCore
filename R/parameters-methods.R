@@ -169,6 +169,19 @@ setReplaceMethod("parameters",
                  })
 
 
+
+## ==========================================================================
+## For compensations
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("parameters",
+          signature=signature(object="compensation"),
+          definition=function(object){
+            tmp <- unlist(sapply(object@parameters, as, "character"))
+            tmp
+          })
+
+
+
 ## ==========================================================================
 ## For setOperationFilters we return the parameters of every subfilter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

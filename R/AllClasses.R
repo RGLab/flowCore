@@ -1426,66 +1426,30 @@ setClass("transformFilter",
 ## Slots are:
 ##   - compensationId: The identifier of the object
 ##   - spillover:      The spillover matrix
-##   - invert:         A logical vector indicating whether the matrix in
-##                     slot spillover is a spillover or a compensation
-##                     matrix.
+##   - parameters:     The parameters for which the data is to be compensated,
+##                     an object of class parameters 
 ## ---------------------------------------------------------------------------
-## setClass("compensation",
-##          representation(spillover="matrix", invert="logical",
-##                         compensationId="character"),
-##          prototype=prototype(invert=TRUE, compensationId="default"))
-## 
-## constructor
-## compensation <- function(spillover, invert=TRUE, compensationId="default")
-## {
-##     if(!is.matrix(spillover) || !is.numeric(spillover) ||
-##        ncol(spillover) != nrow(spillover))
-##         stop("'spillover' must be numeric matrix with same number of ",
-##              "rows and columns", call.=FALSE)
-##     if(is.null(colnames(spillover)))
-##         stop("Spillover matrix must have colnames", call.=FALSE)
-##     checkClass(invert, "logical", 1)
-                                        #     checkClass(compensationId, "character", 1)
-##     new("compensation", spillover=spillover, invert=invert,
-##         compensationId=compensationId)
-## }
 setClass("compensation",
          representation(spillover="matrix",
                         compensationId="character",
-                        parameters="parameters"
-                        ),
+                        parameters="parameters"),
          prototype=prototype(spillover=matrix(),
-         compensationId="default",
-         parameters=new("parameters",.Data="")
-         )
-         )
+                             compensationId="default",
+                             parameters=new("parameters",.Data="")))
 
-## constructor
-##FIXME: The whole ... stuff doesn't make sense
-compensation <- function(..., spillover, invert=TRUE, compensationId="defaultCompensation")
-{ 
-    if(class(...)=="list")
-    {
-        parameters=(...)
-
-        len=length(parameters)
-        charParam=list()
-        
-        while(len>0)
-        {
-            if(class(parameters[[len]])=="unitytransform")  
-            {   
-                charParam[[len]]=slot(parameters[[len]],"parameters")
-            } 
-            else if(class(parameters[[len]])=="transformReference")
-            {
-                charParam[[len]]=slot(parameters[[len]],"transformationId")
-            }                
-            len=len-1                               
-        }
-        colnames(spillover)=unlist(charParam)
-    } 
-    
+## Constructor: We allow for the following inputs:
+##  spillover is always a symmetric numerical matrix with colnames set
+##  invert is always a logical of length 1
+##  ..1 is a character vector
+##  ..1 is a list of character and/or transformations
+##  ... are characters and/or transformations
+## If parameters are given the
+compensation <- function(..., spillover, invert=FALSE,
+                         compensationId="defaultCompensation")
+{
+    parms <- parseDots(list(...))
+    if(missing(spillover))
+        spillover <- as.matrix(parms$values)
     if(!is.matrix(spillover) || !is.numeric(spillover) ||
        ncol(spillover) != nrow(spillover))
         stop("'spillover' must be numeric matrix with same number of ",
@@ -1493,10 +1457,26 @@ compensation <- function(..., spillover, invert=TRUE, compensationId="defaultCom
     if(is.null(colnames(spillover)))
         stop("Spillover matrix must have colnames", call.=FALSE)
     checkClass(compensationId, "character", 1)
+    checkClass(invert, "logical", 1)
+    if(!length(parms$parameters))
+        parms <- sapply(colnames(spillover), unitytransform)
+    if(!all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
+        stop("Parameters and column names of the spillover matrix ",
+             "don't match.", call.=FALSE)
+    if(invert)
+        spillover <- solve(spillover/max(spillover))
     new("compensation", spillover=spillover, 
-        compensationId=compensationId, parameters=new("parameters",.Data=(...)))
+        compensationId=compensationId,
+        parameters=new("parameters", parms$parameters))
 }
 
+
+
+## ===========================================================================
+## compensatedParameter
+## ---------------------------------------------------------------------------
+## FIXME NG: Please document
+## ---------------------------------------------------------------------------
 setClass("compensatedParameter",
           contains=c("transform"),
           representation=representation(parameters="character",spillRefId="character",
@@ -1504,15 +1484,16 @@ setClass("compensatedParameter",
                                        )
         )
 
-compensatedParameter<-function(parameters="NULL",spillRefId="NULL",transformationId="NULL",
-                    searchEnv)
-	   {       
-	       new("compensatedParameter",
-                    parameters=parameters,
-                    spillRefId=spillRefId,
-                    transformationId=transformationId,searchEnv=searchEnv
-                  )
-      	   }
+## Constructor
+compensatedParameter <- function(parameters,
+                                 spillRefId="defaultCompensatedParameter",
+                                 transformationId="defaultTransformationId",
+                                 searchEnv)
+{
+    
+    new("compensatedParameter", parameters=parameters, spillRefId=spillRefId,
+        transformationId=transformationId,searchEnv=searchEnv)
+}
     	 
 
 ## ===========================================================================
