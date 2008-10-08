@@ -332,8 +332,7 @@ setMethod("compensate",
                               compensation="data.frame"),
           function(x, compensation)
       {
-          compensation <- as.matrix(compensation)
-          callNextMethod()
+          compensate(x, as.matrix(compensation))
       })
 
 setMethod("compensate",
@@ -341,14 +340,14 @@ setMethod("compensate",
                               compensation="matrix"),
           definition=function(x, compensation)
       {
-          cols <- colnames(spillover)
+          cols <- colnames(compensation)
           sel <- cols %in% colnames(x)
           if(!all(sel))
               stop("The following parameters in the spillover matrix\n are",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
           e <- exprs(x)
-          e[, cols] <- t(solve(spillover)%*%t(e[,cols]))
+          e[, cols] <- t(solve(compensation)%*%t(e[,cols]))
           exprs(x) = e
           x
       })
