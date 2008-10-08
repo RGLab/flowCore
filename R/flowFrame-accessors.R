@@ -327,92 +327,42 @@ setReplaceMethod("colnames",
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
-# setMethod("compensate",
-#           signature=signature(x="flowFrame",
-#                               spillover="matrix"),
-#           definition=function(x, spillover, inv=TRUE, ...)
-#       {
-#           ## Make sure we're normalized to [0,1] and then invert
-#           cols = colnames(spillover)
-#           sel <- cols %in% colnames(x)
-#           if(!all(sel))
-#               stop("The following parameters in the spillover matrix\n are",
-#                    " not present in the flowFrame:\n",
-#                    paste(cols[!sel], collapse=", "), call.=FALSE)
-#           e    = exprs(x)
-#           if(inv)
-#               e[,cols] = e[,cols]%*%solve(spillover/max(spillover))
-#           else
-#               e[,cols] = e[,cols]%*%spillover
-#           exprs(x) = e
-#           x
-#       })
-# 
-# setMethod("compensate",
-#           signature=signature(x="flowFrame",
-#                               spillover="compensation"),
-#           function(x, spillover, inv=TRUE, ...)
-#       {
-#           compensate(x, spillover=spillover@spillover,
-#                      inv=spillover@invert)
-#       })
+setMethod("compensate",
+          signature=signature(x="flowFrame",
+                              spillover="data.frame"),
+          function(x, spillover)
+      {
+          compensate(x, spillover=as.matrix(spillover@spillover))
+      })
 
 setMethod("compensate",
-          signature=signature(x="flowFrame",compensation="matrix"),
-          definition=function(x,compensation,...)
-      {    
-          spillover=compensation
-          cols = colnames(spillover)
+          signature=signature(x="flowFrame",
+                              compensation="matrix"),
+          definition=function(x, compensation)
+      {
+          cols <- colnames(spillover)
           sel <- cols %in% colnames(x)
           if(!all(sel))
               stop("The following parameters in the spillover matrix\n are",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
-          e = exprs(x)
-          e[,cols]=t(solve(spillover)%*%t(e[,cols]))
+          e <- exprs(x)
+          e[, cols] <- t(solve(spillover)%*%t(e[,cols]))
           exprs(x) = e
           x
       })
 
-setMethod("compensate",
-          signature=signature(x="flowFrame",compensation="compensation"),
-          function(x,compensation, ...)
-          {   
-              parameters=slot(compensation,"parameters")
-              len=length(parameters)
-              charParam=list()
-              data=exprs(x)
-    
-              while(len>0)
-              {
-                  if(class(parameters[[len]])!="unitytransform")  ## process all transformed parameters
-                  {
-                      
-                      if(class(parameters[[len]])=="transformReference")
-                      { 
-                          newCol=matrix(resolveTransformReference(parameters[[len]],data))
-                          #newCol=eval(parameters[[len]])(data)
-                          #newCol=matrix(eval(eval(parameters[[len]]))(data))
-                          #newCol=matrix(eval(eval(parameters[[len]]))(data))
-                          #colnames(newCol)=sprintf("_NEWCOL%03d_",len) 
-                          colnames(newCol)=slot(parameters[[len]],"transformationId")
-                          data <- cbind(data, newCol)
-                      }
-                      
-                  } 
-                  else 
-                  {
-                      charParam[[len]]=slot(parameters[[len]],"transformationId")
-                  
-                  }                
-                  len=len-1                               
-              }
-            
-              x<-flowFrame(data)
-              spillover=compensation
-              compensate(x,compensation@spillover,... )
-          }
-        )
+setMethod("intCompensate",
+          signature=signature(x="flowFrame",
+                              compensation="compensation"),
+          function(x, compensation)
+      {
+          for(p in compensation@parameters)
+              if(is(p, "transformReference"))
+                  x  <- cbind2(x, matrix(resolveTransformReference(p, data)),
+                               dimnames=list(NULL, p@transformationId))
+          compensate(x[,evParms], compensation@spillover)
+      })
 
 
 
