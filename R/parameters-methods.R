@@ -139,6 +139,15 @@ setReplaceMethod("parameters",
 
 setReplaceMethod("parameters", 
                  signature=signature(object="dg1polynomial",
+                   value="parameters"),
+                 definition=function(object, value)
+                 {
+                   object@parameters <- value
+                   object
+                 })
+
+setReplaceMethod("parameters", 
+                 signature=signature(object="dg1polynomial",
                    value="character"),
                  definition=function(object, value)
                  {

@@ -2543,7 +2543,7 @@ setClass("dg1polynomial",
 dg1polynomial <- function(parameters, a=1, b=1,
                           transformationId="defaultDg1polynomialTransform")
 {
-    checkClass(a, "numeric", 1)
+    checkClass(a, "numeric", length(parameters))
     checkClass(b, "numeric", 1)
     checkClass(transformationId, "character", 1)
     new("dg1polynomial", parameters=parameters, a=a, b=b,
@@ -2678,7 +2678,7 @@ setClass("exponential",
                              b=1),
          validity=function(object) 
      {
-         msg < -NULL
+         msg <-NULL
          if(length(object@parameters)!=1)
              msg <- c(msg, "Exponential transform is defined for one parameter")
          if(object@a==0)
@@ -2796,7 +2796,7 @@ setClass("EHtrans",
          prototype=prototype(parameters=unitytransform(), a=1, b=1),
          validity=function(object) 
      {
-         msg < -NULL
+         msg <-NULL
          if(length(object@parameters)!=1)
              msg <- c(msg, "EH transform is defined for one parameter")
          if(object@a<=0)
@@ -2827,7 +2827,7 @@ setClass("splitscale",
                              transitionChannel=4),
          validity=function(object) 
      {
-         msg < -NULL
+         msg <-NULL
          if(length(object@parameters)!=1)
              msg<-c(msg, "Split scale transform is defined for one parameter")
          if(object@r<=0)
