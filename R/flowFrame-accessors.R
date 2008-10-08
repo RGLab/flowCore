@@ -329,10 +329,11 @@ setReplaceMethod("colnames",
 ## ---------------------------------------------------------------------------
 setMethod("compensate",
           signature=signature(x="flowFrame",
-                              spillover="data.frame"),
-          function(x, spillover)
+                              compensation="data.frame"),
+          function(x, compensation)
       {
-          compensate(x, spillover=as.matrix(spillover@spillover))
+          compensation <- as.matrix(compensation)
+          callNextMethod()
       })
 
 setMethod("compensate",
@@ -352,7 +353,7 @@ setMethod("compensate",
           x
       })
 
-setMethod("intCompensate",
+setMethod("compensate",
           signature=signature(x="flowFrame",
                               compensation="compensation"),
           function(x, compensation)
@@ -361,7 +362,7 @@ setMethod("intCompensate",
               if(is(p, "transformReference"))
                   x  <- cbind2(x, matrix(resolveTransformReference(p, data)),
                                dimnames=list(NULL, p@transformationId))
-          compensate(x[,evParms], compensation@spillover)
+          compensate(x, compensation@spillover)
       })
 
 
