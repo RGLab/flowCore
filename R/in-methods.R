@@ -165,9 +165,9 @@ setMethod("%in%",
           definition=function(x,table)
       {   parameters=unlist(parameters(table))
           e <- exprs(x)[,parameters, drop=FALSE] 
-          W <- t(e)-table@mean
-          colSums((solve(table@cov)%*% W) * W <= table@distance)
-      })
+          W <- e-table@mean
+          colSums((W) %*% solve(table@cov) %*% t(W)  )<=table@distance
+        })
 
 ## ==========================================================================
 ## norm2Filter -- as a logical filter, this returns a logical vector.
