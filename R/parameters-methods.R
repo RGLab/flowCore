@@ -95,7 +95,16 @@ setMethod("parameters",
 
 setMethod("parameters",
           signature=signature(object="nullParameter"),
-          definition=function(object) NA) 
+          definition=function(object) NA)
+
+
+setMethod("parameters",
+          signature=signature(object="transformReference"),
+          definition=function(object){
+          while(is(object, "transformReference"))
+            object <- eval(object)
+          parameters(object)
+        })
 
 
 setReplaceMethod("parameters", 

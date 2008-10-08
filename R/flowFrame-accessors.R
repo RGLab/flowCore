@@ -703,6 +703,7 @@ setMethod("cbind2",
           parm <- rbind(parm, data.frame(name=cn, desc=NA, range=NA, range))
           pData(parms) <- parm
           x@parameters <- parms
+          x@exprs <- exp
           for(i in seq_along(cn)){
               tmp <- list(cn[i])
               names(tmp) <- sprintf("$P%dN", i+ncol(x))

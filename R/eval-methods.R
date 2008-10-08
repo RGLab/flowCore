@@ -120,7 +120,7 @@ setMethod("eval",
               parameter <- resolve(expr@parameters, df)
               temp <- expr@a*parameter
               result <- vector(mode="numeric", length=length(temp))
-              result[temp>0] <- log(temp[temp>0])*expr@
+              result[temp>0] <- log(temp[temp>0])*expr@b
               return(result)
           }
       })  
@@ -189,10 +189,30 @@ setMethod("eval",
 	  definition=function(expr, envir, enclos)
 	  {    
             function(df)
-              {
+              {  
                   parameter <- resolve(expr@parameters, df)
-                  solveEH(expr@parameters , expr@a ,expr@b, df)
+                  solveEH(parameter , expr@a ,expr@b)
                }
+	  })
+
+## ===========================================================================
+## EH transformation 
+## ---------------------------------------------------------------------------
+
+setMethod("eval", 
+	  signature=signature(expr="EHtrans",
+                              envir="missing",
+                              enclos="missing"),
+	  definition=function(expr, envir, enclos)
+	  {    
+            function(df)
+              {  
+                  parameter <- resolve(expr@parameters, df)
+                  result=0
+                  result[parameter>=0]=10^(parameter/expr@a)+ (expr@b*parameter)/expr@a-1
+                  result[parameter<0]= -1*(10^(-parameter/expr@a))+ (expr@b*parameter)/expr@a+1
+                  return(result)
+              }
 	  })
 
 
@@ -208,7 +228,6 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              args <- expr@parameters
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -219,13 +238,13 @@ setMethod("eval",
               a <- transitionChannel/(2*t)
               log10ct <- (a*t+b)*d/r
               c <- (10^log10ct)/t
-              idx <- which(args <= t)
-              idx2 <- which(args > t)
+              idx <- which(parameter <= t)
+              idx2 <- which(parameter > t)
               if(length(idx2)>0)
-                  args[idx2] <- log10(c*args[idx2])*r/d
+                  parameter[idx2] <- log10(c*parameter[idx2])*r/d
               if(length(idx)>0)
-                  args[idx] <- a*args[idx]+b
-              args
+                  parameter[idx] <- a*parameter[idx]+b
+              parameter
           }
       })
 
@@ -242,7 +261,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              args <- expr@parameters
+              
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -254,13 +273,13 @@ setMethod("eval",
                   log10ct <- (a*t+b)*d/r
                   c <- (10^log10ct)/t            
                   thresh <- t*a+b
-                  idx <- which(args<=thresh)
-                  idx2 <- which(args>thresh)
+                  idx <- which(parameter<=thresh)
+                  idx2 <- which(parameter>thresh)
                   if(length(idx2)>0)
-                      args[idx2] <- (10^(args[idx2]*(d/r)))/c
+                      parameter[idx2] <- (10^(parameter[idx2]*(d/r)))/c
                   if(length(idx>0))
-                      args[idx] <- (args[idx]-b)/a
-                  args
+                      parameter[idx] <- (parameter[idx]-b)/a
+                  parameter
               }
         })
 
@@ -298,21 +317,20 @@ setMethod("eval",
             enclos="missing"),
           function(expr, envir, enclos)
           {    function(df)
-                 {      
+                 { 
                    parameter <- expr@parameters
                    compObj <- expr@searchEnv[[expr@spillRefId]]
                    spillMat <- compObj@spillover
-                   e <- exprs(df)
                    cols <- colnames(spillMat)
                    trans <- compObj@parameters
                    for(i in trans){
                      if(is(i, "transformReference")){
-                       newCol <- resolveTransformReference(i, exprs(df))
+                       newCol <- resolveTransformReference(i, df)
                        colnames(newCol) <- i@transformationId
-                       e<-cbind(e,newCol)
+                       df <- cbind(df,newCol)
                      }
                    }
-                   t(solve(spillMat)[parameter,]%*%t(e[,cols])) 
+                   t(solve(spillMat)[parameter,]%*%t(df[,cols])) 
                    
                  }
              })
