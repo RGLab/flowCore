@@ -155,10 +155,8 @@ setGeneric("summary", function(object,...) standardGeneric("summary"))
 ## Generics for spillover and compensate
 ## ---------------------------------------------------------------------------
 setGeneric("spillover", function(x,...) standardGeneric("spillover"))
-# setGeneric("compensate", function(x,spillover, inv=TRUE, ...)
-#            standardGeneric("compensate"))
 setGeneric("compensate", 
-            function(x, compensation, ...)
+            function(x, spillover, ...)
             standardGeneric("compensate"))
 
 

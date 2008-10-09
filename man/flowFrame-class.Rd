@@ -411,8 +411,8 @@
     
 
     \item{compensate}{Apply a compensation matrix (or a
-      \code{\linkS4class{compensation}} object on a \code{flowFrame}
-      object. This returns a compensared \code{flowFrame.
+      \code{\linkS4class{compensation}} object) on a \code{flowFrame}
+      object. This returns a compensared \code{flowFrame}.
       
       \emph{Usage:}
       
