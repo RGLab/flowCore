@@ -125,36 +125,36 @@ compensate(x, spillover, \dots)
 
     \item{compensate}{\code{signature(x = "flowFrame", spillover =
 	"matrix")}: Apply a compensation matrix to a
-	\code{\linkS4class{flowFrame}}.  This returns a compensated
-	\code{flowFrame}.
+      \code{\linkS4class{flowFrame}}.  This returns a compensated
+      \code{flowFrame}.
       
       \emph{Usage:}
-
+      
       \code{   compensate(flowFrame, matrix)}
 
     }
 
     \item{compensate}{\code{signature(x = "flowFrame", spillover =
 	"data.frame")}:Try to coerce the \code{data.frame} to a
-	\code{matrix} and apply that to a
-	\code{\linkS4class{flowFrame}}.  This returns a compensated
-	\code{flowFrame}.
+      \code{matrix} and apply that to a
+      \code{\linkS4class{flowFrame}}.  This returns a compensated
+      \code{flowFrame}.
       
       \emph{Usage:}
-
+      
       \code{   compensate(flowFrame, data.frame)}
-
+      
     }
     
     \item{identifier, identifier<-}{\code{signature(object =
-      "compensation")}: Accessor and replacement methods for the
-    \code{compensationId} slot.
-
-    \emph{Usage:}
+	"compensation")}: Accessor and replacement methods for the
+      \code{compensationId} slot.
+      
+      \emph{Usage:}
       
       
       \code{   identifier(compensation)}
-
+      
       \code{   identifier(compensation) <- value}
       
     }
@@ -163,12 +163,11 @@ compensate(x, spillover, \dots)
       about the object.
       
       \emph{Usage:}
-
+      
       This method is automatically called when the object is printed on
       the screen.
       
-    }
-    
+    }  
   }
 }
 

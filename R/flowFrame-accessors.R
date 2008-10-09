@@ -329,39 +329,42 @@ setReplaceMethod("colnames",
 ## ---------------------------------------------------------------------------
 setMethod("compensate",
           signature=signature(x="flowFrame",
-                              compensation="data.frame"),
-          function(x, compensation)
+                              spillover="data.frame"),
+          function(x, spillover, ...)
       {
-          compensate(x, as.matrix(compensation))
+          compensate(x, as.matrix(spillover))
       })
 
 setMethod("compensate",
           signature=signature(x="flowFrame",
-                              compensation="matrix"),
-          definition=function(x, compensation)
+                              spillover="matrix"),
+          definition=function(x, spillover, inv=FALSE)
       {
-          cols <- colnames(compensation)
+          checkClass(inv, "logical", 1)
+          if(inv)
+               spillover <- solve(spillover/max(spillover))
+          cols <- colnames(spillover)
           sel <- cols %in% colnames(x)
           if(!all(sel))
               stop("The following parameters in the spillover matrix\n are",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
           e <- exprs(x)
-          e[, cols] <- t(solve(compensation)%*%t(e[,cols]))
+          e[, cols] <- t(solve(spillover)%*%t(e[,cols]))
           exprs(x) = e
           x
       })
 
 setMethod("compensate",
           signature=signature(x="flowFrame",
-                              compensation="compensation"),
-          function(x, compensation)
+                              spillover="compensation"),
+          function(x, spillover)
       {
-          for(p in compensation@parameters)
+          for(p in spillover@parameters)
               if(is(p, "transformReference"))
                   x  <- cbind2(x, matrix(resolveTransformReference(p, data)),
                                dimnames=list(NULL, p@transformationId))
-          compensate(x, compensation@spillover)
+          compensate(x, spillover@spillover)
       })
 
 
