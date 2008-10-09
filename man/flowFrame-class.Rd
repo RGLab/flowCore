@@ -410,12 +410,14 @@
     }
     
 
-    \item{compensate}{Apply a compensation matrix on a \code{flowFrame}
-      object.
+    \item{compensate}{Apply a compensation matrix (or a
+      \code{\linkS4class{compensation}} object on a \code{flowFrame}
+      object. This returns a compensared \code{flowFrame.
       
       \emph{Usage:}
       
       \code{   compensate(flowFrame, matrix)}
+      \code{   compensate(flowFrame, data.frame)}
 
     }
 
