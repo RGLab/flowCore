@@ -4,14 +4,12 @@
 
 \alias{compensation-class}
 \alias{compensation}
-\alias{compensate,flowFrame,compensation-method}
 \alias{identifier,compensation-method}
+\alias{parameters,compensation-method}
 \alias{identifier<-,compensation,character-method}
 \alias{show,compensation-method}
 \alias{compensate}
-\alias{compensate,flowFrame-method}
-\alias{compensate,flowSet-method}
-\alias{compensate,matrix-method}
+
 
 \title{Class "compensation"}
 
@@ -70,6 +68,9 @@ compensate(x, spillover, \dots)
     representation (spillover or compensation matrix). }
 
   \item{compensationId}{ The identifier for the compensation object. }
+
+  \item{x}{ An object of class \code{\linkS4class{flowFrame}} or
+    \code{\linkS4class{flowSet}}. }
 
   \item{\dots}{Further arguments. For the \code{compensate} methods,
     this is only \code{inv}, a logical that forces the function to use
@@ -158,6 +159,24 @@ compensate(x, spillover, \dots)
       \code{   identifier(compensation) <- value}
       
     }
+
+
+    \item{parameters}{\code{signature(object =
+	"compensation")}: Get the parameter names of the
+      \code{compensation} object. This method also tries to resolve
+      all \code{\link[transform-class]{transforms}} and
+      \code{\link[transformReference-class]{transformReferences}} before
+	returning the parameters as character vectors. Unresolvable
+	references retrun \code{NA}.
+      
+      \emph{Usage:}
+      
+      
+      \code{   parameters(compensation)}
+      
+      
+    }
+    
     
     \item{show}{\code{signature(object = "compensation")}: Print details
       about the object.
