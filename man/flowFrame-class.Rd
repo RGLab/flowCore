@@ -41,6 +41,8 @@
 \alias{cbind2,flowFrame,numeric-method}
 \alias{transform,flowFrame-method}
 \alias{compensate,flowFrame,matrix-method}
+\alias{compensate,flowFrame,data.frame-method}
+\alias{compensate,flowFrame,compensation-method}
 \alias{==,flowFrame,filterResult-method}
 \alias{==,flowFrame,flowFrame-method}
 \alias{<,flowFrame,ANY-method}
