@@ -138,7 +138,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              exp(parameter/expr@a)/expr@b
+              exp(parameter/expr@b)/expr@a
           }
       })
 
@@ -172,7 +172,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              sinh(parameter/(expr@a))/expr@b
+              sinh(parameter/(expr@b))/expr@a
           }
       }) 
 

@@ -1462,8 +1462,13 @@ compensation <- function(..., spillover, inv=FALSE,
     checkClass(inv, "logical", 1)
     if(!length(parms$parameters))
         parms <- sapply(colnames(spillover), unitytransform)
-    if(!all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
-        stop("Parameters and column names of the spillover matrix ",
+
+ #   if(all(sapply(is(parms$parameters, "unitytransform"))) && !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
+ if(all(sapply(parms$parameters,function(x){ is(x,"unitytransform")}
+              )
+        ) && !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
+        
+    stop("Parameters and column names of the spillover matrix ",
              "don't match.", call.=FALSE)
     if(inv)
         spillover <- solve(spillover/max(spillover))
