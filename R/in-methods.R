@@ -100,6 +100,7 @@ setMethod("%in%",
       {   
           parameters=unlist(parameters(table))
           ndim <- length(parameters)
+
           ## If there is only a single dimension then we have
           ## a degenerate case.
           if(ndim==1) 
@@ -147,11 +148,31 @@ setMethod("%in%",
           definition=function(x,table)
       {   
           parameters=unlist(parameters(table))
-          ndim <- length(parameters)
+          #dim <- length(parameters)
            
-          temp=table@a %*% exprs(x)[,parameters]+table@b  
-          as.logical(temp<=0)
+#           temp=table@a %*% exprs(x)[,parameters]+table@b  
+#           as.logical(temp<=0)
+          temp=0
+          res=0
+          for(j in seq_len(nrow(data)))
+          {
+               for(k in seq_len(nrow(table@a)))
+               {
+                   temp[k]<-table@a[k,] %*% t(data[j,,drop=FALSE]) #+table@b[k]
+               }
+             res[j]=all(temp<=0)
+          }
+          res
 
+    ###needs to be fixed ,leaving for loops in for now
+#           data<-exprs(x)[,parameters,drop=FALSE]
+#           da <- rep(as.vector(table@a), nrow(data))
+#           dv <- rep(as.vector(t(data)), each=nrow(table@a))
+#           tmp <- matrix(dv*da, ncol=ncol(table@a))
+#           sel<-rep(1:nrow(data),ncol(table@a))
+#           apply(t(sapply(split(as.data.frame(tmp), sel), colSums))+table@b, 2, function(x) all(x<=0))
+
+          #res
       })
 ## ==========================================================================
 ## ellipsoidGate -- as a logical filter, this returns a logical vector.
@@ -164,9 +185,25 @@ setMethod("%in%",
           signature=signature(x="flowFrame", table="ellipsoidGate"),
           definition=function(x,table)
       {   parameters=unlist(parameters(table))
+          
           e <- exprs(x)[,parameters, drop=FALSE] 
-          W <- e-table@mean
-          colSums((W) %*% solve(table@cov) %*% t(W)  )<=table@distance
+
+#           W <- e-table@mean
+# 
+#           colSums(W %*% solve(table@cov) * W  <=table@distance)==0
+         #browser()
+         #temp <- numeric(seq_len(nrow(e)))
+         #temp <- NULL
+         #for (i in seq_len(nrow(e)))
+         #{
+         #     W <- e[i,,drop=FALSE]-table@mean
+              #temp[i]= (W %*% solve(table@cov) %*% t(W) #)<=table@distance
+              #temp= rbind(temp, (W %*% solve(table@cov)))
+         #}
+          W <- t(t(e)-table@mean)
+          as.logical(rowSums(W %*% solve(table@cov) * W) <= table@distance)
+#           colSums((W) %*% solve(table@cov) %*% t(W)  )<=table@distance
+           #as.logical(temp)
         })
 
 ## ==========================================================================
