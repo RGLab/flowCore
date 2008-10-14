@@ -525,14 +525,13 @@ findTimeChannel <- function(xx)
 {
     time <- grep("^Time$", colnames(xx), value=TRUE,
                  ignore.case=TRUE)[1]
-    if(!length(time)){
+    if(is.na(time)){
         cont <- apply(xx, 2, function(y) all(sign(diff(y)) >= 0))
         time <- names(which(cont))
     }
-    if(!length(time))
-        stop("No time domain recording for this data.\n",
-             "Please define time parameter in the filter's",
-             "'timeParameter' slot.", call.=FALSE)
+    if(is.null(time))
+        stop("Unable to identify time domain recording for this data.\n",
+             "Please define manually.", call.=FALSE)
     return(time)
 }
 

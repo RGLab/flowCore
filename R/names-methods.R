@@ -170,7 +170,7 @@ setMethod("views",
 
 
 ## ==========================================================================
-## The names of only the actioItems in the workFlow object
+## The names of only the actionItems in the workFlow object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("actions",
           signature=signature(x="workFlow"),
