@@ -374,7 +374,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation = "linearize", which.lines=NULL,
                          debug = FALSE,  column.pattern = NULL, decades=0,
-                         sep="\t", name, ...)
+                         sep="\t", as.is=TRUE, name, ...)
 {
     ## A frame of phenoData information
     phenoFrame = NULL
@@ -383,20 +383,23 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     ## character vector or as AnnotatedDataFrame.
     if(!missing(phenoData)) {
         if(is.character(phenoData) && length(phenoData) == 1){
-            phenoData = read.AnnotatedDataFrame(file.path(path, phenoData),
-            header = TRUE, as.is = TRUE, sep=sep, ...)
+            phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
+            header = TRUE, sep=sep, as.is=as.is, ...)
             ## the sampleNames of the Annotated data frame must match the
             ## file names and we try to guess them from the input
             fnams <- grep("name|file|filename", varLabels(phenoData),
                           ignore.case=TRUE)
             if(length(fnams)){
-                fn <- unlist(pData(phenoData[,fnams[1]]))
+                fn <- as.character(unlist(pData(phenoData[,fnams[1]])))
                 if(any(duplicated(fn)))
                     stop("The file names supplied as part of the ",
                          "phenoData are not unique", call.=FALSE)
                 sampleNames(phenoData) <- fn
+                pd <- pData(phenoData)
+                pd[,fnams[1]] <- fn
+                pData(phenoData) <- pd
             }
-            phenoFrame = phenoData
+            phenoFrame <- phenoData
         }else if(is(phenoData,"AnnotatedDataFrame")){
             phenoFrame = phenoData
         }else{if(!is.list(phenoData))

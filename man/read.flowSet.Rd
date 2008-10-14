@@ -8,7 +8,7 @@
 read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   descriptions,name.keyword,alter.names=FALSE, transformation =
   "linearize", which.lines=NULL, debug = FALSE, column.pattern = NULL,
-  decades=0,sep="\t", name, \dots)
+  decades=0,sep="\t", as.is=TRUE, name, \dots)
 
 }
 
@@ -48,6 +48,11 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   
   \item{sep}{Separator character that gets passed on to
     \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}.}
+
+  \item{as.is}{Logical that gets passed on to
+    \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}. This
+    controls the automatic coercion of characters to factors in the
+    \code{phenoData}slot. }
 
   \item{name}{An optional character scalar used as name of the object.}
   

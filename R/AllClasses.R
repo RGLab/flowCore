@@ -376,7 +376,7 @@ quadGate <- function(..., .gate, filterId="defaultQuadGate")
 {
     checkClass(filterId, "character", 1)
     if(!missing(.gate) && !is.list(.gate) && !is.matrix(.gate))
-        .gate <- matrix(.gate, nrow=1)
+        .gate <- matrix(.gate, nrow=1, dimnames=list(NULL, names(.gate)))
     parms <- prepareInputs(parseDots(list(...), len=1), .gate, len=1)
     if(length(parms$parameters) !=2 || nrow(parms$value)!=1)
         stop("Expecting two named arguments or a single named vector\n",

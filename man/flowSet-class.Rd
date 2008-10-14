@@ -455,17 +455,17 @@ summary(samp[[1]])
 
 ## transformation
 opar <- par(mfcol=c(1:2))
-plot(set[[1]], c("FL1-H", "FL2-H"))
-set <- transform(set, "FL1-H"=log(`FL1-H`), "FL2-H"=log(`FL2-H`))
-plot(set[[1]], c("FL1-H", "FL2-H"))
+plot(set[[1]], c("FL1.H", "FL2.H"))
+set <- transform(set, FL1.H=log(FL1.H), FL2.H=log(FL2.H))
+plot(set[[1]], c("FL1.H", "FL2.H"))
 par(opar)
 
 ## filtering of flowSets
-rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+rectGate <- rectangleGate(filterId="nonDebris", FSC.H=c(200,Inf))
 fres <- filter(set, rectGate)
 class(fres)
 summary(fres[[1]])
-rectGate2 <- rectangleGate(filterId="nonDebris2","SSC-H"=c(300,Inf))
+rectGate2 <- rectangleGate(filterId="nonDebris2", SSC.H=c(300,Inf))
 fres2 <- filter(set, list(A=rectGate, B=rectGate2, C=rectGate, D=rectGate2))
 
 ## Splitting frames of a flowSet

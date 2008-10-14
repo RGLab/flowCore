@@ -17,14 +17,6 @@ setMethod("[",
       {
           if(missing(i) && missing(j)) 
               return(x)
-          if(!missing(j)){
-              if(is.character(j))
-                 colnames(x) <- colnames(x)[match(j, colnames(x))]
-              else
-                  colnames(x) <- colnames(x)[j] 
-              if(any(is.na(colnames(x))))
-                  stop("Subset out of bounds", call.=FALSE)
-          }
           orig <- x@frames
           fr  <- new.env(hash=TRUE, parent=emptyenv())
           if(missing(i)) {
@@ -50,6 +42,14 @@ setMethod("[",
           }
           fr <- as(fr,"flowSet")
           phenoData(fr) <- pd
+          if(!missing(j)){
+              if(is.character(j))
+                 colnames(fr) <- colnames(x)[match(j, colnames(x))]
+              else
+                  colnames(fr) <- colnames(x)[j] 
+              if(any(is.na(colnames(fr))))
+                  stop("Subset out of bounds", call.=FALSE)
+          }
           return(fr)
       })
 
@@ -94,15 +94,13 @@ setMethod("colnames",
           definition=function(x, do.NULL="missing", prefix="missing")
           x@colnames)
 
-
-## FIXME: should we make sure that parameter names are changed for each frame?
 setReplaceMethod("colnames",
                  signature=signature(x="flowSet",
                                      value="ANY"),
                  definition=function(x, value)
              {
                  x@colnames <- value
-                 x
+                 fsApply(x, "colnames<-", value)
              })
 
 
