@@ -5,17 +5,22 @@
 \alias{eval,quadratic,missing,missing-method}
 
 \title{Class "quadratic" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ Quadratic transform class defines a transformation 
+ defined by the function \deqn{f(parameter)=a*parameter^2}	}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("quadratic", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor
+\code{quadratic(parameters,a,transformationId)}.
+	
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{a}:}{Object of class \code{"numeric"}
+      -non zero mutiplicative constant }
+    \item{\code{parameters}:}{Object of class \code{"transformation"}
+      -flow parameter to be transformed }
+    \item{\code{transformationId}:}{Object of class \code{"character"}
+    -unique ID to reference the transformation  }
   }
 }
 \section{Extends}{
@@ -27,15 +32,20 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "singleParamete
 \section{Methods}{
 No methods defined with class "quadratic" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\references{ }
+\author{  }
+\note{ The quadratic transformation object can be evaluated using the eval method
+ by passing the data frame as an argument.The transformed
+parameters are returned as a column vector. (See example below)  }
 
 
 \seealso{
 	
 }
 \examples{
-showClass("quadratic")
+  dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  quad1<-quadratic(parameters="FSC-H",a=2,transformationId="quad1")
+  transOut<-eval(quad1)(exprs(dat))
 }
 \keyword{classes}
