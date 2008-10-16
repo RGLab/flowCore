@@ -9,18 +9,23 @@
 
 
 \title{Class "dg1polynomial"  }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ 
+            dg1polynomial allows for scaling,linear combination and translation within a single transformation defined by the function
+   \deqn{ f(parameter_1,...,parameter_n,a_1,...,a_n,b) = b + \Sigma_{i=1}^n a_i*parameter_i}
+                              
+            }
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("dg1polynomial", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by using the constructor \code{dg1polynomial(parameter,a,b,transformationId, ...)}.
+	 
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"parameters"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{b}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{parameters}:}{Object of class \code{"parameters"}
+          -the flow parameters that are to be transformed}
+    \item{\code{a}:}{Object of class \code{"numeric"} - coefficients of length equal to the number of flow parameters }
+    \item{\code{b}:}{Object of class \code{"numeric"} - coefficient of length 1 that performs the translation }
+    \item{\code{transformationId}:}{Object of class \code{"character"} unique ID to reference the transformation }
   }
 }
 \section{Extends}{
@@ -31,16 +36,19 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "transform", di
 \section{Methods}{
 No methods defined with class "dg1polynomial" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- 
+\references{ }
+\author{}
+\note{ The transformation object can be evaluated using the eval method by passing the data frame as an argument.The transformed
+parameters are returned as a column vector. (See example below)}
 
 \seealso{
 
 }
 \examples{
-showClass("dg1polynomial")
+
+  dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  dg1<-dg1polynomial(c("FSC-H","SSC-H"),a=c(1,2),b=1,transformationId="dg1")
+  transOut<-eval(dg1)(exprs(dat))
 }
 \keyword{classes}

@@ -6,17 +6,21 @@
 \alias{initialize,ratio-method}
 
 \title{Class "ratio"  }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ ratio transform calculates the ratio of two parameters 
+  defined by the function
+\deqn{f(parameter_1,parameter_2)=\frac{parameter_1}{parameter_2}}
+}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("ratio", ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor
+ \code{ratio(parameter1,parameter2,transformationId, ...)}.
+	
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{numerator}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{denominator}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{numerator}:}{Object of class \code{"transformation"} -flow parameter to be transformed }
+    \item{\code{denominator}:}{Object of class \code{"transformation"} -flow parameter to be transformed}
+    \item{\code{transformationId}:}{Object of class \code{"character"} unique ID to reference the transformation }
   }
 }
 \section{Extends}{
@@ -29,7 +33,8 @@ No methods defined with class "ratio" in the signature.
 }
 \references{ ~put references to the literature/web site here ~ }
 \author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\note{  The ratio transformation object can be evaluated using the eval method by passing the data frame as an argument.The transformed
+parameters are returned as matrix with one column. (See example below)}
 
  
 
@@ -37,6 +42,11 @@ No methods defined with class "ratio" in the signature.
 
 }
 \examples{
-showClass("ratio")
+
+  dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  rat1<-ratio("FSC-H","SSC-H",transformationId="rat1")
+  transOut<-eval(rat1)(exprs(dat))
+
 }
 \keyword{classes}
