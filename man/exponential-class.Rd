@@ -5,18 +5,24 @@
 \alias{eval,exponential,missing,missing-method}
 
 \title{Class "exponential" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ Exponential transform class defines a trasformation given by the
+function
+          \deqn{f(parameter,a,b)=e^{parameter/b}*\frac{1}{a}}
+
+}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("exponential", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor\code{exponential(parameters,a,b)}.
+
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{b}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{a}:}{Object of class \code{"numeric"}- non zero constant }
+    \item{\code{b}:}{Object of class \code{"numeric"}- non zero constant }
+    \item{\code{parameters}:}{Object of class \code{"transformation"}- flow 
+          parameter to be transformed }
+    \item{\code{transformationId}:}{Object of class \code{"character"} 
+     -unique ID to reference the transformation }
   }
 }
 \section{Extends}{
@@ -30,14 +36,18 @@ No methods defined with class "exponential" in the signature.
 }
 \references{ ~put references to the literature/web site here ~ }
 \author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\note{ The exponential transformation object can be evaluated using the eval method
+ by passing the data frame as an argument.The transformed
+parameters are returned as a matrix with a single column}
 
- 
 
 \seealso{
 
 }
 \examples{
-showClass("exponential")
+ dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  exp1<-logarithm(parameters="FSC-H",a=1,b=,transformationId="exp1")
+  transOut<-eval(exp1)(exprs(dat))
 }
 \keyword{classes}

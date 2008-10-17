@@ -5,17 +5,25 @@
 \alias{eval,squareroot,missing,missing-method}
 
 \title{Class "squareroot" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{
+
+Square root transform class defines a transformation defined 
+by the function \deqn{f(parameter,a)= \sqrt{ |{\frac{parameter}{a}|}}}	
+
+} 
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("squareroot", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor
+\code{squareroot(parameters,a,transformationId)}
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{a}:}{Object of class \code{"numeric"} -non zero multiplicative 
+constant }
+    \item{\code{parameters}:}{Object of class \code{"transformation"}
+-flow parameter to be transformed  }
+    \item{\code{transformationId}:}{Object of class \code{"character"} 
+ -unique ID to reference the transformation }
   }
 }
 \section{Extends}{
@@ -29,7 +37,9 @@ No methods defined with class "squareroot" in the signature.
 }
 \references{ ~put references to the literature/web site here ~ }
 \author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\note{The squareroot transformation object can be evaluated using the eval method
+ by passing the data frame as an argument.The transformed
+parameters are returned as a column vector. (See example below)  }
 
 
 
@@ -37,6 +47,9 @@ No methods defined with class "squareroot" in the signature.
 
 }
 \examples{
-showClass("squareroot")
+  dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  sqrt1<-squareroot(parameters="FSC-H",a=2,transformationId="sqrt1")
+  transOut<-eval(sqrt1)(exprs(dat))
 }
 \keyword{classes}

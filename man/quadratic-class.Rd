@@ -6,7 +6,7 @@
 
 \title{Class "quadratic" }
 \description{ Quadratic transform class defines a transformation 
- defined by the function \deqn{f(parameter)=a*parameter^2}	}
+ defined by the function \deqn{f(parameter,a)=a*parameter^2}	}
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
 \code{quadratic(parameters,a,transformationId)}.

@@ -5,7 +5,15 @@
 \alias{eval,hyperlog,missing,missing-method}
 
 \title{Class "hyperlog"  }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ Hyperlog transformation of a parameter is defined by 
+the function 
+\deqn{f(parameter,a,b)=root{EH(y,a,b)-parameter}}
+
+where EH is a function defined by
+\deqn{EH(y,a,b)= (10^*prarameter)*b \;\;\;\;\;\;\;\;\;a*parameter>0}
+                            \deqn{0 \;\;\;\;\;\;\;a*parameter<=0}
+
+}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("hyperlog", parameters, ...)}.
 	 ~~ describe objects here ~~ 
