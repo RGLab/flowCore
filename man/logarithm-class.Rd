@@ -5,18 +5,22 @@
 \alias{eval,logarithm,missing,missing-method}
 
 \title{Class "logarithm"  }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{	Logartithmic transformation of an argument is a transforation defined by the function 
+
+ \deqn{f(parameter,a,b)=  ln(a*prarameter)*b \;\;\;\;\;\;\;\;\;a*parameter>0}
+                            \deqn{0 \;\;\;\;\;\;\;a*parameter<=0}
+}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("logarithm", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor
+\code{logarithm(parameters,a,b,transformationId)}
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{b}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{a}:}{Object of class \code{"numeric"} -non zero multiplicative constant }
+    \item{\code{b}:}{Object of class \code{"numeric"} -non zero multiplicative constant  }
+    \item{\code{parameters}:}{Object of class \code{"transformation"}-flow parameters to be transformed}
+    \item{\code{transformationId}:}{Object of class \code{"character"}-unique ID to reference the transformation   }
   }
 }
 \section{Extends}{
@@ -30,7 +34,9 @@ No methods defined with class "logarithm" in the signature.
 }
 \references{ ~put references to the literature/web site here ~ }
 \author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\note{ The logarithm transformation object can be evaluated using the eval method
+ by passing the data frame as an argument.The transformed
+parameters are returned as a matrix with a single column. (See example below) }
 
 
 
@@ -38,6 +44,9 @@ No methods defined with class "logarithm" in the signature.
 
 }
 \examples{
-showClass("logarithm")
+ dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  lg1<-logarithm(parameters="FSC-H",a=2,b=1,transformationId="lg1")
+  transOut<-eval(lg1)(exprs(dat))
 }
 \keyword{classes}
