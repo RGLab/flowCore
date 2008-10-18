@@ -211,7 +211,7 @@ setMethod("eval",
                   result=0
                   result[parameter>=0]=10^(parameter/expr@a)+ (expr@b*parameter)/expr@a-1
                   result[parameter<0]= -1*(10^(-parameter/expr@a))+ (expr@b*parameter)/expr@a+1
-                  return(result)
+                  return(matrix(result))
               }
 	  })
 

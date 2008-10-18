@@ -39,7 +39,7 @@ No methods defined with class "dg1polynomial" in the signature.
 \references{ }
 \author{}
 \note{ The transformation object can be evaluated using the eval method by passing the data frame as an argument.The transformed
-parameters are returned as a column vector. (See example below)}
+parameters are returned as a matrix with a single column. (See example below)}
 
 \seealso{
 

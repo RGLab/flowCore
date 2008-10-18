@@ -45,7 +45,7 @@ solveEH<-function(args,a,b)
             
     }
 
-    return(result)
+    return(matrix(result))
 }
 
 ## ===========================================================================
