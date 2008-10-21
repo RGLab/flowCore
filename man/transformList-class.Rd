@@ -4,6 +4,8 @@
 \alias{transformList}
 \alias{colnames,transformList-method}
 \alias{c,transformList-method}
+\alias{identifier,transformList-method}
+\alias{identifier<-,transformList,character-method}
 
 \title{Class "transformList"}
 \description{Class "transformList"}
@@ -20,7 +22,8 @@
 
 \usage{
 
-transformList(from, tfun, to=from)
+transformList(from, tfun, to=from, transformationId =
+                 "defaultTransformation")
 
 }
   
@@ -35,13 +38,20 @@ transformList(from, tfun, to=from)
     the functions used to transform the data. R's recycling rules apply,
     so a single function can be given to be used on all parameters. }
 
+  \item{transformationId}{ The identifier for the object. }
+
 }
 
 
 \section{Slots}{
   \describe{
+    
     \item{\code{transforms}:}{Object of class \code{"list"}, where each
       list item is of class \code{\link{transformMap}}. }
+  
+    \item{\code{transformationId}:}{Object of class \code{"character"},
+      the identifier for the object. }
+
   }
 }
 

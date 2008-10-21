@@ -42,7 +42,7 @@ setMethod("summary",
 setMethod("summary",
           signature=signature(object="gateActionItem"),
           definition=function(object){
-              summary(get(object@filterResult))
+              toTable(summary(get(object@filterResult), verbose=FALSE))
           })
 
 
@@ -55,12 +55,11 @@ setMethod("summary",
           signature=signature(object="filter"),
           definition=function(object, result, ...)
       {
-          if(missing(result))
+                    if(missing(result))
               stop("Only resolved filters may be summarized.\nTry something ",
                    "like 'filter(myFlowFrame, myFilter)'\nbefore calling ",
                    "'summary'.", call.=FALSE)
-          else
-              l <- as(result, "logical")
+          l <- as(result, "logical")
           true <- sum(l)
           count <- length(l)
           new("filterSummary", name=identifier(object), true=true,
@@ -89,7 +88,7 @@ setMethod("summary",
           signature=signature(object="filterResult"),
           definition=function(object, ...)
       {
-          summary(filterDetails(object, object@filterId)$filter,
+                    summary(filterDetails(object, object@filterId)$filter,
                   object, ...)
       })
 
@@ -102,7 +101,11 @@ setMethod("summary",
 setMethod("summary",
           signature=signature(object="logicalFilterResult"),
           definition=function(object, ...)
-          summary(filterDetails(object, 1)$filter, object))
+      {
+                    filter <- filterDetails(object, identifier(object))$filter
+          identifier(filter) <- paste(identifier(filter), "+", sep="")
+          summary(filter, object)
+      })
 
 
 
@@ -143,12 +146,14 @@ setMethod("summary",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
           signature=signature(object="filterResultList"),
-          definition=function(object, ...)
+          definition=function(object, verbose=TRUE, ...)
       {
-          sums <- lapply(object, function(x){
-              cat("filter summary for frame '", x@frameId, "'\n", sep="")
-              tmp <- print(summary(x), indent=1)
-              cat("\n")
+                    sums <- lapply(object, function(x){
+              if(verbose)
+                  cat("filter summary for frame '", x@frameId, "'\n", sep="")
+              tmp <- print(summary(x), indent=1, verbose=verbose)
+              if(verbose)
+                  cat("\n")
               tmp
           })
           return(invisible(new("filterSummaryList", .Data=sums)))
@@ -172,8 +177,9 @@ setMethod("summary",
               new("filterSummary", name=identifier(object), true=true,
                   count=count, p=true/count)			
           } else {
+              id <- gsub("\\+$", "", identifier(object))
               true <- sum(as(result, "logical"))
-              count <- filterDetails(result, identifier(object))$subsetCount
+              count <- filterDetails(result, id)$subsetCount
               new("filterSummary", name=identifier(object), true=true,
                   count=count, p=true/count)			
           }
@@ -201,21 +207,38 @@ setMethod("summary",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
           signature=signature(object="gateView"),
-          definition=function(object)
+          definition=function(object, verbose=FALSE)
       {
-          summary(as(object, "filterResult"))
+          fres <- get(object@filterResult)
+          population <- object@frEntry
+          tmp <- toTable(summary(fres, verbose=verbose))
+          tmp[tmp$population==population,]
       })
 
 
 
 ## ==========================================================================
-## Summarize objects referenced by fcReferences in a workFlow object
+## Summarize objects referenced by fcReferences in a workFlow object.
+## The optional argument reference takes another viewID and calculates
+## summary statistics relative to that population
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
           signature=signature(object="workFlow"),
-          definition=function(object, ID)
+          definition=function(object, ID, reference=NULL, verbose=FALSE)
       {
           checkClass(ID, "character", 1)
-          object <- get(ID, object)
-          summary(object)
+          if(!is.null(reference))
+              checkClass(reference, "character", 1)
+          view <- get(ID, object)
+          tmp <- summary(view)
+          if(is(view, "gateView") && nrow(tmp)){
+              if(is.null(reference))
+                  return(tmp)
+              tmp$count <- unlist(fsApply(Data(object[[reference]]), nrow))
+              tmp$false <- tmp$count-tmp$true
+              tmp$p <- tmp$true/tmp$count
+              tmp$percent <- tmp$p*100
+              tmp$q <- 1-tmp$p
+              return(tmp)
+          }else return(NULL)
       })

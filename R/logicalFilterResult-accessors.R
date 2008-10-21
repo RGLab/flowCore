@@ -33,10 +33,12 @@ setMethod("[[",
               tmp <- x
               tmp@subSet <- !x@subSet
               fd <- filterDetails(x)
-              id <- identifier(fd$filt)
-              fd$filter <- !fd$filt
-              fd$populations <- rev(fd$populations)
+              ld <- length(fd)
+              id <- identifier(fd[[ld]]$filt)
+              fd[[ld]]$filter <- !fd[[ld]]$filt
+              fd[[ld]]$populations <- rev(fd[[ld]]$populations)
               filterDetails(tmp, id) <- fd
+              tmp@filterId <- paste("not", tmp@filterId)
               tmp
           }   
       })

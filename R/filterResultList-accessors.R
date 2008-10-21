@@ -70,6 +70,7 @@ setMethod("toTable",
               for(i in seq_along(x))
                   res <- rbind(res, data.frame(sample=names(x)[i],
                                                population=x[[i]]@name,
+                                               percent=x[[i]]$p*100,
                                                count=x[[i]]@count,
                                                true=x[[i]]@true,
                                                false=x[[i]]$false,

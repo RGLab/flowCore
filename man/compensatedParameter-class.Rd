@@ -5,14 +5,24 @@
 \alias{eval,compensatedParameter,missing,missing-method}
 
 \title{Class "compensatedParameter" }
-\description{ 
-Emission spectral overlap can be corrected by subtracting the the amount of spectral overlap from the total detected signals. This compensation process can be described by using spillover matrices.
 
-compensatedParameter objects allow for compensation of specific parameters the user is interested in by creating compensatedParameter objects and evaluating them.This allows for use of compensatedParameter in gate definitions.
+\description{
+
+  Emission spectral overlap can be corrected by subtracting the the
+  amount of spectral overlap from the total detected signals. This
+  compensation process can be described by using spillover matrices.
+
+  compensatedParameter objects allow for compensation of specific
+  parameters the user is interested in by creating compensatedParameter
+  objects and evaluating them.This allows for use of
+  compensatedParameter in gate definitions.
 
 }
+
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{compensatedParameter(parameters,spillRefId,transformationId,searchEnv)}.
+  
+  Objects can be created by calls of the form
+  \code{compensatedParameter(parameters,spillRefId,transformationId,searchEnv)}.
 	
 }
 \section{Slots}{
@@ -39,7 +49,7 @@ No methods defined with class "compensatedParameter" in the signature.
 \references{ ~~ }
 \author{Gopalakrishnan N,F.Hahne}
 \note{  The transformation object can be evaluated using the eval method by passing the data frame as an argument.The transformed
-  parameters are returned as a matrix with a single column. (See example below)}}
+  parameters are returned as a matrix with a single column. (See example below)}
 
 \seealso{
 compensation

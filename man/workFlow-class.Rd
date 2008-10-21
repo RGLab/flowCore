@@ -33,6 +33,7 @@
 \alias{actions,workFlow-method}
 \alias{alias,workFlow-method}
 \alias{summary,workFlow-method}
+\alias{applyParentFilter}
 
 \title{Class "workFlow"}
 
