@@ -10,9 +10,9 @@ the function
 \deqn{f(parameter,a,b)=root{EH(y,a,b)-parameter}}
 
 where EH is a function defined by
-\deqn{EH(y,a,b)= 10^{(\frac{y}{a})} + \frac{b*y}{a}-1      \;\;\;\;\;\;\;\;\;y>=0}
+\deqn{EH(y,a,b)= 10^{(\frac{y}{a})} + \frac{b*y}{a}-1   ~~~~y>=0}
                             
-\deqn{-10^{(\frac{-y}{a})} + \frac{b*y}{a}+1 \;\;\;\;\;\;\;y<0}
+\deqn{-10^{(\frac{-y}{a})} + \frac{b*y}{a}+1 ~~~~y<0}
 
 }
 \section{Objects from the Class}{

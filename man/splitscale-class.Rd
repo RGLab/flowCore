@@ -12,9 +12,9 @@ trasformation is continuos at the transition points.
 
 The split scale transformation is defined by the function
 
-\deqn{f(parameter,r,maxValue,transitionChannel)= a*parameter+ b      \;\;\;\;\;\;\;\;\;parameter<=t}
+\deqn{f(parameter,r,maxValue,transitionChannel)= a*parameter+ b   ~~~~parameter<=t}
      
-\deqn{ log_{10}(c*parameter)*\frac{r}{d}  \;\;\;\;\;\;\;parameter > t }                       
+\deqn{ log_{10}(c*parameter)*\frac{r}{d}  ~~~~parameter > t }                       
  where, 
  \deqn{b=\frac{transitionChannel}{2}}
 \deqn{d=\frac{2*log_{10}(e)*r}{transitionChannel} + log_{10}(maxValue) }

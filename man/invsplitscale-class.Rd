@@ -7,10 +7,9 @@
 
 \title{Class "invsplitscale"  }
 \description{ The inverse split scale transformation is defined by the function 
-\deqn{f(parameter,r,maxValue,transitionChannel)= \frac{(parameter-b)}{a}
-      \;\;\;\;\;\;\;\;\;parameter<=t*a + b}
+\deqn{f(parameter,r,maxValue,transitionChannel)= \frac{(parameter-b)}{a}  ~~~~parameter<=t*a + b}
      
-\deqn{ \frac{10^{parameter*\frac{d}{r}}}{c}   \;\;\;\;\;\;\;parameter > t*a+b }  
+\deqn{ \frac{10^{parameter*\frac{d}{r}}}{c} ~~~~ parameter > t*a+b }  
 
  where, 
  \deqn{b=\frac{transitionChannel}{2}}

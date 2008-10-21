@@ -7,9 +7,9 @@
 \title{Class "EHtrans" }
 \description{	
  EH transformation of a parameter is defined by the function
-      \deqn{EH(parameter,a,b)= 10^{(\frac{parameter}{a})} + \frac{b*parameter}{a}-1      \;\;\;\;\;\;\;\;\;parameter>=0}
+      \deqn{EH(parameter,a,b)= 10^{(\frac{parameter}{a})} + \frac{b*parameter}{a}-1   ~~~~parameter>=0}
                             
-  \deqn{-10^{(\frac{-parameter}{a})} + \frac{b*parameter}{a}+1 \;\;\;\;\;\;\;parameter<0}
+      \deqn{-10^{(\frac{-parameter}{a})} + \frac{b*parameter}{a}+1  ~~~~parameter<0}
 
 }
 \section{Objects from the Class}{
