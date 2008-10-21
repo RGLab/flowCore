@@ -14,7 +14,7 @@
 }
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
-    /code{EHtrans(praameters,a,b,transformationId)}
+    \code{EHtrans(parameters,a,b,transformationId)}
 }
 \section{Slots}{
 	 \describe{
