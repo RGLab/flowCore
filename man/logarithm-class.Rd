@@ -29,19 +29,22 @@ Class \code{"\linkS4class{transform}"}, by class "singleParameterTransform", dis
 Class \code{"\linkS4class{transformation}"}, by class "singleParameterTransform", distance 3.
 Class \code{"\linkS4class{characterOrTransformation}"}, by class "singleParameterTransform", distance 4.
 }
+
 \section{Methods}{
 No methods defined with class "logarithm" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
+
+\references{Gating-ML Candidate Recommendation for Gating Description in Flow Cytometry V 1.5   }
+
+\author{ 
+Gopalakrishnan N, F.Hahne}
+
 \note{ The logarithm transformation object can be evaluated using the eval method
  by passing the data frame as an argument.The transformed
 parameters are returned as a matrix with a single column. (See example below) }
 
-
-
 \seealso{
-
+exponential,quadratic
 }
 \examples{
  dat <- read.FCS(system.file("extdata","0877408774.B08",

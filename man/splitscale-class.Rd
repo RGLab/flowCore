@@ -1,3 +1,4 @@
+
 \name{splitscale-class}
 \docType{class}
 \alias{splitscale-class}
