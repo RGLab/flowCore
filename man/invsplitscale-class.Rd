@@ -6,19 +6,39 @@
 
 
 \title{Class "invsplitscale"  }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ The inverse split scale transformation is defined by the function 
+\deqn{f(parameter,r,maxValue,transitionChannel)= \frac{(parameter-b)}{a}
+      \;\;\;\;\;\;\;\;\;parameter<=t*a + b}
+     
+\deqn{ \frac{10^{parameter*\frac{d}{r}}}{c}   \;\;\;\;\;\;\;parameter > t*a+b }  
+
+ where, 
+ \deqn{b=\frac{transitionChannel}{2}}
+\deqn{d=\frac{2*log_{10}(e)*r}{transitionChannel} + log_{10}(maxValue) }
+\deqn{t=10^{log_{10}t}}
+\deqn{a= \frac{transitionChannel}{2*t}}
+\deqn{log_{10}ct=\frac{(a*t+b)*d}{r}}
+\deqn{c=10^{log_{10}ct}}
+
+                     
+}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("invsplitscale", parameters, ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor \newline
+ \code{invsplitscale(parameters,r,maxValue,transitionChannel,transformationId)}
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{r}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{maxValue}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{transitionChannel}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"transformation"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{r}:}{Object of class \code{"numeric"} -a positive value indicating
+     the range of the logarithmical part of the display  }
+    \item{\code{maxValue}:}{Object of class \code{"numeric"}  -a positive value 
+           indicating the maximum value the transformation is applied to}
+    \item{\code{transitionChannel}:}{Object of class \code{"numeric"} -non negative 
+          value that indicates where to split the linear vs. logarithmical transformation}
+    \item{\code{parameters}:}{Object of class \code{"transformation"}  - flow parameter
+        to be transformed}
+    \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to
+         reference the transformation}
   }
 }
 \section{Extends}{
@@ -30,16 +50,17 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "singleParamete
 \section{Methods}{
 No methods defined with class "invsplitscale" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\references{Gating-ML Candidate Recommendation for Gating Description in Flow Cytometry  }
+\author{Gopalakrishnan N,F.Hahne}
+\note{ The transformation object can be evaluated using the eval method by passing the data frame as an argument.The transformed
+  parameters are returned as a matrix with a single column. (See example below) }
 
- 
-
-\seealso{
+\seealso{splitscale
 
 }
 \examples{
-showClass("invsplitscale")
+  dat <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
+  sp1<-invsplitscale("FSC-H",r=512,maxValue=2000,transitionChannel=512)
+  transOut<-eval(sp1)(exprs(dat))
 }
 \keyword{classes}
