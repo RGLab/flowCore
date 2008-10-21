@@ -6,16 +6,21 @@
 \alias{eval,unitytransform,missing,missing-method}
 
 \title{Class "unitytransform" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{
+Unity transform class transforms parameters names provided as characters into unity transform objects which can be evaluated to retrive the corresponding columns from the
+data frame	
+}
+
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("unitytransform", ...)}.
-	 ~~ describe objects here ~~ 
+Objects can be created by calls to the constructor \code{unitytransform(parameters,transformationId)}.
+	
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{parameters}:}{Object of class \code{"character"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{parameters}:}{Object of class \code{"character"} -flow parameters to be transformed }
+    \item{\code{transformationId}:}{Object of class \code{"character"}-unique ID to
+         reference the transformation  }
   }
 }
 \section{Extends}{
@@ -26,16 +31,16 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "transform", di
 \section{Methods}{
 No methods defined with class "unitytransform" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
 
-
+\author{ Gopalakrishnan N, F.Hahne }
 
 \seealso{
-
+dg1polynomial, ratio
 }
 \examples{
-showClass("unitytransform")
+  dat <- read.FCS(system.file("extdata","0877408774.B08",
+  package="flowCore"))
+  un1<-unitytransform(c("FSC-H","SSC-H"),transformationId="un1")
+  transOut<-eval(un1)(exprs(dat))
 }
 \keyword{classes}

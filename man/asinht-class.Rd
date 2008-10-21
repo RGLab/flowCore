@@ -32,20 +32,19 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "singleParamete
 \section{Methods}{
 No methods defined with class "asinht" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ The inverse hyperbolic sin transformation object can be evaluated using the eval method
- by passing the data frame as an argument.The transformed
-parameters are returned as a matrix with a single column. (See example below)  }
+\references{Gating-ML Candidate Recommendation for Gating Description in Flow Cytometry V 1.5  }
 
- 
+\author{ Gopalakrishnan N, F.Hahne }
+
+\note{ The inverse hyperbolic sin transformation object can be evaluated using the eval method
+ by passing the data frame as an argument.The transformed parameters are returned as a matrix with a single column. (See example below)  }
 
 \seealso{
-
+sinht
 }
+
 \examples{
- dat <- read.FCS(system.file("extdata","0877408774.B08",
-  package="flowCore"))
+ dat <- read.FCS(system.file("extdata","0877408774.B08",  package="flowCore"))
   asinh1<-asinht(parameters="FSC-H",a=2,b=1,transformationId="asinH1")
   transOut<-eval(asinh1)(exprs(dat))
 }
