@@ -94,6 +94,23 @@ setMethod("Rm",
       })
 
 
+## For normalizeActionItems we need to remove the normalization object
+setMethod("Rm",
+          signature=signature(symbol="normalizeActionItem",
+                              envir="workFlow",
+                              subSymbol="character"),
+          definition=function(symbol, envir, subSymbol)
+      {
+          Rm(symbol@normalization)
+          selectMethod("Rm", signature("actionItem",
+                                       "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
+          rm(list=identifier(symbol), envir=envir@env)
+          return(invisible(NULL))
+      })
+
+
+
 
 ## ==========================================================================
 ## Get the alias table from an actionItem

@@ -1,18 +1,18 @@
-\name{transformActionItem-class}
+\name{normalizeActionItem-class}
 
 \docType{class}
 
-\alias{transformActionItem-class}
-\alias{transformActionItem}
-\alias{print,transformActionItem-method}
-\alias{Rm,transformActionItem,workFlow,character-method}
-\alias{show,transformActionItem-method}
+\alias{normalizeActionItem-class}
+\alias{normalizeActionItem}
+\alias{print,normalizeActionItem-method}
+\alias{Rm,normalizeActionItem,workFlow,character-method}
+\alias{show,normalizeActionItem-method}
 
-\title{Class "transformActionItem"}
+\title{Class "normalizeActionItem"}
 
 \description{
   
-  Class and method to capture transformation operations in a flow
+  Class and method to capture normalization operations in a flow
   cytometry workflow.
 
 }
@@ -20,22 +20,21 @@
 \section{Objects from the Class}{
   
   Objects should be created using the \code{add} method, which creates a
-  \code{transformActionItem} from a \code{\link{transform}} object
+  \code{normalizeActionItem} from a \code{\link{normalization}} object
   and directly assigns it to a \code{\link{workFlow}}. Alternatively,
-  one can use the \code{transformActionItem} constructor function for
+  one can use the \code{normalizeActionItem} constructor function for
   more programmatic access.
   
 }
 
-
 \section{Slots}{
-
+  
   \describe{
-    
-    \item{\code{transform}:}{Object of class
-      \code{"fcTransformReference"}. A reference to the
-      \code{\link{transform}} object that is used for the
-      transformation operation. }
+
+    \item{\code{normalization}:}{Object of class
+      \code{"fcNormalizationReference"}. A reference to the
+      \code{\link{normalization}} object that is used for the
+      compensation operation. }
     
     \item{\code{ID}:}{Object of class \code{"character"}. A unique
       identifier for the \code{actionItem}. }
@@ -45,14 +44,13 @@
     
     \item{\code{parentView}:}{Object of class
       \code{"fcViewReference"}. A reference to the parent
-      \code{\link{view}} the \code{transformActionItem} is applied on. }
+      \code{\link{view}} the \code{normalizeActionItem} is applied on. }
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }
-
+   
   }
 }
-
 
 \section{Extends}{
 Class \code{"\linkS4class{actionItem}"}, directly.
@@ -61,9 +59,9 @@ Class \code{"\linkS4class{actionItem}"}, directly.
 
 \usage{
 
-transformActionItem(ID = paste("transActionRef", guid(), sep = "_"),
-    name=paste("action", identifier(get(transform)), sep =
-                 "_"), parentView, transform, workflow)
+normalizeActionItem(ID = paste("normActionRef", guid(), sep = "_"),
+name = paste("action", identifier(get(normalization)), sep = "_"),
+parentView, normalization, workflow)
 
 }
 
@@ -77,45 +75,48 @@ transformActionItem(ID = paste("transActionRef", guid(), sep = "_"),
 
   \item{name}{ A more human-readable name of the view. }
   
-  \item{parentView, transform}{ References to the parent
-    \code{\link{view}} and \code{\link{transform}} objects,
+  \item{parentView, normalization}{ References to the parent
+    \code{\link{view}} and \code{\link{normalization}} objects,
     respectively. }
   
 }
 
 \value{
 
-  A reference to the \code{transformActionItem} that is created inside the
+  A reference to the \code{normalizeActionItem} that is created inside the
   \code{\link{workFlow}} environment as a side effect of calling the
   \code{add} method.
 
-  A \code{transformActionItem} object for the constructor.
+  A \code{normalizeActionItem} object for the constructor.
   
 }
 
 
 \section{Methods}{
-  \describe{
-    \item{print}{\code{signature(x = "transformActionItem")}: Print
-      details about the object. }
-    
-    \item{Rm}{\code{signature(symbol = "transformActionItem", envir =
-	"workFlow", subSymbol = "character")}: Remove a
-	\code{transformActionItem} from a \code{\link{workFlow}}. This
-	method is recursive and will also remove all dependent
-	\code{views} and \code{\link[actionItem-class]{actionItems}}.}
-    
-    \item{show}{\code{signature(object = "transformActionItem")}: Print
-      details about the object. }
-  }
   
+  \describe{
+    
+    \item{print}{\code{signature(x = "normalizeActionItem")}: Print
+      details about the object. }
+    
+    \item{Rm}{\code{signature(symbol = "normalizeActionItem", envir =
+	"workFlow", subSymbol = "character")}: Remove a
+	\code{normalizeActionItem} from a \code{\link{workFlow}}. This
+	method is recursive and will also remove all dependent
+	\code{views} and \code{\link[actionItem-class]{actionItems}}. }
+    
+    \item{show}{\code{signature(object = "normalizeActionItem")}: Print
+      details about the object. }
+    
+  }
 }
 
 \details{
 
-  \code{transformActionItems} provide a means to bind transformation
-  operations in a workflow. Each \code{transformActionItem} represents a
-  single \code{\link{transform}}.
+  \code{normalizeActionItems} provide a means to bind normalization
+  operations like warping in a workflow. Each
+  \code{normalizeActionItem} represents a single
+  \code{\link{normalization}}.
   
 }
 
@@ -126,6 +127,7 @@ transformActionItem(ID = paste("transActionRef", guid(), sep = "_"),
   \code{\linkS4class{workFlow}},
   \code{\linkS4class{actionItem}},
   \code{\linkS4class{gateActionItem}},
+  \code{\linkS4class{transformActionItem}},
   \code{\linkS4class{compensateActionItem}},
   \code{\linkS4class{view}}
   
@@ -136,5 +138,3 @@ showClass("view")
 }
 
 \keyword{classes}
-
-

@@ -279,14 +279,16 @@ setMethod("show",
 ## A bit mor control over the output (identation)
 setMethod("print",
           signature=signature(x="filterSummary"),
-          definition=function(x, indent=0)
+          definition=function(x, indent=0, verbose=TRUE)
       {
-          for(i in seq(along=x@name)) {
-              cat(rep(" ", indent),
-                  sprintf("%s: %d of %d events (%.2f%%)\n",
-                          x@name[i],
-                          x@true[i], x@count,
-                          x@p[i]*100), sep="")
+          if(verbose){
+              for(i in seq(along=x@name)) {
+                  cat(rep(" ", indent),
+                      sprintf("%s: %d of %d events (%.2f%%)\n",
+                              x@name[i],
+                              x@true[i], x@count,
+                              x@p[i]*100), sep="")
+              }
           }
           return(invisible(x))
       })
@@ -560,11 +562,12 @@ setMethod("show",
                       }
                   }
                   cat("The following data views are provided:\n\n")
-                  print(get(nodes[1], object))
-                  traverseShow(tree, nodes[1], object)
+                  print(get(nodes[1], object)) 
+                 traverseShow(tree, nodes[1], object)
                 }
               }
-              cat("There is no view specified.\n")
+              if(length(nodes)==0)
+                  cat(" There is no view specified.\n")
           })
 
 
@@ -676,6 +679,33 @@ setMethod("print",
 
 setMethod("show",
           signature=signature(object="transformActionItem"),
+          definition=function(object) print(object))
+
+
+
+
+
+## ==========================================================================
+## normalizeActionItem. The print method allows more fine-grained control
+## over the output, e.g., indentation
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("print",
+          signature=signature(x="normalizeActionItem"),
+          definition=function(x, indent=0, parent=TRUE){
+              ind <- paste(rep("     ", indent), collapse="")
+              if(indent>0)
+                  ind <- paste(ind, "  ", collapse="")
+              cat("normalization action item '", x@name, "'\n", sep="")
+              ## Only add the ID when the alias is non-unique
+              if(!uniqueAlias(names(x), x))
+                  cat(ind, " (ID=", x@ID, ")\n", sep="")
+              if(parent)
+                  cat(ind, " applied to view '", get(x@parentView)@name,
+                      "' (ID=",identifier(x@parentView), ")\n", sep="")
+              })
+
+setMethod("show",
+          signature=signature(object="normalizeActionItem"),
           definition=function(object) print(object))
 
 

@@ -57,6 +57,6 @@ setMethod("$",
 setMethod("toTable",
           signature=signature(x="filterSummary"),
           definition=function(x, ...) {
-              data.frame(count=x@count, true=x@true, false=x$false,
+              data.frame(percent=x$p*100, count=x@count, true=x@true, false=x$false,
                          p=x$p, q=x$q)
           })

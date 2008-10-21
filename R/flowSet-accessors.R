@@ -601,3 +601,19 @@ setReplaceMethod("identifier",
                  object@frames[["_.name._"]] <- value
                  object
              })
+
+
+## ==========================================================================
+## Normalize a flowSet using a normalization object
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("normalize",
+          signature=signature(data="flowSet",
+                              x="normalization"),
+          definition=function (data, x)
+      {
+          parms <- parameters(x)
+          args <-  x@arguments
+          args$x <- data
+          args$parameters <- parms
+          do.call(x@normFunction, args)
+      })

@@ -208,7 +208,9 @@ setMethod("parameters",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("parameters",
           signature=signature(object="filterResult"),
-          definition=function(object) filterDetails(object)$parameters)
+          definition=function(object)
+          unique(unlist(sapply(filterDetails(object),
+                               function(x) x$parameters))))
 
 
 
@@ -219,7 +221,8 @@ setMethod("parameters",
 setMethod("parameters",
           signature=signature(object="manyFilterResult"),
           definition=function(object)
-          unique(sapply(filterDetails(object),function(x) x$parameters)))
+          unique(unlist(sapply(filterDetails(object),
+                               function(x) x$parameters))))
 
 
 
@@ -278,3 +281,12 @@ setMethod("parameters",
           signature=signature(object="parameterTransform"),
           definition=function(object) object@parameters)
 
+
+
+# ==========================================================================
+## In a normalization we can get things directly from the parameters
+## slot.
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("parameters",
+          signature=signature(object="normalization"),
+          definition=function(object) object@parameters)

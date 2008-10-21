@@ -125,6 +125,20 @@ setMethod("Rm",
       })
 
 
+## For normalizeViews we just need to remove the view itself
+setMethod("Rm",
+          signature=signature(symbol="normalizeView",
+                              envir="workFlow",
+                              subSymbol="character"),
+          definition=function(symbol, envir, subSymbol, rmRef=TRUE)
+      {
+          selectMethod("Rm", signature("view", "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
+          rm(list=identifier(symbol), envir=envir@env)
+          return(invisible(NULL))
+      })
+
+
 
 ## ==========================================================================
 ## Get the alias table from a view

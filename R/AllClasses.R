@@ -378,11 +378,13 @@ quadGate <- function(..., .gate, filterId="defaultQuadGate")
     if(!missing(.gate) && !is.list(.gate) && !is.matrix(.gate))
         .gate <- matrix(.gate, nrow=1, dimnames=list(NULL, names(.gate)))
     parms <- prepareInputs(parseDots(list(...), len=1), .gate, len=1)
+    p <- as.numeric(parms$values)
+    names(p) <- colnames(parms$values)
     if(length(parms$parameters) !=2 || nrow(parms$value)!=1)
         stop("Expecting two named arguments or a single named vector\n",
              "of length 2 as input for gate boundaries.", call.=FALSE)
     new("quadGate", filterId=filterId, parameters=parms$parameters,
-        boundary=as.numeric(parms$value))
+        boundary=p)
 }
 
 
@@ -1377,14 +1379,17 @@ setClass("transformMap",
 ## A list of transformMaps
 ## ---------------------------------------------------------------------------
 setClass("transformList",
-         representation=representation(transforms="list"),
+         representation=representation(transforms="list",
+                                       transformationId="character"),
+         prototype=prototype(transformationId="defaultTransformation"),
          validity=function(object)
          if(all(sapply(object@transforms, is, "transformMap"))) TRUE else
          stop("All list items of a 'transformList' must be of class ",
               "'transformMap.'", call.=FALSE))
 
 ## constructor
-transformList <- function(from, tfun, to=from)
+transformList <- function(from, tfun, to=from,
+                          transformationId="defaultTransformation")
 {
     from <- unique(from)
     to <- unique(to)
@@ -1401,7 +1406,9 @@ transformList <- function(from, tfun, to=from)
     tlist <- mapply(function(x, y, z)
                     new("transformMap", input=x, output=y, f=z),
                     from, to, tfun[1:length(from)])
-    return(as(tlist, "transformList"))
+    tlist <- as(tlist, "transformList")
+    identifier(tlist) <- transformationId
+    return(tlist)
 }
 
 
@@ -1583,6 +1590,7 @@ refType <- function(value)
     else if(is(value, "transformList")) "fcTransformReference"
     else if(is(value, "graphNEL")) "fcTreeReference"
     else if(is(value, "environment")) "fcAliasReference"
+    else if(is(value, "normalization")) "fcNormalizationReference"
     else if(is.null(value)) "fcNullReference"
     else "fcReference"
 }
@@ -1599,6 +1607,7 @@ refName <- function(value)
     else if(is(value, "transformList")) "transRef"
     else if(is(value, "graphNEL")) "treeRef"
     else if(is(value, "environment")) "aliasRef"
+    else if(is(value, "normalization")) "normRef"
     else if(is.null(value)) "nullRef"
     else "genericRef"
     return(paste(prefix, guid(), sep="_"))
@@ -1841,7 +1850,33 @@ fcTransformReference <- function(ID=paste("transRef",
     checkClass(ID, "character", 1)
     checkClass(env, "workFlow")
     ref <- new("fcTransformReference", ID=ID, env=env@env)
-    setAlias("no scheme yet", identifier(ref), env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
+}
+
+
+
+## ===========================================================================
+## fcNormalizationReference
+## ---------------------------------------------------------------------------
+## A reference to a normalization object. We need this to store a
+## normalization within a normActionItem without unnecessarily
+## copying things.
+## ---------------------------------------------------------------------------
+setClass("fcNormalizationReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("normRef", guid(), sep="_"))
+         )
+
+## constructor
+fcNormalizationReference <- function(ID=paste("normRef",
+                                              guid(), sep="_"),
+                                     env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcNormalizationReference", ID=ID, env=env@env)
+    setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
 
@@ -1854,18 +1889,54 @@ fcTransformReference <- function(ID=paste("transRef",
 ## ---------------------------------------------------------------------------
 setClass("fcNullReference",
          contains=c("fcDataReference",
-         "fcActionReference",
-         "fcViewReference",
-         "fcFilterResultReference",
-         "fcFilterReference",
-         "fcCompensateReference",
-         "fcTransformReference",
-         "fcTreeReference",
-         "fcAliasReference"),
+                    "fcActionReference",
+                    "fcViewReference",
+                    "fcFilterResultReference",
+                    "fcFilterReference",
+                    "fcCompensateReference",
+                    "fcTransformReference",
+                    "fcNormalizationReference",         
+                    "fcTreeReference",
+                    "fcAliasReference"),
          prototype=prototype(ID=paste("nullRef", guid(), sep="_"))
          )
 
 fcNullReference <- function(...) new("fcNullReference")
+
+
+
+## ===========================================================================
+## normalization
+## ---------------------------------------------------------------------------
+## A class to describe normalization operations on a complete flowSet.
+## Currently this is only the warping, but more methods may follow. The
+## class mainly exists to allow for dispatch in the workFlow system. The
+## function 'normFunction' is supposed to take a flowSet, perform an
+## operation on 'parameters' and return the altered flowSet. It has two
+## mandatory arguments: 'x' and 'parameters'. All additional arguments
+## have to be supplied via the list in the 'arguments' slot.
+## ---------------------------------------------------------------------------
+setClass("normalization",
+         representation(parameters="character",
+                        normalizationId="character",
+                        normFunction="function",
+                        arguments="list"),
+         prototype=prototype(normalizationId="defaultNormalization",
+                             normFunction=function(x) x)
+         )
+
+## constructor
+normalization <- function(parameters, normalizationId="defaultNormalization",
+                          normFunction, arguments=list())
+{
+    checkClass(normalizationId, "character", 1)
+    checkClass(parameters, "character")
+    checkClass(normFunction, "function")
+    new("normalization", parameters=parameters,
+        normalizationId=normalizationId, normFunction=normFunction,
+        arguments=arguments)
+}
+
 
 
 
@@ -2091,8 +2162,9 @@ setClass("transformActionItem",
 ## assigns it to the evaluation ennvironment in 'workflow'. The return
 ## value is a reference to that object.
 transformActionItem <- function(ID=paste("transActionRef", guid(), sep="_"),
-                                name="no scheme yet", parentView, transform,
-                                workflow)
+                                name=paste("action", identifier(get(transform)),
+                                           sep="_"),
+                                parentView, transform, workflow)
 {
     checkClass(workflow, "workFlow")
     checkClass(ID, "character", 1)
@@ -2121,9 +2193,8 @@ setClass("compensateActionItem",
 ## value is a reference to that object.
 compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
                                  name=paste("action", identifier(get(compensate)),
-                                 sep="_"),
-                                 parentView, compensate,
-                                 workflow)
+                                            sep="_"),
+                                 parentView, compensate, workflow)
 {
     checkClass(workflow, "workFlow")
     checkClass(ID, "character", 1)
@@ -2135,6 +2206,39 @@ compensateActionItem <- function(ID=paste("compActionRef", guid(), sep="_"),
                   env=workflow@env, alias=workflow@alias)
     return(assign(x=ID, value=action, envir=workflow))
 }
+
+
+## ===========================================================================
+## normalizeActionItem
+## ---------------------------------------------------------------------------
+## normalization actionItem. This contains the definiton of the
+## normalization
+## ---------------------------------------------------------------------------
+setClass("normalizeActionItem",
+         contains="actionItem",
+         representation=representation(normalization="fcNormalizationReference"))
+
+## The constructor creates the compensateActionItem object and directly
+## assigns it to the evaluation ennvironment in 'workflow'. The return
+## value is a reference to that object.
+normalizeActionItem <- function(ID=paste("normActionRef", guid(), sep="_"),
+                                name=paste("action", identifier(get(normalization)),
+                                           sep="_"),
+                                 parentView, normalization,
+                                 workflow)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(normalization, "fcNormalizationReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("normalizeActionItem", ID=ID, name=name,
+                  normalization=normalization, parentView=parentView,
+                  env=workflow@env, alias=workflow@alias)
+    return(assign(x=ID, value=action, envir=workflow))
+}
+
+
 
 ## ===========================================================================
 ## view
@@ -2238,7 +2342,11 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
 ## applied for subsetting (i.e., a new data set has been created)
 applyParentFilter <- function(parent, workflow)
 {
-    pview <- get(parent)
+    pview <- if(!is(parent, "view")) get(parent) else {
+        tmp <- parent
+        parent <- do.call(refType(parent), list(ID=identifier(parent), env=workflow))
+        tmp
+    }
     dataRef <- Data(pview)
     if(is.null(dataRef)){
         parentData <- Data(parent(pview))
@@ -2252,6 +2360,7 @@ applyParentFilter <- function(parent, workflow)
         newDataRef <- assign(value=newData, envir=workflow)
         pview@data <- newDataRef
         assign(parent, value=pview, envir=workflow)
+        return(invisible())
     }
 }
 
@@ -2260,19 +2369,22 @@ applyParentFilter <- function(parent, workflow)
 ## the workFlow object.
 setMethod("add",
           signature=signature(wf="workFlow", action="concreteFilter"),
-          definition=function(wf, action, parent=NULL)
+          definition=function(wf, action, parent=NULL, name="")
       {
           if(is(action, "filterResult"))
               stop("Don't know how to handle object of class '",
                    class(action), "'", call.=FALSE)
           else if(is(action, "filter")){
-              ## assign the filter to the evaluation environment and create
-              ## a reference to it
-              gateRef <- assign(value=action, envir=wf)
               ## get the parentView. If not explicitely specified, use the
               ## root node
               pid <- if(is.null(parent)) views(wf)[[1]] else parent
               pid <- getAlias(pid, wf)
+              if(is.null(unlist(pid)))
+                  stop("'", parent, "' is not a valid view name in this",
+                       " workflow.", call.=FALSE)
+              ## assign the filter to the evaluation environment and create
+              ## a reference to it
+              gateRef <- assign(value=action, envir=wf)
               pview <- fcViewReference(ID=pid, env=wf)
               ## create and assign a new gateActionItem
               actionRef <- gateActionItem(parentView=pview, gate=gateRef,
@@ -2295,7 +2407,8 @@ setMethod("add",
                       if(is(fres, "logicalFilterResult")) 2
                       else length(fres)
                   for(i in seq_len(len)){
-                      vid <- gateView(name=names(fres)[i], workflow=wf,
+                      vid <- gateView(name=paste(name, names(fres)[i], sep=""),
+                                      workflow=wf,
                                       action=actionRef, filterResult=fresRef,
                                       indices=list(fres[[i]]@subSet),
                                       frEntry=names(fres)[i])
@@ -2306,7 +2419,8 @@ setMethod("add",
                       if(is(fres[[1]], "logicalFilterResult")) 2
                       else length(fres[[1]])
                   for(i in seq_len(len)){
-                      vid <- gateView(name=names(fres[[1]])[i], workflow=wf,
+                      vid <- gateView(name=paste(name, names(fres[[1]])[i], sep=""),
+                                      workflow=wf,
                                       action=actionRef, filterResult=fresRef,
                                       indices=lapply(fres, function(y) y[[i]]@subSet),
                                       frEntry=names(fres[[1]])[i])
@@ -2328,7 +2442,7 @@ setMethod("add",
               edgeData(tree, pview@ID, nodes, "actionItem") <-
                   actionRef
               assign(x=wf@tree, value=tree, envir=wf)
-              return(wf)
+              return(invisible(wf))
           } else stop("Don't know how to handle object of class '",
                       class(action), "'", call.=FALSE)       
       })
@@ -2375,15 +2489,19 @@ transformView <- function(workflow, ID=paste("transViewRef", guid(), sep="_"),
 ## which is also directly stored in the workFlow object.
 setMethod("add",
           signature=signature(wf="workFlow", action="transformList"),
-          definition=function(wf, action, parent=NULL)
+          definition=function(wf, action, parent=NULL,
+                              name=identifier(action))
       {
-          ## assign the transformation to the evaluation environment and
-          ## create a reference to it
-          transRef <- assign(value=action, envir=wf)
           ## get the parentView. If not explicitely specified, use the
           ## root node
           pid <- if(is.null(parent)) views(wf)[[1]] else parent
           pid <- getAlias(pid, wf)
+          if(is.null(unlist(pid)))
+                  stop("'", parent, "' is not a valid view name in this",
+                       " workflow.", call.=FALSE)
+          ## assign the transformation to the evaluation environment and
+          ## create a reference to it
+          transRef <- assign(value=action, envir=wf)
           pview <- fcViewReference(ID=pid, env=wf)
           tree <- get(wf@tree)
           if(length(unlist(adj(tree, pid))))
@@ -2398,9 +2516,12 @@ setMethod("add",
           ## now transform the data and assign the result
           tData <- action %on% Data(get(pview))
           dataRef <- assign(value=tData, envir=wf)
-          vid <- transformView(name="no scheme yet", workflow=wf,
+          vid <- transformView(name=name, workflow=wf,
                                action=actionRef, data=dataRef)
-          
+          ## update the identifier of the compensation object
+          identifier(action) <- paste("trans", identifier(action),
+                                      sep="_")
+          assign(transRef, value=action, envir=wf) 
           ## add new nodes and edges to the workflow tree
           nid <- identifier(vid)
           tree <- addNode(nid, tree)
@@ -2408,7 +2529,7 @@ setMethod("add",
           edgeDataDefaults(tree, "actionItem") <- fcNullReference()
           edgeData(tree, pid , nid, "actionItem") <- actionRef
           assign(x=wf@tree, value=tree, envir=wf)
-          return(wf)   
+          return(invisible(wf))
       })
 
 
@@ -2449,18 +2570,22 @@ compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
 ## which is also directly stored in the workFlow object.
 setMethod("add",
           signature=signature(wf="workFlow", action="compensation"),
-          definition=function(wf, action, parent=NULL)
+          definition=function(wf, action, parent=NULL,
+                              name=identifier(action))
       {
-          ## assign the compensation to the evaluation environment and
-          ## create a reference to it
-          compRef <- assign(value=action, envir=wf)
           ## get the parentView. If not explicitely specified, use the
           ## root node
           pid <- if(is.null(parent)) views(wf)[[1]] else parent
           pid <- getAlias(pid, wf)
+          if(is.null(unlist(pid)))
+                  stop("'", parent, "' is not a valid view name in this",
+                       " workflow.", call.=FALSE)
           if(pid != getAlias(views(wf), wf)[1])
               warning("The selected parent view is not a root node.\n",
                       "Are you sure this is correct?", call.=FALSE)
+          ## assign the compensation to the evaluation environment and
+          ## create a reference to it
+          compRef <- assign(value=action, envir=wf)
           pview <- fcViewReference(ID=pid, env=wf)
           
           ## create and assign a new ActionItem
@@ -2472,7 +2597,7 @@ setMethod("add",
           ## now transform the data and assign the result
           tData <- compensate(Data(get(pview)), action)
           dataRef <- assign(value=tData, envir=wf)
-          vid <- compensateView(name=identifier(action), workflow=wf,
+          vid <- compensateView(name=name, workflow=wf,
                                 action=actionRef, data=dataRef)
           ## update the identifier of the compensation object
           identifier(action) <- paste("comp", identifier(action),
@@ -2486,8 +2611,88 @@ setMethod("add",
           edgeDataDefaults(tree, "actionItem") <- fcNullReference()
           edgeData(tree, pid , nid, "actionItem") <- actionRef
           assign(x=wf@tree, value=tree, envir=wf)
-          return(wf)   
+          return(invisible(wf))
       })
+
+
+
+## ===========================================================================
+## normalizeView
+## ---------------------------------------------------------------------------
+## A normalization makes a copy of the data independent of whether it
+## is a leaf node or not.
+## ---------------------------------------------------------------------------
+setClass("normalizeView",
+         contains="view",
+         prototype=prototype(ID=paste("normViewRef", guid(), sep="_"),
+         name="",
+         action=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
+
+## The constructor creates the normalizeView object and directly assigns it
+## to the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+normalizeView <- function(workflow, ID=paste("normViewRef", guid(), sep="_"),
+                           name="default", action, data)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("normalizeView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+## constructor directly from a normalization object. This creates a
+## normalizeActionItem in the workFlow and from that a normalizeView
+## which is also directly stored in the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="normalization"),
+          definition=function(wf, action, parent=NULL,
+                              name=identifier(action))
+      {
+          ## get the parentView. If not explicitely specified, use the
+          ## root node
+          pid <- if(is.null(parent)) views(wf)[[1]] else parent
+          pid <- getAlias(pid, wf)
+          if(is.null(unlist(pid)))
+                  stop("'", parent, "' is not a valid view name in this",
+                       " workflow.", call.=FALSE)
+          ## assign the normalization to the evaluation environment and
+          ## create a reference to it
+          normRef <- assign(value=action, envir=wf)
+          pview <- fcViewReference(ID=pid, env=wf)
+          ## create and assign a new ActionItem
+          actionRef <- normalizeActionItem(parentView=pview,
+                                           normalization=normRef,
+                                           workflow=wf)      
+          ## check if the previous filter has been applied for subsetting
+          applyParentFilter(pview, wf)
+          ## now normalize the data and assign the result
+          tData <- normalize(Data(get(pview)), action)
+          dataRef <- assign(value=tData, envir=wf)
+          vid <- normalizeView(name=name, workflow=wf,
+                               action=actionRef, data=dataRef)
+          ## update the identifier of the normalization object
+          identifier(action) <- paste("norm", identifier(action),
+                                      sep="_")
+          assign(normRef, value=action, envir=wf) 
+          ## add new nodes and edges to the workflow tree
+          nid <- identifier(vid)
+          tree <- get(wf@tree)
+          tree <- addNode(nid, tree)
+          tree <- addEdge(pid, identifier(vid), tree)
+          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+          edgeData(tree, pid , nid, "actionItem") <- actionRef
+          assign(x=wf@tree, value=tree, envir=wf)
+          return(invisible(wf))   
+      })
+
+
 
 
 ## ===========================================================================

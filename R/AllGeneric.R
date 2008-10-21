@@ -303,3 +303,9 @@ setGeneric("eval",
 
 
 
+
+## ===========================================================================
+## Generic to apply a normalization object on a flowSet
+## ---------------------------------------------------------------------------
+setGeneric("normalize", function(data, x)
+           standardGeneric("normalize"))

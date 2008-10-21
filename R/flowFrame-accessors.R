@@ -428,7 +428,7 @@ setMethod("filter",
           signature=signature(x="flowFrame",
                               filter="filter"),
           definition=function(x, filter)
-      {    
+      {
           temp <- resolveTransforms(x, filter)
           x <- temp[["data"]]
           filter <- temp[["filter"]]

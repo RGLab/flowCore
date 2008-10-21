@@ -14,7 +14,7 @@
 ## making sure that the filter item in the filterDetails slot contains all
 ## necessary information
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## Simple accessor for the whole slot. All filterResult classes except for
+## Simple accessor for the whole slot. Most filterResult classes except for
 ## manyFilterResults only contain a single filterDetails item, and those are
 ## returned directly.
 setMethod("filterDetails",
@@ -22,10 +22,7 @@ setMethod("filterDetails",
                               filterId="missing"),
           definition=function(result, filterId)
       {
-          res <- result@filterDetails
-          if(length(res)==1)
-              res <- res[[1]]
-          return(res)
+          return(result@filterDetails)
       })
 
 ## Access only a single filter of the filterDetails list either by name

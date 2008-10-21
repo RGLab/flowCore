@@ -129,6 +129,7 @@ setMethod("summarizeFilter",
           ret$cov <- attr(result@subSet,'cov')
           ret$center <- attr(result@subSet,'center')
           ret$radius <- attr(result@subSet,'radius')
+          ret$parameters <- parameters(filter)
           return(ret)
       })
 
@@ -144,5 +145,8 @@ setMethod("summarizeFilter",
       {
           ret <- callNextMethod()
           ret$subsetCount <- attr(result@subSet,'subsetCount')
+          additionalDetails <- attr(result@subSet,'filterDetails')[[2]]
+          sel <- !names(additionalDetails) %in% c("filter", "parameters")
+          ret <- c(ret, additionalDetails[sel])
           return(ret)
       })

@@ -145,3 +145,37 @@ setMethod("identifier",
 setMethod("identifier",
           signature=signature(object="transform"),
           definition=function(object) object@transformationId)
+
+
+
+## ==========================================================================
+## normalize objects have a normalizationId slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature(object="normalization"),
+          definition=function(object) object@normalizationId)
+
+setReplaceMethod("identifier",
+                 signature=signature("normalization","character"),
+                 definition=function(object,value)
+             {
+                 object@normalizationId <- value
+                 object
+             })
+
+
+
+## ==========================================================================
+## transformList objects have a transformationId slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature(object="transformList"),
+          definition=function(object) object@transformationId)
+
+setReplaceMethod("identifier",
+                 signature=signature("transformList","character"),
+                 definition=function(object,value)
+             {
+                 object@transformationId <- value
+                 object
+             })

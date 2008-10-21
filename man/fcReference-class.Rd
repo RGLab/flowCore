@@ -23,6 +23,8 @@
 \alias{fcCompensateReference}
 \alias{fcTransformReference-class}
 \alias{fcTransformReference}
+\alias{fcNormalizationReference-class}
+\alias{fcNormalizationReference}
 \alias{fcNullReference-class}
 \alias{assign}
 \alias{fcNullReference}
@@ -98,6 +100,10 @@
   
   Class \code{"\linkS4class{fcReference}"}, directly.
 
+   \code{fcNormalizationReference}:
+  
+  Class \code{"\linkS4class{fcReference}"}, directly.
+
   \code{fcNullReference}:
   
   Class \code{"\linkS4class{fcDataReference}"}, directly.
@@ -107,6 +113,7 @@
   Class \code{"\linkS4class{fcFilterReference}"}, directly.
   Class \code{"\linkS4class{fcCompensateReference}"}, directly.
   Class \code{"\linkS4class{fcTransformReference}"}, directly.
+  Class \code{"\linkS4class{fcNormalizationReference}"}, directly.
   Class \code{"\linkS4class{fcTreeReference}"}, directly.
   Class \code{"\linkS4class{fcAliasReference}"}, directly.
   Class \code{"\linkS4class{fcReference}"}, by class "fcDataReference",
@@ -191,6 +198,10 @@ fcFilterReference <- function(ID=paste("filterRef",
                               env=new.env(parent=emptyenv()))
 
 fcCompensateReference <- function(ID=paste("compRef",
+                                           guid(), sep="_"),
+                                  env=new.env(parent=emptyenv()))
+
+fcNormalizeReference <- function(ID=paste("normRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
@@ -304,11 +315,11 @@ Rm(symbol, envir, subSymbol, ...)
   respectively. \code{fcDataReference} should be used for
   \code{\link{flowFrame}} or \code{\link{flowSet}} objects, whereas
   \code{fcFilterResultReference}, \code{fcFilterReference},
-  \code{fcTransformReference} and \code{fcCompensateReference} link to
-  \code{\link{filterResult}}, \code{\link{filter}},
-  \code{\linkS4class{transform}} and \code{\linkS4class{compensation}}
-  obects. \code{fsStructureReference} only exists to jointly dispatch on
-  certain subgroups of references.
+  \code{fcTransformReference}, \code{fcCompensateReference}, and
+  \code{fcNormalizationReference} link to \code{\link{filterResult}},
+  \code{\link{filter}}, \code{\linkS4class{transform}} and
+  \code{\linkS4class{compensation}} obects. \code{fsStructureReference}
+  only exists to jointly dispatch on certain subgroups of references.
   
 }
 

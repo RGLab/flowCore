@@ -12,7 +12,7 @@
 
 \description{
   
-  Class and method to capture transformation operations in a flow
+  Class and method to capture compensation operations in a flow
   cytometry workflow.
 
 }
@@ -44,7 +44,7 @@
     
     \item{\code{parentView}:}{Object of class
       \code{"fcViewReference"}. A reference to the parent
-      \code{\link{view}} the \code{transformActionItem} is applied on. }
+      \code{\link{view}} the \code{compensateActionItem} is applied on. }
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }

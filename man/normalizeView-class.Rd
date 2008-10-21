@@ -1,16 +1,16 @@
-\name{compensateView-class}
+\name{normalizeView-class}
 
 \docType{class}
 
-\alias{compensateView-class}
-\alias{compensateView}
-\alias{Rm,compensateView,workFlow,character-method}
+\alias{normalizeView-class}
+\alias{normalizeView}
+\alias{Rm,normalizeView,workFlow,character-method}
 
-\title{Class "compensateView"}
+\title{Class "normalizeView"}
 
 \description{
 
-  Class and method to capture the result of compensation operations in a
+  Class and method to capture the result of normalization operations in a
   flow cytometry workflow.
 
 }
@@ -18,9 +18,9 @@
 \section{Objects from the Class}{
 
   Objects should be created using the \code{add} method, which creates a
-  \code{compensateView} from a \code{\link{compensation}} object and
+  \code{normalizeView} from a \code{\link{normalization}} object and
   directly assigns it to a \code{\link{workFlow}}. Alternatively, one
-  can use the \code{compensateView} constructor function for more programmatic
+  can use the \code{normalizeView} constructor function for more programmatic
   access.  }
 
 \section{Slots}{
@@ -55,7 +55,7 @@
 
 \usage{
 
-compensateView(workflow, ID=paste("compViewRef", guid(), sep="_"),
+normalizeView(workflow, ID=paste("normViewRef", guid(), sep="_"),
                           name="default", action, data)
 
 }
@@ -77,11 +77,11 @@ compensateView(workflow, ID=paste("compViewRef", guid(), sep="_"),
 
 \value{
 
-  A reference to the \code{compensateView} that is created inside the
+  A reference to the \code{normalizeView} that is created inside the
   \code{\link{workFlow}} environment as a side effect of calling the
   \code{add} method.
 
-  A \code{compensateView} object for the constructor.
+  A \code{normalizeView} object for the constructor.
   
 }
 
@@ -90,9 +90,9 @@ compensateView(workflow, ID=paste("compViewRef", guid(), sep="_"),
   
   \describe{
     
-    \item{Rm}{\code{signature(symbol = "compensateView", envir =
+    \item{Rm}{\code{signature(symbol = "normalizeView", envir =
 	"workFlow", subSymbol = "character")}: Remove a
-      \code{compensateView} from a \code{\link{workFlow}}. This method is
+      \code{normalizeView} from a \code{\link{workFlow}}. This method is
       recursive and will also remove all dependent \code{views} and
       \code{\link[actionItem-class]{actionItem}}s. }
     
@@ -108,7 +108,7 @@ compensateView(workflow, ID=paste("compViewRef", guid(), sep="_"),
   \code{\linkS4class{view}},
   \code{\linkS4class{gateView}},
   \code{\linkS4class{transformView}},
-  \code{\linkS4class{normalizeView}},
+  \code{\linkS4class{compensateView}},
   \code{\linkS4class{actionItem}}
   
 }
