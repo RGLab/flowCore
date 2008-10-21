@@ -7,8 +7,8 @@
 \title{Class "logarithm"  }
 \description{	Logartithmic transformation of an argument is a transforation defined by the function 
 
- \deqn{f(parameter,a,b)=  ln(a*prarameter)*b \;\;\;\;\;\;\;\;\;a*parameter>0}
-                            \deqn{0 \;\;\;\;\;\;\;a*parameter<=0}
+ \deqn{f(parameter,a,b)=  ln(a*prarameter)*b ~~~~a*parameter>0}
+                            \deqn{0  ~~~~a*parameter<=0}
 }
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
