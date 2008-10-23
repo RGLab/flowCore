@@ -67,7 +67,7 @@ read.FCS <- function(filename,
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
-    realMin <- pmin(zeroVals,apply(mat,2,min,na.rm=TRUE))
+    realMin <- pmin(zeroVals,apply(mat,2,min,na.rm=TRUE), na.rm=TRUE)
     params  <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin)
     close(con)
