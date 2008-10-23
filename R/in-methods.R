@@ -492,15 +492,17 @@ prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad)
 }
 
 ## Guess which channel captures time in a flowFrame
-findTimeChannel <- function(xx)
+findTimeChannel <- function(xx, strict=FALSE)
 {
     time <- grep("^Time$", colnames(xx), value=TRUE,
                  ignore.case=TRUE)[1]
     if(is.na(time)){
+        if(is(xx, "flowSet") || is(xx, "flowFrame"))
+            xx <- exprs(xx[[1]])
         cont <- apply(xx, 2, function(y) all(sign(diff(y)) >= 0))
         time <- names(which(cont))
     }
-    if(is.null(time))
+    if(!length(time) && strict)
         stop("Unable to identify time domain recording for this data.\n",
              "Please define manually.", call.=FALSE)
     return(time)
