@@ -179,7 +179,7 @@ setMethod("plot",
               stop("You need to have Rgraphviz installed for this feature", 
                    call.=FALSE)
           tree <- get(x@tree)
-          labels <- gsub("_", "_\n", views(x))
+          labels <- gsub(" ", "\n", gsub("_", "_\n", views(x)))
           cmatch <- cbind(c("view", "compensateView", "transformView", 
                             "gateView"), c("black", "green", "blue", "red"))
           mt <- match(sapply(views(x), function(y) class(get(y, x))), 
