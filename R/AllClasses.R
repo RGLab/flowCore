@@ -1469,13 +1469,9 @@ compensation <- function(..., spillover, inv=FALSE,
     checkClass(inv, "logical", 1)
     if(!length(parms$parameters))
         parms <- sapply(colnames(spillover), unitytransform)
-
- #   if(all(sapply(is(parms$parameters, "unitytransform"))) && !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
- if(all(sapply(parms$parameters,function(x){ is(x,"unitytransform")}
-              )
-        ) && !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
-        
-    stop("Parameters and column names of the spillover matrix ",
+    if(all(sapply(parms$parameters,function(x) is(x,"unitytransform"))) &&
+       !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
+        stop("Parameters and column names of the spillover matrix ",
              "don't match.", call.=FALSE)
     if(inv)
         spillover <- solve(spillover/max(spillover))
@@ -1521,7 +1517,7 @@ compensatedParameter <- function(parameters,
 ## of different reference classes to be used in the subsequent class
 ## definition. Objects of class "fcNullReference" allow to assign
 ## empty (hence unresolvable) references without breaking dispatch
-## or class validity. The taks of creating the correct reference type is
+## or class validity. The task of creating the correct reference type is
 ## handled by the workFlow-specific assign methods, however these only call
 ## the appropriate fcReference constructors, so those need to make sure that
 ## all necesary side-effects take place.
@@ -1559,25 +1555,6 @@ getAlias <- function(alias, workflow)
     return(as.vector(sapply(alias, fun)))
 }
 
-## remove alias for an identifier
-rmAlias <- function(value, workflow)
-{
-    checkClass(value, "character", 1)
-    checkClass(workflow, "workFlow")
-    workflow <- alias(workflow)
-    ind <- names(which(sapply(as.list(workflow), function(x)
-                              value %in% x)==TRUE))
-    for(i in ind){
-        tmp <- workflow[[i]]
-        tmp <- setdiff(tmp, value)
-        if(!length(tmp))
-            rm(list=i, envir=workflow)
-        else
-            workflow[[i]] <- tmp
-    }
-    return(invisible(NULL))
-}
-
 ## Figure out which reference type to create, based on the class of 'value'
 refType <- function(value)
 {
@@ -1591,6 +1568,7 @@ refType <- function(value)
     else if(is(value, "graphNEL")) "fcTreeReference"
     else if(is(value, "environment")) "fcAliasReference"
     else if(is(value, "normalization")) "fcNormalizationReference"
+    else if(is(value, "list")) "fcJournalReference"
     else if(is.null(value)) "fcNullReference"
     else "fcReference"
 }
@@ -1608,6 +1586,7 @@ refName <- function(value)
     else if(is(value, "graphNEL")) "treeRef"
     else if(is(value, "environment")) "aliasRef"
     else if(is(value, "normalization")) "normRef"
+    else if(is(value, "list")) "journalRef"
     else if(is.null(value)) "nullRef"
     else "genericRef"
     return(paste(prefix, guid(), sep="_"))
@@ -1656,6 +1635,29 @@ fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
     checkClass(env, "workFlow")
     ref <- new("fcTreeReference", ID=ID, env=env@env)
     setAlias("tree", identifier(ref), env)
+    return(ref)
+}
+
+
+
+## ===========================================================================
+## fcJournalReference
+## ---------------------------------------------------------------------------
+## A reference to a list representing the journal
+## ---------------------------------------------------------------------------
+setClass("fcJournalReference",
+         contains="fcStructureReference",
+         prototype=prototype(ID=paste("journalRef", guid(), sep="_"))
+         )
+
+## constructor
+fcJournalReference <- function(ID=paste("journalRef", guid(), sep="_"),
+                            env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, "workFlow")
+    ref <- new("fcJournalReference", ID=ID, env=env@env)
+    setAlias("journal", identifier(ref), env)
     return(ref)
 }
 
@@ -1897,6 +1899,7 @@ setClass("fcNullReference",
                     "fcTransformReference",
                     "fcNormalizationReference",         
                     "fcTreeReference",
+                    "fcJournalReference",
                     "fcAliasReference"),
          prototype=prototype(ID=paste("nullRef", guid(), sep="_"))
          )
@@ -1953,21 +1956,27 @@ normalization <- function(parameters, normalizationId="defaultNormalization",
 ## updating without the necessaty of an assignment method or the like.
 ## In addition to the tree we store an alias table in the environment.
 ## Internally, all objects are referenced by their guid, but we allow for
-## more human readble aliases (usually the "name" slot) which can ge used
+## more human readable aliases (usually the "name" slot) which can be used
 ## to identify objects if they are unique. Whenever possible we try to plot
 ## these readable names and those are also available for completion.
 ## Note that the environment in the prototype gets created once and all
 ## objects created via "new" without explicitely defining "env" will
-## essentially share a common environment. This is fixed in the constructor
+## essentially share a common environment. This is fixed in the constructor.
+## We also keep a journal in the 'journal' slot, which essentially is a list
+## holding references to all objects that are created by any operation on the
+## workflow. This allows for a simple stepwise undo mechanism and also for
+## some clean-up by the error handling in case an operation fails.
 ## ---------------------------------------------------------------------------
 setClass("workFlow",
          representation=representation(name="character",
          tree="fcTreeReference",
          alias="fcAliasReference",
+         journal="fcJournalReference",
          env="environment"),
          prototype=prototype(name="default",
          tree=fcNullReference(),
          alias=fcNullReference(),
+         journal=fcNullReference(),
          env=new.env(parent=emptyenv())))
 
 ## The constructor takes a flow data object (flowFrame or flowSet) and
@@ -1975,9 +1984,6 @@ setClass("workFlow",
 ## graph and the alias table in the environment
 workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 {
-    if(!is(data, "flowFrame") && !is(data, "flowSet"))
-        stop("'data' must be a flow data structure (flowFrame or flowSet)",
-             call.=FALSE)
     ## some sanity checks up front
     checkClass(name, "character", 1)
     checkClass(env, "environment")
@@ -1988,12 +1994,22 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
     assign("alias", id, aliasTable)
     assign(id, aliasTable, wf@env)
     wf@alias <- new("fcAliasReference", env=wf@env, ID=id)
+    ## Set up the views tree and the journal
+    tree <- new("graphNEL", edgemode="directed")
+    journal <- list()
     ## Assign the data to the workFlow and create a base view
-    dataRef <- assign(value=data, envir=wf)
-    viewRef <- view(workflow=wf, name="base view", data=dataRef)
-    ## Set up the views tree
-    tree <- new("graphNEL", nodes=identifier(viewRef), edgemode="directed")
+    if(!missing(data)){
+        if(!is(data, "flowFrame") && !is(data, "flowSet"))
+            stop("'data' must be a flow data structure (flowFrame or flowSet)",
+                 call.=FALSE)
+        dataRef <- assign(value=data, envir=wf)
+        viewRef <- view(workflow=wf, name="base view", data=dataRef)
+        tree <- addNode(identifier(viewRef), tree)
+        journal <- list(c(identifier(viewRef), identifier(dataRef)))
+        names(journal) <- ".action_baseView"
+    }
     wf@tree <- assign(value=tree, envir=wf)
+    wf@journal <- assign(value=journal, envir=wf)
     return(wf)
 }
 
@@ -2048,9 +2064,17 @@ setMethod("assign",
           if(!is.null(value)){
               if(x %in% ls(pos))
                   warning("Overwriting object in the environment.", call.=FALSE)
+              ## add new item to journal
+              jid <- identifier(pos@journal)
+              journal <- get(pos@journal)
+              lj <- length(journal)
               assign(x, value, envir=pos@env)
+              if(lj){
+                  journal[[length(journal)]] <- c(journal[[length(journal)]], x)
+                  assign(jid, journal, pos@env)
+              }
           }else{
-              rm(list=x, envir=pos@env)
+              suppressWarnings(rm(list=x, envir=pos@env))
           }
           do.call(refType(value), list(ID=x, env=pos))     
       })
@@ -2371,80 +2395,99 @@ setMethod("add",
           signature=signature(wf="workFlow", action="concreteFilter"),
           definition=function(wf, action, parent=NULL, name="")
       {
-          if(is(action, "filterResult"))
-              stop("Don't know how to handle object of class '",
-                   class(action), "'", call.=FALSE)
-          else if(is(action, "filter")){
-              ## get the parentView. If not explicitely specified, use the
-              ## root node
-              pid <- if(is.null(parent)) views(wf)[[1]] else parent
-              pid <- getAlias(pid, wf)
-              if(is.null(unlist(pid)))
-                  stop("'", parent, "' is not a valid view name in this",
-                       " workflow.", call.=FALSE)
-              ## assign the filter to the evaluation environment and create
-              ## a reference to it
-              gateRef <- assign(value=action, envir=wf)
-              pview <- fcViewReference(ID=pid, env=wf)
-              ## create and assign a new gateActionItem
-              actionRef <- gateActionItem(parentView=pview, gate=gateRef,
-                                          workflow=wf)
-              ## check if the previous filter has been applied for subsetting
-              applyParentFilter(pview, wf)
-              ## now evaluate the filter and assign the result
-              fres <- filter(Data(get(pview)), action)
-              if(!validFilterResultList(fres))
-                  stop("Don't know how to proceed.", call.=FALSE)
-              fresRef <-  assign(value=fres, envir=wf)
-              gAction <- get(actionRef)
-              gAction@filterResult <- fresRef
-              assign(actionRef, gAction, wf) 
-              ## we need to distinguish between logicalFilterResults and
-              ## multipleFilterResults
-              nodes <- NULL
-              if(!is(fres, "filterResultList")){
-                  len <-
-                      if(is(fres, "logicalFilterResult")) 2
-                      else length(fres)
-                  for(i in seq_len(len)){
-                      vid <- gateView(name=paste(name, names(fres)[i], sep=""),
-                                      workflow=wf,
-                                      action=actionRef, filterResult=fresRef,
-                                      indices=list(fres[[i]]@subSet),
-                                      frEntry=names(fres)[i])
-                      nodes <- c(nodes, identifier(vid))
+          fun <- function(wf, action, parent, name)
+          {
+              if(is(action, "filterResult"))
+                  stop("Don't know how to handle object of class '",
+                       class(action), "'", call.=FALSE)
+              else if(is(action, "filter")){
+                  ## get the parentView. If not explicitely specified, use the
+                  ## root node
+                  pid <- if(is.null(parent)) views(wf)[[1]] else parent
+                  pid <- getAlias(pid, wf)
+                  if(is.null(unlist(pid)))
+                      stop("'", parent, "' is not a valid view name in this",
+                           " workflow.", call.=FALSE)
+                  ## assign the filter to the evaluation environment and create
+                  ## a reference to it
+                  gateRef <- assign(value=action, envir=wf)
+                  pview <- fcViewReference(ID=pid, env=wf)
+                  ## create and assign a new gateActionItem
+                  actionRef <- gateActionItem(parentView=pview, gate=gateRef,
+                                              workflow=wf)
+                  ## add a useful name to the journal entry
+                  journal <- get(wf@journal)
+                  names(journal)[length(journal)] <- identifier(actionRef)
+                  assign(wf@journal, journal, wf)
+                  ## check if the previous filter has been applied for subsetting
+                  applyParentFilter(pview, wf)
+                  ## now evaluate the filter and assign the result
+                  fres <- filter(Data(get(pview)), action)
+                  if(!validFilterResultList(fres))
+                      stop("Don't know how to proceed.", call.=FALSE)
+                  fresRef <-  assign(value=fres, envir=wf)
+                  gAction <- get(actionRef)
+                  gAction@filterResult <- fresRef
+                  assign(actionRef, gAction, wf) 
+                  ## we need to distinguish between logicalFilterResults and
+                  ## multipleFilterResults
+                  nodes <- NULL
+                  if(!is(fres, "filterResultList")){
+                      len <-
+                          if(is(fres, "logicalFilterResult")) 2
+                          else length(fres)
+                      for(i in seq_len(len)){
+                          vid <- gateView(name=paste(name, names(fres)[i], sep=""),
+                                          workflow=wf,
+                                          action=actionRef, filterResult=fresRef,
+                                          indices=list(fres[[i]]@subSet),
+                                          frEntry=names(fres)[i])
+                          nodes <- c(nodes, identifier(vid))
+                      }
+                  }else{
+                      len <-
+                          if(is(fres[[1]], "logicalFilterResult")) 2
+                          else length(fres[[1]])
+                      for(i in seq_len(len)){
+                          vid <- gateView(name=paste(name, names(fres[[1]])[i], sep=""),
+                                          workflow=wf,
+                                          action=actionRef, filterResult=fresRef,
+                                          indices=lapply(fres, function(y) y[[i]]@subSet),
+                                          frEntry=names(fres[[1]])[i])
+                          nodes <- c(nodes, identifier(vid))
+                      }
                   }
-              }else{
-                  len <-
-                      if(is(fres[[1]], "logicalFilterResult")) 2
-                      else length(fres[[1]])
-                  for(i in seq_len(len)){
-                      vid <- gateView(name=paste(name, names(fres[[1]])[i], sep=""),
-                                      workflow=wf,
-                                      action=actionRef, filterResult=fresRef,
-                                      indices=lapply(fres, function(y) y[[i]]@subSet),
-                                      frEntry=names(fres[[1]])[i])
-                      nodes <- c(nodes, identifier(vid))
-                  }
-              }
-              ## update the filter and filterResult IDs
-              identifier(action) <- paste("filter", identifier(action),
-                                          sep="_")
-              identifier(fres) <- paste("fres", identifier(fres),
-                                        sep="_")
-              assign(gateRef, action, wf)
-              assign(fresRef, fres, wf)
-              ## add new nodes and edges to the workflow tree
-              tree <- get(wf@tree)
-              tree <- addNode(nodes, tree)
-              tree <- addEdge(pview@ID, nodes, tree)
-              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-              edgeData(tree, pview@ID, nodes, "actionItem") <-
-                  actionRef
-              assign(x=wf@tree, value=tree, envir=wf)
-              return(invisible(wf))
-          } else stop("Don't know how to handle object of class '",
-                      class(action), "'", call.=FALSE)       
+                  ## update the filter and filterResult IDs
+                  identifier(action) <- paste("filter", identifier(action),
+                                              sep="_")
+                  identifier(fres) <- paste("fres", identifier(fres),
+                                            sep="_")
+                  assign(gateRef, action, wf)
+                  assign(fresRef, fres, wf)
+                  ## add new nodes and edges to the workflow tree
+                  tree <- get(wf@tree)
+                  tree <- addNode(nodes, tree)
+                  tree <- addEdge(pview@ID, nodes, tree)
+                  edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+                  edgeData(tree, pview@ID, nodes, "actionItem") <-
+                      actionRef
+                  assign(x=wf@tree, value=tree, envir=wf)
+                  return(invisible(wf))
+              } else stop("Don't know how to handle object of class '",
+                          class(action), "'", call.=FALSE)
+          }
+          ## create a new journal entry first
+          journal <- c(get(wf@journal), list(NULL))
+          assign(wf@journal, journal, wf)
+          ## now do the actual adding, new objects are captured in the journal
+          tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        print(e)
+                        undo(wf)
+                    })
+          return(invisible(wf))
       })
 
 
@@ -2492,43 +2535,62 @@ setMethod("add",
           definition=function(wf, action, parent=NULL,
                               name=identifier(action))
       {
-          ## get the parentView. If not explicitely specified, use the
-          ## root node
-          pid <- if(is.null(parent)) views(wf)[[1]] else parent
-          pid <- getAlias(pid, wf)
-          if(is.null(unlist(pid)))
+          fun <- function(wf, action, parent, name)
+          {
+              ## get the parentView. If not explicitely specified, use the
+              ## root node
+              pid <- if(is.null(parent)) views(wf)[[1]] else parent
+              pid <- getAlias(pid, wf)
+              if(is.null(unlist(pid)))
                   stop("'", parent, "' is not a valid view name in this",
                        " workflow.", call.=FALSE)
-          ## assign the transformation to the evaluation environment and
-          ## create a reference to it
-          transRef <- assign(value=action, envir=wf)
-          pview <- fcViewReference(ID=pid, env=wf)
-          tree <- get(wf@tree)
-          if(length(unlist(adj(tree, pid))))
-              warning("The selected parent view is not a leaf node.\n",
-                      "Don't know how to update yet.", call.=FALSE)
-          ## create and assign a new transformActionItem
-          actionRef <- transformActionItem(parentView=pview,
-                                           transform=transRef,
-                                           workflow=wf)
-          ## check if the previous filter has been applied for subsetting
-          applyParentFilter(pview, wf)
-          ## now transform the data and assign the result
-          tData <- action %on% Data(get(pview))
-          dataRef <- assign(value=tData, envir=wf)
-          vid <- transformView(name=name, workflow=wf,
-                               action=actionRef, data=dataRef)
-          ## update the identifier of the compensation object
-          identifier(action) <- paste("trans", identifier(action),
-                                      sep="_")
-          assign(transRef, value=action, envir=wf) 
-          ## add new nodes and edges to the workflow tree
-          nid <- identifier(vid)
-          tree <- addNode(nid, tree)
-          tree <- addEdge(pid, identifier(vid), tree)
-          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-          edgeData(tree, pid , nid, "actionItem") <- actionRef
-          assign(x=wf@tree, value=tree, envir=wf)
+              ## assign the transformation to the evaluation environment and
+              ## create a reference to it
+              transRef <- assign(value=action, envir=wf)
+              pview <- fcViewReference(ID=pid, env=wf)
+              tree <- get(wf@tree)
+              if(length(unlist(adj(tree, pid))))
+                  warning("The selected parent view is not a leaf node.\n",
+                          "Don't know how to update yet.", call.=FALSE)
+              ## create and assign a new transformActionItem
+              actionRef <- transformActionItem(parentView=pview,
+                                               transform=transRef,
+                                               workflow=wf)
+              ## add a useful name to the journal entry
+              journal <- get(wf@journal)
+              names(journal)[length(journal)] <- identifier(actionRef)
+              assign(wf@journal, journal, wf)
+              ## check if the previous filter has been applied for subsetting
+              applyParentFilter(pview, wf)
+              ## now transform the data and assign the result
+              tData <- action %on% Data(get(pview))
+              dataRef <- assign(value=tData, envir=wf)
+              vid <- transformView(name=name, workflow=wf,
+                                   action=actionRef, data=dataRef)
+              ## update the identifier of the transformation object
+              identifier(action) <- paste("trans", identifier(action),
+                                          sep="_")
+              assign(transRef, value=action, envir=wf) 
+              ## add new nodes and edges to the workflow tree
+              nid <- identifier(vid)
+              tree <- addNode(nid, tree)
+              tree <- addEdge(pid, identifier(vid), tree)
+              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+              edgeData(tree, pid , nid, "actionItem") <- actionRef
+              assign(x=wf@tree, value=tree, envir=wf)
+              return(invisible(wf))
+          }
+          ## create a new journal entry first
+          journal <- c(get(wf@journal), list(NULL))
+          assign(wf@journal, journal, wf)
+          ## now do the actual adding, new objects are captured in the journal
+          tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        print(e)
+                        undo(wf)
+                    })
           return(invisible(wf))
       })
 
@@ -2571,46 +2633,64 @@ compensateView <- function(workflow, ID=paste("compViewRef", guid(), sep="_"),
 setMethod("add",
           signature=signature(wf="workFlow", action="compensation"),
           definition=function(wf, action, parent=NULL,
-                              name=identifier(action))
+          name=identifier(action))
       {
-          ## get the parentView. If not explicitely specified, use the
-          ## root node
-          pid <- if(is.null(parent)) views(wf)[[1]] else parent
-          pid <- getAlias(pid, wf)
-          if(is.null(unlist(pid)))
+          fun <- function(wf, action, parent, name)
+          {
+              ## get the parentView. If not explicitely specified, use the
+              ## root node
+              pid <- if(is.null(parent)) views(wf)[[1]] else parent
+              pid <- getAlias(pid, wf)
+              if(is.null(unlist(pid)))
                   stop("'", parent, "' is not a valid view name in this",
                        " workflow.", call.=FALSE)
-          if(pid != getAlias(views(wf), wf)[1])
-              warning("The selected parent view is not a root node.\n",
+              if(pid != getAlias(views(wf), wf)[1])
+                  warning("The selected parent view is not a root node.\n",
                       "Are you sure this is correct?", call.=FALSE)
-          ## assign the compensation to the evaluation environment and
-          ## create a reference to it
-          compRef <- assign(value=action, envir=wf)
-          pview <- fcViewReference(ID=pid, env=wf)
-          
-          ## create and assign a new ActionItem
-          actionRef <- compensateActionItem(parentView=pview,
-                                            compensate=compRef,
-                                            workflow=wf)      
-          ## check if the previous filter has been applied for subsetting
-          applyParentFilter(pview, wf)
-          ## now transform the data and assign the result
-          tData <- compensate(Data(get(pview)), action)
-          dataRef <- assign(value=tData, envir=wf)
-          vid <- compensateView(name=name, workflow=wf,
-                                action=actionRef, data=dataRef)
-          ## update the identifier of the compensation object
-          identifier(action) <- paste("comp", identifier(action),
-                                      sep="_")
-          assign(compRef, value=action, envir=wf) 
-          ## add new nodes and edges to the workflow tree
-          nid <- identifier(vid)
-          tree <- get(wf@tree)
-          tree <- addNode(nid, tree)
-          tree <- addEdge(pid, identifier(vid), tree)
-          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-          edgeData(tree, pid , nid, "actionItem") <- actionRef
-          assign(x=wf@tree, value=tree, envir=wf)
+              ## assign the compensation to the evaluation environment and
+              ## create a reference to it
+              compRef <- assign(value=action, envir=wf)
+              pview <- fcViewReference(ID=pid, env=wf)
+              ## create and assign a new ActionItem
+              actionRef <- compensateActionItem(parentView=pview,
+                                                compensate=compRef,
+                                                workflow=wf)
+              ## add a useful name to the journal entry
+              journal <- get(wf@journal)
+              names(journal)[length(journal)] <- identifier(actionRef)
+              assign(wf@journal, journal, wf)
+              ## check if the previous filter has been applied for subsetting
+              applyParentFilter(pview, wf)
+              ## now transform the data and assign the result
+              tData <- compensate(Data(get(pview)), action)
+              dataRef <- assign(value=tData, envir=wf)
+              vid <- compensateView(name=name, workflow=wf,
+                                    action=actionRef, data=dataRef)
+              ## update the identifier of the compensation object
+              identifier(action) <- paste("comp", identifier(action),
+                                          sep="_")
+              assign(compRef, value=action, envir=wf) 
+              ## add new nodes and edges to the workflow tree
+              nid <- identifier(vid)
+              tree <- get(wf@tree)
+              tree <- addNode(nid, tree)
+              tree <- addEdge(pid, identifier(vid), tree)
+              edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+              edgeData(tree, pid , nid, "actionItem") <- actionRef
+              assign(x=wf@tree, value=tree, envir=wf)
+              return(invisible(wf))
+          }
+          ## create a new journal entry first
+          journal <- c(get(wf@journal), list(NULL))
+          assign(wf@journal, journal, wf)
+          ## now do the actual adding, new objects are captured in the journal
+          tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        print(e)
+                        undo(wf)
+                    })
           return(invisible(wf))
       })
 
@@ -2655,42 +2735,61 @@ setMethod("add",
           definition=function(wf, action, parent=NULL,
                               name=identifier(action))
       {
-          ## get the parentView. If not explicitely specified, use the
-          ## root node
-          pid <- if(is.null(parent)) views(wf)[[1]] else parent
-          pid <- getAlias(pid, wf)
-          if(is.null(unlist(pid)))
-                  stop("'", parent, "' is not a valid view name in this",
-                       " workflow.", call.=FALSE)
-          ## assign the normalization to the evaluation environment and
-          ## create a reference to it
-          normRef <- assign(value=action, envir=wf)
-          pview <- fcViewReference(ID=pid, env=wf)
-          ## create and assign a new ActionItem
-          actionRef <- normalizeActionItem(parentView=pview,
-                                           normalization=normRef,
-                                           workflow=wf)      
-          ## check if the previous filter has been applied for subsetting
-          applyParentFilter(pview, wf)
-          ## now normalize the data and assign the result
-          tData <- normalize(Data(get(pview)), action)
-          dataRef <- assign(value=tData, envir=wf)
-          vid <- normalizeView(name=name, workflow=wf,
-                               action=actionRef, data=dataRef)
-          ## update the identifier of the normalization object
-          identifier(action) <- paste("norm", identifier(action),
-                                      sep="_")
-          assign(normRef, value=action, envir=wf) 
-          ## add new nodes and edges to the workflow tree
-          nid <- identifier(vid)
-          tree <- get(wf@tree)
-          tree <- addNode(nid, tree)
-          tree <- addEdge(pid, identifier(vid), tree)
-          edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-          edgeData(tree, pid , nid, "actionItem") <- actionRef
-          assign(x=wf@tree, value=tree, envir=wf)
-          return(invisible(wf))   
-      })
+           fun <- function(wf, action, parent, name)
+           {
+               ## get the parentView. If not explicitely specified, use the
+               ## root node
+               pid <- if(is.null(parent)) views(wf)[[1]] else parent
+               pid <- getAlias(pid, wf)
+               if(is.null(unlist(pid)))
+                   stop("'", parent, "' is not a valid view name in this",
+                        " workflow.", call.=FALSE)
+               ## assign the normalization to the evaluation environment and
+               ## create a reference to it
+               normRef <- assign(value=action, envir=wf)
+               pview <- fcViewReference(ID=pid, env=wf)
+               ## create and assign a new ActionItem
+               actionRef <- normalizeActionItem(parentView=pview,
+                                                normalization=normRef,
+                                                workflow=wf)
+               ## add a useful name to the journal entry
+               journal <- get(wf@journal)
+               names(journal)[length(journal)] <- identifier(actionRef)
+               assign(wf@journal, journal, wf)
+               ## check if the previous filter has been applied for subsetting
+               applyParentFilter(pview, wf)
+               ## now normalize the data and assign the result
+               tData <- normalize(Data(get(pview)), action)
+               dataRef <- assign(value=tData, envir=wf)
+               vid <- normalizeView(name=name, workflow=wf,
+                                    action=actionRef, data=dataRef)
+               ## update the identifier of the normalization object
+               identifier(action) <- paste("norm", identifier(action),
+                                           sep="_")
+               assign(normRef, value=action, envir=wf) 
+               ## add new nodes and edges to the workflow tree
+               nid <- identifier(vid)
+               tree <- get(wf@tree)
+               tree <- addNode(nid, tree)
+               tree <- addEdge(pid, identifier(vid), tree)
+               edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+               edgeData(tree, pid , nid, "actionItem") <- actionRef
+               assign(x=wf@tree, value=tree, envir=wf)
+               return(invisible(wf))
+           }
+           ## create a new journal entry first
+           journal <- c(get(wf@journal), list(NULL))
+           assign(wf@journal, journal, wf)
+           ## now do the actual adding, new objects are captured in the journal
+           tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        print(e)
+                        undo(wf)
+                    })
+           return(invisible(wf))
+       })
 
 
 
