@@ -113,7 +113,7 @@ read.FCS <- function(filename,
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
     identifier(tmp) <- basename(identifier(tmp))
-    if(ncdf){
+    if(ncdf && nrow(tmp) > 0){
         ttmp <- ncdfExpressionMatrix(tmp)
         handler <- new("ncdfHandler", file=ttmp$file, pointer=ttmp$pointer, open=TRUE)
         tmp@exprs <- handler
