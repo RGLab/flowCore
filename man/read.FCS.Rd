@@ -1,5 +1,6 @@
 \name{read.FCS}
 \alias{read.FCS}
+\alias{cleanup}
 \title{Read an FCS file}
 
 \description{Read Data File Standard for Flow Cytometry}
@@ -7,7 +8,10 @@
 \usage{
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
-            debug=FALSE, alter.names=FALSE, column.pattern=NULL, decades=0)
+            debug=FALSE, alter.names=FALSE, column.pattern=NULL,
+            decades=0, ncdf = FALSE)
+
+   cleanup()
 
 }
 
@@ -42,6 +46,22 @@
 
   \item{decades}{When scaling is activated, the number of decades to use
     for the output.}
+
+  \item{ncdf}{Instead of reading all data into memory, this switches to
+    file-based data storage. A \code{netCDF} file is creates for each
+    \code{\link{flowFrame}} in the \code{.flowCoreNcdf}
+    subdirectory. For large data sets this significantly reduces the
+    memory profile of the R session, to the cost of speed and disk
+    space. The \code{\link{exprs}} and \code{\link{exprs<-}} methods
+    make sure that the user always gets a matrix of data values.  Please
+    note that currently all operations that call \code{\link{exprs<-}},
+    either explicitely or implicitely, will result in the creation of a
+    new \code{netCDF} file. This behaviour may change in the
+    future. Currently the software does not remove any of the
+    \code{netCDF} files and it is up to the user to do clean up. The
+    easiest way to do that is to delete the whole \code{netCDF}
+    directory. To this end, one can envoke the \code{cleanup}
+    function. }
   
 }
 

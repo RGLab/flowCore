@@ -8,7 +8,7 @@
 read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   descriptions,name.keyword,alter.names=FALSE, transformation =
   "linearize", which.lines=NULL, debug = FALSE, column.pattern = NULL,
-  decades=0,sep="\t", as.is=TRUE, name, \dots)
+  decades=0,sep="\t", as.is=TRUE, name, ncdf=FALSE, \dots)
 
 }
 
@@ -55,6 +55,9 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
     \code{phenoData}slot. }
 
   \item{name}{An optional character scalar used as name of the object.}
+
+  \item{ncdf}{Instead of reading all data into memory, this switches to
+    file-based data storage. See \code{\link{read.FCS}} for details. }
   
   \item{\dots}{Further arguments that get passed on to
     \code{\link[flowCore]{read.AnnotatedDataFrame}}, see details.}

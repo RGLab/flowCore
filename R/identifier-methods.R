@@ -38,6 +38,7 @@ setReplaceMethod("identifier",
                  definition=function(object, value)
              {
                  object@description[["GUID"]] <- value
+                 tmp <- object@exprs
                  return(object)
              })
 

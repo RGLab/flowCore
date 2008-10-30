@@ -92,9 +92,39 @@ setMethod("[",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("exprs",
           signature=signature(object="flowFrame"),
-          definition=function(object)
-          object@exprs
-          )
+          definition=function(object){
+              tmp <- object@exprs
+              if(is(tmp, "ncdfHandler")){
+                  ## Need to figure out how to better use that
+                  ##pointer <- if(!tmp@open) open.ncdf(tmp@file) else tmp@pointer
+                  pointer <- open.ncdf(tmp@file)
+                  tmp <- get.var.ncdf(pointer, "exprs")
+                  colnames(tmp) <- object@parameters$name
+                  close.ncdf(pointer)
+              }
+              return(tmp)
+          })
+
+
+## create a netCDF file from a data matrix for a single flowFrame
+ncdfExpressionMatrix <- function(flowFrame,
+                                 file=file.path(getwd(), ".flowCoreNcdf",
+                                                paste(flowCore:::guid(),".ncdf", sep="")))
+{
+    if(!file.exists(".flowCoreNcdf"))
+       dir.create(".flowCoreNcdf")
+    ID <- "exprs"
+    x <- dim.def.ncdf("cells", "counts", as.integer(seq_len(nrow(flowFrame))))
+    y <- dim.def.ncdf("parameters", "stains", as.integer(seq_len(ncol(flowFrame))))
+    dat <- var.def.ncdf(ID, "channels", list(x,y), NA, prec="double")
+    if(is(flowFrame, "flowFrame")) flowFrame <- exprs(flowFrame)
+    ncdf <- create.ncdf(file, dat)
+    put.var.ncdf(ncdf, ID, flowFrame)
+    sync.ncdf(ncdf)
+    return(list(file=file, pointer=ncdf))
+}
+
+
 
 setReplaceMethod("exprs",
                  signature=signature(object="flowFrame",
@@ -105,7 +135,7 @@ setReplaceMethod("exprs",
                      stop("replacement value for the 'exprs' slot ",
                           "of 'flowFrame' objects must be numeric",
                           "matrix", call.=FALSE)
-                 mt <- match(colnames(value), parameters(object)$name)
+                 mt <- match(colnames(value), colnames(object))
                  if(length(mt)==0)
                      stop("colnames missing in replacement value. ",
                           "Unable to match data columns", call.=FALSE)
@@ -115,9 +145,21 @@ setReplaceMethod("exprs",
                           paste(colnames(value)[is.na(mt)], collapse=", "),
                           "\nunable to replace", call.=FALSE)
                  object@parameters <- object@parameters[mt,,drop=FALSE]
-                 object@exprs <- value
+                 tmp <- object@exprs
+                 if(is(tmp, "ncdfHandler")){
+                     ## The following overwrites files, but for now lets
+                     ## create new ones.
+                     ## res <- ncdfExpressionMatrix(value, tmp@file)
+                     res <- ncdfExpressionMatrix(value)
+                     object@exprs@open <- TRUE
+                     object@exprs@pointer <- res$pointer
+                     object@exprs@file <- res$file
+                 }else{
+                     object@exprs <- value
+                 }
                  return(object)
              })
+
 
 ## throw meaningful error when trying to replace with anything other than matrix
 setReplaceMethod("exprs",
@@ -254,7 +296,7 @@ setMethod("plot",
 setMethod("nrow",
           signature=signature(x="flowFrame"),
           definition=function(x)
-            return(nrow(x@exprs))
+            return(nrow(exprs(x)))
           )
 
 
@@ -265,7 +307,7 @@ setMethod("nrow",
 setMethod("ncol",
           signature=signature(x="flowFrame"),
           definition=function(x)
-            return(ncol(x@exprs))
+            return(ncol(exprs(x)))
           )
 
 
@@ -277,7 +319,7 @@ setMethod("dim",
           signature=signature(x="flowFrame"),
           definition=function(x)
       {
-          d <- dim(x@exprs)
+          d <- dim(exprs(x))
           names(d) <- c("events", "parameters")
           return(d)
       })
@@ -302,7 +344,7 @@ setMethod("featureNames",
 setMethod("colnames",
           signature=signature(x="flowFrame"),
           definition=function(x, do.NULL="missing", prefix="missing")
-          colnames(exprs(x))
+          as.vector(x@parameters$name)
           )
 
 setReplaceMethod("colnames",
@@ -314,11 +356,13 @@ setReplaceMethod("colnames",
                      stop("colnames don't match dimensions of data matrix",
                           call.=FALSE)
                  pars <- parameters(x)
-                 colnames(x@exprs) <- structure(as.character(value),
-                                               names=rownames(pData(pars)))
+                 tmp <- exprs(x)
+                 colnames(tmp) <- structure(as.character(value),
+                                            names=rownames(pData(pars)))
                  pars$name <- value
                  names(pars$name) <- rownames(pData(pars))
                  x@parameters <- pars
+                 exprs(x) <- tmp
                  return(x)
              })
 
@@ -385,9 +429,9 @@ setMethod("transform",
           ranges <- range(x)
           tranges <- as.matrix(transform(as.data.frame(ranges),...))
           transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
-          nc <- colnames(transformed)[-c(1:ncol(x@exprs))]
+          nc <- colnames(transformed)[-c(1:ncol(exprs(x)))]
           colnames(transformed) <- c(colnames(x), nc)
-          if(ncol(transformed) > ncol(x@exprs)) {
+          if(ncol(transformed) > ncol(exprs(x))) {
               ## Add new parameter descriptions if there are any
               oCol <- lapply(e[2:length(e)], all.vars)
               nCol <- nc
@@ -650,7 +694,7 @@ setMethod("cbind2",
           parm <- rbind(parm, data.frame(name=cn, desc=NA, range=NA, range))
           pData(parms) <- parm
           x@parameters <- parms
-          x@exprs <- exp
+          exprs(x) <- exp
           for(i in seq_along(cn)){
               tmp <- list(cn[i])
               names(tmp) <- sprintf("$P%dN", i+ncol(x))
