@@ -74,24 +74,6 @@ setMethod("ls",
 
 
 ## ==========================================================================
-## Remove an object from the workFlow environment
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## The general method to access the object by name. Note that there there
-## are more sophisticated Rm methods for views and actionItems that traverse
-## the tree and also remove all dependent objects. Those will get called
-## automatically.
-setMethod("Rm",
-          signature=signature(symbol="character",
-                              envir="workFlow",
-                              subSymbol="character"),
-          definition=function(symbol, envir, subSymbol, ...)
-      {
-          Rm(get(symbol, envir), envir)
-      })
-
-
-
-## ==========================================================================
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## by name

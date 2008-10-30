@@ -70,9 +70,5 @@ polytopeGate(\dots, .gate, b, filterId="defaultPolytopeGate")
 
 \seealso{ \code{\link{flowFrame}}, \code{\link{filter}} }
 
-\examples{
-
-
-}
 \keyword{methods}
 

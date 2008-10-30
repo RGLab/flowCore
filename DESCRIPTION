@@ -11,6 +11,7 @@ Collate: AllGeneric.R
 	 AllClasses.R
 	 flowFrame-accessors.R
 	 flowSet-accessors.R
+         Rm-methods.R
 	 actionItem-accessors.R
 	 coerce.R
 	 logicalFilterResult-accessors.R

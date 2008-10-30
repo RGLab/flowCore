@@ -34,6 +34,7 @@
 \alias{alias,workFlow-method}
 \alias{summary,workFlow-method}
 \alias{applyParentFilter}
+\alias{undo}
 
 \title{Class "workFlow"}
 
@@ -71,6 +72,10 @@
 
 workFlow(data, name = "default", env = new.env(parent = emptyenv()))
 
+applyParentFilter(parent, workflow)
+
+undo(wf, n=1)
+
 }
 
 \arguments{
@@ -81,14 +86,24 @@ workFlow(data, name = "default", env = new.env(parent = emptyenv()))
 
   \item{name}{ A more human-readable name of the view. }
   
-  \item{env}{ Object of class \code{"environment"}. The
+  \item{env}{ Object of class \code{environment}. The
     evaluation environment used for the \code{\link{workFlow}}. }
+
+  \item{workflow, wf}{ Object of class \code{workFlow}. }
+
+  \item{parent}{ Object of class \code{gateView}. The parent view on
+    which the filter is to be applied. }
+
+  \item{n}{ The number of operations to undo. }
   
 }
 
 \value{
 
-  A \code{workFlow} object.
+  A \code{workFlow} object for the constructor
+
+  Both \code{applyParentFilter} and \code{undo} are called for their
+  side-effects.
   
 }
 
@@ -180,7 +195,10 @@ workFlow(data, name = "default", env = new.env(parent = emptyenv()))
     
     \item{Rm}{\code{signature(symbol = "character", envir = "workFlow",
 	subSymbol = "character")}: Remove the object identified by the
-      symbol \code{symnbol} from the \code{workFlow}. }
+      symbol \code{symbol} from the \code{workFlow}. }
+
+    \item{undo}{\code{signature(wf = "workFlow", n = "numeric")}: Undo
+      the last \code{n} operations on the  \code{workFlow}. }
     
     \item{show}{\code{signature(object = "workFlow")}: Print details
       about the object. }
