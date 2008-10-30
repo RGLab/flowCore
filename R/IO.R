@@ -36,7 +36,9 @@ read.FCS <- function(filename,
                      which.lines=NULL,
                      debug=FALSE,
                      alter.names=FALSE,
-                     column.pattern=NULL,decades=0)
+                     column.pattern=NULL,
+                     decades=0,
+                     ncdf=FALSE)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -111,6 +113,11 @@ read.FCS <- function(filename,
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
     identifier(tmp) <- basename(identifier(tmp))
+    if(ncdf){
+        ttmp <- ncdfExpressionMatrix(tmp)
+        handler <- new("ncdfHandler", file=ttmp$file, pointer=ttmp$pointer, open=TRUE)
+        tmp@exprs <- handler
+    }
     return(tmp)
 }
 
@@ -374,7 +381,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation = "linearize", which.lines=NULL,
                          debug = FALSE,  column.pattern = NULL, decades=0,
-                         sep="\t", as.is=TRUE, name, ...)
+                         sep="\t", as.is=TRUE, name, ncdf=FALSE, ...)
 {
     ## A frame of phenoData information
     phenoFrame = NULL
@@ -441,7 +448,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       debug=debug,  column.pattern=column.pattern,
-                      decades=decades)
+                      decades=decades, ncdf=ncdf)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
@@ -504,3 +511,7 @@ write.AnnotatedDataFrame <- function(frame, file)
                      varMetadata(frame)$labelDescription, sep=""), con)
     write.table(pData(frame), con, quote=FALSE, sep="\t")  
 }
+
+
+cleanup <- function() if(file.exists(".flowCoreNcdf"))
+    unlink(".flowCoreNcdf", recursive=TRUE)

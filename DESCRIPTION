@@ -4,7 +4,7 @@ Version: 1.9.2
 Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan
 Description: Provides S4 data structures and basic functions to deal with flow cytometry data.
 Maintainer: Nolwenn Le Meur <nlemeur@fhcrc.org>
-Depends: R (>= 2.7.0), methods, rrcov, feature, Biobase
+Depends: R (>= 2.7.0), methods, rrcov, feature, Biobase, ncdf
 Imports: Biobase, MASS, utils, graph
 Suggests: flowViz
 Collate: AllGeneric.R 

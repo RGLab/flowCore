@@ -7,6 +7,7 @@
 \alias{[,flowFrame,filterResult-method}
 \alias{$.flowFrame}
 \alias{exprs}
+\alias{exprs<-}
 \alias{exprs,flowFrame-method}
 \alias{exprs<-,flowFrame,matrix-method}
 \alias{exprs<-,flowFrame,ANY-method}
