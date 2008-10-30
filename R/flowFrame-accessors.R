@@ -32,12 +32,12 @@ setMethod("[",
           if(!missing(i))
                if(max(abs(i)) > nrow(x))
                    stop(msg, call.=FALSE)
-          
           exprs(x) <-  switch(1+missing(i)+2*missing(j),
                           { exprs(x)[i, j, ..., drop=FALSE] },
                           { exprs(x)[ , j, ..., drop=FALSE] },
                           { exprs(x)[i,  , ..., drop=FALSE] },
                           { exprs(x)[ ,  , ..., drop=FALSE] } )
+          
           x
       })
 
@@ -99,6 +99,8 @@ setMethod("exprs",
                   ##pointer <- if(!tmp@open) open.ncdf(tmp@file) else tmp@pointer
                   pointer <- open.ncdf(tmp@file)
                   tmp <- get.var.ncdf(pointer, "exprs")
+                  if(!is.matrix(tmp)) 
+                      tmp <- matrix(tmp, ncol=1)
                   colnames(tmp) <- object@parameters$name
                   close.ncdf(pointer)
               }
@@ -111,6 +113,8 @@ ncdfExpressionMatrix <- function(flowFrame,
                                  file=file.path(getwd(), ".flowCoreNcdf",
                                                 paste(flowCore:::guid(),".ncdf", sep="")))
 {
+    if(nrow(flowFrame) == 0)
+        return(NULL)
     if(!file.exists(".flowCoreNcdf"))
        dir.create(".flowCoreNcdf")
     ID <- "exprs"
@@ -151,9 +155,13 @@ setReplaceMethod("exprs",
                      ## create new ones.
                      ## res <- ncdfExpressionMatrix(value, tmp@file)
                      res <- ncdfExpressionMatrix(value)
-                     object@exprs@open <- TRUE
-                     object@exprs@pointer <- res$pointer
-                     object@exprs@file <- res$file
+                     if(!is.null(res)){
+                         object@exprs@open <- TRUE
+                         object@exprs@pointer <- res$pointer
+                         object@exprs@file <- res$file
+                     }else{
+                         object@exprs <- value
+                     }
                  }else{
                      object@exprs <- value
                  }
