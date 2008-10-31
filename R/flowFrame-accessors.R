@@ -124,7 +124,7 @@ ncdfExpressionMatrix <- function(flowFrame,
     if(is(flowFrame, "flowFrame")) flowFrame <- exprs(flowFrame)
     ncdf <- create.ncdf(file, dat)
     put.var.ncdf(ncdf, ID, flowFrame)
-    sync.ncdf(ncdf)
+    close.ncdf(pointer)
     return(list(file=file, pointer=ncdf))
 }
 
