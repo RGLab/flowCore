@@ -269,6 +269,22 @@ setGeneric("alias", function(object, ...)
 
 
 ## ===========================================================================
+## Generic to access the journal of a workFlow
+## ---------------------------------------------------------------------------
+setGeneric("journal", function(object, ...)
+           standardGeneric("journal"))
+
+
+
+## ===========================================================================
+## Generic to access the tree within a workFlow
+## ---------------------------------------------------------------------------
+setGeneric("tree", function(object, ...)
+           standardGeneric("tree"))
+
+
+
+## ===========================================================================
 ## Generic to return all views of the workFlow object
 ## ---------------------------------------------------------------------------
 setGeneric("views", function(x, ...)

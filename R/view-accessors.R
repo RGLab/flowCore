@@ -24,7 +24,46 @@ setMethod("action",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("Data",
           signature=signature(object="view"),
-          definition=function(object) get(object@data))
+          definition=function(object){
+              dat <- get(object@data)
+              if(is.null(dat)){
+                  parent <- parent(object)
+                  ## The parent gate is not be evaluated yet, we do that now
+                  if(is(object, "gateView")){
+                      parentData <- Data(parent)
+                      if(is(parentData, "flowFrame")){
+                          newData <- parentData[object@indices[[1]],]
+                      }else{
+                          newData <- parentData[1:length(parentData)]
+                          for(i in seq_along(object@indices))
+                              newData[[i]] <- newData[[i]][object@indices[[i]],]
+                      }
+                      newDataID <- refName(newData)
+                      env <- object@env
+                      ## We also need to update the appropriate journal entry
+                      jid <- grep("journalRef", ls(env), value=TRUE)
+                      if(length(jid) != 1)
+                          stop("Unable to find journal in this environment.",
+                               call.=FALSE)
+                      journal <- journal(env)
+                      assign(x=newDataID, value=newData, envir=env)
+                      actionId <- identifier(action(object))
+                      if(actionId %in% names(journal)){
+                          journal[[actionId]] <- c(journal[[actionId]],
+                                                          newDataID)
+                          assign(jid, journal, env)
+                      }
+                      object@data <- new("fcDataReference", ID=newDataID,
+                                         env=env)
+                      assign(identifier(object), value=object, envir=env)
+                      return(newData)
+                  }else{
+                      stop("Unable to find data for this view.\n This workFlow object ",
+                           "is corrupted beyond repair.", call.=FALSE)
+                  }
+              }
+              return(dat)
+          })
 
 
 

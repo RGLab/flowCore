@@ -115,13 +115,62 @@ setMethod("$",
 
 
 ## ==========================================================================
-## Get the alias table from a workFlow
+## Get the alias table from a workFlow or an environment
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uniqueAlias <- function(x, wf) length(alias(wf)[[x]])==1
 
 setMethod("alias",
           signature=signature(object="workFlow"),
           definition=function(object) get(object@alias))
+
+setMethod("alias",
+          signature=signature(object="environment"),
+          definition=function(object){
+              alRef <- grep("aliasRef", ls(object), value=TRUE)
+              if(length(alRef) != 1)
+                  stop("Unable to find alias table in this environment.",
+                       call.=FALSE)
+              get(alRef, object)
+          })
+
+
+
+## ==========================================================================
+## Get the journal from a workFlow or an environment
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("journal",
+          signature=signature(object="workFlow"),
+          definition=function(object) get(object@journal))
+
+setMethod("journal",
+          signature=signature(object="environment"),
+          definition=function(object){
+              jRef <- grep("journalRef", ls(object), value=TRUE)
+              if(length(jRef) != 1)
+                  stop("Unable to find journal in this environment.",
+                       call.=FALSE)
+              get(jRef, object)
+          })
+
+
+
+## ==========================================================================
+## Get the tree from a workFlow or an environment
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("tree",
+          signature=signature(object="workFlow"),
+          definition=function(object) get(object@tree))
+
+setMethod("tree",
+          signature=signature(object="environment"),
+          definition=function(object){
+              tRef <- grep("treeRef", ls(object), value=TRUE)
+              if(length(tRef) != 1)
+                  stop("Unable to find tree in this environment.",
+                       call.=FALSE)
+              get(tRef, object)
+          })
+
 
 
 

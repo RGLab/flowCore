@@ -32,8 +32,14 @@
 \alias{actions}
 \alias{actions,workFlow-method}
 \alias{alias,workFlow-method}
+\alias{alias,environment-method}
 \alias{summary,workFlow-method}
-\alias{applyParentFilter}
+\alias{journal}
+\alias{journal,workFlow-method}
+\alias{journal,environment-method}
+\alias{tree}
+\alias{tree,workFlow-method}
+\alias{tree,environment-method}
 \alias{undo}
 
 \title{Class "workFlow"}
@@ -72,8 +78,6 @@
 
 workFlow(data, name = "default", env = new.env(parent = emptyenv()))
 
-applyParentFilter(parent, workflow)
-
 undo(wf, n=1)
 
 }
@@ -89,11 +93,9 @@ undo(wf, n=1)
   \item{env}{ Object of class \code{environment}. The
     evaluation environment used for the \code{\link{workFlow}}. }
 
-  \item{workflow, wf}{ Object of class \code{workFlow}. }
+  \item{wf}{ Object of class \code{workFlow}. }
 
-  \item{parent}{ Object of class \code{gateView}. The parent view on
-    which the filter is to be applied. }
-
+  
   \item{n}{ The number of operations to undo. }
   
 }
@@ -216,6 +218,24 @@ undo(wf, n=1)
 
     \item{alias}{\code{signature(object = "workFlow")}: Return the alias
       table for the \code{workFlow}.}
+
+    \item{alias}{\code{signature(object = "environment")}: Return the
+      alias table from a generic environment. The method tries to find
+      'fcAliasRef' among the object symbols in the environment. }
+    
+    \item{journal}{\code{signature(object = "workFlow")}: Return the
+      journal for the \code{workFlow}.}
+
+    \item{journal}{\code{signature(object = "environment")}: Return the
+      journal from a generic environment. The method tries to find
+      'fcJournalRef' among the object symbols in the environment. }
+
+    \item{tree}{\code{signature(object = "workFlow")}: Return the
+      tree of the \code{workFlow}.}
+     
+     \item{journal}{\code{signature(object = "environment")}: Return the
+       tree from a generic environment. The method tries to find
+       'fcTreeRef' among the object symbols in the environment. }
       
   }
 }

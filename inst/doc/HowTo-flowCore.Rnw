@@ -503,11 +503,13 @@ x & x \geq a \\
 \item[lnTransform]{$ f(x) = \log\left(x\right)\frac{r}{d} $}
 \item[logTransform]{$ f(x) = \log_b\left(x\right)\frac{r}{d} $}
 \item[biexponentialTransform]{ $ f^{-1}(x) = ae^{bx}-ce^{dx}+f$}
-\item[logicleTransform]{ A special form of the biexponential transform with parameters selected by the data.}
+\item[logicleTransform]{ A special form of the biexponential transform
+    with parameters selected by the data.}
 \item[arcsinhTransform]{ $ f(x) = asinh\left(a+bx\right)+c$}
 \end{description}
 
-To use a standard transform, first we create a transform function via the constructors supplied by \Rpackage{flowCore}:
+To use a standard transform, first we create a transform function via
+the constructors supplied by \Rpackage{flowCore}:
 
 <<Transfo3, echo=true>>=
 aTrans <- truncateTransform("truncate at 1", a=1)
@@ -1026,7 +1028,7 @@ wf[["action_rectangle"]]
 In order to retreive the underlying data for a \Rclass{view} you
 can use the \Rfunction{Data} method.
 <<getData>>=
-Data(wf[["rectangle+"]])
+Data(wf[["rectangle-"]])
 @ 
 %
 There are \Rfunction{summary} methods defined for the different
@@ -1047,7 +1049,32 @@ xyplot(`FL1-H` ~ `FL2-H`, wf[["CD15 FITC+CD45 PE+"]])
 @ 
 
 \subsection{Removing items from \Rclass{workFlow} object}
-Still need to document Rm, undo, etc.
+The hierarchical structur of the \Rclass{workFlow} object introduces
+dependencies between \Rclass{views} or between \Rclass{views} and
+\Rclass{actionItems}. Thus, removing a particular view means also
+removing all of its associated child \Rclass{views} and
+\Rclass{actionItems}. The easiest way to remove objects from a
+\Rclass{workFlow} is through the \Robject{undo} mechanism. The
+function takes a \Rclass{workFlow} object as first argument and an
+optional second integer argument giving the number of operartions that
+are supposed to be roled back.
+<<undo>>=
+undo(wf)
+wf
+@ 
+%
+Sometimes it is more convenient to specify a particular \Rclass{view}
+or \Rclass{action} item that is to be removed. This can be archived
+using the \Rfunction{Rm} methods for \Rclass{views} or
+\Rclass{actionItems}. As a side-effect these methods will also remove
+all dependent items and the user should be well aware of this
+potentially dangerous behaviour.
+<<RmView>>=
+Rm('rectangle-', wf)
+@ 
+<<RmAction>>=
+Rm('asinh', wf)
+@ 
 
 
 \clearpage
