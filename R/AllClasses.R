@@ -19,9 +19,9 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
     if(mandatory && missing(x))
         stop("Argument '", substitute(x), "' missing with no default",
              call.=verbose)
-    msg <- paste("'", substitute(x), "' must be object of class '",
-                 class, "'", sep="")
-    fail <- !is(x, class)
+    msg <- paste("'", substitute(x), "' must be object of class ",
+                 paste("'", class, "'", sep="", collapse=" or "), sep="")
+    fail <- !any(sapply(class, function(c, y) is(y, c), x))
     if(!is.null(length) && length(x) != length){
         fail <- TRUE
         msg <- paste(msg, "of length", length)
@@ -1553,9 +1553,9 @@ setAlias <- function(alias, value, workflow)
 {
     checkClass(alias, "character", 1)
     checkClass(value, "character", 1)
-    checkClass(workflow, "workFlow")
-    workflow <- alias(workflow)
-    workflow[[alias]] <- unique(c(workflow[[alias]], value))
+    checkClass(workflow, c("workFlow", "environment"))
+    aliasEnv <- alias(workflow)
+    aliasEnv[[alias]] <- unique(c(aliasEnv[[alias]], value))
     return(invisible(NULL))
 }
 
@@ -1563,7 +1563,7 @@ setAlias <- function(alias, value, workflow)
 getAlias <- function(alias, workflow)
 {
     checkClass(alias, "character")
-    checkClass(workflow, "workFlow")
+    checkClass(workflow, c("workFlow", "environment"))
     fun <- function(x)
         if(x %in% ls(workflow)) x else alias(workflow)[[x]]
     return(as.vector(sapply(alias, fun)))
@@ -1611,8 +1611,9 @@ fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
                         env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "environment")
-    ref <- new("fcReference", ID=ID, env=env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workflow")) env@env else env
+    ref <- new("fcReference", ID=ID, env=envir)
     setAlias(substitute(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1646,9 +1647,10 @@ fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcTreeReference", ID=ID, env=env@env)
-    setAlias("tree", identifier(ref), env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcTreeReference", ID=ID, env=envir)
+    setAlias(".__tree", identifier(ref), env)
     return(ref)
 }
 
@@ -1669,9 +1671,10 @@ fcJournalReference <- function(ID=paste("journalRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcJournalReference", ID=ID, env=env@env)
-    setAlias("journal", identifier(ref), env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcJournalReference", ID=ID, env=envir)
+    setAlias(".__journal", identifier(ref), env)
     return(ref)
 }
 
@@ -1692,8 +1695,9 @@ fcAliasReference <- function(ID=paste("aliasRef", guid(), sep="_"),
                              env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    new("fcAliasReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    new("fcAliasReference", ID=ID, env=envir)
 }
 
 
@@ -1713,8 +1717,9 @@ fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcDataReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcDataReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1737,8 +1742,9 @@ fcActionReference <- function(ID=paste("actionRef", guid(), sep="_"),
                               env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcActionReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcActionReference", ID=ID, env=envir)
     setAlias(names(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1761,8 +1767,9 @@ fcViewReference <- function(ID=paste("viewRef", guid(), sep="_"),
                             env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcViewReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcViewReference", ID=ID, env=envir)
     setAlias(names(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1787,8 +1794,9 @@ fcFilterResultReference <- function(ID=paste("fresRef",
                                     env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcFilterResultReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcFilterResultReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1812,8 +1820,9 @@ fcFilterReference <- function(ID=paste("filterRef",
                               env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcFilterReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcFilterReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1837,8 +1846,9 @@ fcCompensateReference <- function(ID=paste("compRef",
                                   env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcCompensateReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcCompensateReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1864,8 +1874,9 @@ fcTransformReference <- function(ID=paste("transRef",
                                  env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcTransformReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcTransformReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -1890,8 +1901,9 @@ fcNormalizationReference <- function(ID=paste("normRef",
                                      env=new.env(parent=emptyenv()))
 {
     checkClass(ID, "character", 1)
-    checkClass(env, "workFlow")
-    ref <- new("fcNormalizationReference", ID=ID, env=env@env)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcNormalizationReference", ID=ID, env=envir)
     setAlias(identifier(get(ref)), identifier(ref), env)
     return(ref)
 }
@@ -2005,7 +2017,7 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
     ## set up the alias table as an environment in the workFlow
     aliasTable <- new.env(hash=TRUE, parent=emptyenv())
     id <- refName(aliasTable)
-    assign("alias", id, aliasTable)
+    assign(".__alias", id, aliasTable)
     assign(id, aliasTable, wf@env)
     wf@alias <- new("fcAliasReference", env=wf@env, ID=id)
     ## Set up the views tree and the journal
@@ -2375,33 +2387,6 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
     return(ref)
 }
 
-## check if the parentView of an actionItem object is the result of a
-## filtering operation and, if that is the case, that the filter has been
-## applied for subsetting (i.e., a new data set has been created)
-applyParentFilter <- function(parent, workflow)
-{
-    pview <- if(!is(parent, "view")) get(parent) else {
-        tmp <- parent
-        parent <- do.call(refType(parent), list(ID=identifier(parent), env=workflow))
-        tmp
-    }
-    dataRef <- Data(pview)
-    if(is.null(dataRef)){
-        parentData <- Data(parent(pview))
-        if(is(parentData, "flowFrame"))
-            newData <- parentData[pview@indices[[1]],]
-        else{
-            newData <- parentData[1:length(parentData)]
-            for(i in seq_along(pview@indices))
-                newData[[i]] <- newData[[i]][pview@indices[[i]],]
-        }
-        newDataRef <- assign(value=newData, envir=workflow)
-        pview@data <- newDataRef
-        assign(parent, value=pview, envir=workflow)
-        return(invisible())
-    }
-}
-
 ## constructor directly from a filter object. This creates a gateActionItem
 ## in the workFlow and from that a gateView which is also directly stored in
 ## the workFlow object.
@@ -2433,8 +2418,6 @@ setMethod("add",
                   journal <- get(wf@journal)
                   names(journal)[length(journal)] <- identifier(actionRef)
                   assign(wf@journal, journal, wf)
-                  ## check if the previous filter has been applied for subsetting
-                  applyParentFilter(pview, wf)
                   ## now evaluate the filter and assign the result
                   fres <- filter(Data(get(pview)), action)
                   if(!validFilterResultList(fres))
@@ -2574,8 +2557,6 @@ setMethod("add",
               journal <- get(wf@journal)
               names(journal)[length(journal)] <- identifier(actionRef)
               assign(wf@journal, journal, wf)
-              ## check if the previous filter has been applied for subsetting
-              applyParentFilter(pview, wf)
               ## now transform the data and assign the result
               tData <- action %on% Data(get(pview))
               dataRef <- assign(value=tData, envir=wf)
@@ -2673,8 +2654,6 @@ setMethod("add",
               journal <- get(wf@journal)
               names(journal)[length(journal)] <- identifier(actionRef)
               assign(wf@journal, journal, wf)
-              ## check if the previous filter has been applied for subsetting
-              applyParentFilter(pview, wf)
               ## now transform the data and assign the result
               tData <- compensate(Data(get(pview)), action)
               dataRef <- assign(value=tData, envir=wf)
@@ -2770,8 +2749,6 @@ setMethod("add",
                journal <- get(wf@journal)
                names(journal)[length(journal)] <- identifier(actionRef)
                assign(wf@journal, journal, wf)
-               ## check if the previous filter has been applied for subsetting
-               applyParentFilter(pview, wf)
                ## now normalize the data and assign the result
                tData <- normalize(Data(get(pview)), action)
                dataRef <- assign(value=tData, envir=wf)

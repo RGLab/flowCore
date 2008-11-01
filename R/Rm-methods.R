@@ -17,7 +17,7 @@ relatedViews <- function(view, wf)
 rmAlias <- function(value, workflow)
 {
     checkClass(value, "character", 1)
-    checkClass(workflow, "workFlow")
+    checkClass(workflow, c("workFlow", "environment"))
     workflow <- alias(workflow)
     ind <- names(which(sapply(as.list(workflow), function(x)
                               value %in% x)==TRUE))
@@ -52,6 +52,14 @@ setMethod("Rm",
           suppressWarnings(rm(list=identifier(symbol), envir=envir@env))
           assign(x=envir@tree, value=removeNode(curView, get(envir@tree)),
                  envir=envir)
+          journal <- journal(envir)
+          curAction <- identifier(action(symbol))
+          aiMatch <- sapply(edgeData(get(envir@tree), attr="actionItem"), identifier)
+          depNodes <- gsub(".*\\|", "", names(aiMatch[aiMatch == curAction]))
+          delEntry <- match(identifier(action(symbol)), names(journal))
+          if(!length(depNodes) && !is.na(delEntry))
+              journal <- journal[-delEntry]
+          assign(envir@journal, journal, envir)
           return(invisible(NULL))
       })
 
@@ -127,6 +135,11 @@ setMethod("Rm",
           curAction <- identifier(symbol)
           aiMatch <- sapply(edgeData(get(envir@tree), attr="actionItem"), identifier)
           depNodes <- gsub(".*\\|", "", names(aiMatch[aiMatch == curAction]))
+          journal <- journal(envir)
+          delEntry <- match(curAction, names(journal))
+          if(!is.na(delEntry))
+              journal <- journal[-delEntry]
+          assign(envir@journal, journal, envir)
           lapply(mget(depNodes, envir), Rm, envir)
           return(invisible(NULL))
       })
@@ -268,11 +281,11 @@ setMethod("Rm",
 rmLastJournalEntry <- function(wf)
 {
     checkClass(wf, "workFlow")
-    journal <- get(wf@journal)
+    journal <- journal(wf)
     alias <- alias(wf)
     lastEntry <- tail(journal, n=1)
     if(names(lastEntry) != ".action_baseView"){
-        tree <- get(wf@tree)
+        tree <- tree(wf)
         nodes <- intersect(nodes(tree), unlist(lastEntry))
         if(length(nodes)){
             tree <- removeNode(nodes, tree)
@@ -280,11 +293,13 @@ rmLastJournalEntry <- function(wf)
         }
         views <- grep("gateViewRef", unlist(lastEntry), value=TRUE)
         for(i in views){
-            thisView <- parent(get(i, wf))
-            thisView@data <- fcNullReference()
-            assign(identifier(thisView), thisView, wf@env)
+            try({
+                thisView <- parent(get(i, wf))
+                thisView@data <- fcNullReference()
+                assign(identifier(thisView), thisView, wf@env)
+            }, silent=TRUE)
         }
-        sapply(unlist(lastEntry), rmAlias, wf)
+        try(sapply(unlist(lastEntry), rmAlias, wf), silent=TRUE)
         suppressWarnings(rm(list=unlist(lastEntry), envir=wf@env))
     }
     wf
@@ -299,7 +314,7 @@ undo <- function(wf, n=1)
     lj <- length(journal)
     n <- min(lj-1, n)
     for(i in seq_len(n)){
-        rmLastJournalEntry(wf)
+        try(rmLastJournalEntry(wf), silent=TRUE)
         journal <- journal[-lj]
     }
     assign(wf@journal, journal, wf)
