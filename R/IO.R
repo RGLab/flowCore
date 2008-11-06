@@ -114,6 +114,9 @@ read.FCS <- function(filename,
                parameters=params)
     identifier(tmp) <- basename(identifier(tmp))
     if(ncdf && nrow(tmp) > 0){
+        if(!require(ncdf))
+            stop("You need to have package 'ncdf' installed in order for ",
+                 "this feature to work.", call.=FALSE)
         ttmp <- ncdfExpressionMatrix(tmp)
         handler <- new("ncdfHandler", file=ttmp$file, pointer=ttmp$pointer, open=TRUE)
         tmp@exprs <- handler
