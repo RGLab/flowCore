@@ -95,6 +95,9 @@ setMethod("exprs",
           definition=function(object){
               tmp <- object@exprs
               if(is(tmp, "ncdfHandler")){
+                   if(!require(ncdf))
+                       stop("You need to have package 'ncdf' installed in order for ",
+                            "this feature to work.", call.=FALSE)
                   ## Need to figure out how to better use that
                   ##pointer <- if(!tmp@open) open.ncdf(tmp@file) else tmp@pointer
                   pointer <- open.ncdf(tmp@file)
@@ -151,6 +154,9 @@ setReplaceMethod("exprs",
                  object@parameters <- object@parameters[mt,,drop=FALSE]
                  tmp <- object@exprs
                  if(is(tmp, "ncdfHandler")){
+                     if(!require(ncdf))
+                         stop("You need to have package 'ncdf' installed in order for ",
+                              "this feature to work.", call.=FALSE)
                      ## The following overwrites files, but for now lets
                      ## create new ones.
                      ## res <- ncdfExpressionMatrix(value, tmp@file)
