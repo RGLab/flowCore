@@ -63,14 +63,14 @@ read.FCS <- function(filename,
 
     ## read the file
     offsets <- readFCSheader(con)
-    txt     <- readFCStext(con, offsets, debug)
-    mat     <- readFCSdata(con, offsets, txt, transformation, which.lines,
-                           debug, scale, alter.names, decades)
+    txt <- readFCStext(con, offsets, debug)
+    mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
+                       debug, scale, alter.names, decades)
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
     realMin <- pmin(zeroVals,apply(mat,2,min,na.rm=TRUE), na.rm=TRUE)
-    params  <- makeFCSparameters(colnames(mat),txt, transformation, scale,
+    params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin)
     close(con)
 
@@ -102,7 +102,7 @@ read.FCS <- function(filename,
     spID <- intersect(c("SPILL", "spillover"), names(description))
     if(length(spID)>0){
         sp <- description[[spID]]
-        splt <-  strsplit(sp, ",")[[1]]
+        splt <- strsplit(sp, ",")[[1]]
         nrCols <- as.numeric(splt[1])
         cnames <- splt[2:(nrCols+1)]
         vals <- as.numeric(splt[(nrCols+2):length(splt)])
@@ -382,19 +382,20 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
 ## ---------------------------------------------------------------------------
 read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
-                         transformation = "linearize", which.lines=NULL,
-                         debug = FALSE,  column.pattern = NULL, decades=0,
+                         transformation="linearize", which.lines=NULL,
+                         debug=FALSE,  column.pattern=NULL, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, ...)
 {
     ## A frame of phenoData information
-    phenoFrame = NULL
+    phenoFrame <- NULL
     
     ## deal with the case that the phenoData is provided, either as
     ## character vector or as AnnotatedDataFrame.
     if(!missing(phenoData)) {
         if(is.character(phenoData) && length(phenoData) == 1){
             phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
-            header = TRUE, sep=sep, as.is=as.is, ...)
+                                                 header = TRUE, sep=sep,
+                                                 as.is=as.is, ...)
             ## the sampleNames of the Annotated data frame must match the
             ## file names and we try to guess them from the input
             fnams <- grep("name|file|filename", varLabels(phenoData),
@@ -424,43 +425,51 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         if(!is.null(files))
             warning("Supplied file names will be ignored, ",
                     "using names in the phenoData slot instead.")
-        file.names = sampleNames(phenoFrame)
-        files      = dir(path,paste(gsub("\\.","\\\\\\.",file.names),
-        collapse="|"),full.names=TRUE)
+        file.names <- sampleNames(phenoFrame)
+        files <- dir(path,paste(gsub("\\.","\\\\\\.",file.names),
+                                collapse="|"),full.names=TRUE)
         if(length(files) != length(file.names)) 
             stop(paste("Not all files given by phenoData could be found in",
                        path))
     }else{
-        
         ## if we haven't found files by now try to search according to
         ## 'pattern'
         if(is.null(files)) {
-            files = dir(path,pattern,full.names=TRUE)
-            file.names = dir(path,pattern,full.names=FALSE)
+            files <- dir(path,pattern,full.names=TRUE)
+            file.names <- dir(path,pattern,full.names=FALSE)
             if(length(files)<1)
                 stop(paste("No matching files found in ",path))
         } else {
             if(!is.character(files))
                 stop("'files' must be a character vector.")
-            file.names = basename(files) ## strip path from names
+            file.names <- basename(files) ## strip path from names
             if(path != ".")
-                files = file.path(path, files)    
+                files <- file.path(path, files)    
         }
     }
     
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
-                      debug=debug,  column.pattern=column.pattern,
+                      debug=debug, column.pattern=column.pattern,
                       decades=decades, ncdf=ncdf)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
     ## Sadly reading the flowSet is a lot more insane now.
-    if(!missing(name.keyword))
+    if(!missing(name.keyword)){
+        keys <- unlist(sapply(flowSet,keyword,name.keyword))
+        if(is.null(keys))
+            stop("'", name.keyword, "' is not a valid keyword in any of ",
+                 "the available FCS files.", call.=FALSE)
+        if(length(keys) != length(flowSet))
+            stop("One or several FCS files do not contain a keyword '",
+                 name.keyword, "'.", call.=FALSE)
+        if(any(duplicated(keys)))
+            stop("The values of '", name.keyword, "' are not unique.", call.=FALSE)
         names(flowSet) <- sapply(flowSet,keyword,name.keyword)
     else
         names(flowSet) <- make.unique(file.names)
-    flowSet = as(flowSet,"flowSet")
+    flowSet <- as(flowSet,"flowSet")
     if(!is.null(phenoFrame))
         phenoData(flowSet) <- phenoFrame
     else if(!missing(phenoData)) {
@@ -469,7 +478,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         print(field.names)
         if(is.null(field.names))
             stop("phenoData list must have names")
-        field.names = sapply(seq(along=phenoData),function(i) {
+        field.names <- sapply(seq(along=phenoData),function(i) {
             if(length(field.names[i]) == 0) as(phenoData[i],"character")
             else field.names[i]
         })
@@ -478,12 +487,12 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             if(!is.null(names(descriptions)))
                 descriptions = descriptions[field.names]
         } else
-        descriptions = field.names
-        names(phenoData) = field.names
-        phenoData(flowSet) = new("AnnotatedDataFrame",
-                 data=keyword(flowSet,phenoData),
-                 varMetadata=data.frame(labelDescription=I(descriptions),
-                 row.names=field.names))
+        descriptions <- field.names
+        names(phenoData) <- field.names
+        phenoData(flowSet) <- new("AnnotatedDataFrame",
+                                  data=keyword(flowSet,phenoData),
+                                  varMetadata=data.frame(labelDescription=I(descriptions),
+                                                         row.names=field.names))
     }
     ## finally decide on which names to use for the sampleNames, but retain the
     ## original GUIDs in case there are some

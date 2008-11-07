@@ -239,7 +239,7 @@ setMethod("keyword",
           keyword(object,object@description)
           )
 
-## select keywords by combination of name and function
+## select keywords by combination of name and/or function
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="list"),
@@ -249,7 +249,7 @@ setMethod("keyword",
               if(is.character(k))
                   object@description[k]
               else if(is.function(k))
-                  k(object,object@description,k)
+                  k(object,object@description)
               else NA
           })
       })

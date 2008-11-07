@@ -228,10 +228,10 @@ setMethod("keyword",
                               keyword="list"),
           definition=function(object,keyword)
       {
-          do.call("data.frame",c(lapply(keyword,function(k) {
+          do.call("data.frame", c(lapply(keyword,function(k){
               I(sapply(sampleNames(object),function(n)
                        keyword(object[[n]],k)))}),
-                                 list(row.names=sampleNames(object))))
+                                  list(row.names=sampleNames(object))))
       })
 
 
