@@ -467,8 +467,9 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         if(any(duplicated(keys)))
             stop("The values of '", name.keyword, "' are not unique.", call.=FALSE)
         names(flowSet) <- sapply(flowSet,keyword,name.keyword)
-    else
+    }else{
         names(flowSet) <- make.unique(file.names)
+    }
     flowSet <- as(flowSet,"flowSet")
     if(!is.null(phenoFrame))
         phenoData(flowSet) <- phenoFrame
