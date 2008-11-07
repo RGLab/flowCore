@@ -293,16 +293,18 @@ rmLastJournalEntry <- function(wf)
         }
         views <- grep("gateViewRef", unlist(lastEntry), value=TRUE)
         for(i in views){
-            try({
-                thisView <- parent(get(i, wf))
-                thisView@data <- fcNullReference()
-                assign(identifier(thisView), thisView, wf@env)
-            }, silent=TRUE)
+            curView <- try(get(i, wf), silent=TRUE)
+            if(!is(curView, "try-error")){
+                thisView <- parent(curView)
+                if(is(thisView, "gateView")){
+                    thisView@data <- fcNullReference()
+                    assign(identifier(thisView), thisView, wf@env)
+                }
+            }
         }
         try(sapply(unlist(lastEntry), rmAlias, wf), silent=TRUE)
         suppressWarnings(rm(list=unlist(lastEntry), envir=wf@env))
     }
-    wf
 }
 
 
@@ -314,9 +316,10 @@ undo <- function(wf, n=1)
     lj <- length(journal)
     n <- min(lj-1, n)
     for(i in seq_len(n)){
-        try(rmLastJournalEntry(wf), silent=TRUE)
+        rmLastJournalEntry(wf)
         journal <- journal[-lj]
+        lj <- length(journal)
+        assign(wf@journal, journal, wf)
     }
-    assign(wf@journal, journal, wf)
     invisible(NULL)
 }
