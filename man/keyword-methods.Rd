@@ -8,8 +8,11 @@
 \alias{keyword,flowFrame,list-method}
 \alias{keyword<-}
 \alias{keyword<-,flowFrame,list-method}
+\alias{keyword<-,flowSet,list-method}
 \alias{keyword<-,flowFrame,ANY-method}
 \alias{keyword<-,flowFrame,character-method}
+\alias{keyword,flowSet,list-method}
+\alias{keyword,flowSet,ANY-method}
 
 \title{Methods to retrieve keywords of a flowFrame}
 
@@ -30,7 +33,7 @@ keyword(object, keyword)
   
   \item{object}{Object of class \code{\link{flowFrame}}.}
   
-  \item{keyword}{character vector or list of potential keywords or
+  \item{keyword}{Character vector or list of potential keywords or
     function. If missing all keywords are returned.}
   
 }
@@ -42,8 +45,13 @@ keyword(object, keyword)
       all keywords from the \code{description} slot in \code{object}
       that match the character vector \code{keyword}.}
 
-    \item{object = "flowFrame", keyword = "function"}{Apply the function in
-      \code{keyword} on the \code{description} slot of \code{object}.}
+    \item{object = "flowFrame", keyword = "function"}{Apply the function
+      in \code{keyword} on the \code{\link{flowFrame}} \code{object}.
+      The function needs to be able to cope with a single argument and
+      it needs to return a single character string. A typical use case
+      is for instance to paste together values from several different
+      keywords or to compute some statistic on the \code{flowFrame} and
+      combine it with one or several other keywords. }
 
     \item{object = "flowFrame", keyword = "list"}{Combine characters and
       functions in a list to select keyword values.}
@@ -51,9 +59,38 @@ keyword(object, keyword)
     \item{object = "flowFrame", keyword = "missing"}{This is essentially an
       alias for \code{\link{description}} and returns all keyword-value
       pairs.}
+
+    \item{object = "flowSet", keyword = "list"}{This is a wrapper around
+      \code{fsApply(object, keyword, keyword)} which essentially
+      iterates over the frames in the \code{\link{flowSet}}. }
+
+    \item{object = "flowSet", keyword = "ANY"}{This first coerces
+      the \code{keyword} (mostly a character vector) to a list and then
+      calls the next applicable method.
+    }
     
   }
 }
+
+\details{
+
+  The \code{keyword} methods allow access to the keywords stored in the
+  FCS files, either for a \code{flowFrame} or for a list of frames in a
+  \code{flowSet}. The most simple usecase is to provide a character
+  vector or a list of character strings of keyword names. A more
+  sophisticated version is to provide a function which has to take one
+  mandatory argument, the value of this is the \code{flowFrame}. This
+  can be used to query arbitrary information from the \code{flowFrame's}
+  \code{description} slot or even the raw data. The function has to
+  return a single character string. The \code{list} methods allow to
+  combine functional and direct keyword access.
+
+  The replacement method takes a named character vector or a named list
+  as input. R's usual recycling rules apply when replacing keywords for
+  a whole \code{flowSet}.
+  
+}
+
 
 \author{N. LeMeur, F. Hahne, B. Ellis}
 
@@ -61,10 +98,20 @@ keyword(object, keyword)
 
 \examples{
 
- samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
- keyword(samp)
+samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
+keyword(samp)
 
- keyword(samp,"FCSversion")
+keyword(samp, "FCSversion")
+
+keyword(samp, function(x,...) paste(keyword(x, "SAMPLE ID"), keyword(x,
+"GUID"), sep="_"))
+
+keyword(samp) <- list(foo="bar")
+
+data(GvHD)
+keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
+
+keyword(GvHD) <- list(sample=sampleNames(GvHD))
 
 }
 

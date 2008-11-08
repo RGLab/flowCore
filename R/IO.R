@@ -412,9 +412,9 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             }
             phenoFrame <- phenoData
         }else if(is(phenoData,"AnnotatedDataFrame")){
-            phenoFrame = phenoData
+            phenoFrame <- phenoData
         }else{if(!is.list(phenoData))
-                  stop("Argument 'phenoData' must be of type ",
+                  stop("Argument 'phenoData' must be of type 'list', ",
                        "'AnnotatedDataFrame' or a filename\n",
                        "of a text file containing the phenotypic information")
           }
@@ -431,6 +431,10 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         if(length(files) != length(file.names)) 
             stop(paste("Not all files given by phenoData could be found in",
                        path))
+        if(!"name" %in% varLabels(phenoFrame)){
+            phenoFrame$name <- files
+            varMetadata(phenoFrame)["name",] <- "Filename"
+        }
     }else{
         ## if we haven't found files by now try to search according to
         ## 'pattern'
@@ -473,10 +477,9 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet <- as(flowSet,"flowSet")
     if(!is.null(phenoFrame))
         phenoData(flowSet) <- phenoFrame
-    else if(!missing(phenoData)) {
+    else if(!missing(phenoData)){
         ##Collect the names for each field in the data frame
         field.names <- names(phenoData)
-        print(field.names)
         if(is.null(field.names))
             stop("phenoData list must have names")
         field.names <- sapply(seq(along=phenoData),function(i) {
@@ -490,10 +493,18 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
         } else
         descriptions <- field.names
         names(phenoData) <- field.names
-        phenoData(flowSet) <- new("AnnotatedDataFrame",
-                                  data=keyword(flowSet,phenoData),
-                                  varMetadata=data.frame(labelDescription=I(descriptions),
-                                                         row.names=field.names))
+        oldpDat <- pData(flowSet)
+        newpDat <- as.data.frame(keyword(flowSet, phenoData))
+        sel <- intersect(colnames(newpDat), colnames(oldpDat))
+        if(length(sel))
+            oldpDat <- oldpDat[, -which(colnames(oldpDat)%in% sel), drop=FALSE]
+        newpDat <- cbind(oldpDat, as.data.frame(keyword(flowSet,phenoData)))
+        if(any(duplicated(newpDat$name)))
+            stop("The character strings in the 'name' variable in the phenoData slot ",
+                 "have to be unique.", call.=FALSE)
+        phenoData(flowSet) <- new("AnnotatedDataFrame", data=newpDat,
+                                  varMetadata=data.frame(labelDescription=I(colnames(newpDat)),
+                                                         row.names=colnames(newpDat)))
     }
     ## finally decide on which names to use for the sampleNames, but retain the
     ## original GUIDs in case there are some

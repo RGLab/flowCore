@@ -32,7 +32,6 @@
 \alias{varLabels<-,flowSet,ANY-method}
 \alias{varMetadata,flowSet-method}
 \alias{varMetadata<-,flowSet,ANY-method}
-\alias{keyword,flowSet,list-method}
 \alias{compensate,flowSet,matrix-method}
 \alias{transform,flowSet-method}
 \alias{rbind2,flowSet,missing}
@@ -209,13 +208,18 @@ quantitative cell-based assays}
       
     }
     
-    \item{keyword}{Extract keywords specified in a list from the
-      \code{description} slot of each frame.
+    \item{keyword}{Extract or replace keywords specified in a character
+      vector or a list from the \code{description} slot of each
+      frame. See \code{\link{keyword}} for details.
       
       \emph{Usage:}
       
       \code{   keyword(flowSet, list(keywords))}
       
+      \code{   keyword(flowSet, keywords)}
+
+      \code{   keyword(flowSet) <- list(foo="bar") }
+            
     }
     
     \item{length}{number of \code{\linkS4class{flowFrame}} objects in
