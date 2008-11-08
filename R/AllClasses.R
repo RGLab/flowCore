@@ -1413,12 +1413,13 @@ transformList <- function(from, tfun, to=from,
     if(is.character(tfun))
         tfun <- lapply(tfun, get)
     if(!is.list(tfun)) tfun <- list(tfun)
-    if(!all(sapply(tfun, is, "function")))
+    if(!all(sapply(tfun, is, "function") | sapply(tfun, is, "transform")))
         stop("'tfun' must be a list of functions or a character vector ",
              "with the function names.", call.=FALSE)
     tfun <- rep(tfun, length(from))
     tlist <- mapply(function(x, y, z)
-                    new("transformMap", input=x, output=y, f=z),
+                    new("transformMap", input=x, output=y, 
+                    f=if(is(z, "transform")) z@.Data else z),
                     from, to, tfun[1:length(from)])
     tlist <- as(tlist, "transformList")
     identifier(tlist) <- transformationId
