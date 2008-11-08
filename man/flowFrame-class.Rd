@@ -207,6 +207,10 @@
       \code{   keyword(flowFrame)}
 
       \code{   keyword(flowFrame, character)}
+
+      \code{   keyword(flowFrame, list)}
+      
+      \code{   keyword(flowFrame) <- list(value) }
       
     }
     

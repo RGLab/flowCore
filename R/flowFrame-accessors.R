@@ -230,13 +230,12 @@ setMethod("keyword",
               structure(object@description[keyword], names=keyword)
           )
 
-## select keywords by function
-## FIXME: What is the idea behind this? Don't see the use case...
+## select or combine keywords by function
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="function"),
           definition=function(object,keyword)
-          keyword(object,object@description)
+          keyword(object)
           )
 
 ## select keywords by combination of name and/or function
@@ -245,11 +244,11 @@ setMethod("keyword",
                               keyword="list"),
           definition=function(object,keyword)
       {
-          sapply(keyword,function(k) {
+          sapply(keyword, function(k) {
               if(is.character(k))
                   object@description[k]
               else if(is.function(k))
-                  k(object,object@description)
+                  k(object)
               else NA
           })
       })

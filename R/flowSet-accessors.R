@@ -226,14 +226,35 @@ setReplaceMethod("sampleNames",
 setMethod("keyword",
           signature=signature(object="flowSet",
                               keyword="list"),
-          definition=function(object,keyword)
+          definition=function(object, keyword)
       {
-          do.call("data.frame", c(lapply(keyword,function(k){
-              I(sapply(sampleNames(object),function(n)
-                       keyword(object[[n]],k)))}),
-                                  list(row.names=sampleNames(object))))
+          keys <-  fsApply(object, function(x) unlist(keyword(x, keyword)))
+          if(!is.null(dim(keys))){
+              colnames(keys) <- gsub("\\..*$", "", colnames(keys))
+              rownames(keys) <- sampleNames(object)
+          }
+          return(keys)
       })
 
+setMethod("keyword",
+          signature=signature(object="flowSet",
+                              keyword="ANY"),
+          definition=function(object, keyword)
+          keyword(object, as.list(keyword)))
+
+setReplaceMethod("keyword", signature=c("flowSet", "list"),
+                 definition=function(object, value){
+                     for(i in seq_along(value)){
+                         vals <- rep(value[[i]], length(object))
+                         for(j in seq_len(length(object))){
+                             thisVal <- list(vals[[j]])
+                             names(thisVal) <- names(value)[i] 
+                             keyword(object[[j]]) <- thisVal
+                         }
+                     }
+                     object
+                 })
+                 
 
 
 ## ==========================================================================
@@ -259,7 +280,8 @@ setMethod("fsApply",
               if(all(sapply(res,is,"flowFrame"))) {
                   res <- as(res,"flowSet")
                   phenoData(res) = phenoData(x)[sampleNames(x),]
-              } else if(all(sapply(res,is.numeric)) && diff(range(sapply(res,length))) == 0) {
+              } else if(all(sapply(res,is.numeric)) || all(sapply(res,is.character)) &&
+                        diff(range(sapply(res,length))) == 0) {
                   res <- do.call(rbind,res)
               }
           }

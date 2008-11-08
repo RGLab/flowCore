@@ -286,7 +286,7 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
           ## The parameters need to match all frames
           params <- parameters(from[[1]])
           allParams <- fsApply(from, function(x) pData(parameters(x))$name)
-          if(!all(sapply(allParams, identical, pData(params)$name)))
+          if(!all(apply(allParams, 2, function(x) length(unique(x))==1)))
               stop("parameters must be the same for all frames")
           ## making sure we are not doing too many copies of the data
           lens <- fsApply(from, nrow)
