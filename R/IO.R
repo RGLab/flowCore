@@ -4,6 +4,22 @@
 
 
 ## ==========================================================================
+## Determine which 'files' are valid FCS files
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+isFCSfile <- function(files)
+{
+    sapply(files, function(f){
+        if (file.exists(f)) {
+            con <- file(f, open="rb")
+            version <- readChar(con, 6)
+            isTRUE(version %in% c("FCS2.0", "FCS3.0"))
+        }
+        else FALSE
+    })
+}
+
+
+## ==========================================================================
 ## Reading FCS file header and TEXT section only
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 read.FCSheader <- function(files, path=".", keyword=NULL)
