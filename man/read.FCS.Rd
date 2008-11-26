@@ -1,11 +1,14 @@
 \name{read.FCS}
 \alias{read.FCS}
 \alias{cleanup}
+\alias{isFCSfile}
 \title{Read an FCS file}
 
-\description{Read Data File Standard for Flow Cytometry}
+\description{Check validity and Read Data File Standard for Flow Cytometry}
 
 \usage{
+
+   isFCSfile(files)
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             debug=FALSE, alter.names=FALSE, column.pattern=NULL,
@@ -17,6 +20,8 @@
 
 \arguments{
   
+  \item{files}{ A vector of filenames }
+
   \item{filename}{Character of length 1: filename}
   
   \item{transformation}{An character string that defines the type of
@@ -67,6 +72,9 @@
 
 \details{
   
+  The function \code{isFCSfile} determines whether its arguments are
+  valid FCS files.
+
   The function \code{read.FCS} works with the output of the FACS machine
   software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data
   LMD). However, the FCS 3.0 standard includes some options that are not
@@ -89,10 +97,12 @@
 
 \value{
 
-  An object of class \code{\link[flowCore]{flowFrame}} that contains the
-  data in the \code{exprs} slot, the parameters monitored in the
-  \code{parameters} slot and the keywords and value saved in the header
-  of the FCS file.
+  \code{isFCSfile} returns a logical vector.
+  
+  \code{read.FCS} returns an object of class
+  \code{\link[flowCore]{flowFrame}} that contains the data in the
+  \code{exprs} slot, the parameters monitored in the \code{parameters}
+  slot and the keywords and value saved in the header of the FCS file.
 
 }
 
