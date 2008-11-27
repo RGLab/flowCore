@@ -11,6 +11,7 @@ isFCSfile <- function(files)
     sapply(files, function(f){
         if (file.exists(f)) {
             con <- file(f, open="rb")
+            on.exit(close(con))
             version <- readChar(con, 6)
             isTRUE(version %in% c("FCS2.0", "FCS3.0"))
         }
