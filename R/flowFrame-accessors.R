@@ -389,7 +389,7 @@ setMethod("compensate",
                               spillover="data.frame"),
           function(x, spillover, ...)
       {
-          compensate(x, as.matrix(spillover))
+          compensate(x, as.matrix(spillover),...)
       })
 
 setMethod("compensate",
@@ -415,13 +415,13 @@ setMethod("compensate",
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="compensation"),
-          function(x, spillover)
+          function(x, spillover,...)
       {
           for(p in spillover@parameters)
               if(is(p, "transformReference"))
                   x  <- cbind2(x, matrix(resolveTransformReference(p, data)),
                                dimnames=list(NULL, p@transformationId))
-          compensate(x, spillover@spillover)
+          compensate(x, spillover@spillover,...)
       })
 
 
