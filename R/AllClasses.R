@@ -1488,9 +1488,11 @@ compensation <- function(..., spillover, inv=FALSE,
        !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
         stop("Parameters and column names of the spillover matrix ",
              "don't match.", call.=FALSE)
-    if(inv)
+    if(inv){
       ## spillover <- solve(spillover/max(spillover))
       spillover <- solve(spillover)
+        colnames(spillover) <- rownames(spillover)
+    }
     new("compensation", spillover=spillover, 
         compensationId=compensationId,
         parameters=new("parameters", parms$parameters))

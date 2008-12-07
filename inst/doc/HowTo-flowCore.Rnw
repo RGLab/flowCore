@@ -1004,8 +1004,16 @@ For complex work flows it becomes increasingly hard to convey all
 information by printing on the screen. There is a plotting function
 for \Rclass{workFlow} objects which plots the underlying tree. The
 function depends on the \Rpackage{Rgraphviz} package.
-<<plotwf, fig=true>>=
+<<plotwf, eval=FALSE>>=
 plot(wf)
+@ 
+<<plotwfdo, fig=true, echo=FALSE, results=hide>>=
+if(suppressWarnings(require(Rgraphviz))){
+    plot(wf)
+}else{
+    plot(1,1, type="n", axes=FALSE, ann=FALSE)
+    text(1,1,"Need to install Rgraphviz")
+}
 @ 
 
 \subsection{Accessing items in the \Rclass{workFlow} object}
