@@ -55,7 +55,8 @@ read.FCS <- function(filename,
                      alter.names=FALSE,
                      column.pattern=NULL,
                      decades=0,
-                     ncdf=FALSE)
+                     ncdf=FALSE,
+                     min.limit=-111)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -82,11 +83,12 @@ read.FCS <- function(filename,
     offsets <- readFCSheader(con)
     txt <- readFCStext(con, offsets, debug)
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
-                       debug, scale, alter.names, decades)
+                       debug, scale, alter.names, decades, min.limit)
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
-    realMin <- pmin(zeroVals,apply(mat,2,min,na.rm=TRUE), na.rm=TRUE)
+    absMin <- apply(mat,2,min,na.rm=TRUE)
+    realMin <- pmin(zeroVals,pmax(-111, absMin, na.rm=TRUE), na.rm=TRUE)
     params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin)
     close(con)
@@ -246,7 +248,7 @@ readFCStext <- function(con, offsets, debug)
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
-                        scale, alter.names, decades) {
+                        scale, alter.names, decades, min.limit=-111) {
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
@@ -361,6 +363,12 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
     colnames(dat) <- if(alter.names)  structure(make.names(cn),
                                                 names=names(cn))else cn
+
+    ## truncate data at max range
+    for(i in seq_len(ncol(dat)))
+        dat[dat[,i]>range[i],i] <- range[i]
+    if(!is.null(min.limit))
+        dat[dat<min.limit] <- min.limit
 
     ## transform or scale if necessary
     if(transformation) {

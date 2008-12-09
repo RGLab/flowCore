@@ -421,8 +421,8 @@ setMethod("compensate",
       {
           for(p in spillover@parameters)
               if(is(p, "transformReference"))
-                  x  <- cbind2(x, matrix(resolveTransformReference(p, data)),
-                               dimnames=list(NULL, p@transformationId))
+                  x  <- cbind2(x, matrix(resolveTransformReference(p, data),
+                               dimnames=list(NULL, p@transformationId)))
           compensate(x, spillover@spillover,...)
       })
 

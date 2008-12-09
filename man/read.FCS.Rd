@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             debug=FALSE, alter.names=FALSE, column.pattern=NULL,
-            decades=0, ncdf = FALSE)
+            decades=0, ncdf = FALSE, min.limit=-111)
 
    cleanup()
 
@@ -67,6 +67,16 @@
     easiest way to do that is to delete the whole \code{netCDF}
     directory. To this end, one can envoke the \code{cleanup}
     function. }
+  
+  \item{min.limit}{The minimum value in the data range that is
+    allowed. Some instruments produce extreme artifactual values. The
+    positive data range for each parameter is completely defined by the
+    measurement range of the instrument and all larger values are set to
+    this threshold. The lower data boundary is not that well defined,
+    since compensation might shift some values below the original
+    measurement range of the instrument. The default value of \code{-111}
+    copies the behavior of flowJo. It can be set to an arbitray number
+    or to \code{NULL}, in which case the original values are kept. }
   
 }
 
