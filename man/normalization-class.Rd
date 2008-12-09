@@ -72,12 +72,12 @@ normalize(data, x)
 
   \item{x}{ An object of class \code{\linkS4class{flowSet}}. }
 
-  \item{normFunction} {The normalization function}
+  \item{normFunction}{The normalization function}
   
-  \item{arguments} {The list of additional arguments to
+  \item{arguments}{The list of additional arguments to
     \code{normFunction}}
     
-  \item{data} {The \code{flowSet} to normalize. }
+  \item{data}{The \code{flowSet} to normalize. }
   
 }
 
