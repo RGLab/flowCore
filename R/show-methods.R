@@ -55,11 +55,12 @@ setMethod("show",
               cat("Compensation object '", object@compensationId,
                   "':\n", sep="")
               if(ncol(object@spillover)){
+				  print(object@spillover)
 #                   if(!object@invert)
 #                       print(object@spillover)
 #                   else
 #                       print(solve(object@spillover/max(object@spillover)))
-                      ;
+#                      ;
               }else{
                   cat("The spillover matrix is empty\n")
               }
