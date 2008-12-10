@@ -1461,6 +1461,7 @@ setClass("compensation",
 
 ## Constructor: We allow for the following inputs:
 ##  spillover is always a symmetric numerical matrix with colnames set
+## invert is deprecated
 ##  invert is always a logical of length 1
 ##  ..1 is a character vector
 ##  ..1 is a list of character and/or transformations
@@ -1468,8 +1469,7 @@ setClass("compensation",
 ##  ... are characters and/or transformations
 ## If parameters are given explicitely they need to match the colnames
 ## of the spillover matrix.
-compensation <- function(..., spillover, inv=FALSE,
-                         compensationId="defaultCompensation")
+compensation <- function(..., spillover, compensationId="defaultCompensation")
 {
     parms <- parseDots(list(...))
     if(missing(spillover))
@@ -1481,18 +1481,16 @@ compensation <- function(..., spillover, inv=FALSE,
     if(is.null(colnames(spillover)))
         stop("Spillover matrix must have colnames", call.=FALSE)
     checkClass(compensationId, "character", 1)
-    checkClass(inv, "logical", 1)
+#    checkClass(inv, "logical", 1)
     if(!length(parms$parameters))
         parms <- sapply(colnames(spillover), unitytransform)
     if(all(sapply(parms$parameters,function(x) is(x,"unitytransform"))) &&
        !all(sapply(parms$parameters, parameters) %in% colnames(spillover)))
         stop("Parameters and column names of the spillover matrix ",
              "don't match.", call.=FALSE)
-    if(inv){
+#    if(inv)
       ## spillover <- solve(spillover/max(spillover))
-      spillover <- solve(spillover)
-        colnames(spillover) <- rownames(spillover)
-    }
+#      spillover <- solve(spillover)
     new("compensation", spillover=spillover, 
         compensationId=compensationId,
         parameters=new("parameters", parms$parameters))
