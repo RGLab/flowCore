@@ -387,19 +387,19 @@ setReplaceMethod("colnames",
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="data.frame"),
-          function(x, spillover, ...)
+          function(x, spillover)
       {
-          compensate(x, as.matrix(spillover),...)
+          compensate(x, as.matrix(spillover))
       })
 
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="matrix"),
-          definition=function(x, spillover, inv=FALSE)
+          definition=function(x, spillover)
       {
-          checkClass(inv, "logical", 1)
-          if(inv)
-               spillover <- solve(spillover/max(spillover))
+#          checkClass(inv, "logical", 1)
+#          if(inv)
+#               spillover <- solve(spillover/max(spillover))
           cols <- colnames(spillover)
           sel <- cols %in% colnames(x)
           if(!all(sel))
@@ -417,13 +417,13 @@ setMethod("compensate",
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="compensation"),
-          function(x, spillover,...)
+          function(x, spillover)
       {
           for(p in spillover@parameters)
               if(is(p, "transformReference"))
                   x  <- cbind2(x, matrix(resolveTransformReference(p, data),
                                dimnames=list(NULL, p@transformationId)))
-          compensate(x, spillover@spillover,...)
+          compensate(x, spillover@spillover)
       })
 
 
