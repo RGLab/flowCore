@@ -104,10 +104,10 @@
  
 
 %Review style settings
-%\newenvironment{bmcformat}{\begin{raggedright}\baselineskip20pt\sloppy\setboolean{publ}{false}}{\end{raggedright}\baselineskip20pt\sloppy}
+\newenvironment{bmcformat}{\begin{raggedright}\baselineskip20pt\sloppy\setboolean{publ}{false}}{\end{raggedright}\baselineskip20pt\sloppy}
 
 %Publication style settings
-\newenvironment{bmcformat}{\fussy\setboolean{publ}{true}}{\fussy}
+%\newenvironment{bmcformat}{\fussy\setboolean{publ}{true}}{\fussy}
 
 
 
@@ -175,13 +175,13 @@
 \address{%
   \iid(1)Life Sciences Department, Computational Biology Program,%
   Division of Public Health Sciences, Fred Hutchinson Cancer Research Center,%
-  1100 Fairview Ave. N, M2-B876, PO Box 19024,  Seattle, Washington 98109-1024\\
+  1100 Fairview Ave. N, M2-B876, PO Box 19024,  Seattle, Washington 98109-1024, USA\\
   \iid(2)EA SeRAIC INSERM, IRISA - Symbiose, Campus Beaulieu, Universit\'{e} de Rennes I, % 
   35042 Rennes Cedex, France \\
   \iid(3)Terry Fox Laboratory, British Columbia Cancer Agency Research Centre,% 
   675 West 10th Avenue, Vancouver, BC V5Z 1L3  Canada, Canada\\
-  \iid(4)AdBrite Inc\\
-  \iid(5)BD Biosciences
+  \iid(4)AdBrite Inc., 731 Market St., 5th Floor, San Francisco, California 94103, USA\\
+  \iid(5)BD Biosciences, Research Triangle Park, North Carolina 27709, USA
 }%
 \maketitle
 
@@ -207,11 +207,11 @@
   \paragraph*{Background:} Recent advances in automation technologies
   have enabled the use of flow-cytometry high content screening
   (FH-HCS). However, data management and data analysis methods have
-  not advanced sufficiently far from the inital small-scale studies to
+  not advanced sufficiently far from the initial small-scale studies to
   support the large complex data sets generated in FH-HCS
   applications.
       
-  \paragraph*{Results:} We developped a set of flexible computational
+  \paragraph*{Results:} We developed a set of flexible computational
   tools for FC-HCS data analysis written in R and freely available
   from the Bioconductor Project. The \Rpackage{flowCore} package
   provides the flow cytometry community with a shared research
@@ -334,9 +334,8 @@ the further development of the technology \cite{lizard2007fca}.
  
 %%%%%%%%%%%%%%%%%%
 \section*{Implementation}
-%% The computational tools we have developed are distributed in the R
-%% software language as the Bioconductor package
-%% \Rpackage{flowCore}. 
+The computational tools we have developed are distributed in the R
+software language as the Bioconductor package \Rpackage{flowCore}.
 The Bioconductor package \Rpackage{flowCore} is a freely available,
 highly functional, and extensible FCM data analysis platform that
 enables researchers to efficiently handle FC-HCS data and encourages
@@ -366,7 +365,7 @@ However, recent developments in high-throughput FCM are shifting the
 focus of interest away from single-tube based measurements towards
 large and complex experimental designs with dozens of covariates and
 influencing factors. For example, experiments consist of large numbers
-of samples from different patients, measured at different timepoints
+of samples from different patients, measured at different time points
 \cite{brinkman2007hcf} or following different drug treatments
 \cite{gasparetto2004ice}. Modern FCM data analysis tools have to deal
 with an additional layer of sample metadata and they need to provide
@@ -391,7 +390,7 @@ data between analysis tools.
 
 The \Rpackage{flowCore} framework presented here can import and
 process raw data FCS files along with their complete set of
-file-specific metadata (Figure~\ref{fig1:FrameWork}).  Moreover, it is
+file-specific metadata (Figure~1\ref{fig1:FrameWork}).  Moreover, it is
 a software implementation of the Gating-ML Candidate Recommendation
 (CR), an emerging ISAC standard developed in collaboration with the
 ISAC Data Standards Task Force, which makes it possible to integrate
@@ -480,7 +479,7 @@ fostered the development of a number of valuable add-ons
 Data transformation is essential for both data visualization and
 modelling \cite{lo2008agf}. The major transformations that are
 routinely used in FCM analysis have been implemented in
-\Rpackage{flowCore} (\textit{e.g.,} log, bi-exponantioal or arcsinh,
+\Rpackage{flowCore} (\textit{e.g.,} log, bi-exponantial or arcsinh,
 see Table~\ref{table1} for a complete list). Furthermore, the design
 of the R language makes it easy to define arbitrary functions to apply
 to the data of individual \Rclass{flowFrames} or entire
@@ -501,7 +500,7 @@ distribution or by density estimation. This approach is fundamentally
 different from the traditional application of static gating regions
 across samples, as it is able to take into accounts unforeseen changes
 in signal intensities, such as drifts in the instrumentation
-over time or sample variablity.
+over time or sample variability.
 
 The ability to programmatically access gates is a prerequisite for
 automated or semi-automated gating. By utilizing a unified interface
@@ -512,14 +511,14 @@ gates. Complex combinations and hierarchies of gates can be captured
 in multi-step gating strategies. The definition of gates in
 \Rpackage{flowCore} follows the Gating-ML CR, thus any
 \Rpackage{flowCore} gating strategy can be reproduced by any other
-software that also adheres to the standard and vice versa.
+software that also adheres to the standard and \textit{vice versa}.
 
 Gating, as well as all other operations in \Rclass{flowCore}, can be
 applied over each individual frame in a \Rclass{flowSet}, and summary
 methods provide information about the outcome of these operations. In
 addition, the result of a gating operation can be used to subset the
 input \Rclass{flowFrame} or \Rclass{flowSet}, either by filtering out
-negative events or by splitting in multiple subpopulations. This
+negative events or by splitting in multiple sub-populations. This
 design allows to easily combine all of \Rpackage{flowCore}'s
 components into complex work flows.
 
@@ -547,7 +546,7 @@ components into complex work flows.
   \Rpackage{flowQ} package to create an HTML report that highlights
   potential quality issues. Assuming that the data has already been
   imported as the \Rclass{flowSet} object ``dat'', the following
-  simple line of code produces the output shown in Figure~\ref{flowQ}:
+  simple line of code produces the output shown in Figure~2\ref{flowQ}:
 
 \begin{verbatim}
 > library(flowQ)
@@ -596,7 +595,7 @@ authors.
 
 We can chose one of the many visualization option from the
 \Rpackage{flowViz} package to plot the results of the recent filtering
-operation. A very basic matrix of density plots is shown in Figure
+operation. A very basic matrix of density plots is shown in Figure~3
 \ref{xyplot}, where each panel in the matrix represents the data of
 one individual patient.
 
@@ -615,7 +614,7 @@ provides data structures that help organize sequences of typical FCM
 data analysis operations and complex gating strategies into concise
 work flows. These structures are self-reflective, they contain all
 intermediate results and offer a unified user interface to assess the
-progress and the outcome of an anlysis.
+progress and the outcome of an analysis.
 
 \subsection*{Related flow packages}
 
@@ -642,7 +641,7 @@ automatic gating approach via robust model-based clustering using
 \Rpackage{flowCore}'s data model and infrastructure which is
 implemented in the Bioconductor package \Rpackage{flowClust}. Another
 package, \Rpackage{plateCore}, providing more specialized support for
-experiments conducted on microtitre plates and facilitiating the
+experiments conducted on microtitre plates and facilitating the
 handling of spatial metadata, is under development.
     
 
@@ -730,40 +729,30 @@ Foundation for Health Research. RRB is an ISAC Scholar.
 
 \section*{Figures}
   \subsection*{Figure 1 - flowCore Framework}
-  \begin{figure}[hp]
-    \centering
-    \includegraphics{Figure1-flowCoreFrameWork.jpg}
-    \caption{\label{fig1:FrameWork}{For each experiment, the content of
+ \label{fig1:FrameWork}For each experiment, the content of
         the FCS files, phenotypic and metadata are stored in a
         \Rclass{flowSet}. Each \Rclass{flowFrame} in a \Rclass{flowSet}
         corresponds to one FCS file. All basic operations (e.g.,
         compensation, transformation, gating) can be applied to either
-        single \Rclass{flowFrames} or a \Rclass{flowSet} simultaneously.}}
-  \end{figure}
+        single \Rclass{flowFrames} or a \Rclass{flowSet} simultaneously.
+
   
   \subsection*{Figure 2 - Quality assessment}
-    \begin{figure}[hp]
-      \centering
-      \includegraphics{flowQ.jpg}
-      \caption{\label{flowQ}%
+    \label{flowQ}%
         HTML quality assessment report generated by the flowQ package for a
         subset of data from an experiment focussing on Graft-Versus-Host
         Disease \cite{brinkman2007hcf}. Rows correspond to the samples in
-        the set, columns to different quality checks.}
-    \end{figure}
+        the set, columns to different quality checks.
+
 
     \subsection*{Figure 3 - Quality assessment}
-    \begin{figure}[hp]
-      \centering
-      \includegraphics{xyplot.pdf}
-      \caption{\label{xyplot}%
+    \label{xyplot}{
         Scatterplot matrix of a single \Rclass{flowSet} from an experiement
         focussing on immune tolerance following kidney
         transplantation. Outlines of the gating regions identified by an
         automated gating operation are added on top of the density
         representation of the data.}
-    \end{figure}
-    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
 %% Tables                        %%
@@ -775,11 +764,11 @@ Foundation for Health Research. RRB is an ISAC Scholar.
 \section*{Tables}
   \subsection*{Table 1 - Data transformations}
     \begin{table}[ht]
-      \caption{\label{table1} Within these formulas, $x$ is the variable
-          corresponding to value being transformed, $y$ is the result of the
-          transformation, $a$, $b$, $c$, $d$, $f$, $p$, $m$, $T$, and $w$, are
-          constants affecting the transformation function, $e$ is the base of
-          the natural logarithm, and $root$ is a root-finding algorithm.  }
+      \caption{\label{table1} Data transformations implemented in \Rpackage{flowCore}. Within these formulas, $x$ is the variable
+        corresponding to value being transformed, $y$ is the result of the
+        transformation, $a$, $b$, $c$, $d$, $f$, $p$, $m$, $T$, and $w$, are
+        constants affecting the transformation function, $e$ is the base of
+        the natural logarithm, and $root$ is a root-finding algorithm. Other transformations can easily be implemented in R.}
       \begin{center}
         \begin{tabular}{|l|l|}
           \hline
@@ -802,7 +791,8 @@ Foundation for Health Research. RRB is an ISAC Scholar.
 
   \subsection*{Table 2 - Filter and gate classes}
   \begin{table}[ht]
-    \label{table2}
+    \caption{\label{table2} Filter and gate classes implemented in
+      \Rpackage{flowCore}.} 
     \begin{center}
       \begin{tabular}{|l|l|}
         \hline
@@ -838,16 +828,16 @@ Foundation for Health Research. RRB is an ISAC Scholar.
 %%                               %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{Additional Files}
-  \subsection*{Additional file 1 --- Sample additional file title}
-    Additional file descriptions text (including details of how to
-    view the file, if it is in a non-standard format or the file extension).  This might
-    refer to a multi-page table or a figure.
-
-  \subsection*{Additional file 2 --- Sample additional file title}
-    Additional file descriptions text.
-
-
+%% \section*{Additional Files}
+%%   \subsection*{Additional file 1 --- Sample additional file title}
+%%     Additional file descriptions text (including details of how to
+%%     view the file, if it is in a non-standard format or the file extension).  This might
+%%     refer to a multi-page table or a figure.
+%% 
+%%   \subsection*{Additional file 2 --- Sample additional file title}
+%%     Additional file descriptions text.
+%% 
+%% 
 \end{bmcformat}
 \end{document}
 
