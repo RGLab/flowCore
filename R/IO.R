@@ -56,7 +56,7 @@ read.FCS <- function(filename,
                      column.pattern=NULL,
                      decades=0,
                      ncdf=FALSE,
-                     min.limit=-111)
+                     min.limit=NULL)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -188,7 +188,7 @@ readFCSgetPar <- function(x, pnam)
     stopifnot(is.character(x), is.character(pnam)) 
     i <- match(pnam, names(x))
     if(any(is.na(i)))
-        stop(paste("Parameter(s)", pnam, "not contained in 'x'"))
+        stop(paste("Parameter(s)", pnam, "not contained in 'x'\n"))
     return(x[i])
 }
 

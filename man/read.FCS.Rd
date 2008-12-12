@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             debug=FALSE, alter.names=FALSE, column.pattern=NULL,
-            decades=0, ncdf = FALSE, min.limit=-111)
+            decades=0, ncdf = FALSE, min.limit=NULL)
 
    cleanup()
 
