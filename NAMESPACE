@@ -1,4 +1,4 @@
-useDynLib("flowCore",biexponential_transform, inPolygon, inPolytope)
+useDynLib("flowCore",.registration=TRUE)
 
 importFrom(utils,
            "assignInNamespace",

@@ -133,7 +133,7 @@ inpolygon <- function(points, vertices)
              "of a polygon on a two-dimensional plane", call.=FALSE)
     
     ## call C function
-    .Call("inPolygon", points, vertices, package="flowCore")
+    .Call("inPolygon", points, vertices, PACKAGE="flowCore")
 }
 
 ## ==========================================================================

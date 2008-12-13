@@ -35,9 +35,7 @@
   \describe{
     
     \item{\code{spillover}:}{Object of class \code{matrix}; the
-      spillover matrix. Note that you can switch from a spillover to a
-      compensation matrix representation using the \code{inv} argument
-      of either the constructor or the \code{compensate} methods. }
+      spillover matrix. }
     
     \item{\code{compensationId}:}{Object of class \code{character}. An
       identifier for the object. }
@@ -53,7 +51,7 @@
 
 \usage{
 
-compensation(\dots, spillover, inv=FALSE,
+compensation(\dots, spillover,
 compensationId="defaultCompensation")
 
 compensate(x, spillover, \dots)
@@ -64,17 +62,12 @@ compensate(x, spillover, \dots)
 
   \item{spillover}{ The spillover or compensation matrix. }
 
-  \item{inv}{ A logical to swich between the two matrix
-    representation (spillover or compensation matrix). }
-
   \item{compensationId}{ The identifier for the compensation object. }
 
   \item{x}{ An object of class \code{\linkS4class{flowFrame}} or
     \code{\linkS4class{flowSet}}. }
 
-  \item{\dots}{Further arguments. For the \code{compensate} methods,
-    this is only \code{inv}, a logical that forces the function to use
-    the inverse of the spillover matrix.
+  \item{\dots}{Further arguments. 
 
     The constructor is designed to be useful in both programmatic and
     interactive settings, and \dots serves as a container for possible
