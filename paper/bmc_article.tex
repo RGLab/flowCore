@@ -469,20 +469,21 @@ analysis offer support for these operations, typically in an
 interactive, GUI-driven interface. In \Rpackage{flowCore} we have
 taken the approach to abstractly describe these operations and build a
 set of tools to perform them on both \Rclass{flowFrames} and
-\Rclass{flowSets}. While transformation, and to a certain extent
-compensation, are fairly routine operations with only limited
-potential for improvement, being able to implement new methodologies
-for gating of FCM data, and extending the capabilities of
-\Rpackage{flowCore} through object oriented programming are features
-that clearly sets our framework apart from other FCM analysis
-tools. By factoring out as much of the bookkeeping as possible,
-programmers can focus on the actual operations rather then having to
-deal with the tedious details of data integration and
-access. Third-party methods can act on their own as first-class
-citizens in the analysis framework, without breaking the work flow or
-the basic infrastructure. This design allows for the straightforward
-extension of \Rpackage{flowCore}'s capabilities, and has already
-fostered the development of a number of valuable add-ons
+\Rclass{flowSets}. Typically, the results of these operations are
+again \Rclass{flowFrame} or \Rclass{flwoSet} objects. While
+transformation, and to a certain extent compensation, are fairly
+routine operations with only limited potential for improvement, being
+able to implement new methodologies for gating of FCM data, and
+extending the capabilities of \Rpackage{flowCore} through object
+oriented programming are features that clearly sets our framework
+apart from other FCM analysis tools. By factoring out as much of the
+bookkeeping as possible, programmers can focus on the actual
+operations rather then having to deal with the tedious details of data
+integration and access. Third-party methods can act on their own as
+first-class citizens in the analysis framework, without breaking the
+work flow or the basic infrastructure. This design allows for the
+straightforward extension of \Rpackage{flowCore}'s capabilities, and
+has already fostered the development of a number of valuable add-ons
 \cite{lo2008agf,sarkar2008ufv}.
 
 \subsubsection*{Transformation and compensation}
