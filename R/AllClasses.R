@@ -1114,7 +1114,7 @@ manyFilterResult <- function(filters, frameId, dependency=NULL)
 {
     q <- new("manyFilterResult",
              filterDetails=lapply(filters, slot, "filterDetails"),
-             subSet=do.call("cbind", lapply(filters, as, "logical")),
+             subSet=do.call(cbind, lapply(filters, as, "logical")),
              dependency=dependency)
     colnames(q@subSet) <- sapply(filters, slot, "filterId")
     q

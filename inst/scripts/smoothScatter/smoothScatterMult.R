@@ -63,12 +63,12 @@ mergeCols <- function(colors, mFun, dims, bfArgs){
  if(!is(colors, "matrix"))
    stop("'colors' must be matrix containing color values")
  d <- dim(colors)
- mCols <- do.call("blendWrapper", args=c(list(background=colors[,1],
+ mCols <- do.call(blendWrapper, args=c(list(background=colors[,1],
                                     foreground=colors[,2], blendFun=mFun),
                                     bfArgs))
  i <- 3
  while(i<=d[2]){
-   mCols <- do.call("blendWrapper", args=c(list(background=mCols,
+   mCols <- do.call(blendWrapper, args=c(list(background=mCols,
                                     foreground=colors[,i], blendFun=mFun),
                                     bfArgs))
    i <- i+1
