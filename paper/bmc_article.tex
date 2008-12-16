@@ -441,14 +441,16 @@ concept of a collection of \Rclass{flowFrames} called a
 \Rclass{flowFrames} along with relevant information associated with
 each individual frame such as descriptions of the cell sample, the
 treatment to which the sample was subjected, or the location of that
-sample in a microtitre plate.  \Rclass{flowSets} manage the consistent
-application of operations on the individual \Rclass{flowFrames} and
-shift the burden of keeping score of the metadata from the user to the
-infrastructure, thus reducing the risk of errors (\textit{e.g.},
-mixups of sample labels). Crucial operations like taking subsets, data
-transformations and gating or computation of summary statistics are
-greatly facilitated and all relevant annotation information is
-constantly passed on along the analysis pipeline. 
+sample in a microtitre plate.  The objects are self-contained and can
+be shipped to other computers, platform
+independently. \Rclass{flowSets} manage the consistent application of
+operations on the individual \Rclass{flowFrames} and shift the burden
+of keeping score of the metadata from the user to the infrastructure,
+thus reducing the risk of errors (\textit{e.g.}, mixups of sample
+labels). Crucial operations like taking subsets, data transformations
+and gating or computation of summary statistics are greatly
+facilitated and all relevant annotation information is constantly
+passed on along the analysis pipeline.
 
 The \Rclass{flowSet} structure can be readily extended to incorporate
 the potentially complex metadata associated with even larger FC-HCS
