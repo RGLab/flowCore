@@ -158,7 +158,7 @@ makeFCSparameters <- function(cn,txt, transformation, scale, decades,
     ## make sure the ranges are transformed along with the data
     if(transformation & !scale){
         ampliPar <- txt[paste(id,"E",sep="")]
-        ampli <- do.call("rbind",lapply(ampliPar, function(x)
+        ampli <- do.call(rbind,lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:npar)
             if(ampli[i,1] > 0)
@@ -373,7 +373,7 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
     ## transform or scale if necessary
     if(transformation) {
         ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
-        ampli <- do.call("rbind",lapply(ampliPar, function(x)
+        ampli <- do.call(rbind,lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
         
         for (i in 1:nrpar){
