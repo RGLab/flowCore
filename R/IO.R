@@ -299,11 +299,14 @@ readFCSdata <- function(con, offsets, x, transformation,  which.lines, debug,
                  "point to read the data.")
         }
     }
-    
-    if(bitwidth==10 && gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp"){
-        warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
-                "Coulter's CPX software.\nThe data might be corrupted if produced ",
-                "by another software.", call.=FALSE)
+    if(bitwidth==10 ){
+        if(!gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp")
+            warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
+                    "Coulter's CPX software.\nThe data might be corrupted if produced ",
+                    "by another software.", call.=FALSE)
+        else
+            warning("Beckma Coulter CPX data.\nCorrected for invalid bitwidth 10.",
+                    call.=FALSE)
         bitwidth <- 16
     }
     size <- bitwidth/8
