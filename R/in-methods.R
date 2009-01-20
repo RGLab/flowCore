@@ -279,8 +279,8 @@ setMethod("%in%",
           bwNS <- min(st.dev,IQR.val)*(4/(7*length(values)))^(1/9)
           ## Obtain significant high curvature intervals.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
-                                 addSignifCurvRegion=TRUE,
-                                 gridsize=gridsize, plotFS=FALSE)
+                                 addSignifCurv=TRUE,
+                                 gridsize=gridsize)
           xGrid <- unlist(fSObj$fhat$x.grid)
           hiCurvIndic <- as.numeric(fSObj$curv)
           diffGrid <- diff(c(0,hiCurvIndic,0))
@@ -339,8 +339,8 @@ setMethod("%in%",
           bwNS <- samp.size.fac*sig.hats        
           ## Obtain significant high curvature regions.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
-                                 addSignifCurvRegion=TRUE,
-                           gridsize=gridsize, plotFS=FALSE)
+                                 addSignifCurv=TRUE,
+                           gridsize=gridsize)
           contourLinesObj <- contourLines(fSObj$fhat$x[[1]],
                                           fSObj$fhat$x[[2]],
                                     fSObj$curv, levels=0.5)
