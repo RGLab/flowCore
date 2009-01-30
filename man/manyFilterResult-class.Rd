@@ -30,12 +30,14 @@ Class \code{"\linkS4class{filterResult}"}, directly.
 Class \code{"\linkS4class{filter}"}, by class "filterResult", distance 2.
 }
 \section{Methods}{
+\describe{
   \item{[, [[}{subsetting. If \code{x} is \code{manyFilterResult},
     then \code{x[[i]]} a \code{FilterResult}  object. The semantics is
     similar to the behavior of the subsetting operators for lists.}
   \item{length}{number of \code{filterResult} objects in the set.}
   \item{names}{names of the  \code{filterResult} objects in the set.}
   \item{summary}{summary \code{filterResult} objects in the set.}
+}
 }
 
 \author{B. Ellis}

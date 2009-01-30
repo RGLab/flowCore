@@ -27,7 +27,7 @@
   \item{transformation}{An character string that defines the type of
     transformation. Valid values are \code{linearize} (default) or
     \code{scale}.The \code{linearize} tramsformation applies the
-    appropriate power transform to the data while the code{scale}
+    appropriate power transform to the data while the \code{scale}
     transformation scales all columns to $[0,10^decades]$.  defaulting
     to decades=0 as in the FCS4 specification. A logical can also be
     used: \code{TRUE} is equal to \code{linearize} and \code{FALSE}

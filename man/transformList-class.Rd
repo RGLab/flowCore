@@ -56,7 +56,7 @@ transformList(from, tfun, to=from, transformationId =
 }
 
 \section{Methods}{
-
+\describe{
   \item{colnames}{\code{signature(x = "transformList")}: This returns
     the names of the parameters that are to be transformed. }
 
@@ -67,7 +67,7 @@ transformList(from, tfun, to=from, transformationId =
     "flowFrame")}: Perform a transformation using the
     \code{transformList} on a \code{\link{flowFrame}} or
     \code{\link{flowSet}}. }
-  
+  }
 }
 
 \author{B. Ellis, F. Hahne}

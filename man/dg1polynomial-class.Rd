@@ -25,15 +25,14 @@ Objects can be created by using the constructor \code{dg1polynomial(parameter,a,
 }
 
 \section{Slots}{
-  \describe
-  {
+  \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
     \item{\code{parameters}:}{Object of class \code{"parameters"}
           -the flow parameters that are to be transformed}
     \item{\code{a}:}{Object of class \code{"numeric"} - coefficients of length equal to the number of flow parameters }
     \item{\code{b}:}{Object of class \code{"numeric"} - coefficient of length 1 that performs the translation }
     \item{\code{transformationId}:}{Object of class \code{"character"} unique ID to reference the transformation }
-  }
+    }
 }
 
 \section{Extends}{
