@@ -25,7 +25,7 @@ The split scale transformation is defined by the function
 }
 
 \section{Objects from the Class}{
-Objects can be created by calls to the constructor \newline
+Objects can be created by calls to the constructor 
  \code{splitscale(parameters,r,maxValue,transitionChannel,transformationId)}
 
 }

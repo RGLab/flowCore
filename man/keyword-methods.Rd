@@ -40,7 +40,6 @@ keyword(object, keyword)
 
 \section{Methods}{
   \describe{
-
     \item{object = "flowFrame", keyword = "character"}{Return values for
       all keywords from the \code{description} slot in \code{object}
       that match the character vector \code{keyword}.}
@@ -72,27 +71,23 @@ keyword(object, keyword)
   }
 }
 
-\details{
-
-  The \code{keyword} methods allow access to the keywords stored in the
+\details{ The \code{keyword} methods allow access to the keywords stored in the
   FCS files, either for a \code{flowFrame} or for a list of frames in a
-  \code{flowSet}. The most simple usecase is to provide a character
+  \code{flowSet}. The most simple use case is to provide a character
   vector or a list of character strings of keyword names. A more
   sophisticated version is to provide a function which has to take one
   mandatory argument, the value of this is the \code{flowFrame}. This
-  can be used to query arbitrary information from the \code{flowFrame's}
+  can be used to query arbitrary information from the \code{flowFrames}
   \code{description} slot or even the raw data. The function has to
   return a single character string. The \code{list} methods allow to
   combine functional and direct keyword access.
-
   The replacement method takes a named character vector or a named list
   as input. R's usual recycling rules apply when replacing keywords for
-  a whole \code{flowSet}.
+  a whole \code{flowSet}
   
 }
 
-
-\author{N. LeMeur, F. Hahne, B. Ellis}
+\author{N LeMeur,F Hahne,B Ellis}
 
 \seealso{\code{\link{description}}}
 

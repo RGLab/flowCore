@@ -133,7 +133,7 @@
 \details{
 
   The splitting operation in the context of
-  code{\linkS4class{flowFrame}}s and code{\linkS4class{flowSet}}s is the
+  \code{\linkS4class{flowFrame}}s and \code{\linkS4class{flowSet}}s is the
   logical extension of subsetting. While the latter only returns the
   events contained within a gate, the former splits the data into the
   groups of events cotained within and those not contained within a

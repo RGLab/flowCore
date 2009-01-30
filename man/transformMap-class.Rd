@@ -32,9 +32,10 @@
 }
 
 \section{Methods}{
-
+\describe{
   \item{show}{\code{signature(object = "transformList")}: Print details
     about the object. }
+}
 }
 
 \author{ B. Ellis, F. Hahne }

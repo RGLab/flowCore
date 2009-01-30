@@ -19,7 +19,9 @@ functions of this type for use in one of the transformation modalities.
   }
 }
 \section{Methods}{
+\describe{
   \item{\code{summary}}{Return the parameters}
+  }
 }
 
 \author{N LeMeur}

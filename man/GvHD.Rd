@@ -17,11 +17,13 @@
   \code{flowFrames}.
   Each \code{flowFrame} correponds to one sample at one time point.
   The \code{phenodata} lists:
+  \describe{
   \item{Patient}{The patient Id code }
   \item{Visit}{The number of visits to the hospital}
   \item{Days}{The number of days since the graft. Negative values
     correpond to days before the graft.}
   \item{Grade}{Grade of the cancer}
+}
 }
 \details{
   This GvHD dataset represents the measurements of one biomarker

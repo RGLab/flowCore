@@ -40,10 +40,10 @@
 }
 
 \section{Methods}{
-  
+ \describe{
   \item{names}{An unsorted list of the names of the filters contained
     within the set.}
-  
+ 
   \item{sort}{Returns a topological sort of the names of the filters contained within the 
 set. Primarily used by internal functions (such as \code{\link{filter}}), this method is 
 also useful for planning gating strategy layouts and the like.}
@@ -63,7 +63,7 @@ also useful for planning gating strategy layouts and the like.}
     rather than attempting to construct filters the long way. The
     formula interface is also lazy, allowing you to add filters in any
     order.}
-
+}
 }
 
 \section{Details}{

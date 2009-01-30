@@ -20,8 +20,7 @@
 \deqn{c=10^{log_{10}ct}}
 }
 
-\section{Objects from the Class}{
-Objects can be created by calls to the constructor \newline
+\section{Objects from the Class}{Objects can be created by calls to the constructor 
  \code{invsplitscale(parameters,r,maxValue,transitionChannel,transformationId)}
 }
 
