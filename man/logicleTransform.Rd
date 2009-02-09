@@ -8,7 +8,7 @@
 
 }
 \usage{
-logicleTransform(transformationId, w = 0, r = 262144, d = 5, ...)
+logicleTransform(transformationId="defaultLogicleTransform", w = 0, r = 262144, d = 5, ...)
 }
 
 \arguments{

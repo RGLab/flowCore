@@ -10,7 +10,7 @@
   
 }
 \usage{
-arcsinhTransform(transformationId, a=1, b=1, c=0)
+arcsinhTransform(transformationId="defaultArcsinhTransform", a=1, b=1, c=0)
 }
 
 \arguments{

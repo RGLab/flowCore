@@ -9,7 +9,7 @@
   b would be the maximum possible value and a would be the minimum possible value.
 }
 \usage{
-scaleTransform(transformationId, a, b)
+scaleTransform(transformationId="defaultScaleTransform", a, b)
 }
 
 \arguments{

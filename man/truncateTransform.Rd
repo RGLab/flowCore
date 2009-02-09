@@ -9,7 +9,7 @@
   values less than 1 by 1.
 }
 \usage{
-truncateTransform(transformationId, a=1)
+truncateTransform(transformationId="defaultTruncateTransform", a=1)
 }
 
 \arguments{

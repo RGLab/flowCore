@@ -33,24 +33,24 @@ more specific filter.
   
   All \code{\link[filter-class]{filter}} objects in \code{flowCore}
   should be instantiated through their constructors. These are functions
-  that have the same name as the respective \code{filter} classes. E.g.,
-  \code{\link[rectangleGate]{rectangleGate()}} is the constructor
-  function for rectangular gates, and
+  that share the same name with the respective \code{filter}
+  classes. E.g., \code{\link[rectangleGate]{rectangleGate()}} is the
+  constructor function for rectangular gates, and
   \code{\link[kmeansFilter]{kmeansFilter()}} creates objects of class
   \code{\link{kmeansFilter}}. Usually these constructors can deal with
   various different inputs, allowing to utilize the same function in
-  different programmatic or interactive settings. For all
-  \code{filters} that operate on specific flow parameters (i.e., those
-  inheriting from \code{\link[parameterFilter-class]{parameterFilter}}),
-  the parameters need to be passed to the constructor, either as names
-  or colnames of additional input arguments or explicitely as separate
-  arguments.  See the documentation of the respective \code{filter}
-  classes for details. If parameters are explicitely defined as separate
-  arguments, they may be of class \code{character}, in which case they
-  will be evaluated literaly as colnames in a \code{\link{flowFrame}},
-  or of class \code{\link[transform-class]{transform}}, in which case
-  the filtering is performed on a temporarily transformed copy of the
-  input data. See \code{\link[parameterFilter-class]{here}} for details.
+  different programmatic or interactive settings. For all \code{filters}
+  that operate on specific flow parameters (i.e., those inheriting from
+  \code{\link[parameterFilter-class]{parameterFilter}}), the parameters
+  need to be passed to the constructor, either as names or colnames of
+  additional input arguments or explicitely as separate arguments.  See
+  the documentation of the respective \code{filter} classes for
+  details. If parameters are explicitely defined as separate arguments,
+  they may be of class \code{character}, in which case they will be
+  evaluated literaly as colnames in a \code{\link{flowFrame}}, or of
+  class \code{\link[transform-class]{transform}}, in which case the
+  filtering is performed on a temporarily transformed copy of the input
+  data. See \code{\link[parameterFilter-class]{here}} for details.
   
 }
 

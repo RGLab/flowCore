@@ -11,7 +11,7 @@
   logbase = 10 corresponds to base 10 logarithm.
 }
 \usage{
-logTransform(transformationId, logbase=10, r=1, d=1)
+logTransform(transformationId="defaultLogTransform", logbase=10, r=1, d=1)
 }
 
 \arguments{

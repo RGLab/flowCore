@@ -9,7 +9,7 @@ scale at high values and a linear scale at low values with a fixed transition po
 transition value that is reached at the bottom of the display.
 }
 \usage{
-splitScaleTransform(transformationId, maxValue=1023, transitionChannel=64, r=192)
+splitScaleTransform(transformationId="defaultSplitscaleTransform", maxValue=1023, transitionChannel=64, r=192)
 }
 
 \arguments{

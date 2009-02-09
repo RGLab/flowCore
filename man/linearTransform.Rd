@@ -7,7 +7,7 @@
   The definition of this function is currently  x <- a*x+b
 }
 \usage{
-linearTransform(transformationId, a = 1, b = 0)
+linearTransform(transformationId="defaultLinearTransform", a = 1, b = 0)
 }
 
 \arguments{
