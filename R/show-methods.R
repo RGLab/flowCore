@@ -245,6 +245,18 @@ setMethod("show",
       })
 
 
+## ==========================================================================
+## filterList
+## --------------------------------------------------------------------------
+setMethod("show",
+          signature=signature(object="filterList"),
+          definition=function(object)
+      {
+          cat(sprintf("A list of %d filters with filterId '%s'.\n",
+                      length(object), identifier(object)))
+      })
+
+
 
 ## ==========================================================================
 ## filterSet

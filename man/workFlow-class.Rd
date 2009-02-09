@@ -6,6 +6,7 @@
 \alias{workFlow}
 \alias{add}
 \alias{add,workFlow,concreteFilter-method}
+\alias{add,workFlow,filterList-method}
 \alias{add,workFlow,transformList-method}
 \alias{add,workFlow,compensation-method}
 \alias{assign,ANY,ANY,missing,workFlow,missing,missing-method}
@@ -118,6 +119,11 @@ undo(wf, n=1)
 	"concreteFilter")}: Create a new \code{\link{gateActionItem}} and
       \code{\link{gateView}} from a \code{\link{filter}} and assign those to
       the workflow. }
+
+    \item{add}{\code{signature(wf = "workFlow", action =
+	"filterList")}: Create a new \code{\link{gateActionItem}} and
+      \code{\link{gateView}} from a \code{\link{filterList}}
+	and assign those to the workflow. }
 
     \item{add}{\code{signature(wf = "workFlow", action =
 	"transformList")}: Create a new \code{\link{transformActionItem}} and

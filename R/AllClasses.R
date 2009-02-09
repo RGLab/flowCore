@@ -1180,6 +1180,62 @@ validFilterResultList <- function(fres, set, strict=TRUE)
 }
 
 
+## ---------------------------------------------------------------------------
+## A list of filters serving as input for a filtering operation of whole
+## flowSets or for generating workflow gateActionItems. This directly extends
+## class 'list' and mainly exists to allow for method dispatch and sanity
+## checking. The filterId slot is supposed to contain a unique identifier for all
+## individual filter objects in the list. Names of the list items should
+## always correspond to sampleNames of the flowSet.
+## ---------------------------------------------------------------------------
+setClass("filterList",
+         contains="list",
+         representation=representation(filterId="character"))
+
+## Check if a filteList matches a flowSet. If strict=TRUE, the
+## function will also check whether all items in the filterResultSet
+## are of equal type and produce the same number of populations.
+validFilterList <- function(flist, set, strict=TRUE)
+{
+    res <- TRUE
+    checkClass(flist, "filterList")
+    checkClass(strict, "logical", 1)
+    if(!missing(set)){
+        checkClass(set, "flowSet")
+        if(res <- !all(names(flist) == sampleNames(set)))
+            warning("Sample names don't match between flowSet and ",
+                    "filterResultList", call.=FALSE)
+    }
+    if(strict){
+        fTypes <- sapply(flist, function(x) class(x))
+        if(length(unique(fTypes)) != 1)
+        {
+            warning("Not all filter objects in the list are of equal",
+                    " type.", call.=FALSE)
+            res <- FALSE
+        }
+        if(any(sapply(flist, is, "filterResult")))
+        {
+            stop("filterResults are not allowed in a filterList") 
+            res <- FALSE
+        }
+        return(res)
+    }
+}
+
+## Constructor
+filterList <- function(x, filterId=identifier(x[[1]]))
+{
+    checkClass(x, "list")
+    checkClass(filterId, "character", 1)
+    if(is.null(names(x)))
+        stop("Names missing in input list.")
+    x <- new("filterList", .Data=x, filterId=filterId)
+    validFilterList(x)
+    return(x)
+}
+
+
 ## ===========================================================================
 ## filterSummary
 ## ---------------------------------------------------------------------------
@@ -1577,6 +1633,7 @@ refType <- function(value)
     if(is(value, "flowFrame") || is(value, "flowSet")) "fcDataReference"
     else if(is(value, "filterResult")) "fcFilterResultReference"
     else if(is(value, "filter")) "fcFilterReference"
+    else if(is(value, "filterList")) "fcFilterReference"
     else if(is(value, "actionItem")) "fcActionReference"
     else if(is(value, "view")) "fcViewReference"
     else if(is(value, "compensation")) "fcCompensateReference"
@@ -1595,6 +1652,7 @@ refName <- function(value)
     prefix <- if(is(value, "flowFrame") || is(value, "flowSet")) "dataRef"
     else if(is(value, "filterResult")) "fresRef"
     else if(is(value, "filter")) "filterRef"
+    else if(is(value, "filterList")) "filterRef"
     else if(is(value, "actionItem")) "actionRef"
     else if(is(value, "view")) "viewRef"
     else if(is(value, "compensation")) "compRef"
@@ -2389,6 +2447,91 @@ gateView <- function(workflow, ID=paste("gateViewRef", guid(), sep="_"),
     return(ref)
 }
 
+
+## Helper function to create gateActionItem from either a filter or filterList
+## object
+createGateActionItem <- function(wf, action, parent, name)
+{
+    if(is(action, "filterResult"))
+        stop("Don't know how to handle object of class '",
+             class(action), "'", call.=FALSE)
+    else if(is(action, "filter") || is(action, "filterList")){
+        ## get the parentView. If not explicitely specified, use the
+        ## root node
+        pid <- if(is.null(parent)) views(wf)[[1]] else parent
+        pid <- getAlias(pid, wf)
+        if(is.null(unlist(pid)))
+            stop("'", parent, "' is not a valid view name in this",
+                 " workflow.", call.=FALSE)
+        ## assign the filter to the evaluation environment and create
+        ## a reference to it
+        gateRef <- assign(value=action, envir=wf)
+        pview <- fcViewReference(ID=pid, env=wf)
+        ## create and assign a new gateActionItem
+        actionRef <- gateActionItem(parentView=pview, gate=gateRef,
+                                    workflow=wf)
+        ## add a useful name to the journal entry
+        journal <- get(wf@journal)
+        names(journal)[length(journal)] <- identifier(actionRef)
+        assign(wf@journal, journal, wf)
+        ## now evaluate the filter and assign the result
+        fres <- filter(Data(get(pview)), action)
+        if(is(action, "filterList"))
+            identifier(fres) <- identifier(action)
+        if(!validFilterResultList(fres))
+            stop("Don't know how to proceed.", call.=FALSE)
+        fresRef <-  assign(value=fres, envir=wf)
+        gAction <- get(actionRef)
+        gAction@filterResult <- fresRef
+        assign(actionRef, gAction, wf) 
+        ## we need to distinguish between logicalFilterResults and
+        ## multipleFilterResults
+        nodes <- NULL
+        if(!is(fres, "filterResultList")){
+            len <-
+                if(is(fres, "logicalFilterResult")) 2
+                else length(fres)
+            for(i in seq_len(len)){
+                vid <- gateView(name=paste(name, names(fres)[i], sep=""),
+                                workflow=wf,
+                                action=actionRef, filterResult=fresRef,
+                                indices=list(fres[[i]]@subSet),
+                                frEntry=names(fres)[i])
+                nodes <- c(nodes, identifier(vid))
+            }
+        }else{
+            len <-
+                if(is(fres[[1]], "logicalFilterResult")) 2
+                else length(fres[[1]])
+            for(i in seq_len(len)){
+                vid <- gateView(name=paste(name, names(fres[[1]])[i], sep=""),
+                                workflow=wf,
+                                action=actionRef, filterResult=fresRef,
+                                indices=lapply(fres, function(y) y[[i]]@subSet),
+                                frEntry=names(fres[[1]])[i])
+                nodes <- c(nodes, identifier(vid))
+            }
+        }
+        ## update the filter and filterResult IDs
+        identifier(action) <- paste("filter", identifier(action),
+                                    sep="_")
+        identifier(fres) <- paste("fres", identifier(fres),
+                                  sep="_")
+        assign(gateRef, action, wf)
+        assign(fresRef, fres, wf)
+        ## add new nodes and edges to the workflow tree
+        tree <- get(wf@tree)
+        tree <- addNode(nodes, tree)
+        tree <- addEdge(pview@ID, nodes, tree)
+        edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+        edgeData(tree, pview@ID, nodes, "actionItem") <-
+            actionRef
+        assign(x=wf@tree, value=tree, envir=wf)
+        return(invisible(wf))
+    } else stop("Don't know how to handle object of class '",
+                class(action), "'", call.=FALSE)
+}
+
 ## constructor directly from a filter object. This creates a gateActionItem
 ## in the workFlow and from that a gateView which is also directly stored in
 ## the workFlow object.
@@ -2396,90 +2539,12 @@ setMethod("add",
           signature=signature(wf="workFlow", action="concreteFilter"),
           definition=function(wf, action, parent=NULL, name="")
       {
-          fun <- function(wf, action, parent, name)
-          {
-              if(is(action, "filterResult"))
-                  stop("Don't know how to handle object of class '",
-                       class(action), "'", call.=FALSE)
-              else if(is(action, "filter")){
-                  ## get the parentView. If not explicitely specified, use the
-                  ## root node
-                  pid <- if(is.null(parent)) views(wf)[[1]] else parent
-                  pid <- getAlias(pid, wf)
-                  if(is.null(unlist(pid)))
-                      stop("'", parent, "' is not a valid view name in this",
-                           " workflow.", call.=FALSE)
-                  ## assign the filter to the evaluation environment and create
-                  ## a reference to it
-                  gateRef <- assign(value=action, envir=wf)
-                  pview <- fcViewReference(ID=pid, env=wf)
-                  ## create and assign a new gateActionItem
-                  actionRef <- gateActionItem(parentView=pview, gate=gateRef,
-                                              workflow=wf)
-                  ## add a useful name to the journal entry
-                  journal <- get(wf@journal)
-                  names(journal)[length(journal)] <- identifier(actionRef)
-                  assign(wf@journal, journal, wf)
-                  ## now evaluate the filter and assign the result
-                  fres <- filter(Data(get(pview)), action)
-                  if(!validFilterResultList(fres))
-                      stop("Don't know how to proceed.", call.=FALSE)
-                  fresRef <-  assign(value=fres, envir=wf)
-                  gAction <- get(actionRef)
-                  gAction@filterResult <- fresRef
-                  assign(actionRef, gAction, wf) 
-                  ## we need to distinguish between logicalFilterResults and
-                  ## multipleFilterResults
-                  nodes <- NULL
-                  if(!is(fres, "filterResultList")){
-                      len <-
-                          if(is(fres, "logicalFilterResult")) 2
-                          else length(fres)
-                      for(i in seq_len(len)){
-                          vid <- gateView(name=paste(name, names(fres)[i], sep=""),
-                                          workflow=wf,
-                                          action=actionRef, filterResult=fresRef,
-                                          indices=list(fres[[i]]@subSet),
-                                          frEntry=names(fres)[i])
-                          nodes <- c(nodes, identifier(vid))
-                      }
-                  }else{
-                      len <-
-                          if(is(fres[[1]], "logicalFilterResult")) 2
-                          else length(fres[[1]])
-                      for(i in seq_len(len)){
-                          vid <- gateView(name=paste(name, names(fres[[1]])[i], sep=""),
-                                          workflow=wf,
-                                          action=actionRef, filterResult=fresRef,
-                                          indices=lapply(fres, function(y) y[[i]]@subSet),
-                                          frEntry=names(fres[[1]])[i])
-                          nodes <- c(nodes, identifier(vid))
-                      }
-                  }
-                  ## update the filter and filterResult IDs
-                  identifier(action) <- paste("filter", identifier(action),
-                                              sep="_")
-                  identifier(fres) <- paste("fres", identifier(fres),
-                                            sep="_")
-                  assign(gateRef, action, wf)
-                  assign(fresRef, fres, wf)
-                  ## add new nodes and edges to the workflow tree
-                  tree <- get(wf@tree)
-                  tree <- addNode(nodes, tree)
-                  tree <- addEdge(pview@ID, nodes, tree)
-                  edgeDataDefaults(tree, "actionItem") <- fcNullReference()
-                  edgeData(tree, pview@ID, nodes, "actionItem") <-
-                      actionRef
-                  assign(x=wf@tree, value=tree, envir=wf)
-                  return(invisible(wf))
-              } else stop("Don't know how to handle object of class '",
-                          class(action), "'", call.=FALSE)
-          }
+         
           ## create a new journal entry first
           journal <- c(get(wf@journal), list(NULL))
           assign(wf@journal, journal, wf)
           ## now do the actual adding, new objects are captured in the journal
-          tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+          tryCatch(createGateActionItem(wf=wf, action=action, parent=parent, name=name),
                     error=function(e){
                         cat("Error adding item '", substitute(action),
                             "':\n  ", sep="")
@@ -2490,6 +2555,28 @@ setMethod("add",
       })
 
 
+
+## constructor directly from a filterList object. This creates a gateActionItem
+## in the workFlow and from that a gateView which is also directly stored in
+## the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="filterList"),
+          definition=function(wf, action, parent=NULL, name="")
+      {
+         
+          ## create a new journal entry first
+          journal <- c(get(wf@journal), list(NULL))
+          assign(wf@journal, journal, wf)
+          ## now do the actual adding, new objects are captured in the journal
+          tryCatch(createGateActionItem(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        print(e)
+                        undo(wf)
+                    })
+          return(invisible(wf))
+      })
 
 
 
