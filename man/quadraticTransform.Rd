@@ -7,7 +7,7 @@
   The definition of this function is currently  x <- a*x\^2 + b*x + c
 }
 \usage{
-quadraticTransform(transformationId, a = 1, b = 1, c = 0)
+quadraticTransform(transformationId="defaultQuadraticTransform", a = 1, b = 1, c = 0)
 }
 
 \arguments{

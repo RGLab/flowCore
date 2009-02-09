@@ -10,7 +10,7 @@
   Typically r and d are both equal to 1.0. Both must be positive.
 }
 \usage{
-lnTransform(transformationId, r=1, d=1)
+lnTransform(transformationId="defaultLnTransform", r=1, d=1)
 }
 
 \arguments{

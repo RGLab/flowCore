@@ -1278,7 +1278,8 @@ setClass("filterSummaryList",
 ## create objects of the basic class 'transform', unless stated otherwise.
 ## ---------------------------------------------------------------------------
 ## linear (polynomial) transform constructor
-linearTransform <- function(transformationId, a=1, b=0)
+linearTransform <- function(transformationId="defaultLinearTransform",
+                            a=1, b=0)
 {
     checkClass(a, "numeric")
     checkClass(b, "numeric")
@@ -1288,7 +1289,8 @@ linearTransform <- function(transformationId, a=1, b=0)
 }
 
 ## Quadratic transformation constructor
-quadraticTransform <- function(transformationId, a=1, b=1, c=0)
+quadraticTransform <- function(transformationId="defaultQuadraticTransform",
+                               a=1, b=1, c=0)
 {
     if(!is.double(a)) 
         stop("a must be numeric")
@@ -1302,7 +1304,8 @@ quadraticTransform <- function(transformationId, a=1, b=1, c=0)
 }
 
 ## Natural logarithm transformation constructor
-lnTransform <- function(transformationId, r=1, d=1)
+lnTransform <- function(transformationId="defaultLnTransform",
+                        r=1, d=1)
 {
     if(!is.double(r) || r <= 0)
         stop("r must be numeric and positive")
@@ -1315,7 +1318,8 @@ lnTransform <- function(transformationId, r=1, d=1)
 }
 
 ## Logarithm transformation constructor
-logTransform <- function(transformationId, logbase=10, r=1, d=1)
+logTransform <- function(transformationId="defaultLogTransform",
+                         logbase=10, r=1, d=1)
 {
     if(!is.double(r) || r <= 0)
         stop("r must be numeric and positive")
@@ -1333,7 +1337,8 @@ logTransform <- function(transformationId, logbase=10, r=1, d=1)
 
 ## General biexponential transformation constructor
 biexponentialTransform <-
-    function(transformationId, a=.5, b=1, c=.5, d=1, f=0, w=0,
+    function(transformationId="defaultBiexponentialTransform",
+             a=.5, b=1, c=.5, d=1, f=0, w=0,
              tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
 {
     t <- new("transform", .Data=function(x)
@@ -1344,7 +1349,8 @@ biexponentialTransform <-
 }
 
 ## Logicle transformation constructor
-logicleTransform <- function(transformationId, w=0, r=262144, d=5, ...)
+logicleTransform <- function(transformationId="defaultLogicleTransform",
+                             w=0, r=262144, d=5, ...)
 {
     if(w>d)
         stop("Negative range decades must be smaller than total ",
@@ -1361,7 +1367,8 @@ logicleTransform <- function(transformationId, w=0, r=262144, d=5, ...)
 }
 
 ## Truncation transformation constructor
-truncateTransform <- function(transformationId, a=1)
+truncateTransform <- function(transformationId="defaultTruncateTransform",
+                              a=1)
 {
     t <- new("transform", .Data=function(x){
         x[x<=a] <- a
@@ -1372,7 +1379,8 @@ truncateTransform <- function(transformationId, a=1)
 }
 
 ## Scale transformation constructor
-scaleTransform <- function(transformationId, a=1, b=10^4)
+scaleTransform <- function(transformationId="defaultScaleTransform",
+                           a=1, b=10^4)
 {
     t <- new("transform", .Data=function(x) (x-a)/(b-a))
     t@transformationId <- transformationId
@@ -1380,7 +1388,8 @@ scaleTransform <- function(transformationId, a=1, b=10^4)
 }
 
 ## Split-scale transformation constructor
-splitScaleTransform <- function(transformationId, maxValue=1023,
+splitScaleTransform <- function(transformationId="defaultSplitscaleTransform",
+                                maxValue=1023,
                                 transitionChannel=64, r=192)
 {
     maxChannel <- r + transitionChannel
@@ -1405,7 +1414,8 @@ splitScaleTransform <- function(transformationId, maxValue=1023,
 }
 
 ## Hyperbolic Arcsin transformation constructor
-arcsinhTransform <- function(transformationId, a=1, b=1, c=0)
+arcsinhTransform <- function(transformationId="defaultArcsinhTransform",
+                             a=1, b=1, c=0)
 {
     t <- new("transform", .Data=function(x) asinh(a+b*x)+c)
     t@transformationId <- transformationId
