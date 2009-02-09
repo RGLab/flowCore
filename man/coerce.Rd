@@ -39,7 +39,8 @@
 \alias{coerce,ratio,character-method}
 \alias{coerce,transform,character-method}
 \alias{coerce,unitytransform,character-method}
-
+\alias{coerce,ellipsoidGate,polygonGate-method}
+\alias{coerce,rectangleGate,polygonGate-method}
 
 
 \title{Convert an object to another class}

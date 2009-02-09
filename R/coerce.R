@@ -380,3 +380,35 @@ setAs(from="parameters", to="character", def=function(from){
 
 
 
+## ==========================================================================
+## coerce between gate representations
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setAs(from="ellipsoidGate", to="polygonGate", def=function(from)
+  {
+      parms <- parameters(from)
+      ## get the ellipse lines
+      center <- from@mean[parms]
+      if(is.null(rownames(from@cov)))
+          rownames(from@cov) <- colnames(from@cov)
+      cov <- from@cov[parms, parms]
+      radius <- from@distance
+      chol.cov <- t(chol(cov))
+      t <- seq(0, 2 * base::pi, length = 50)
+      ans <- center +
+          (chol.cov %*% rbind(x = radius * cos(t),
+                              y = radius * sin(t)))
+      ans <- as.data.frame(t(ans))
+      names(ans) <- parms
+      ## create a polygonGate
+      polygonGate(.gate=ans, filterId=identifier(from))
+  })
+
+
+
+setAs(from="rectangleGate", to="polygonGate", def=function(from)
+  {
+      bound <- rbind(from@min, c(from@max[1], from@min[2]), from@max,
+                     c(from@min[1], from@max[2]))
+      polygonGate(.gate=bound, filterId=identifier(from))
+  })
+    

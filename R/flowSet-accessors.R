@@ -363,50 +363,59 @@ setMethod("filter",
 							filterId=identifier(filter)))
 		})
 
-## for named lists of filters. Names of the list items have to correspond
-## to sampleNames in the set. Filters in the filter list that can't be
-## matched are ignored, for those that are missing, and "empty" dummy
-## filterResult is produced
+
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="list"),
-		definition=function(x,filter)
-		{
-			if(is.null(names(filter)))
-				stop("'filter' must be a named list, where names correspond",
-						" to sample names in the flowSet", call.=FALSE)
-			nn <- names(filter)
-			sn <- sampleNames(x)
-			unused <- nn[!(nn %in% sn)]
-			notfilter <-  setdiff(sn, nn)
-			## Check for non-matching filters
-			if(length(unused) > 0)
-				warning(paste("Some filters were not used:\n",
-								paste(unused, sep="", collapse=", ")),
-						call.=FALSE)
-			common <- intersect(nn, sn)
-			res <- vector("list", length(x))
-			fid <- character(length(x))
-			names(res) <- names(fid) <- sampleNames(x)
-			## use all matching filters first
-			for(f in common){
-				res[[f]] <- filter(x[[f]], filter[[f]])
-				fid[f] <- identifier(filter[[f]])
-			}
-			## use dummy filters for all the rest (if any)
-			if(length(notfilter)){
-				warning(paste("Some frames were not filtered:\n",
-								paste(notfilter, sep="", collapse=", ")),
-						call.=FALSE)
-				exp <- paste("rep(length(", parameters(x[[1]], names=TRUE)[1],
-						"))", sep="")
-				dummyFilter <- char2ExpressionFilter(exp, filterId="dummy")
-				res[notfilter] <- filter(x[notfilter], dummyFilter)
-				fid[notfilter] <- identifier(dummyFilter)
-			}
-			return(new("filterResultList", .Data=res, frameId=sampleNames(x),
-							filterId=fid))
-		})
+		definition=function(x, filter)
+      {
+          filter(x, filterList(filter))
+      })
+
+## for named lists of filters. Names of the list items have to correspond
+## to sampleNames in the set. Filters in the filter list that can't be
+## matched are ignored, for those that are missing, an "empty" dummy
+## filterResult is produced
+setMethod("filter",
+		signature=signature(x="flowSet",
+				filter="filterList"),
+		definition=function(x, filter)
+      {
+          if(is.null(names(filter)))
+              stop("'filter' must be a named list, where names correspond",
+                   " to sample names in the flowSet", call.=FALSE)
+          nn <- names(filter)
+          sn <- sampleNames(x)
+          unused <- nn[!(nn %in% sn)]
+          notfilter <-  setdiff(sn, nn)
+          ## Check for non-matching filters
+          if(length(unused) > 0)
+              warning(paste("Some filters were not used:\n",
+                            paste(unused, sep="", collapse=", ")),
+                      call.=FALSE)
+          common <- intersect(nn, sn)
+          res <- vector("list", length(x))
+          fid <- character(length(x))
+          names(res) <- names(fid) <- sampleNames(x)
+          ## use all matching filters first
+          for(f in common){
+              res[[f]] <- filter(x[[f]], filter[[f]])
+              fid[f] <- identifier(filter[[f]])
+          }
+          ## use dummy filters for all the rest (if any)
+          if(length(notfilter)){
+              warning(paste("Some frames were not filtered:\n",
+                            paste(notfilter, sep="", collapse=", ")),
+                      call.=FALSE)
+              exp <- paste("rep(length(", parameters(x[[1]], names=TRUE)[1],
+                           "))", sep="")
+              dummyFilter <- char2ExpressionFilter(exp, filterId="dummy")
+              res[notfilter] <- filter(x[notfilter], dummyFilter)
+              fid[notfilter] <- identifier(dummyFilter)
+          }
+          return(new("filterResultList", .Data=res, frameId=sampleNames(x),
+                     filterId=fid))
+      })
 
 
 

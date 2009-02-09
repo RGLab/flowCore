@@ -79,6 +79,23 @@ setMethod("identifier",
           definition=function(object) object@ID)
 
 
+## ==========================================================================
+## For filterList objects we can get the ID directly from the filterId slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature("filterList"),
+          definition=function(object) object@filterId)
+
+setReplaceMethod("identifier",
+                 signature=signature("filterList","character"),
+                 definition=function(object,value)
+             {
+                 object@filterId <- value
+                 object
+             })
+
+
+
 
 ## ==========================================================================
 ## For filterReferences we first resolve the reference to a concrete filter
