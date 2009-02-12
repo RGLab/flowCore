@@ -14,9 +14,7 @@ No methods defined with class "characterOrTransformation" in the signature.
 
  
 
-\seealso{
 
-}
 \examples{
 showClass("characterOrTransformation")
 }
