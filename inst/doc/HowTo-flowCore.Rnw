@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 %\VignetteIndexEntry{Basic Functions for Flow Cytometry Data}
-%\VignetteDepends{flowCore}
+%\VignetteDepends{flowCore, flowViz}
 %\VignetteKeywords{}
 %\VignettePackage{flowCore}
 \documentclass[11pt]{article}
