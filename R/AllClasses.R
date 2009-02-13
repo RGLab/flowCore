@@ -650,7 +650,7 @@ setClass("curv1Filter",
 ##  bwFac is always a numeric of length 1 and gridsize is always a numeric
 ##     of length 2
 ##  x is either a character or a transformation
-curv1Filter <- function(x, bwFac=1.2, gridsize=rep(151, 2),
+curv1Filter <- function(x, bwFac=1.2, gridsize=rep(401, 2),
                         filterId="defaultCurv1Filter")
 {
     checkClass(filterId, "character", 1)
