@@ -438,6 +438,11 @@ setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, ...)
       {
+          ## We hack method dispatch here to allow for something like
+          ## transform(flowSet, transformList). Not really nice,
+          ##  but so what...
+          if(length(list(...)) && is(..1, "transformList"))
+              return(..1 %on% `_data`)
           e <- substitute(list(...))
           x <- `_data`
           par <- parameters(x)
