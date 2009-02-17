@@ -80,6 +80,8 @@ transformList(from, tfun, to=from, transformationId =
 tl <- transformList(c("FSC-H", "SSC-H"), list(log, asinh))
 colnames(tl)
 c(tl, transformList("FL1-H", "linearTransform"))
+data(GvHD)
+transform(GvHD[[1]], tl)
 
 }
 \keyword{classes}

@@ -323,8 +323,9 @@ setMethod("transform",
 				stop("All transforms must be named")
 			new("transformList",
 					transforms=lapply(seq(along=funs),function(i)
-								new("transformMap",input=io[i],output=io[i],
-										f=funs[[i]])))
+                                                          new("transformMap",input=io[i],
+                                                              output=io[i],
+                                                              f=funs[[i]])))
 		})
 
 
