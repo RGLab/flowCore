@@ -214,6 +214,7 @@ setReplaceMethod("sampleNames",
 			}
 			pd <- phenoData(object)
 			sampleNames(pd) <- value
+                        pd$name <- value
 			object@phenoData <- pd
 			object@frames <- env
 			return(object)
