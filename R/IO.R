@@ -82,7 +82,6 @@ read.FCS <- function(filename,
     ## read the file
     offsets <- readFCSheader(con)
     txt <- readFCStext(con, offsets, debug)
-    print(txt)
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
                        debug, scale, alter.names, decades, min.limit)
     id <- paste("$P",1:ncol(mat),sep="")
