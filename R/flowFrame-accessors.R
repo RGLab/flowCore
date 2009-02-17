@@ -439,10 +439,10 @@ setMethod("transform",
           definition=function(`_data`, ...)
       {
           ## We hack method dispatch here to allow for something like
-          ## transform(flowSet, transformList). Not really nice,
-          ##  but so what...
-          if(length(list(...)) && is(..1, "transformList"))
-              return(..1 %on% `_data`)
+          ## transform(flowSet, transformList). Not really nice because
+          ## we also need to deal with non-standard evaluation, but so what...
+          suppressWarnings(try(if(length(list(...)) && is(..1, "transformList"))
+              return(..1 %on% `_data`), silent=TRUE))
           e <- substitute(list(...))
           x <- `_data`
           par <- parameters(x)
