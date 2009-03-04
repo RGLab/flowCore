@@ -280,7 +280,7 @@ setMethod("%in%",
           IQR.val <- (Q3.val - Q1.val)/(qnorm(3/4) - qnorm(1/4))
           bwNS <- min(st.dev,IQR.val)*(4/(7*length(values)))^(1/9)
           ## Obtain significant high curvature intervals.
-          fSObj <- featureSignif(values, bw=bwFac*bwNS,
+	  fSObj <- featureSignif(values, bw=bwFac*bwNS,
                                  addSignifCurv=TRUE,
                                  gridsize=gridsize)
           xGrid <- unlist(fSObj$fhat$x.grid)

@@ -2075,6 +2075,11 @@ setClass("workFlow",
          journal=fcNullReference(),
          env=new.env(parent=emptyenv())))
 
+
+## make deep copy of a flowSet
+copyFlowSet <- function(x) x[1:length(x)]
+
+
 ## The constructor takes a flow data object (flowFrame or flowSet) and
 ## makes a copy in the evaluation environment. It also sets up the views
 ## graph and the alias table in the environment
@@ -2098,6 +2103,7 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
         if(!is(data, "flowFrame") && !is(data, "flowSet"))
             stop("'data' must be a flow data structure (flowFrame or flowSet)",
                  call.=FALSE)
+	data <- copyFlowSet(data)
         dataRef <- assign(value=data, envir=wf)
         viewRef <- view(workflow=wf, name="base view", data=dataRef)
         tree <- addNode(identifier(viewRef), tree)
