@@ -654,7 +654,7 @@ setMethod("normalize",
 		{
 			parms <- parameters(x)
 			args <-  x@arguments
-			args$x <- data
+			args$x <- copyFlowSet(data)
 			args$parameters <- parms
 			do.call(x@normFunction, args)
 		})
