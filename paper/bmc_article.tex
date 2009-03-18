@@ -122,7 +122,7 @@
 %%                                          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{flowCore a Bioconductor package for high throughput flow cytometry}
+\title{flowCore: a Bioconductor package for high throughput flow cytometry}
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                          %%
@@ -389,23 +389,24 @@ interchange of data between analysis tools.
 %% I think switching the last 2 paragraphs make more sense as the 2nd
 %% one of this section talk about other closed-source soft etc.
 %% But up to you
-\Rpackage{flowCore} does not provide a graphical user interface
-(\textit{i.e.}, is not a GUI-driven software) and all operations are
-done using a command line interface.  It is possible to add a more
-elaborate user interface on top of this infrastructure, however the
-focus in this paper is on a programmatic approach to enable the
-convenient development of novel analysis methods and automation of
-complex analysis approaches.  By taking the burden of data management
-from the programmer, and by providing well-defined application
-programming interfaces (APIs), it is possible to readily test new
-ideas and to easily extend the framework's functionality.
+\Rpackage{flowCore} does not provide a graphical user interface and
+all operations are done using a command line interface.  It is
+possible to add a more elaborate user interface on top of this
+infrastructure, however the focus in this paper is on a programmatic
+approach to enable the convenient development of novel analysis
+methods and automation of complex analysis approaches.  By taking the
+burden of data management from the programmer, and by providing
+well-defined application programming interfaces (APIs), it is possible
+to readily test new ideas and to easily extend the framework's
+functionality.
 
 The \Rpackage{flowCore} framework presented here can import and
 process raw data FCS files along with their complete set of
 file-specific metadata (Figure~1\ref{fig1:FrameWork}). Moreover, it is
-a software implementation of the Gating-ML Candidate Recommendation
-(CR), an emerging ISAC standard developed in collaboration with the
-ISAC Data Standards Task Force, which makes it possible to integrate
+a software implementation of the Gating-Markup Language Candidate
+Recommendation (Gating-ML CR), an emerging standard developed in collaboration
+with the International Society for Analytical Cytology (ISAC) Data
+Standards Task Force, which makes it possible to integrate
 \Rpackage{flowCore} in existing work flows and to communicate with any
 other FCM tool that adheres to the proposed standard
 \cite{SpidlenInPressCytometryA}. Adherence to standards also plays a
@@ -466,24 +467,24 @@ was not already done on the instrument) and transformed, and
 sub-populations of interest need to be selected based on a set of
 (predominantly sequential) gates. All software solutions for FCM
 analysis offer support for these operations, most often in an
-interactive, GUI-driven interface. In \Rpackage{flowCore} we have
+interactive, graphical user interface. In \Rpackage{flowCore} we have
 taken the approach to abstractly describe these operations and build a
 set of tools to perform them on both \Rclass{flowFrames} and
 \Rclass{flowSets}. Typically, the results of these operations are
 again \Rclass{flowFrame} or \Rclass{flowSet} objects. While
 transformation, and to a certain extent compensation, are fairly
 routine operations with only limited potential for improvement, being
-able to implement new methodologies for gating of FCM data, and
-extend the capabilities of \Rpackage{flowCore} through object
-oriented programming are features that clearly sets our framework
-apart from other FCM analysis tools. By factoring out as much of the
-bookkeeping as possible, programmers can focus on the actual
-operations rather then having to deal with the tedious details of data
-integration and access. Third-party methods can act on their own as
-first-class citizens in the analysis framework, without breaking the
-work flow or the basic infrastructure. This design allows for the
-straightforward extension of \Rpackage{flowCore}'s capabilities, and
-has already fostered the development of a number of valuable add-ons
+able to implement new methodologies for gating of FCM data, and extend
+the capabilities of \Rpackage{flowCore} through object oriented
+programming are features that clearly sets our framework apart from
+other FCM analysis tools. By factoring out as much of the bookkeeping
+as possible, programmers can focus on the actual operations rather
+then having to deal with the tedious details of data integration and
+access. Third-party methods can act on their own as first-class
+citizens in the analysis framework, without breaking the work flow or
+the basic infrastructure. This design allows for the straightforward
+extension of \Rpackage{flowCore}'s capabilities, and has already
+fostered the development of a number of valuable add-ons
 \cite{lo2008agf,sarkar2008ufv}.
 
 \subsubsection*{Transformation and compensation}
@@ -658,13 +659,13 @@ information can be used to arrange the layout and composition of the
 plots.  Furthermore, the design and the API of the visualization
 software is very generic, and users can readily extend its
 capabilities by providing self-defined plotting functions.  The
-\Rpackage{flowQ} package offers more advanced quality assurance (QA)
+\Rpackage{flowQ} package offers more advanced quality assurance
 methodology and a framework to create interactive web-based reports of
-QA results. The \Rpackage{flowUtil} package implements data import and
-export including flow-cytometry specific standard markup
-language. Finally, the \Rpackage{flowStats} package provides elaborate
-statistical methods that are relevant in the context of flow cytometry
-data analysis.
+quality assurance results. The \Rpackage{flowUtil} package implements
+data import and export including flow-cytometry specific standard
+markup language. Finally, the \Rpackage{flowStats} package provides
+elaborate statistical methods that are relevant in the context of flow
+cytometry data analysis.
 
 More recently, \cite{lo2008agf} have developed an automatic gating
 approach via robust model-based clustering using \Rpackage{flowCore}'s
@@ -696,11 +697,21 @@ applications.
 \section*{Availability and requirements}
 Project name: flowCore ;
 Project home page: http://bioconductor.org ;
-Operating system(s): The flowCore package can be installed on all the 
-platforms supporting R. These include a wide variety of UNIX platforms, Windows and MacOS.;  
+Operating system(s): A wide variety of UNIX platforms, Windows and MacOS.;  
 Programming language: R ;
 Licence: The Artistic License, Version 2.0 .
 
+
+The flowCore package and its associated packages are part of the
+R/Bioconductor project, an environment for statistical computing and
+bioinformatics. The R software environment is freely available at
+http://www.r-project.org. flowCore and its dependencies (flowQ,
+flowViz) are available on the Bioconductor project website
+(http://bioconductor.org) as freely distributed and open source
+software packages with an Artistic license. They are fully integrated
+into the R/Bioconductor environment for statistical computing and
+bioinformatics and run on operating systems Windows, Mac OS X, and
+Unix.
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Authors contributions}
@@ -774,13 +785,13 @@ Foundation for Health Research. RRB is an ISAC Scholar.
         the set, columns to different quality checks.
 
 
-    \subsection*{Figure 3 - Quality assessment}
-    \label{xyplot}{
-        Scatterplot matrix of a single \Rclass{flowSet} from an experiment
-        focusing on immune tolerance following kidney
-        transplantation. Outlines of the gating regions identified by an
-        automated gating operation are added on top of the density
-        representation of the data.}
+    \subsection*{Figure 3 - Batch gating}
+    \label{xyplot}{ 
+      Scatterplot matrix of a single \Rclass{flowSet}
+      from an experiment focusing on immune tolerance following kidney
+      transplantation. Outlines of the gating regions identified by a
+      \Rclass{curve2Filter} automated gating operation are added on
+      top of the density representation of the data.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
@@ -805,14 +816,14 @@ Foundation for Health Research. RRB is an ISAC Scholar.
           \hline
           linear & $ax + b$ \\
           quadratic & $ax^2 + bx + c$ \\
-          natural logarithm & $ln(x)(r/d)$ \\
-          logarithm & $log(x)(r/d)$ \\
-          biexponential & $root(a*e^{(b*y)}-c*e^{(-d+y)}+f)$ \\
-          logicle& $root(Te^{-(m-w)}*(e^{(y-w)}-p^2e^{-(y-w)/p}+p^2-1)$ \\
-          truncate & $x_{x<=a} = a$ \\
+          natural logarithm & $log_e(x)(r/d)$ \\
+          logarithm & $log_b(x)(r/d)$ \\
+          biexponential & $root(ae^{(b*y)}-ce^{(-d+y)}+f)$ \\
+          logicle& $root(Te^{-(m-w)}(e^{(y-w)}-p^2e^{-(y-w)/p}+p^2-1)$ \\
+          truncate & $x_{x{\leq}a} = a$ \\
           scale & $(x-a)/(b-a)$ \\
           split-scale & combination of linear and logarithm \\
-          arcsinh & $asinh(a + bx)+c$ \\
+          arcsinh & $arcsinh(a + bx)+c$ \\
           \hline
         \end{tabular}
       \end{center}
