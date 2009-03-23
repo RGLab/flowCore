@@ -454,9 +454,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
             warning("Supplied file names will be ignored, ",
                     "using names in the phenoData slot instead.")
         file.names <- sampleNames(phenoFrame)
-        files <- dir(path,paste(gsub("\\.","\\\\\\.",file.names),
-                                collapse="|"),full.names=TRUE)
-        if(length(files) != length(file.names)) 
+	files <- file.path(path, file.names)
+      	if(!all(file.exists(files)))
             stop(paste("Not all files given by phenoData could be found in",
                        path))
         if(!"name" %in% varLabels(phenoFrame)){
