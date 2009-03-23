@@ -205,8 +205,8 @@
 \begin{abstract}
         % Do not use inserted blank lines (ie \\) until main body of text.
   \paragraph*{Background:} Recent advances in automation technologies
-  have enabled the use of flow cytometry high content screening
-  (FH-HCS), generating large complex data sets often in clinical
+  have enabled the use of flow cytometry for high throughput
+  screening, generating large complex data sets often in clinical
   trials or drug discovery settings. However, data management and data
   analysis methods have not advanced sufficiently far from the initial
   small-scale studies to support modeling in the presence of multiple
@@ -276,18 +276,17 @@ Automation technologies developed during the last several years have
 enabled the use of flow cytometry (FCM) to generate large, complex
 data sets in both basic and clinical research applications
 \cite{brinkman2007hcf}. A serious bottleneck in the interpretation of
-existing studies and the application of flow cytometry high content
-screening (FC-HCS) to even larger, more complex problems is that data
-management and data analysis methods have not advanced sufficiently
-far from the methods developed for applications of FCM
- to small-scale,
-tube-based studies \cite{mahnke2007omi}. In particular, the data often
-need to be organized into groups of samples based on combinations of
-additional covariates and similar operations need to be applied to
-these groups in a transparent and reproducible manner. Furthermore,
-the growing depth of knowledge in the field of immunology, for
-instance the characterization of distinct human T-cell sub-population
-\cite{Appay}, clearly argues for more systematic approaches.
+existing studies and the application of high throughput FCM to even
+larger, more complex problems is that data management and data
+analysis methods have not advanced sufficiently far from the methods
+developed for applications of FCM to small-scale, tube-based studies
+\cite{mahnke2007omi}. In particular, the data often need to be
+organized into groups of samples based on combinations of additional
+covariates and similar operations need to be applied to these groups
+in a transparent and reproducible manner. Furthermore, the growing
+depth of knowledge in the field of immunology, for instance the
+characterization of distinct human T-cell sub-population \cite{Appay},
+clearly argues for more systematic approaches.
 %% add one of the last roederer's paper that "request" algo and
 %% automation for FC-HCS data analysis.
 
@@ -375,16 +374,16 @@ provides one coherent way to describe these richer data structures.
 In addition, functions or methods that work on those classes allow for
 interaction and manipulation. Many of the currently available software
 solutions offer only limited support for such self-contained
-structures, or make use of containers like XML or binary storage
-formats that are designed specifically for particular user interfaces
-and hence not easily amenable to programmatical access. In addition,
-the closed-source nature of these products often makes them
-impractical to integrate into analysis pipelines. In this manuscript
-we describe classes for FCM data analysis and their implementation in
-R, however, they could just as easily be implemented in any other
-language (e.g., Java, C++). Software written in those languages could
-use similar data structures, thereby simplifying communication and the
-interchange of data between analysis tools.
+structures, or make use of binary storage containers that are designed
+specifically for the needs of particular user interfaces and hence are
+not easily amenable to programmatical access. In addition, the
+closed-source nature of these products often makes them impractical to
+integrate into analysis pipelines. In this manuscript we describe
+classes for FCM data analysis and their implementation in R, however,
+they could just as easily be implemented in any other language (e.g.,
+Java, C++). Software written in those languages could use similar data
+structures, thereby simplifying communication and the interchange of
+data between analysis tools.
 
 %% I think switching the last 2 paragraphs make more sense as the 2nd
 %% one of this section talk about other closed-source soft etc.
@@ -403,8 +402,8 @@ functionality.
 The \Rpackage{flowCore} framework presented here can import and
 process raw data FCS files along with their complete set of
 file-specific metadata (Figure~1\ref{fig1:FrameWork}). Moreover, it is
-a software implementation of the Gating-Markup Language Candidate
-Recommendation (Gating-ML CR), an emerging standard developed in collaboration
+a software implementation of the Gating Markup Language Candidate
+Recommendation, an emerging standard developed in collaboration
 with the International Society for Analytical Cytology (ISAC) Data
 Standards Task Force, which makes it possible to integrate
 \Rpackage{flowCore} in existing work flows and to communicate with any
@@ -818,11 +817,10 @@ Foundation for Health Research. RRB is an ISAC Scholar.
           quadratic & $ax^2 + bx + c$ \\
           natural logarithm & $log_e(x)(r/d)$ \\
           logarithm & $log_b(x)(r/d)$ \\
-          biexponential & $root(ae^{(b*y)}-ce^{(-d+y)}+f)$ \\
-          logicle& $root(Te^{-(m-w)}(e^{(y-w)}-p^2e^{-(y-w)/p}+p^2-1)$ \\
+          biexponential & $ae^{(b*x)}-ce^{(-d+x)}+f$ \\
+          logicle& $Te^{-(m-w)}(e^{(x-w)}-p^2e^{-(x-w)/p}+p^2-1)$ \\
           truncate & $x_{x{\leq}a} = a$ \\
           scale & $(x-a)/(b-a)$ \\
-          split-scale & combination of linear and logarithm \\
           arcsinh & $arcsinh(a + bx)+c$ \\
           \hline
         \end{tabular}
