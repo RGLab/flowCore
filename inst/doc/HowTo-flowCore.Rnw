@@ -489,7 +489,7 @@ Though any function can be used as a transform in both the out-of-line
 and inline transformation techniques, \Rpackage{flowCore} provides a
 number of parameterized transform generators that correspond to the
 transforms commonly found in flow cytometry and defined in the
-Transformation Markup Language (Transformation-ML). Briefly, the
+Transformation Markup Language (Transformation-ML, see \url{http://www.ficcs.org/} and \cite{Spidlen2006} for more details). Briefly, the
 predefined transforms are:
 
 \begin{description}
@@ -520,22 +520,24 @@ which we can then use on the parameter of interest in the usual way
 transform(fs,`FL1-H`=aTrans(`FL1-H`))
 @
 
-\section{Filtering}
+\section{Gating}
 
-The most common task in the analysis of flow cytometry data is usual
-some form of filtering operation, either to obtain summary statistics
-about the number of events that meet a certain criteria or to perform
-further analysis on a subset of the data.
+The most common task in the analysis of flow cytometry data is some
+form of filtering operation, also known as gating, either to obtain
+summary statistics about the number of events that meet a certain
+criteria or to perform further analysis on a subset of the data.  Most
+filtering operations are a composition of one or more common filtering
+operations. The definition of gates in \Rpackage{flowCore} follows the
+Gating Markup Language Candidate Recommendation \cite{Spidlen2008},
+thus any \Rpackage{flowCore} gating strategy can be reproduced by any
+other software that also adheres to the standard and \textit{vice
+  versa}.
 
-\subsection{Standard Filters}
-
-Most filtering operations are a composition of one or more common
-filtering operations. Like transformations, \Rpackage{flowCore}
-includes a number of built-in common flow cytometry filters.
-
-The simplest of these filters are the geometric filters, which
-correspond to those typically found in interactive flow cytometry
-software:
+\subsection{Standard gates and filters}
+Like transformations, \Rpackage{flowCore} includes a number of
+built-in common flow cytometry gates. The simplest of these gates are
+the geometric gates, which correspond to those typically found in
+interactive flow cytometry software:
 \begin{description}
 \item[rectangleGate]{Describes a cubic shape in one or more
     dimensions--a rectangle in one dimension is simply an interval
@@ -557,8 +559,11 @@ rectGate <- rectangleGate(filterId="Fluorescence Region",
                           "FL1-H"=c(0, 12), "FL2-H"=c(0, 12))
 @
 
-We also include some data-driven filters not usually found in flow
-cytometry software:
+In addition, we introduce the notion of data-driven gates, or filters,
+not usually found in flow cytometry software. In these approaches, the
+necessary parameters are computed based on the properties of the
+underlying data, for instance by modelling data distribution or by
+density estimation :
 
 \begin{description}
 \item[norm2Filter]{ A robust method for finding a region that most

@@ -490,16 +490,17 @@ fostered the development of a number of valuable add-ons
 Data transformation is essential for both data visualization and
 modelling \cite{lo2008agf}. The major transformations that are
 routinely used in FCM analysis have been implemented in
-\Rpackage{flowCore} (\textit{e.g.,} log, bi-exponential or arcsinh,
-see Table~\ref{table1} for a complete list). Furthermore, the design
-of the R language makes it easy to define arbitrary functions to apply
-to the data of individual \Rclass{flowFrames} or entire
-\Rclass{flowSets}, respectively. Compensation, that corrects for
-fluorescence spillover originating from the inherent overlap of
-emission spectra from antibody fluorescent labels, is available for
-both \Rclass{flowFrames} and \Rclass{flowSets}. In addition, the
-software offers functionality to compute spillover or compensation
-matrices from a set of appropriate single stain controls.
+\Rpackage{flowCore} (\textit{e.g.,} log, bi-exponential, arcsinh or
+logicle \cite{Parks:2006}, see Table~\ref{table1} for a complete
+list). Furthermore, the design of the R language makes it easy to
+define arbitrary functions to apply to the data of individual
+\Rclass{flowFrames} or entire \Rclass{flowSets},
+respectively. Compensation, that corrects for fluorescence spillover
+originating from the inherent overlap of emission spectra from
+antibody fluorescent labels, is available for both \Rclass{flowFrames}
+and \Rclass{flowSets}. In addition, the software offers functionality
+to compute spillover or compensation matrices from a set of
+appropriate single stain controls.
 
 
 \subsubsection*{Gating}
@@ -523,7 +524,8 @@ as well as to create summary statistics, as for instance the
 proportions of events falling in a single gate or in a combination of
 gates. Complex combinations and hierarchies of gates can be captured
 in multi-step gating strategies. The definition of gates in
-\Rpackage{flowCore} follows the Gating-ML CR, thus any
+\Rpackage{flowCore} follows the Gating Markup Language Candidate
+Recommendation \cite{SpidlenInPressCytometryA}, thus any
 \Rpackage{flowCore} gating strategy can be reproduced by any other
 software that also adheres to the standard and \textit{vice versa}.
 
@@ -804,10 +806,8 @@ Foundation for Health Research. RRB is an ISAC Scholar.
   \subsection*{Table 1 - Data transformations}
     \begin{table}[ht]
       \caption{\label{table1} Data transformations implemented in \Rpackage{flowCore}. Within these formulas, $x$ is the variable
-        corresponding to value being transformed, $y$ is the result of the
-        transformation, $a$, $b$, $c$, $d$, $f$, $p$, $m$, $T$, and $w$, are
-        constants affecting the transformation function, $e$ is the base of
-        the natural logarithm, and $root$ is a root-finding algorithm. Other transformations can easily be implemented in R.}
+        corresponding to value being transformed, $a$, $b$, $c$, $d$, $f$, $p$, $m$, $T$, and $w$, are
+        constants affecting the transformation function, $e$ is the base of the natural logarithm (see \cite{Parks:2006} for details on the logicle transformation). Other transformations can easily be implemented in R.}
       \begin{center}
         \begin{tabular}{|l|l|}
           \hline
