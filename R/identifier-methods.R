@@ -37,6 +37,7 @@ setReplaceMethod("identifier",
                                      value="ANY"),
                  definition=function(object, value)
              {
+                 object@description[["ORIGINALGUID"]] <- object@description[["GUID"]]
                  object@description[["GUID"]] <- value
                  tmp <- object@exprs
                  return(object)

@@ -726,6 +726,29 @@ sampleFilter <- function(size, filterId="defaultSampleFilter")
 }
 
 
+## ===========================================================================
+## boundaryFilter
+## ---------------------------------------------------------------------------
+## Remove events piled up on the margins of a particular channel
+## ---------------------------------------------------------------------------
+setClass("boundaryFilter",
+         representation=representation(tolerance="numeric"),
+         contains="parameterFilter",
+         prototype=list(tolerance=.Machine$double.eps, filterId="defaultBoundaryFilter"))
+
+##Constructor: We allow for the following inputs:
+##  tolerance is always a numeric of length 1
+boundaryFilter <- function(x, tolerance=.Machine$double.eps, filterId="defaultBoundaryFilter")
+{
+    checkClass(filterId, "character")
+    checkClass(tolerance, "numeric")
+    tolerance <- rep(tolerance, length(x))[1:length(x)]
+    names(tolerance) <- as.character(x)
+    new("boundaryFilter", parameters=x, filterId=filterId, tolerance=tolerance)
+}
+
+
+
 
 ## ===========================================================================
 ## expressionFilter

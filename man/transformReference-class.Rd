@@ -6,16 +6,16 @@
 \alias{eval,transformReference,missing,missing-method}
 
 \title{Class "transformReference" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\description{ Class allowing to reference transforms, for instance as parameters.}
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("transformReference", ...)}.
-	 ~~ describe objects here ~~ 
+  Objects will be created internally whenever necessary and this should
+  not be of any concern to the user.
 }
 \section{Slots}{
 	 \describe{
-    \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{searchEnv}:}{Object of class \code{"environment"} ~~ }
-    \item{\code{transformationId}:}{Object of class \code{"character"} ~~ }
+    \item{\code{.Data}:}{The list of references }
+    \item{\code{searchEnv}:}{The environment into which the reference points. }
+    \item{\code{transformationId}:}{The name of the transformation }
   }
 }
 \section{Extends}{
@@ -26,16 +26,7 @@ Class \code{"\linkS4class{characterOrTransformation}"}, by class "transform", di
 \section{Methods}{
 No methods defined with class "transformReference" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
 
- 
+\author{N. Gopalakrishnan}
 
-\seealso{
-
-}
-\examples{
-showClass("transformReference")
-}
 \keyword{classes}
