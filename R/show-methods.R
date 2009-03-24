@@ -550,6 +550,24 @@ setMethod("show",
 
 
 ## ==========================================================================
+## boundaryFilter
+## ---------------------------------------------------------------------------
+setMethod("show",
+          signature=signature(object="boundaryFilter"),
+          definition=function(object)
+      {
+          msg <- paste("boundaryFilter '",object@filterId,
+                       "' with settings:\n  tolerance=",
+                       signif(object@tolerance,3), sep="")
+          cat(msg)
+          cat("\n  operating on channel(s)", paste(parameters(object), collapse=", "))
+          cat("\n")
+          invisible(msg)
+      })
+
+
+
+## ==========================================================================
 ## workFlow. Recursively print all views in the workflow tree adding
 ## indentation
 ## ---------------------------------------------------------------------------

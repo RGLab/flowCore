@@ -34,9 +34,11 @@ setMethod("Data",
                       if(is(parentData, "flowFrame")){
                           newData <- parentData[object@indices[[1]],]
                       }else{
-                          newData <- parentData[1:length(parentData)]
-                          for(i in seq_along(object@indices))
-                              newData[[i]] <- newData[[i]][object@indices[[i]],]
+                          newData <- copyFlowSet(parentData)
+                          for(i in seq_along(object@indices)){
+                              if(nrow(newData[[i]]) > 0)
+                                  newData[[i]] <- newData[[i]][object@indices[[i]],]
+                          }
                       }
                       newDataID <- refName(newData)
                       env <- object@env

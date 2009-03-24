@@ -23,6 +23,7 @@
 \alias{\%in\%,flowFrame,curv2Filter-method}
 \alias{\%in\%,flowFrame,quadGate-method}
 \alias{\%in\%,flowFrame,timeFilter-method}
+\alias{\%in\%,flowFrame,boundaryFilter-method}
 \alias{\%in\%,flowFrame,polytopeGate-method}
 
 \title{Filter-specific membership methods}

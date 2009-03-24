@@ -272,11 +272,12 @@ setMethod("%in%",
           gridsize <- table@gridsize
           ## drop data that has piled up on the measurement ranges
           r <- range(x, param)
-          sel <- ovalues > r[1,] & ovalues < r[2,]
+          sel <- ovalues > r[1,] & ovalues < r[2,] & !is.na(ovalues)
           values <- ovalues[sel]
           ## Compute normal scale bandwidth (second derivative).
-          st.dev <- sqrt(var(values))
-          Q1.val <- quantile(values,1/4) ; Q3.val <- quantile(values,3/4)
+          st.dev <- sqrt(var(values, na.rm=TRUE))
+          Q1.val <- quantile(values,1/4, na.rm=TRUE)
+          Q3.val <- quantile(values,3/4, na.rm=TRUE)
           IQR.val <- (Q3.val - Q1.val)/(qnorm(3/4) - qnorm(1/4))
           bwNS <- min(st.dev,IQR.val)*(4/(7*length(values)))^(1/9)
           ## Obtain significant high curvature intervals.
@@ -328,7 +329,8 @@ setMethod("%in%",
           ## drop data that has piled up on the measurement ranges
           r <- range(x, param)
           sel <- (ovalues[,1] > r[1,1] & ovalues[,1] < r[2,1] &
-                  ovalues[,2] > r[1,2] & ovalues[,2] < r[2,2])
+                  ovalues[,2] > r[1,2] & ovalues[,2] < r[2,2] &
+                  !is.na(ovalues[,1]) & !is.na(ovalues[,2]))
           values <- ovalues[sel, ]
           ## Compute normal scale bandwidths.
           st.devs <- sqrt(apply(values, 2, var))
@@ -632,6 +634,25 @@ setMethod("%in%",
           l <- rep(FALSE,nrow(x))
           l[sample(length(l), n, replace=FALSE)] <- TRUE
           l
+      })
+
+
+
+## ==========================================================================
+## boundaryFilter -- We remove boundary events
+## ---------------------------------------------------------------------------
+setMethod("%in%",
+          signature=signature(x="flowFrame",
+                              table="boundaryFilter"),
+          definition=function(x, table)
+      {
+          ranges <- range(x)
+          exp <- exprs(x)
+          res <- as.matrix(sapply(parameters(table), function(z)
+                                  exp[,z]>ranges[1,z]+table@tolerance[z] &
+                                  exp[,z]<ranges[2,z]-table@tolerance[z]))
+          res[is.na(res)] <- TRUE
+          return(apply(res, 1, any))
       })
 
 

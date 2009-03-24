@@ -81,6 +81,12 @@ setReplaceMethod("[[",
 			if(length(i) != 1)
 				stop("subscript out of bounds (index must have ",
 						"length 1)")
+                        cnx <- colnames(x)
+                        cnv <- colnames(value)
+                        if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
+                            stop("The colnames of this flowFrame don't match ",
+                                 "the colnames of the flowSet.")
+                        
 			sel <- if(is.numeric(i)) sampleNames(x)[[i]] else i
 			x@frames[[sel]] <- value
 			return(x)
@@ -100,7 +106,9 @@ setReplaceMethod("colnames",
 		definition=function(x, value)
 		{
 			x@colnames <- value
-			fsApply(x, "colnames<-", value)
+                        for(i in sampleNames(x))
+                            colnames(x@frames[[i]]) <- value
+			x
 		})
 
 

@@ -3,14 +3,17 @@
 \alias{parameters-class}
 
 \title{Class "parameters" }
-\description{	 ~~ A concise (1-5 lines) description of what the class is.  ~~}
+
+\description{A representation of flow parameters that allows for
+  referencing.}
+
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("parameters", ...)}.
-	 ~~ describe objects here ~~ 
+  Objects will be created internally whenever necessary and this should
+  not be of any concern to the user.
 }
 \section{Slots}{
 	 \describe{
-    \item{\code{.Data}:}{Object of class \code{"list"} ~~ }
+    \item{\code{.Data}:}{A list of the individual parameters }
   }
 }
 \section{Extends}{
@@ -20,15 +23,7 @@ Class \code{"\linkS4class{vector}"}, by class "list", distance 2.
 \section{Methods}{
 No methods defined with class "parameters" in the signature.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
 
+\author{ Nishant Gopalakrishnan }
 
-\seealso{
-
-}
-\examples{
-showClass("parameters")
-}
 \keyword{classes}
