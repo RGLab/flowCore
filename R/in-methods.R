@@ -509,6 +509,8 @@ findTimeChannel <- function(xx, strict=FALSE)
     if(!length(time) && strict)
         stop("Unable to identify time domain recording for this data.\n",
              "Please define manually.", call.=FALSE)
+    if(length(time)>1)
+        time <- character(0)
     return(time)
 }
 
