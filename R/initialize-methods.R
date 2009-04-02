@@ -41,7 +41,8 @@ setMethod("initialize",
           signature=signature(.Object="parameterFilter"),
           definition=function(.Object, parameters, ...)
           {
-            parameters(.Object) <- parameters
+            if (!missing(parameters))
+              parameters(.Object) <- parameters
             callNextMethod()
           })
 
