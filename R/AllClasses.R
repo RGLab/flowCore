@@ -22,9 +22,13 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
     msg <- paste("'", substitute(x), "' must be object of class ",
                  paste("'", class, "'", sep="", collapse=" or "), sep="")
     fail <- !any(sapply(class, function(c, y) is(y, c), x))
-    if(!is.null(length) && length(x) != length){
-        fail <- TRUE
-        msg <- paste(msg, "of length", length)
+    if(!is.null(length) && length(x) != length)
+    {
+        if(!is.null(x))
+        {
+            fail <- TRUE
+            msg <- paste(msg, "of length", length)
+        }
     }
     if(fail) stop(msg, call.=verbose) else invisible(NULL)     
 }
