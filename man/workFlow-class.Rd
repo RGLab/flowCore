@@ -34,6 +34,7 @@
 \alias{actions,workFlow-method}
 \alias{alias,workFlow-method}
 \alias{alias,environment-method}
+\alias{nodes,workFlow-method}
 \alias{summary,workFlow-method}
 \alias{journal}
 \alias{journal,workFlow-method}
@@ -213,6 +214,10 @@ undo(wf, n=1)
     
     \item{summary}{\code{signature(object = "workFlow")}: Summarize a
       view in the \code{workFlow}. }
+
+     \item{nodes}{\code{signature(object = "workFlow")}: Return a named vector
+      of node ids where the names are the human readable names stored in
+      the alias table. }
 
     \item{actions}{\code{signature(x = "workFlow")}: List the names of
       the \code{\link[actionItem-class]{actionItems}} in the

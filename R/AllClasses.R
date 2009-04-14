@@ -3121,6 +3121,14 @@ setMethod("add",
           add(wf, action,...)
       })
 
+setMethod("add",
+          signature=signature(wf="workFlow", action="logical"),
+          definition=function(wf, action, ...)
+      {
+          action <- subsetting(which(action))
+          add(wf, action,...)
+      })
+
 
 
 
