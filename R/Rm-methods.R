@@ -119,6 +119,21 @@ setMethod("Rm",
           return(invisible(NULL))
       })
 
+## For subsettingViews we just need to remove the view itself
+setMethod("Rm",
+          signature=signature(symbol="subsettingView",
+                              envir="workFlow",
+                              subSymbol="character"),
+          definition=function(symbol, envir, subSymbol, rmRef=TRUE)
+      {
+          selectMethod("Rm", signature("view", "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
+          suppressWarnings(rm(list=identifier(symbol), envir=envir@env))
+          return(invisible(NULL))
+      })
+
+
+
 
 
 ## ==========================================================================
@@ -197,6 +212,22 @@ setMethod("Rm",
           definition=function(symbol, envir, subSymbol)
       {
           Rm(symbol@normalization)
+          selectMethod("Rm", signature("actionItem",
+                                       "workFlow", "character"))(symbol, envir)
+          rmAlias(identifier(symbol), envir)
+          suppressWarnings(rm(list=identifier(symbol), envir=envir@env))
+          return(invisible(NULL))
+      })
+
+
+## For subsettingActionItems we need to remove the subsetting object
+setMethod("Rm",
+          signature=signature(symbol="subsettingActionItem",
+                              envir="workFlow",
+                              subSymbol="character"),
+          definition=function(symbol, envir, subSymbol)
+      {
+          Rm(symbol@subsetting)
           selectMethod("Rm", signature("actionItem",
                                        "workFlow", "character"))(symbol, envir)
           rmAlias(identifier(symbol), envir)

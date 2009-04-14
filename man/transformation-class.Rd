@@ -13,8 +13,6 @@ No methods defined with class "transformation" in the signature.
 }
 \author{N. Gopalakrishnan}
 
-\seealso{
 
-}
 
 \keyword{classes}

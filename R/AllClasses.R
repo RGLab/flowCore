@@ -1678,6 +1678,7 @@ refType <- function(value)
     else if(is(value, "graphNEL")) "fcTreeReference"
     else if(is(value, "environment")) "fcAliasReference"
     else if(is(value, "normalization")) "fcNormalizationReference"
+    else if(is(value, "subsetting")) "fcSubsettingReference"
     else if(is(value, "list")) "fcJournalReference"
     else if(is.null(value)) "fcNullReference"
     else "fcReference"
@@ -1697,6 +1698,7 @@ refName <- function(value)
     else if(is(value, "graphNEL")) "treeRef"
     else if(is(value, "environment")) "aliasRef"
     else if(is(value, "normalization")) "normRef"
+    else if(is(value, "subsetting")) "subRef"
     else if(is(value, "list")) "journalRef"
     else if(is.null(value)) "nullRef"
     else "genericRef"
@@ -2008,6 +2010,33 @@ fcNormalizationReference <- function(ID=paste("normRef",
 
 
 ## ===========================================================================
+## fcSubsettingReference
+## ---------------------------------------------------------------------------
+## A reference to a subsetting object. We need this to store a
+## subsetting within a normActionItem without unnecessarily
+## copying things.
+## ---------------------------------------------------------------------------
+setClass("fcSubsettingReference",
+         contains="fcReference",
+         prototype=prototype(ID=paste("subRef", guid(), sep="_"))
+         )
+
+## constructor
+fcSubsettingReference <- function(ID=paste("subRef",
+                                              guid(), sep="_"),
+                                     env=new.env(parent=emptyenv()))
+{
+    checkClass(ID, "character", 1)
+    checkClass(env, c("workFlow", "environment"))
+    envir <- if(is(env, "workFlow")) env@env else env
+    ref <- new("fcSubsettingReference", ID=ID, env=envir)
+    setAlias(identifier(get(ref)), identifier(ref), env)
+    return(ref)
+}
+
+
+
+## ===========================================================================
 ## fcNullReference
 ## ---------------------------------------------------------------------------
 ## A NULL reference to be used whenever a slot is supposed to be empty
@@ -2020,7 +2049,8 @@ setClass("fcNullReference",
                     "fcFilterReference",
                     "fcCompensateReference",
                     "fcTransformReference",
-                    "fcNormalizationReference",         
+                    "fcNormalizationReference",
+                    "fcSubsettingReference", 
                     "fcTreeReference",
                     "fcJournalReference",
                     "fcAliasReference"),
@@ -2062,6 +2092,34 @@ normalization <- function(parameters, normalizationId="defaultNormalization",
         normalizationId=normalizationId, normFunction=normFunction,
         arguments=arguments)
 }
+
+
+
+
+## ===========================================================================
+## subsetting
+## ---------------------------------------------------------------------------
+## A class to describe subsetting operations on a flowSet. The
+## class mainly exists to allow for dispatch in the workFlow system.
+## ---------------------------------------------------------------------------
+setClassUnion("characterOrNumeric", c("character","numeric"))
+setClass("subsetting",
+         representation(subsettingId="character",
+                        indices="characterOrNumeric"),
+         prototype=prototype(subsettingId="defaultSubsetting")
+         )
+
+## constructor
+subsetting <- function(indices, subsettingId="defaultSubsetting")
+{
+    checkClass(indices, c("character","numeric"))
+    checkClass(subsettingId, "character",1)
+    new("subsetting", indices=indices,
+        subsettingId=subsettingId)
+}
+
+
+
 
 
 
@@ -2371,7 +2429,7 @@ setClass("normalizeActionItem",
          contains="actionItem",
          representation=representation(normalization="fcNormalizationReference"))
 
-## The constructor creates the compensateActionItem object and directly
+## The constructor creates the normalizeActionItem object and directly
 ## assigns it to the evaluation ennvironment in 'workflow'. The return
 ## value is a reference to that object.
 normalizeActionItem <- function(ID=paste("normActionRef", guid(), sep="_"),
@@ -2387,6 +2445,36 @@ normalizeActionItem <- function(ID=paste("normActionRef", guid(), sep="_"),
     checkClass(parentView, "fcViewReference")
     action <- new("normalizeActionItem", ID=ID, name=name,
                   normalization=normalization, parentView=parentView,
+                  env=workflow@env, alias=workflow@alias)
+    return(assign(x=ID, value=action, envir=workflow))
+}
+
+
+## ===========================================================================
+## subsettingActionItem
+## ---------------------------------------------------------------------------
+## This contains the definiton of the subsetting
+## ---------------------------------------------------------------------------
+setClass("subsettingActionItem",
+         contains="actionItem",
+         representation=representation(subsetting="fcSubsettingReference"))
+
+## The constructor creates the subsettingActionItem object and directly
+## assigns it to the evaluation ennvironment in 'workflow'. The return
+## value is a reference to that object.
+subsettingActionItem <- function(ID=paste("subActionRef", guid(), sep="_"),
+                                name=paste("action", identifier(get(subsetting)),
+                                           sep="_"),
+                                 parentView, subsetting,
+                                 workflow)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(subsetting, "fcSubsettingReference")
+    checkClass(parentView, "fcViewReference")
+    action <- new("subsettingActionItem", ID=ID, name=name,
+                  subsetting=subsetting, parentView=parentView,
                   env=workflow@env, alias=workflow@alias)
     return(assign(x=ID, value=action, envir=workflow))
 }
@@ -2615,7 +2703,7 @@ setMethod("add",
                     error=function(e){
                         cat("Error adding item '", substitute(action),
                             "':\n  ", sep="")
-                        print(e)
+                        cat(gsub("Error.*\\)\\:", "", e))
                         undo(wf)
                     })
           return(invisible(wf))
@@ -2715,7 +2803,7 @@ setMethod("add",
                     error=function(e){
                         cat("Error adding item '", substitute(action),
                             "':\n  ", sep="")
-                        print(e)
+                        cat(gsub("Error.*\\)\\:", "", e))
                         undo(wf)
                     })
           return(invisible(wf))
@@ -2813,7 +2901,7 @@ setMethod("add",
                     error=function(e){
                         cat("Error adding item '", substitute(action),
                             "':\n  ", sep="")
-                        print(e)
+                        cat(gsub("Error.*\\)\\:", "", e))
                         undo(wf)
                     })
           return(invisible(wf))
@@ -2908,11 +2996,115 @@ setMethod("add",
                     error=function(e){
                         cat("Error adding item '", substitute(action),
                             "':\n  ", sep="")
-                        print(e)
+                        cat(gsub("Error.*\\)\\:", "", e))
                         undo(wf)
                     })
            return(invisible(wf))
        })
+
+
+
+## ===========================================================================
+## subsettingView
+## ---------------------------------------------------------------------------
+## A subsetting makes a copy of the data independent of whether it
+## is a leaf node or not.
+## ---------------------------------------------------------------------------
+setClass("subsettingView",
+         contains="view",
+         prototype=prototype(ID=paste("subViewRef", guid(), sep="_"),
+         name="",
+         action=fcNullReference(),
+         data=fcNullReference(),
+         env=new.env(parent=emptyenv())))
+
+## The constructor creates the subsettingView object and directly assigns it
+## to the evaluation ennvironment in 'workflow'. The return value is a
+## reference to that object.
+subsettingView <- function(workflow, ID=paste("subViewRef", guid(), sep="_"),
+                           name="default", action, data)
+{
+    checkClass(workflow, "workFlow")
+    checkClass(ID, "character", 1)
+    checkClass(name, "character", 1)
+    checkClass(action, "fcActionReference")
+    checkClass(data, "fcDataReference")
+    bv <- new("subsettingView", ID=ID, name=name, env=workflow@env,
+              action=action, data=data, alias=workflow@alias)
+    ref <- assign(identifier(bv), bv, workflow)
+    return(ref)
+}
+
+## constructor directly from a subsetting object. This creates a
+## subsettingActionItem in the workFlow and from that a subsettingView
+## which is also directly stored in the workFlow object.
+setMethod("add",
+          signature=signature(wf="workFlow", action="subsetting"),
+          definition=function(wf, action, parent=NULL,
+                              name=identifier(action))
+      {
+           fun <- function(wf, action, parent, name)
+           {
+               ## get the parentView. If not explicitely specified, use the
+               ## root node
+               pid <- if(is.null(parent)) views(wf)[[1]] else parent
+               pid <- getAlias(pid, wf)
+               if(is.null(unlist(pid)))
+                   stop("'", parent, "' is not a valid view name in this",
+                        " workflow.", call.=FALSE)
+               ## assign the subsetting to the evaluation environment and
+               ## create a reference to it
+               subRef <- assign(value=action, envir=wf)
+               pview <- fcViewReference(ID=pid, env=wf)
+               ## create and assign a new ActionItem
+               actionRef <- subsettingActionItem(parentView=pview,
+                                                 subsetting=subRef,
+                                                 workflow=wf)
+               ## add a useful name to the journal entry
+               journal <- get(wf@journal)
+               names(journal)[length(journal)] <- identifier(actionRef)
+               assign(wf@journal, journal, wf)
+               ## now subset the data and assign the result
+               pdat <- Data(get(pview))
+               if(is.character(action@indices))
+               {
+                   if(!all(action@indices %in% sampleNames(pdat)))
+                       stop("Subset out of bounds.")
+                   action@indices <- match(action@indices, sampleNames(pdat))
+               }
+               tData <- Data(get(pview))[action@indices]
+               dataRef <- assign(value=tData, envir=wf)
+               vid <- subsettingView(name=name, workflow=wf,
+                                     action=actionRef, data=dataRef)
+               ## update the identifier of the subsetting object
+               identifier(action) <- paste("sub", identifier(action),
+                                           sep="_")
+               assign(subRef, value=action, envir=wf) 
+               ## add new nodes and edges to the workflow tree
+               nid <- identifier(vid)
+               tree <- get(wf@tree)
+               tree <- addNode(nid, tree)
+               tree <- addEdge(pid, identifier(vid), tree)
+               edgeDataDefaults(tree, "actionItem") <- fcNullReference()
+               edgeData(tree, pid , nid, "actionItem") <- actionRef
+               assign(x=wf@tree, value=tree, envir=wf)
+               return(invisible(wf))
+           }
+           ## create a new journal entry first
+           journal <- c(get(wf@journal), list(NULL))
+           assign(wf@journal, journal, wf)
+           ## now do the actual adding, new objects are captured in the journal
+           tryCatch(fun(wf=wf, action=action, parent=parent, name=name),
+                    error=function(e){
+                        cat("Error adding item '", substitute(action),
+                            "':\n  ", sep="")
+                        cat(gsub("Error.*\\)\\:", "", e))
+                        undo(wf)
+                    })
+           return(invisible(wf))
+       })
+
+
 
 
 
