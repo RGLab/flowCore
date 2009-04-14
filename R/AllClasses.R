@@ -3105,6 +3105,21 @@ setMethod("add",
        })
 
 
+setMethod("add",
+          signature=signature(wf="workFlow", action="character"),
+          definition=function(wf, action, ...)
+      {
+          action <- subsetting(action)
+          add(wf, action,...)
+      })
+
+setMethod("add",
+          signature=signature(wf="workFlow", action="numeric"),
+          definition=function(wf, action, ...)
+      {
+          action <- subsetting(action)
+          add(wf, action,...)
+      })
 
 
 
