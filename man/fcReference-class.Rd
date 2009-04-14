@@ -26,6 +26,8 @@
 \alias{fcNormalizationReference-class}
 \alias{fcNormalizationReference}
 \alias{fcNullReference-class}
+\alias{fcSubsettingReference}
+\alias{fcSubsettingReference-class}
 \alias{assign}
 \alias{fcNullReference}
 \alias{get}
@@ -202,6 +204,10 @@ fcCompensateReference <- function(ID=paste("compRef",
                                   env=new.env(parent=emptyenv()))
 
 fcNormalizeReference <- function(ID=paste("normRef",
+                                           guid(), sep="_"),
+                                  env=new.env(parent=emptyenv()))
+
+fcSubsettingReference <- function(ID=paste("subRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 

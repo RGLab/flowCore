@@ -742,6 +742,30 @@ setMethod("show",
 
 
 ## ==========================================================================
+## subsettingActionItem. The print method allows more fine-grained control
+## over the output, e.g., indentation
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("print",
+          signature=signature(x="subsettingActionItem"),
+          definition=function(x, indent=0, parent=TRUE){
+              ind <- paste(rep("     ", indent), collapse="")
+              if(indent>0)
+                  ind <- paste(ind, "  ", collapse="")
+              cat("subsetting action item '", x@name, "'\n", sep="")
+              ## Only add the ID when the alias is non-unique
+              if(!uniqueAlias(names(x), x))
+                  cat(ind, " (ID=", x@ID, ")\n", sep="")
+              if(parent)
+                  cat(ind, " applied to view '", get(x@parentView)@name,
+                      "' (ID=",identifier(x@parentView), ")\n", sep="")
+              })
+
+setMethod("show",
+          signature=signature(object="subsettingActionItem"),
+          definition=function(object) print(object))
+
+
+## ==========================================================================
 ## fcNullReference
 ## ---------------------------------------------------------------------------
 setMethod("show",
@@ -785,3 +809,15 @@ setMethod("show",
               sep="")
       })
 
+
+
+## ==========================================================================
+## subsetting
+## ---------------------------------------------------------------------------
+setMethod("show",
+          signature=signature(object="subsetting"),
+          definition=function(object)
+      {
+          cat("subsetting object '", identifier(object), "' to samples:\n",
+              paste(object@indices, collapse=", "), "\n", sep="")
+      })

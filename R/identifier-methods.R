@@ -183,6 +183,22 @@ setReplaceMethod("identifier",
              })
 
 
+## ==========================================================================
+## subsetting objects have a subsettingId slot
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("identifier",
+          signature=signature(object="subsetting"),
+          definition=function(object) object@subsettingId)
+
+setReplaceMethod("identifier",
+                 signature=signature("subsetting","character"),
+                 definition=function(object,value)
+             {
+                 object@subsettingId <- value
+                 object
+             })
+
+
 
 ## ==========================================================================
 ## transformList objects have a transformationId slot
