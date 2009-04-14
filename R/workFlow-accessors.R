@@ -76,6 +76,16 @@ setMethod("ls",
 ## ==========================================================================
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## is a view name unique?
+isUniqueName <- function(n, wf)
+{
+    atab <-  mget(ls(alias(wf)), alias(wf))
+    if(length(atab[[n]])==0)
+        stop("'", n, "' is not a view in this workFlow object",
+             call.=FALSE)
+    length(atab[[n]])==1  
+}
+
 ## by name
 setMethod("[[",
           signature=signature(x="workFlow"),
@@ -89,9 +99,13 @@ setMethod("[[",
                    call.=FALSE)
           if(!missing(j))
               warning("Invalid dimension is ignored", call.=FALSE)
-          if(! i %in% names(x))
-              stop("'", i, "' is not a view in this workFlow object",
-                   call.=FALSE)
+          ids <- nodes(tree(x))
+          if(i %in% ids)
+              return(get(i, x))
+          if(!isUniqueName(i, x))
+              stop("'", i, "' is not a unique name for a view in this workflow. ",
+                   "It maps to the following unique identfiers:\n  ",
+                   paste(alias(x)[[i]], collapse=", "), call.=FALSE)
           get(i,x)
       })
 
@@ -151,6 +165,29 @@ setMethod("journal",
                        call.=FALSE)
               get(jRef, object)
           })
+
+
+
+## ==========================================================================
+## Get the nodes from a workFlow tree
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setMethod("nodes",
+          signature=signature(object="workFlow"),
+          definition=function (object, ...)
+      {
+          n <- nodes(tree(object))
+          names(n) <- id2Alias(n, object)
+          n
+      })
+
+
+nameIdMapping <- function(wf)
+{
+    n <- nodes(wf)
+    vec <- names(n)
+    names(vec) <- n
+    vec
+}
 
 
 

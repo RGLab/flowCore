@@ -75,7 +75,8 @@ importFrom(grDevices,
 
 importFrom(graph,
            "edgeRenderInfo<-",
-           "nodeRenderInfo<-")
+           "nodeRenderInfo<-",
+           "nodes")
 
 importFrom(graphics,
            hist,

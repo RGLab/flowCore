@@ -5,6 +5,7 @@
 \alias{add,workFlow,subsetting-method}
 \alias{add,workFlow,numeric-method}
 \alias{add,workFlow,character-method}
+\alias{add,workFlow,logical-method}
 \alias{identifier<-,subsetting,character-method}
 \alias{identifier,subsetting-method}
 \alias{show,subsetting-method}
