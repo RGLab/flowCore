@@ -1369,7 +1369,7 @@ biexponentialTransform <-
              tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
 {
     t <- new("transform", .Data=function(x)
-             x <- .Call(biexponential_transform, x, a, b, c,
+             x <- .Call("biexponential_transform", x, a, b, c,
                         d, f, w, tol, maxit))
     t@transformationId <- transformationId
     t
@@ -1377,18 +1377,25 @@ biexponentialTransform <-
 
 ## Logicle transformation constructor
 logicleTransform <- function(transformationId="defaultLogicleTransform",
-                             w=0, r=262144, d=5, ...)
+                             w=0, r=262144, d=5,
+                          tol=.Machine$double.eps^0.8, maxit=as.integer(5000))
 {
     if(w>d)
         stop("Negative range decades must be smaller than total ",
              "number of decades")
-    w <- w*log(10)
+  #  w <- w*log(10)
     d <- d*log(10)
     p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
             c(.Machine$double.eps, 2*(w+d)))$root
-    t <- new("transform", .Data=biexponentialTransform(transformationId,
-                          a=r*exp(-(d-w)), b=1, c=r*exp(-(d-w))*p^2, d=1/p,
-                          f=p^2-1, w=w, ...))
+    a=r*exp(-(d-w))
+    b=1
+    c=r*exp(-(d-w))*p^2
+    d=1/p
+    f=a*(p^2-1)
+    t <- new("transform", .Data=function(x) 
+		x <- .Call("logicle_transform",x,a,b,c,d,f,w,tol,maxit)
+	    )
+            
     t@transformationId <- transformationId
     t
 }

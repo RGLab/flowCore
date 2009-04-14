@@ -28,7 +28,7 @@ biexponentialTransform(transformationId="defaultBiexponentialTransform", a = 0.5
 	Returns values giving the inverse of the biexponential within a certain tolerance. This function should be used with care as numerical inversion routines often have problems with the inversion process due to the large range of values that are essentially 0. Do not be surprised if you end up with population splitting about \code{w} and other odd artifacts.
 }
 
-\author{ B. Ellis }
+\author{ B. Ellis, N Gopalakrishnan }
 \seealso{ \code{\link{transform}} }
 \examples{
 # Construct some "flow-like" data which tends to be hetereoscedastic.
