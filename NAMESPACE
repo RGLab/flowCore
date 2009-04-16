@@ -1,119 +1,44 @@
 useDynLib("flowCore",.registration=TRUE)
 
-importClassesFrom(Biobase,
-                  AnnotatedDataFrame,
-		  eSet,
-		  phenoData)
+importClassesFrom(Biobase, AnnotatedDataFrame)
 
-importClassesFrom(methods,
-                  ANY,
-                  "NULL",
-                  call,
-                  character,
-                  data.frame,
-                  environment,
-                  expression,
-                  factor,
-                  formula,
-                  "function",
-                  list,
-                  logical,
-                  matrix,
-                  missing,
-                  name,
-                  numeric,
-                  oldClass)
+importClassesFrom(methods, ANY, call, character, data.frame,
+                  environment, expression, factor, formula, "function",
+                  list, logical, matrix, missing, name, "NULL",
+                  numeric, oldClass)
 
-
-importMethodsFrom(Biobase,
-                  description,
-                  "description<-",
-                  exprs,
-                  "exprs<-",
-                  featureNames,
-                  pData,
-                  "pData<-",
-                  phenoData,
-                  "phenoData<-",
-                  sampleNames,
-                  "sampleNames<-",
-                  varLabels,
-                  "varLabels<-",
-                  varMetadata,
+importMethodsFrom(Biobase, description, "description<-", exprs,
+                  "exprs<-", featureNames, pData, "pData<-", phenoData,
+                  "phenoData<-", sampleNames, "sampleNames<-",
+                  varLabels, "varLabels<-", varMetadata,
                   "varMetadata<-")
 
-importMethodsFrom(graph,
-                  addEdge,
-                  addNode,
-                  adj,
-                  edgeData,
-                  "edgeData<-",
-                  "edgeDataDefaults<-",
-                  removeNode)
+importMethodsFrom(graph, addEdge, addNode, adj, edgeData, "edgeData<-",
+                  "edgeDataDefaults<-", nodes, removeNode)
 
-importMethodsFrom(methods,
-                  cbind2,
-                  coerce,
-                  initialize,
-                  rbind2,
-                  show)
+importMethodsFrom(methods, cbind2, coerce, initialize, rbind2, show)
 
-importFrom(Biobase,
-           l2e,
-           listLen,
-           read.AnnotatedDataFrame)
+importFrom(Biobase, l2e, listLen, read.AnnotatedDataFrame)
 
-importFrom(MASS,
-           cov.rob)
+importFrom(feature, featureSignif)
 
-importFrom(feature,
-           featureSignif)
+importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 
-importFrom(grDevices,
-           contourLines)
+importFrom(graphics, hist, plot, text)
 
-importFrom(graph,
-           "edgeRenderInfo<-",
-           "nodeRenderInfo<-",
-           "nodes")
+importFrom(grDevices, contourLines)
 
-importFrom(graphics,
-           hist,
-           plot,
-           text)
+importFrom(MASS, cov.rob)
 
-importFrom(methods,
-           "@<-",
-           as,
-           callNextMethod,
-           getSlots,
-           is,
-           new,
-           selectMethod,
-           signature,
-           slot,
-           "slot<-")
+importFrom(methods, "@<-", as, callNextMethod, getSlots, is, new,
+           selectMethod, signature, slot, "slot<-")
 
-importFrom(rrcov,
-           CovMcd)
+importFrom(rrcov, CovMcd)
 
-importFrom(stats,
-           kmeans,
-           mad,
-           median,
-           qnorm,
-           quantile,
-           runif,
-           sd,
-           uniroot,
-           var)
+importFrom(stats, kmeans, mad, median, qnorm, quantile, runif, sd,
+           uniroot, var)
 
-importFrom(utils,
-           data,
-           find,
-           head,
-           tail,
-           write.table)
+importFrom(utils, data, find, head, tail, write.table)
 
 
 exportClasses("actionItem",

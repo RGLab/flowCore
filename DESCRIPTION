@@ -1,19 +1,19 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.9.6
+Version: 1.9.7
 Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan
 Description: Provides S4 data structures and basic functions to deal with flow
 	     cytometry data. 
 Maintainer: F. Hahne <fhahne@fhcrc.org>
 Depends: R (>= 2.8.1), Biobase, rrcov
-Imports: Biobase, MASS, feature, grDevices, graph, graphics, methods, rrcov,
-	 stats, utils 
+Imports: Biobase, feature, graph, graphics, grDevices, MASS, methods,
+         rrcov, stats, utils
 Suggests: Rgraphviz, flowViz, ncdf
 Collate: AllGeneric.R 
 	 AllClasses.R
 	 flowFrame-accessors.R
 	 flowSet-accessors.R
-         Rm-methods.R
+     Rm-methods.R
 	 actionItem-accessors.R
 	 coerce.R
 	 logicalFilterResult-accessors.R
@@ -42,5 +42,5 @@ Collate: AllGeneric.R
 	 split-methods.R
 	 eval-methods.R
 	 gatingML.R
-License: The Artistic License, Version 2.0
+License: Artistic-2.0
 biocViews:  Infrastructure, Flowcytometry, CellBasedAssays

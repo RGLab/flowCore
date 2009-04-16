@@ -32,7 +32,6 @@ Sweave("inst/doc/HowTo-flowCore.Rnw")
 ## if the package is built, you can start from here
 library(flowCore)
 #source("R/perry.r")
-library(geneplotter)
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
