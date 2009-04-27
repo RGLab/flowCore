@@ -629,10 +629,15 @@ setMethod("range",
               stop("'", paste(channel[which(pind==0)],
                               collapse="' and '", sep=""),
                    "' is/are no valid parameter(s) in this frame",
-                   call.=FALSE) 
-          ret <- rbind(min=parameters(x)$minRange[pind],
-                       max=parameters(x)$maxRange[pind])
-              colnames(ret) <- parameters(x)$name[pind]
+                   call.=FALSE)
+          mir <- parameters(x)$minRange[pind]
+          if(is.null(mir))
+              mir <- apply(exprs(x[,channel]), 2, min, na.rm=TRUE)
+          mar <- parameters(x)$maxRange[pind]
+          if(is.null(mar))
+              mar <- apply(exprs(x[,channel]), 2, max, na.rm=TRUE)
+          ret <- rbind(min=mir, max=mar)
+          colnames(ret) <- parameters(x)$name[pind]
           return(as.data.frame(ret))
       })
 
