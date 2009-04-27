@@ -100,7 +100,7 @@ setMethod("summary",
           signature=signature(object="filterResult"),
           definition=function(object, ...)
       {
-                    summary(filterDetails(object, object@filterId)$filter,
+          summary(filterDetails(object, object@filterId)$filter,
                   object, ...)
       })
 
@@ -115,8 +115,8 @@ setMethod("summary",
           definition=function(object, ...)
       {
                     filter <- filterDetails(object, identifier(object))$filter
-          identifier(filter) <- paste(identifier(filter), "+", sep="")
-          summary(filter, object)
+                    identifier(filter) <- paste(identifier(filter), "+", sep="")
+                    summary(filter, object)
       })
 
 
@@ -130,7 +130,8 @@ setMethod("summary",
           definition=function(object, ...)
       {
           true <- summary(object@subSet[!is.na(object@subSet)])
-          count <-  sum(!is.na(object@subSet))
+          ## count <-  sum(!is.na(object@subSet))
+          count <- length(object@subSet)
           name=levels(object@subSet)
           new("filterSummary", name=levels(object@subSet), true=true,
               count=count ,p=true/count)
@@ -185,13 +186,15 @@ setMethod("summary",
               e1 <- as(object@filters[[1]],"logical")
               e2 <- as(object@filters[[2]],"logical")
               true <- sum(e1&e2)
-              count<- sum(e2)		
+              ## count <- sum(e2)
+              count <- length(e2)		
               new("filterSummary", name=identifier(object), true=true,
                   count=count, p=true/count)			
           } else {
               id <- gsub("\\+$", "", identifier(object))
               true <- sum(as(result, "logical"))
-              count <- filterDetails(result, id)$subsetCount
+              ## count <- filterDetails(result, id)$subsetCount
+              count <- length(as(result, "logical"))
               new("filterSummary", name=identifier(object), true=true,
                   count=count, p=true/count)			
           }
