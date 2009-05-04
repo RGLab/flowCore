@@ -540,9 +540,32 @@ setMethod("%in%",
           function(x,table)
       {	
           fr <- sapply(table@filters, filter, x=x)
-          res <- apply(matrix(sapply(fr, as, "logical"),
-                       ncol=length(table@filters)), 1, any
-                      )
+	  ## If we have a multipleFilterResult and a logical
+	  ## filter result we have to dissect the two
+	  mfr <- sapply(fr, is, "multipleFilterResult")
+	  if(sum(mfr)>1)
+	     stop("'unionFilters' are not defined when several ",
+	          "filter objects return 'multipleFilterResults.")
+ 	  if(any(mfr))
+	  {
+	     res <- fr[mfr][[1]]@subSet
+	     resL <- sapply(fr[!mfr], slot, "subSet")
+ 	     resM <- !is.na(res)
+             if(any(resL & resM))
+	        stop("unionFilters are not defined for overlapping",
+		     " populations.")
+	     l <- levels(res)
+	     nl <- make.unique(c(sapply(fr[!mfr], 
+                     identifier), l))[1:sum(!mfr)]
+             levels(res) <- c(l, nl)
+	     for(i in seq_along(nl))
+	        res[resL[,i]] <- nl[i]
+          }   
+	  else
+	  {
+             res <- apply(matrix(sapply(fr, as, "logical"),
+                          ncol=length(table@filters)), 1, any)
+	  }
           details <- list()
           for(i in fr) { 
               fd <- filterDetails(i)
@@ -569,7 +592,7 @@ setMethod("%in%",
 	      if(sum(mfr)>1)
 	         stop("'intersectFilters' are not defined when several ",
 		     "filter objects return 'multipleFilterResults.")
-	      if(is.list(fr))
+	      if(any(mfr))
 	      {
 		 res <- fr[mfr][[1]]@subSet
 	         res[!as(fr[!mfr][[1]], "logical")] <- NA
