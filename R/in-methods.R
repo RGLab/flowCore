@@ -563,10 +563,23 @@ setMethod("%in%",
           definition=function(x,table)
           {   
               fr <- sapply(table@filters, filter, x=x)
-              
-              res <- apply(matrix(sapply(fr, as, "logical"),
-                           ncol=length(table@filters)), 1, all
-                          )
+	      ## If we have a multipleFilterResult and a logical
+	      ## filter result we have to dissect the two
+	      mfr <- sapply(fr, is, "multipleFilterResult")
+	      if(sum(mfr)>1)
+	         stop("'intersectFilters' are not defined when several ",
+		     "filter objects return 'multipleFilterResults.")
+	      if(is.list(fr))
+	      {
+		 res <- fr[mfr][[1]]@subSet
+	         res[!as(fr[!mfr][[1]], "logical")] <- NA
+	      }
+              else
+	      {
+                 res <- apply(matrix(sapply(fr, as, "logical"),
+                              ncol=length(table@filters)), 1, all
+                             )
+	      }
               details <- list()
               for(i in fr) 
               { 
