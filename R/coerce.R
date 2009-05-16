@@ -223,8 +223,19 @@ setAs(from="environment", to="flowSet", def=function(from)
       frameList <- frameList[isFrame]    
       ## Check the column names
       colNames <- sapply(frameList, function(f) colnames(from[[f]]))
+      ucol <- sort(unique(as.vector(unlist(colNames))))
       if(is.null(dim(colNames)))
+      {
+          if(length(ucol) != length(colNames[[1]]) || !all(ucol == sort(colNames[[1]])))
+              stop("The individual flowFrames do not contain identical stains.")
           dim(colNames) <- c(ncol(from[[frameList[[1]]]]), length(frameList))
+
+      }
+      else
+      {
+          if(!all(ucol == sort(colNames[,1])))
+               stop("The individual flowFrames do not contain identical stains.")
+      }
       if(!all(apply(colNames, 2, "==", colNames[,1])))
           stop("Column names for all frames do not match.")
       new("flowSet", frames=from, colnames=colNames[,1],
