@@ -11,8 +11,8 @@
    isFCSfile(files)
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
-            debug=FALSE, alter.names=FALSE, column.pattern=NULL,
-            decades=0, ncdf = FALSE, min.limit=NULL)
+            alter.names=FALSE, column.pattern=NULL,
+            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL)
 
    cleanup()
 
@@ -37,9 +37,6 @@
     to be read. If NULL all the records are read, if of length 1, a
     random sample of the size indicated by \code{which.lines} is read
     in.}
-
-  \item{debug}{boolean indicating whether or not to print the
-    debugging statements, default is TRUE}
   
   \item{alter.names}{boolean indicating whether or not we should rename
     the columns to valid R names using \code{\link{make.names}}. The
@@ -77,6 +74,14 @@
     measurement range of the instrument. The default value of \code{-111}
     copies the behavior of flowJo. It can be set to an arbitray number
     or to \code{NULL}, in which case the original values are kept. }
+
+  \item{dataset}{The FCS file specification allows for multiple data
+    segments in a single file. Since the output of \code{read.FCS} is a
+    single \code{flowFrame} we can't automatically read in all available
+    sets. This parameter allows to chose one of the subsets for
+    import. Its value is supposed to be an integer in the range of
+    available data sets. This argument is ignored if there is only a
+    single data segment in the FCS file.}
   
 }
 
