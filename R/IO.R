@@ -103,6 +103,11 @@ read.FCS <- function(filename,
         }
     }
     txt <- readFCStext(con, offsets)
+    ## We only transform if the data in the FCS file hasn't already been
+    ## transformed before
+    if("transformation" %in% names(txt) &&
+       txt[["transformation"]] %in% c("applied", "custom"))
+        transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
                        scale, alter.names, decades, min.limit)
     id <- paste("$P",1:ncol(mat),sep="")
@@ -127,10 +132,14 @@ read.FCS <- function(filename,
             stop(paste("file", filename, "seems to be corrupted."))
     }
 
-    ## set transformed flag
-    txt[["FILENAME"]] = filename
-    if(transformation==TRUE){
-        txt[["transformation"]] <-"applied" 
+    ## set transformed flag and fix the PnE and the Datatype keywords
+    txt[["FILENAME"]] <- filename
+    if(transformation==TRUE)
+    {
+        txt[["transformation"]] <-"applied"
+        for(p in seq_along(pData(params)$name))
+            txt[[sprintf("$P%sE", p)]] <- "0,0"
+        txt[["$DATATYPE"]] <- "F"
     }
 
     ## build description from FCS parameters
@@ -389,8 +398,9 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     ## Do we want the function to bail out when the above condition is TRUE?
     ## Might be better to assume the data was ok up to this point and
     ## exit gracefully with a warning as done in the following lines...
-    if(length(dat) %% nrpar != 0){
-        dat <- dat[1:(length(dat) %/% nrpar)]
+    ld <- length(dat)
+    if(ld %% nrpar != 0){
+        dat <- dat[1:(ld - (ld %% nrpar))]
         warning("Error in reading data stream for file '",
                 summary(con)$description, "'/nData may be truncated!")
     }
@@ -625,3 +635,151 @@ write.AnnotatedDataFrame <- function(frame, file)
 
 cleanup <- function() if(file.exists(".flowCoreNcdf"))
     unlink(".flowCoreNcdf", recursive=TRUE)
+
+
+
+
+
+## ==========================================================================
+## write new FCS file header
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+writeFCSheader <- function(con, offsets)
+{
+    seek(con, 0)
+    writeChar("FCS3.0    ", con, eos=NULL)
+    for(i in offsets)
+        writeChar(paste(paste(rep(" ", 8-nchar(i)), collapse=""), i,
+                        collapse="", sep=""), con, eos=NULL)
+    invisible()
+}
+
+
+
+## ==========================================================================
+## collapse the content of the description slot into a character vector
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+collapseDesc <- function(x)
+{
+    d <- description(x)
+    d <- d[order(names(d))]
+    paste("\\", iconv(paste(names(d), "\\", sapply(d, paste, collapse=" "),
+                            "\\", collapse="", sep=""), to="latin1",
+                      sub=" "), sep="")
+   
+}
+
+
+
+## ==========================================================================
+## Write a flowFrame to an FCS file. Unless given explicitely, the filename
+## is taken from the idnetifier of the flowFrame. 'what' controls the output
+## data type.
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+write.FCS <- function(x, filename, what="numeric")
+{
+    ## Some sanity checking up front
+    if(missing(filename))
+    {
+        filename <- identifier(x)
+        if(!length(grep(".", filename, fixed=TRUE)))
+            filename <- paste(filename, "fcs", sep=".")
+    }
+    what <- match.arg(what, c("integer", "numeric", "double"))
+    if(!is.character(filename) || length(filename)!=1)
+        stop("Argument 'filename' has to be a character of length 1.")
+    if(!is(x, "flowFrame"))
+        stop("Argument 'x' has to be a 'flowFrame'.") 
+    ## Set the mandatory keywords first
+    begTxt <- 58
+    types <- data.frame(symbol=c("I", "F", "D"),
+                        bitwidth=c(2,4,8), stringsAsFactors=FALSE)
+    rownames(types) <- c("integer", "numeric", "double")
+    orders <- c(little="1,2,3,4", big="4,3,2,1")
+    endian <- "big"
+    ## We always use single precision as data type, no matter what...
+    mk <- list("$BEGINANALYSIS"="0",
+               "$BEGINDATA"="",
+               "$BEGINSTEXT"=begTxt,
+               "$BYTEORD"=orders[endian],
+               "$DATATYPE"=types[what, "symbol"],
+               "$ENDANALYSIS"="0",
+               "$ENDDATA"="",
+               "$ENDSTEXT"="",
+               "$MODE"="L",
+               "$NEXTDATA"="0",
+               "$PAR"=ncol(x),
+               "$TOT"=nrow(x),
+               "FCSversion"="3")
+    pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
+    names(pnb) <- sprintf("$P%sB", 1:ncol(x))
+    mk <- c(mk, pnb)
+    description(x) <- mk
+    ## Figure out the offsets based on the size of the initial text section
+    ld <-  length(exprs(x)) * types[what, "bitwidth"]
+    ctxt <- collapseDesc(x)
+    endTxt <- nchar(ctxt) + begTxt
+    endDat <- ld + endTxt
+    endTxt <- endTxt + nchar(endTxt) + nchar(endTxt+1) + nchar(endDat)
+    ## Now we update the header with the new offsets and recalculate
+    endDat <- ld + endTxt
+    description(x) <- list("$ENDSTEXT"=endTxt,
+                           "$BEGINDATA"=endTxt,
+                           "$ENDDATA"=endTxt+ld)
+    ctxt <- collapseDesc(x)
+    offsets <- c(begTxt, endTxt, endTxt, endTxt+ld, 0,0)
+    ## Write out to file
+    con <- file(filename, open="wb")
+    on.exit(close(con))
+    writeFCSheader(con, offsets)
+    writeChar(ctxt, con, eos=NULL)
+    writeBin(as(t(exprs(x)), what), con, size=types[what, "bitwidth"],
+             endian=endian)
+    filename
+}
+
+
+
+## ==========================================================================
+## Write separate FCS files for each flowFrame in a flowSet. Filenames are
+## either taken from the identifiers of the flowSets, or from a character
+## vector with the same length as the flowSet, or by prepending 'i_' to the
+## value of a character scalar. By default, the files will be written in a
+## subdirectry constructed from the flowSet's identifier.
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+write.flowSet <- function(x, outdir=identifier(x), filename, ...)
+{
+    ## Some sanity  checking up front
+    if(missing(filename))
+    {
+        filename <- as.character(fsApply(x, identifier))
+    }
+    else
+    {
+        ferr <- paste("Argument 'fileame has to be a character scalar or",
+                      "a character vector of the same length as 'x'.")
+        if(is.character(filename))
+        {
+            if(length(filename)==1)
+                filename <- paste(seq_len(length(x)), filename, sep="_")
+            else if(length(filename) != length(x))
+                stop(ferr)
+        }
+        else
+            stop(ferr)
+    }
+    if(!is.character(outdir) || length(outdir)!=1)
+        stop("Argument 'outdir' has to be a character of length 1.")
+    if(!file.exists(outdir))
+        dir.create(outdir, recursive=TRUE)
+    if(!is(x, "flowSet"))
+        stop("Argument 'x' has to be a 'flowSet'.")
+    for(f in seq_len(length(x)))
+    {
+        if(!length(grep(".", filename[f], fixed=TRUE)))
+            filename[f] <- paste(filename[f], "fcs", sep=".")
+        write.FCS(x[[f]], filename=file.path(outdir, filename[f]), ...)
+    }
+    sampleNames(x) <- filename
+    write.AnnotatedDataFrame(phenoData(x), file=file.path(outdir, "annotation.txt"))
+    outdir
+}

@@ -10,6 +10,25 @@
 ## ==========================================================================
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## When subsetting columns (i.e., parameters) we also want to clean up the
+## $PnX keywords
+subsetKeywords <- function(x, j)
+{
+    kw <- description(x)
+    sel <- grep("^\\$P[0-9]*[A-Z]$", names(kw))
+    if(is.logical(j))
+        j <- which(j)
+    if(is.character(j))
+        j <- match(j, colnames(x))
+    pars <- as.integer(sapply(gsub("^\\$P", "", names(kw[sel])), function(y)
+                              substr(y,1,nchar(y)-1)))
+    sel <- sel[!pars %in% j]
+    if(length(sel))
+        x@description <- kw[-sel]
+    return(x)
+}
+
+
 ## by indices or logical vectors
 setMethod("[",
           signature=signature(x="flowFrame"),
@@ -32,13 +51,25 @@ setMethod("[",
           if(!missing(i))
                if(max(abs(i)) > nrow(x))
                    stop(msg, call.=FALSE)
-          exprs(x) <-  switch(1+missing(i)+2*missing(j),
-                          { exprs(x)[i, j, ..., drop=FALSE] },
-                          { exprs(x)[ , j, ..., drop=FALSE] },
-                          { exprs(x)[i,  , ..., drop=FALSE] },
-                          { exprs(x)[ ,  , ..., drop=FALSE] } )
-          
-          x
+          switch(1+missing(i)+2*missing(j),
+             {
+                 x <- subsetKeywords(x, j)
+                 exprs(x) <- exprs(x)[i, j, ..., drop=FALSE]
+                 x
+             },
+             {
+                 x <- subsetKeywords(x, j)
+                 exprs(x) <- exprs(x)[ , j, ..., drop=FALSE]
+                 x
+             },
+             {
+                 exprs(x) <- exprs(x)[i,  , ..., drop=FALSE]
+                 x
+             },
+             {
+                 exprs(x) <- exprs(x)[ ,  , ..., drop=FALSE]
+                 x
+             } )
       })
 
 ## by results of a filtering operation
@@ -469,11 +500,13 @@ setMethod("transform",
                                              nrow(oparFrame))
               pData(par) <- rbind(oparFrame, nparFrame)
           }
-          else {
-                  cnames <- colnames(x)
-                  par$minRange <- tranges[1,]
-                  par$maxRange <- tranges[2,]
-              }
+          else
+          {
+              cnames <- colnames(x)
+              par$minRange <- tranges[1,]
+              par$maxRange <- tranges[2,]
+          }
+          description(x) <- list(transformation="custom")
           new("flowFrame",
               exprs=transformed, 
               parameters=par,

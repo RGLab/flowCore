@@ -112,6 +112,7 @@ setMethod("%on%",
           }
           exprs(e2) <- x
           parameters(e2) <- pars
+          description(e2) <- list(transformation="custom")
           e2
       })
 
