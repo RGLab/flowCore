@@ -14,8 +14,8 @@
   class mainly exists for method dispatch. }
 
 \section{Objects from the Class}{
-  
-  Objects are created from regular lists using the constructor \code{filterList}.
+Objects are created from regular lists using the constructor 
+\code{filterList}.
 
 }
 \section{Slots}{

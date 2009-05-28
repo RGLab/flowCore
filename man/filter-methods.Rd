@@ -71,7 +71,7 @@ filter(x,filter,...)
 
 }  
 
-\seealso{\code{\linkS4class{filter}}, \code{\linkS4class{filterResult}}}
+\seealso{\code{\link{Subset}}, \code{\linkS4class{filterResult}}}
 
 \author{F Hahne, B. Ellis, N. Le Meur}
 
