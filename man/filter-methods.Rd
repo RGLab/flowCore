@@ -30,7 +30,7 @@
 }
 
 \usage{
-filter(x,filter,...)
+filter(x, filter, \dots)
 }
 
 \arguments{
@@ -41,7 +41,7 @@ filter(x,filter,...)
   \item{filter}{An object of class \code{\linkS4class{filter}} or a
     named list \code{filters}.}
   
-  \item{...}{Optional arguments}
+  \item{\dots}{Optional arguments}
   
 }
 
@@ -57,13 +57,24 @@ filter(x,filter,...)
   method exists chiefly to allow the calculation of these statistics
   without the need to first \code{\link{Subset}} a
   \code{\linkS4class{flowFrame}}, which can be quite large.
+
+  When applying on a \code{flowSet}, the \code{filter} argument can
+  either be a single \code{filter} object, in which case it is recycled
+  for all frames in the set, or a named list of \code{filter}
+  objects. The names are supposed to match the frame identifiers (i.e.,
+  the output of \code{sampleNames(x)} of the \code{flowSet}. If some
+  frames identifiers are missing, the particular frames are skipped
+  during filtering. Accordingly, all \code{filters} in the filter list
+  that can't be mapped to the \code{flowSet} are ignored. Note that all
+  \code{filter} objects in the list must be of the same type,
+  e.g. \code{rectangleGates}.
 	
 }
 
 \value{
   
-  A \code{\linkS4class{filterResult}} object or a list of
-  \code{\linkS4class{filterResult}} objects if \code{x} is a
+  A \code{\linkS4class{filterResult}} object or a
+  \code{\linkS4class{filterResultList}} object if \code{x} is a
   \code{\linkS4class{flowSet}}. Note that
   \code{\linkS4class{filterResult}} objects are themselves filters,
   allowing them to be used in filter expressions or \code{Subset}
@@ -77,9 +88,26 @@ filter(x,filter,...)
 
 \examples{
 
- samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
- rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
- summary(filter(samp,rectGate))
+## Filtering a flowFrame
+samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
+rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+fr <- filter(samp,rectGate)
+class(fr)
+summary(fr)
+
+## filtering a flowSet
+data(GvHD)
+foo <- GvHD[1:3]
+fr2 <- filter(foo, rectGate)
+class(fr2)
+summary(fr2)
+
+## filtering a flowSet using different filters for each frame
+rg2 <- rectangleGate(filterId="nonDebris","FSC-H"=c(300,Inf))
+rg3 <- rectangleGate(filterId="nonDebris","FSC-H"=c(400,Inf))
+flist <- list(rectGate, rg2, rg3)
+names(flist) <- sampleNames(foo)
+fr3 <- filter(foo, flist)
 
 }
 

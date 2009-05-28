@@ -557,11 +557,13 @@ setMethod("show",
           definition=function(object)
       {
           msg <- paste("boundaryFilter '",object@filterId,
-                       "' with settings:\n  tolerance=",
-                       signif(object@tolerance,3), sep="")
+                       "' operating on ",
+                       sprintf("channel%s\n", ifelse(length(object@side)==1, "", "s:")),
+                       paste(" ", parameters(object), " (tolerance=",
+                             signif(object@tolerance,3),
+                             ", boundary=", object@side, ")\n", sep="",
+                             collapse=""), sep="")
           cat(msg)
-          cat("\n  operating on channel(s)", paste(parameters(object), collapse=", "))
-          cat("\n")
           invisible(msg)
       })
 
