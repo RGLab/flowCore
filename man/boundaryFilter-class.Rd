@@ -36,6 +36,11 @@
       machine tolerance used to decide whether an event is on the
       measurement boundary. Essentially, this is done by evaluating
       \code{x>minRange+tolerance & x<maxRange-tolerance}. }
+
+     \item{\code{side}:}{Object of class \code{"character"}. The margin
+       on which to evaluate the filter. Either \code{upper} for the
+       upper margin or \code{lower} for the lower margin or \code{both}
+       for both margins. }
       
   }
 }
@@ -52,19 +57,29 @@
 
 \usage{
 
-boundaryFilter(x, tolerance=.Machine$double.eps, filterId="defaultBoundaryFilter")
+boundaryFilter(x, tolerance=.Machine$double.eps, side=c("both", "lower",
+"upper"), filterId="defaultBoundaryFilter")
 
 }
 
 
 \arguments{
 
-  \item{x}{ Character giving the name of the measurement parameter on
-    which the filter is supposed to work on. This can also be a list
-    containing a single character scalar for programmatic access. }
+  \item{x}{ Character giving the name(s) of the measurement parameter(s) on
+    which the filter is supposed to work. Note that all events on the
+    margins of ay of the channels provided by \code{x} will be
+    discarded, which is often not desired. Such events may not
+    convey much informtion in the particular channel on which their
+    value falls on the margin, however they may well be informative in
+    other channels. }
 
-  \item{tolerance}{ Numerics scalar, used to set the \code{tolerance}
-    slot of the object. }
+  \item{tolerance}{ Numeric vector, used to set the \code{tolerance}
+    slot of the object. Can be set separately for each element in
+    \code{x}. R's recycling rules apply. }
+
+   \item{side}{ Character vector, used to set the \code{side}
+    slot of the object.  Can be set separately for each element in
+    \code{x}. R's recycling rules apply.}
     
   \item{filterId}{ An optional parameter that sets the \code{filterId}
     slot of this filter. The object can later be identified by this
@@ -145,7 +160,7 @@ package="flowCore"))
 boundaryFilter("FSC-H", filterId="myBoundaryFilter")
 
 ## To facilitate programmatic construction we also have the following
-bf <- boundaryFilter(filterId="myBoundaryFilter", x=list("FSC-H"))
+bf <- boundaryFilter(filterId="myBoundaryFilter", x=c("FSC-H"))
 
 ## Filtering using boundaryFilter
 fres <- filter(dat, bf)
@@ -154,6 +169,9 @@ summary(fres)
 
 ## We can subset the data with the result from the filtering operation.
 Subset(dat, fres)
+
+## A boundaryFilter on the lower margins of several channels
+bf2 <- boundaryFilter(x=c("FSC-H", "SSC-H"), side="lower")
 
 }
 

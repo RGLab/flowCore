@@ -697,11 +697,16 @@ setMethod("%in%",
       {
           ranges <- range(x)
           exp <- exprs(x)
-          res <- as.matrix(sapply(parameters(table), function(z)
-                                  exp[,z]>ranges[1,z]+table@tolerance[z] &
-                                  exp[,z]<ranges[2,z]-table@tolerance[z]))
+          res <- as.matrix(sapply(parameters(table), function(z){
+              low <- exp[,z]>ranges[1,z]+table@tolerance[z]
+              high <- exp[,z]<ranges[2,z]-table@tolerance[z]
+              switch(table@side[z],
+                     both=low & high,
+                     upper=high,
+                     lower=low)
+          }))
           res[is.na(res)] <- TRUE
-          return(apply(res, 1, any))
+          return(apply(res, 1, all))
       })
 
 
