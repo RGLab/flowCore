@@ -133,14 +133,19 @@ read.FCS <- function(filename,
     }
 
     ## set transformed flag and fix the PnE and the Datatype keywords
+    ## also add our own PnR fields.
     txt[["FILENAME"]] <- filename
     if(transformation==TRUE)
     {
         txt[["transformation"]] <-"applied"
         for(p in seq_along(pData(params)$name))
+        {
             txt[[sprintf("$P%sE", p)]] <- "0,0"
+            txt[[sprintf("$P%sR_flowCore", p)]] <- attr(mat, "ranges")[p]+1
+        }
         txt[["$DATATYPE"]] <- "F"
     }
+    attr(mat, "ranges") <- NULL   
 
     ## build description from FCS parameters
     description <- strsplit(txt,split="\n")
@@ -176,12 +181,15 @@ read.FCS <- function(filename,
 ## ==========================================================================
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-makeFCSparameters <- function(cn,txt, transformation, scale, decades,
+makeFCSparameters <- function(cn, txt, transformation, scale, decades,
                               realMin) {
 
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
-    range <- origRange <- as.numeric(txt[paste(id,"R",sep="")])
+    rid <- paste(id,"R_flowCore",sep="")
+    original <- is.na(txt[rid[1]])
+    range <- origRange <- if(!original) as.numeric(txt[rid]) else
+    as.numeric(txt[paste(id,"R",sep="")])
     range <- rbind(realMin,range-1)
 
     ## make sure the ranges are transformed along with the data
@@ -191,7 +199,7 @@ makeFCSparameters <- function(cn,txt, transformation, scale, decades,
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:npar)
             if(ampli[i,1] > 0)
-                range[,i] <- 10^((range[,i]/(origRange[i]-1))*ampli[i,1])
+                range[,i] <- 10^((range[,i]/(origRange[i]-1))*ampli[i,1])-c(1,0)
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
@@ -199,7 +207,7 @@ makeFCSparameters <- function(cn,txt, transformation, scale, decades,
     new("AnnotatedDataFrame",
         data=data.frame(row.names=I(id),name=I(cn),
         desc=I(txt[paste(id,"S",sep="")]),
-        range=origRange, minRange=range[1,], maxRange=range[2,]),
+        range=as.numeric(txt[paste(id,"R",sep="")]), minRange=range[1,], maxRange=range[2,]),
         varMetadata=data.frame(row.names=I(c("name","desc","range",
                                "minRange", "maxRange")),
         labelDescription=I(c("Name of Parameter","Description of Parameter",
@@ -436,17 +444,20 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                                                 names=names(cn))else cn
 
     ## truncate data at max range
-    for(i in seq_len(ncol(dat)))
-        dat[dat[,i]>range[i],i] <- range[i]
-    if(!is.null(min.limit))
-        dat[dat<min.limit] <- min.limit
+    if(is.na(x["transformation"]))
+    {
+        for(i in seq_len(ncol(dat)))
+            dat[dat[,i]>range[i],i] <- range[i]
+        if(!is.null(min.limit))
+            dat[dat<min.limit] <- min.limit
+    }
 
     ## transform or scale if necessary
-    if(transformation) {
+    if(transformation)
+    {
         ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
         ampli <- do.call(rbind,lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
-        
         for (i in 1:nrpar){
             if(ampli[i,1] > 0){
                 dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
@@ -464,6 +475,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             else
                 dat[,i] <- d*((dat[,i])/(range[i]))
     }
+    attr(dat, "ranges") <- range
     return(dat) 
 }
 
