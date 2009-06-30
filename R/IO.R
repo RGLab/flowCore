@@ -140,7 +140,7 @@ read.FCS <- function(filename,
         txt[["transformation"]] <-"applied"
         for(p in seq_along(pData(params)$name))
         {
-            txt[[sprintf("$P%sE", p)]] <- "0,0"
+            txt[[sprintf("$P%sE", p)]] <- sprintf("0,%d", pData(params)[p,"minRange"])
             txt[[sprintf("$P%sR_flowCore", p)]] <- attr(mat, "ranges")[p]+1
         }
         txt[["$DATATYPE"]] <- "F"
@@ -199,7 +199,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:npar)
             if(ampli[i,1] > 0)
-                range[,i] <- 10^((range[,i]/(origRange[i]-1))*ampli[i,1])-c(1,0)
+                range[,i] <- 10^((range[,i]/(origRange[i]-1))*ampli[i,1])
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
