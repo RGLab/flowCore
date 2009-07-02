@@ -14,8 +14,13 @@ for specialized dispatch. All of the ``...Transform'' constructors return
 functions of this type for use in one of the transformation modalities.
 }
 \section{Slots}{
-	 \describe{
+  \describe{
+    
     \item{\code{.Data}:}{Object of class \code{"function"}}
+
+    \item{\code{transformationId}:}{A name for the transformation
+      object}
+  
   }
 }
 \section{Methods}{

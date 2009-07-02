@@ -32,6 +32,9 @@ cytometry workflow. }
       reference to the parent \code{\link{view}} the \code{actionItem}
       is applied on. }
 
+    \item{\code{alias}:}{Object of class \code{"fcAliasReference"}. A
+      reference to the alias table.}
+
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }
 

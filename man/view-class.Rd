@@ -50,6 +50,9 @@
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }
+
+     \item{\code{alias}:}{Object of class \code{"fcAliasReference"}. A
+      reference to the alias table.}
     
     \item{\code{data}:}{Object of class \code{"fcDataReference"} A
       reference to the data that is associated to the view. See

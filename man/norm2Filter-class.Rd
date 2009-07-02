@@ -41,10 +41,6 @@
       deviations used for data selection (all points within
       \code{scalefac} standard deviations are selected).}
 
-    \item{\code{transformation}:}{Object of class \code{"list"}
-      containing \code{\link{transform}} objects, if applicable
-      they are applied to the data before filtering}
-
     \item{\code{n}:}{Object of class \code{"numeric"}, the number of
       events used to compute the covariance matrix of the bivariate
       distribution.}

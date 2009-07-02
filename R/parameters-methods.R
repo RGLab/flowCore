@@ -210,7 +210,7 @@ setMethod("parameters",
           signature=signature(object="filterResult"),
           definition=function(object)
           unique(unlist(sapply(filterDetails(object),
-                               function(x) x$parameters))))
+                               function(x) if(is.list(x)) x$parameters))))
 
 
 

@@ -34,6 +34,8 @@
       context of the flow cytometry values.}
     
     \item{\code{args}:}{An environment providing additional parameters.}
+
+    \item{\code{deparse}:}{A character scalar of the deparsed expression.}
     
     \item{\code{filterId}:}{The identifier of the filter}
     
