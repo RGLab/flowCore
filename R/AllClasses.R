@@ -2629,6 +2629,7 @@ createGateActionItem <- function(wf, action, parent, name)
         ## we need to distinguish between logicalFilterResults and
         ## multipleFilterResults
         nodes <- NULL
+        warned <- FALSE
         if(!is(fres, "filterResultList")){
             len <-
                 if(is(fres, "logicalFilterResult")) 2
@@ -2639,6 +2640,11 @@ createGateActionItem <- function(wf, action, parent, name)
                                 action=actionRef, filterResult=fresRef,
                                 indices=list(fres[[i]]@subSet),
                                 frEntry=names(fres)[i])
+                if(!warned)
+                {
+                    isUniqueName(names(get(vid)), wf, TRUE, identifier(vid))
+                    warned <- TRUE
+                }
                 nodes <- c(nodes, identifier(vid))
             }
         }else{
@@ -2651,6 +2657,11 @@ createGateActionItem <- function(wf, action, parent, name)
                                 action=actionRef, filterResult=fresRef,
                                 indices=lapply(fres, function(y) y[[i]]@subSet),
                                 frEntry=names(fres[[1]])[i])
+                if(!warned)
+                {
+                    isUniqueName(names(get(vid)), wf, TRUE, identifier(vid))
+                    warned <- TRUE
+                }
                 nodes <- c(nodes, identifier(vid))
             }
         }
@@ -2688,11 +2699,11 @@ setMethod("add",
           ## now do the actual adding, new objects are captured in the journal
           tryCatch(createGateActionItem(wf=wf, action=action, parent=parent, name=name),
                     error=function(e){
-                        cat("Error adding item '", substitute(action),
-                            "':\n  ", sep="")
-                        print(e)
+                        message("Error adding item '", substitute(action),
+                            "':\n  ", conditionMessage(e))
                         undo(wf)
-                    })
+                    },
+                   warning=function(e) message("Warning: ", conditionMessage(e)))
           return(invisible(wf))
       })
 
