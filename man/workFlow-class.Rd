@@ -68,6 +68,12 @@
     \item{\code{tree}:}{Object of class \code{"fcTreeReference"}. A
       reference to the \code{\link[graph:graphNEL-class]{graphNEL}}
       objects representing the view structure of the workflow. }
+
+    \item{\code{alias}:}{Object of class \code{"fcAliasReference"}. A
+      reference to the alias table.}
+
+    \item{\code{journal}:}{Object of class \code{"fcJournalReference"}. A
+      reference to the journal.}
     
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment for the workflow in which all objects will be

@@ -44,10 +44,6 @@
     
     \item{\code{filterId}:}{Object of class \code{"character"},
       referencing the filter.}
-
-    \item{\dots:}{You can also directly describe the covarinace matrix
-      of the \code{ellipsoidGate} through named arguments, as described
-      below. }
     
   }
 }

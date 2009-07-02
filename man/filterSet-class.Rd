@@ -36,6 +36,9 @@
 \section{Slots}{
   \describe{
     \item{\code{env}:}{The environment that actually holds the filters}
+    
+    \item{\code{name}:}{A more descriptive name of the set.}
+    
   }
 }
 

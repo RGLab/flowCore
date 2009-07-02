@@ -18,12 +18,25 @@ be a \code{\link{filter}} operation of \code{\link{filterSet}} object on a
 \code{\link{flowFrame}} object.} 
 
 \section{Slots}{
-	 \describe{
+
+  \describe{
+    
     \item{\code{subSet}:}{Object of class \code{"matrix"}}
-    \item{\code{frameId}:}{Object of class \code{"character"} referencing the \code{flowFrame} object filtered. Used for sanity checking.}
-    \item{\code{filterDetails}:}{Object of class \code{"list"} describing the filter applied}
-    \item{\code{filterId}:}{Object of class \code{"character"} referencing the filter applied}
-  }
+ 
+    \item{\code{frameId}:}{Object of class \code{"character"}
+      referencing the \code{flowFrame} object filtered. Used for sanity
+      checking.}
+
+    \item{\code{filterDetails}:}{Object of class \code{"list"}
+      describing the filter applied}
+ 
+    \item{\code{filterId}:}{Object of class \code{"character"}
+      referencing the filter applied}
+
+     \item{\code{dependency}:}{ Any dependencies between the
+       fitlers. Currently not used. }
+   
+   }
 }
 \section{Extends}{
 Class \code{"\linkS4class{filterResult}"}, directly.

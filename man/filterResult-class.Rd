@@ -21,8 +21,6 @@
       describing the filter applied}
     \item{\code{filterId}:}{Object of class \code{"character"}
       referencing the filter applied}
-    \item{\code{parameters}:}{Object of class \code{"ANY"} describing
-      the parameters used to filter the \code{flowFrame}}
   }
 }
 \section{Extends}{
