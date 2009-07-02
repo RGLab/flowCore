@@ -110,6 +110,7 @@ read.FCS <- function(filename,
         transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
                        scale, alter.names, decades, min.limit)
+    matRanges <- attr(mat,"ranges")
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
@@ -136,16 +137,17 @@ read.FCS <- function(filename,
     ## also add our own PnR fields.
     txt[["FILENAME"]] <- filename
     if(transformation==TRUE)
-    {
+    { 
         txt[["transformation"]] <-"applied"
         for(p in seq_along(pData(params)$name))
         {
-            txt[[sprintf("$P%sE", p)]] <- sprintf("0,%d", pData(params)[p,"minRange"])
-            txt[[sprintf("$P%sR_flowCore", p)]] <- attr(mat, "ranges")[p]+1
+             txt[[sprintf("$P%sE", p)]] <- sprintf("0,%d", pData(params)[p,"minRange"])
+             txt[[sprintf("$P%sR_flowCore", p)]] <- matRanges[p]+1
+
+
         }
         txt[["$DATATYPE"]] <- "F"
     }
-    attr(mat, "ranges") <- NULL   
 
     ## build description from FCS parameters
     description <- strsplit(txt,split="\n")
