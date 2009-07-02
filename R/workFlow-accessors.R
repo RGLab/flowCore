@@ -77,13 +77,18 @@ setMethod("ls",
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## is a view name unique?
-isUniqueName <- function(n, wf)
+isUniqueName <- function(n, wf, warn=FALSE, uid)
 {
     atab <-  mget(ls(alias(wf)), alias(wf))
     if(length(atab[[n]])==0)
-        stop("'", n, "' is not a view in this workFlow object",
-             call.=FALSE)
-    length(atab[[n]])==1  
+            stop("'", n, "' is not a view in this workFlow object.",
+                 call.=FALSE)
+    res <- length(atab[[n]])==1 
+    if(!res && warn)
+        warning("'", n, "' is not a unique view name in this workFlow object.\n",
+                "You will only be able to access the view using its UID",
+                " '", uid, "'", call.=FALSE)
+     return(res)
 }
 
 ## by name
@@ -103,9 +108,10 @@ setMethod("[[",
           if(i %in% ids)
               return(get(i, x))
           if(!isUniqueName(i, x))
-              stop("'", i, "' is not a unique name for a view in this workflow. ",
-                   "It maps to the following unique identfiers:\n  ",
-                   paste(alias(x)[[i]], collapse=", "), call.=FALSE)
+              stop("'", i, "' is not a unique name for a view in this workflow.\nIn",
+                   " order to access it you have to use its unique identifier. ",
+                   "\n'", i, "' maps to the following UIDs:\n  '",
+                   paste(alias(x)[[i]], collapse="', '"), "'", call.=FALSE)
           get(i,x)
       })
 
