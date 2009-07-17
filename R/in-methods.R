@@ -697,6 +697,8 @@ setMethod("%in%",
       {
           ranges <- range(x)
           exp <- exprs(x)
+          if(nrow(exp)==0)
+              return(as.logical(NULL))
           res <- as.matrix(sapply(parameters(table), function(z){
               low <- exp[,z]>ranges[1,z]+table@tolerance[z]
               high <- exp[,z]<ranges[2,z]-table@tolerance[z]
