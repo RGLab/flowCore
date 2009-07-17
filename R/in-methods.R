@@ -190,6 +190,14 @@ setMethod("%in%",
                               table="norm2Filter"),
           definition=function(x, table)
       {
+          if(nrow(x)==0)
+          {
+              result <- as.logical(NULL)
+              attr(result, 'center') <- NA
+              attr(result, 'cov') <- NA
+              attr(result, 'radius') <- NA
+              return(result)
+          }
           if(length(parameters(table)) != 2)
               stop("norm2 filters require exactly two parameters.")
           y <- exprs(x)[,parameters(table)]
