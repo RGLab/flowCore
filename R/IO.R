@@ -141,7 +141,7 @@ read.FCS <- function(filename,
         txt[["transformation"]] <-"applied"
         for(p in seq_along(pData(params)$name))
         {
-             txt[[sprintf("$P%sE", p)]] <- sprintf("0,%d", pData(params)[p,"minRange"])
+             txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", max(0, pData(params)[p,"minRange"]))
              txt[[sprintf("$P%sR_flowCore", p)]] <- matRanges[p]+1
 
 
