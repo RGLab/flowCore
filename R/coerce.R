@@ -312,8 +312,15 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
                   offset <- offset+lens[i,]
               }
           }
-          pData(params)["Original",c("name", "desc")] <- c("Original",
-                                                           "Original frame")
+          repl <-  data.frame("Original",
+                         max(pData(params)$range, na.rm=TRUE),
+                         min(pData(params)$minRange, na.rm=TRUE),
+                         max(pData(params)$maxRange, na.rm=TRUE))
+          rownames(repl) <- "Original"
+          pData(params)["Original",-2] <- repl
+          pData(params)[,2] <- c(as.character(pData(parameters(from[[1]]))[,2]),
+                                 "Original Frame")
+             
           desc  <- list(description="Synthetic Frame",
                         sampleNames=sampleNames(from))
           new("flowFrame",exprs=exp,parameters=params,description=desc)
