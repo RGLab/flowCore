@@ -142,7 +142,7 @@ read.FCS <- function(filename,
         for(p in seq_along(pData(params)$name))
         {
              txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", max(0, pData(params)[p,"minRange"]))
-             txt[[sprintf("$P%sR_flowCore", p)]] <- matRanges[p]+1
+             txt[[sprintf("flowCore_$P%sR", p)]] <- matRanges[p]+1
 
 
         }
@@ -188,7 +188,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
-    rid <- paste(id,"R_flowCore",sep="")
+    rid <- paste("flowCore_", id,"R",sep="")
     original <- is.na(txt[rid[1]])
     range <- origRange <- if(!original) as.numeric(txt[rid]) else
     as.numeric(txt[paste(id,"R",sep="")])
@@ -710,7 +710,6 @@ write.FCS <- function(x, filename, what="numeric")
     rownames(types) <- c("integer", "numeric", "double")
     orders <- c(little="1,2,3,4", big="4,3,2,1")
     endian <- "big"
-    ## We always use single precision as data type, no matter what...
     mk <- list("$BEGINANALYSIS"="0",
                "$BEGINDATA"="",
                "$BEGINSTEXT"=begTxt,
@@ -727,6 +726,25 @@ write.FCS <- function(x, filename, what="numeric")
     pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
     names(pnb) <- sprintf("$P%sB", 1:ncol(x))
     mk <- c(mk, pnb)
+    ## FlowJo seems to get confused by empty values in PnS, we fix that here
+    pns <- description(x)[sprintf("$P%sS", 1:ncol(x))]
+    names(pns) <- sprintf("$P%sS", 1:ncol(x))
+    pns <- lapply(pns, function(y) if(!length(y)) " " else y)
+    mk <- c(mk, pns)
+    ## We need all PnE keywords and assume "0,0" if they are missing
+    pne <- description(x)[sprintf("$P%sE", 1:ncol(x))]
+    names(pne) <- sprintf("$P%sE", 1:ncol(x))
+    pne[sapply(pne, length)==0] <- "0,0"
+    mk <- c(mk, pne)
+    ## The same for PnR, "1024" if missing
+    pnr <- description(x)[sprintf("$P%sR", 1:ncol(x))]
+    names(pnr) <- sprintf("$P%sR", 1:ncol(x))
+    pnr[sapply(pnr, length)==0] <- "1024"
+    mk <- c(mk, pnr)
+    ## Now update the PnN keyword
+    pnn <- colnames(x)
+    names(pnn) <- sprintf("$P%sN", 1:ncol(x))
+    mk <- c(mk, pnn)
     description(x) <- mk
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
@@ -794,6 +812,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
         write.FCS(x[[f]], filename=file.path(outdir, filename[f]), ...)
     }
     sampleNames(x) <- filename
+    pData(x)$FCS_File <- filename
     write.AnnotatedDataFrame(phenoData(x), file=file.path(outdir, "annotation.txt"))
     outdir
 }
