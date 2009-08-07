@@ -67,7 +67,7 @@ setMethod("summary",
           signature=signature(object="filter"),
           definition=function(object, result, ...)
       {
-                    if(missing(result))
+          if(missing(result))
               stop("Only resolved filters may be summarized.\nTry something ",
                    "like 'filter(myFlowFrame, myFilter)'\nbefore calling ",
                    "'summary'.", call.=FALSE)
@@ -147,7 +147,7 @@ setMethod("summary",
           signature=signature(object="manyFilterResult"),
           definition=function(object, ...)
       {
-          n <- colnames(object@subSet)
+          n <- names(object)
           lapply(n,function(i) summary(object[[i]]))
       })
 

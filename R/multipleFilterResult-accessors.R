@@ -11,7 +11,6 @@ setMethod("[[",
           signature=signature(x="multipleFilterResult"),
           definition=function(x, i, j, drop=FALSE)
       {
-          #browser()
           if(length(i)!=1)
               stop("subscript out of bounds (index must have length 1)")
           if(is.numeric(i))

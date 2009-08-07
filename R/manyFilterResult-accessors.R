@@ -18,10 +18,14 @@ setMethod("[[",
           if(is.numeric(i)) i <- names(x)[i]
           if(length(i)!=1)
               stop("Only a single subpopulation can be selected.")
-          filterDetails <- structure(list(filterDetails(x,i)),names=i)
+          if(!i %in% names(x))
+              stop("Index out of bounds.")
+          filterDetails <- x@filterDetails
+          names(filterDetails) <- i
           filterDetails$population <- i
           filterDetails$source <- identifier(x)
-          new("logicalFilterResult", subSet=x@subSet[,i],
+          dat <- if(i == "rest") !apply(x@subSet, 1, any) else x@subSet[,i]
+          new("logicalFilterResult", subSet=dat,
               filterDetails=filterDetails,
               frameId=x@frameId, filterId=i)
       })
