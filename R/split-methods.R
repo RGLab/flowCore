@@ -169,23 +169,12 @@ setMethod("split",
           signature=signature(x="flowFrame",
                               f="manyFilterResult"),
           definition=function(x, f, drop=FALSE, prefix=NULL,
-                              flowSet=FALSE, ...)
+                              flowSet=FALSE, population=NULL, ...)
       {
-          ##If drop is TRUE then only use results without children
-          if(drop)
-              nn <- rownames(f@dependency)[rowSums(f@dependency)==0]
-          else
-              nn <- names(f)
-          out <- structure(lapply(nn, function(i) x[f[[i]], ]),
-                           names=if(is.null(prefix)) nn else
-                           paste(prefix,nn,sep=""))
-          if(length(flowSet) > 0 && flowSet) {
-              df <- data.frame(name=I(nn), row.names=nn)
-              vm <- data.frame(labelDescription=I("Name"), row.names="name")
-              out <- flowSet(out, phenoData=new("AnnotatedDataFrame", data=df,
-                                                varMetadata=vm))
-          }
-          return(if(is.list(out) && length(out)==1) out[[1]] else out)
+          m <- getMethod("split", signature=signature(x="flowFrame",
+                                                      f="multipleFilterResult"))
+          m(x=x, f=f, drop=drop, prefix=prefix, flowSet=flowSet,
+            population=population, ...)   
       })
 
 

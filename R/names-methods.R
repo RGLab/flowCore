@@ -87,7 +87,7 @@ setMethod("names",
 ## ---------------------------------------------------------------------------
 setMethod("names",
           signature=signature(x="manyFilterResult"),
-          definition=function(x) colnames(x@subSet))
+          definition=function(x) c("rest", colnames(x@subSet)))
 
 
 
