@@ -352,7 +352,7 @@ setMethod("%in%",
           ## Obtain significant high curvature regions.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
                                  addSignifCurv=TRUE,
-                           gridsize=gridsize)
+                                 gridsize=gridsize)
           contourLinesObj <- contourLines(fSObj$fhat$x[[1]],
                                           fSObj$fhat$x[[2]],
                                     fSObj$curv, levels=0.5)

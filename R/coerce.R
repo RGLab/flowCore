@@ -23,6 +23,13 @@ setAs(from="logical", to="filterResult", def=function(from)
 setAs(from="numeric", to="filterResult", def=function(from)
       new("randomFilterResult", filterId="", subSet=from))
 
+setAs(from="matrix", to="filterResult", def=function(from)
+      new("manyFilterResult", filterId="", subSet=from))
+
+
+
+
+
 setAs(from="gateView", to="filterResult", def=function(from)
   {
       fres <- as(from@indices, "filterResult")

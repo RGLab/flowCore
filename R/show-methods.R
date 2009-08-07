@@ -205,9 +205,9 @@ setMethod("show",
           signature=signature(object="manyFilterResult"),
           definition=function(object)
       {
-          n <- names(object)
-          cat("A filter result containing: ")
-          cat(paste(n,sep=","))
+          n <- unique(as.vector(object@subSet))
+          cat("A filter result containing potentially overlapping populations:\n")
+          cat(paste(n,collapse=", "))
           cat("\n")
       })
 
