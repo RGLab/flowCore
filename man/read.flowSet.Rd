@@ -75,7 +75,7 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   be of class \code{character}, in which case this function tries to
   read a \code{AnnotatedDataFrame} object from the file with that name
   by calling
-  \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame(file.path(path,phenoData),\dots)}}.
+  \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}(file.path(path,phenoData),\dots)}.
   
   In some cases the file names are not a reasonable selection criterion
   and the user might want to import files based on some keywords within
