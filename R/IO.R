@@ -196,7 +196,11 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 
     ## make sure the ranges are transformed along with the data
     if(transformation & !scale){
+      
         ampliPar <- txt[paste(id,"E",sep="")]
+        noPnE <- is.na(ampliPar)
+        if(any(noPnE))
+            ampliPar[noPnE] <- "0,0"
         ampli <- do.call(rbind,lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:npar)
@@ -470,7 +474,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         if(any(noPnE))
         {
             warning("No '$PnE' keyword available for the following channels: ",
-                    paste(which(noPnE), collapse=", "), "\nUsing '0,0' as default.")
+                    paste(which(noPnE), collapse=", "), "\nUsing '0,0' as default.",
+                    call.=FALSE)
             ampliPar[noPnE] <- "0,0"
         }
         ampli <- do.call(rbind,lapply(ampliPar, function(x)
