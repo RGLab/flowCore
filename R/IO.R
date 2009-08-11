@@ -221,13 +221,20 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 ## ==========================================================================
 ## match FCS parameters
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCSgetPar <- function(x, pnam)
+readFCSgetPar <- function(x, pnam, strict=TRUE)
 {
 
     stopifnot(is.character(x), is.character(pnam)) 
     i <- match(pnam, names(x))
-    if(any(is.na(i)))
-        stop(paste("Parameter(s)", pnam, "not contained in 'x'\n"))
+    if(any(is.na(i)) && strict)
+        stop(paste("Parameter(s)", pnam[is.na(i)], "not contained in 'x'\n"))
+    if(!strict)
+    {
+        if(!all(is.na(i)))
+            i[!is.na(i)] <- x[i[!is.na(i)]]
+        names(i) <- pnam
+        return(i)
+    }
     return(x[i])
 }
 
@@ -457,7 +464,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     ## transform or scale if necessary
     if(transformation)
     {
-        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""))
+        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""),
+                                  strict=FALSE)
+        noPnE <- is.na(ampliPar)
+        if(any(noPnE))
+        {
+            warning("No '$PnE' keyword available for the following channels: ",
+                    paste(which(noPnE), collapse=", "), "\nUsing '0,0' as default.")
+            ampliPar[noPnE] <- "0,0"
+        }
         ampli <- do.call(rbind,lapply(ampliPar, function(x)
                                         as.integer(unlist(strsplit(x,",")))))
         for (i in 1:nrpar){
