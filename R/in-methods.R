@@ -509,8 +509,10 @@ findTimeChannel <- function(xx, strict=FALSE)
     time <- grep("^Time$", colnames(xx), value=TRUE,
                  ignore.case=TRUE)[1]
     if(is.na(time)){
-        if(is(xx, "flowSet") || is(xx, "flowFrame"))
+        if(is(xx, "flowSet"))
             xx <- exprs(xx[[1]])
+		else if (is(xx, "flowFrame"))
+			xx <- exprs(xx)
         cont <- apply(xx, 2, function(y) all(sign(diff(y)) >= 0))
         time <- names(which(cont))
     }
