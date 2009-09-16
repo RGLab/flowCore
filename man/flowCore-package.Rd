@@ -10,8 +10,9 @@ deal with flow cytometry data.
 }
 \description{
 
-  Define important flow cytometry data classes: \code{\link{flowFrame}},
-  \code{\link{flowSet}} and their acdcessors.
+  Define important flow cytometry data classes:
+  \code{\link[flowCore:flowFrame-class]{flowFrame}}, 
+  \code{\link[flowCore:flowSet-class]{flowSet}} and their acdcessors.
   
   Provide important transformation, filter, gating, workflow, and summary
   functions for flow cytometry data analysis.
@@ -24,8 +25,8 @@ deal with flow cytometry data.
 \details{ \tabular{ll}{
     Package: \tab flowCore
     \cr Type: \tab Package
-    \cr Version: \tab 1.11.19
-    \cr Date: \tab 2009-09-15
+    \cr Version: \tab 1.11.20
+    \cr Date: \tab 2009-09-16
     \cr License: \tab Artistic-2.0\cr }
 
 }
@@ -38,9 +39,4 @@ deal with flow cytometry data.
 }
 
 \keyword{ package }
-\seealso{
-\code{\link[flowCore:flowCore-package]{flowCore}}
-}
-\examples{
-## examples go here
 }
