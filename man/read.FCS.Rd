@@ -51,7 +51,8 @@
 
   \item{ncdf}{Instead of reading all data into memory, this switches to
     file-based data storage. A \code{netCDF} file is creates for each
-    \code{\link{flowFrame}} in the \code{.flowCoreNcdf}
+    \code{\link[flowCore:flowFrame-class]{flowFrame}} in the
+    \code{.flowCoreNcdf} 
     subdirectory. For large data sets this significantly reduces the
     memory profile of the R session, to the cost of speed and disk
     space. The \code{\link{exprs}} and \code{\link{exprs<-}} methods
@@ -115,9 +116,10 @@
   \code{isFCSfile} returns a logical vector.
   
   \code{read.FCS} returns an object of class
-  \code{\link[flowCore]{flowFrame}} that contains the data in the
-  \code{exprs} slot, the parameters monitored in the \code{parameters}
-  slot and the keywords and value saved in the header of the FCS file.
+  \code{\link[flowCore:flowFrame-class]{flowFrame}} that contains the
+  data in the \code{exprs} slot, the parameters monitored in the
+  \code{parameters} slot and the keywords and value saved in the header
+  of the FCS file. 
 
 }
 

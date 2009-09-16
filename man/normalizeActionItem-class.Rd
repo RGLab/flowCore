@@ -103,7 +103,7 @@ parentView, normalization, workflow)
 	"workFlow", subSymbol = "character")}: Remove a
 	\code{normalizeActionItem} from a \code{\link{workFlow}}. This
 	method is recursive and will also remove all dependent
-	\code{views} and \code{\link[actionItem-class]{actionItems}}. }
+	\code{views} and \code{\link[flowCore:actionItem-class]{actionItems}}. }
     
     \item{show}{\code{signature(object = "normalizeActionItem")}: Print
       details about the object. }

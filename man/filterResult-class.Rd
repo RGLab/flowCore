@@ -35,7 +35,7 @@ Class \code{"\linkS4class{filter}"}, directly.
 \author{B. Ellis, N. LeMeur}
 
 \seealso{
-  \code{\link[flowCore]{filter}},
+  \code{\link[flowCore:filter-methods]{filter}},
   \code{"\linkS4class{logicalFilterResult}"},
   \code{"\linkS4class{multipleFilterResult}"},
   \code{"\linkS4class{randomFilterResult}"}

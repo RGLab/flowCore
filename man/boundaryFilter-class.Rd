@@ -142,7 +142,7 @@ boundaryFilter(x, tolerance=.Machine$double.eps, side=c("both", "lower",
 \seealso{
 
  \code{\link{flowFrame}}, \code{\link{flowSet}},
-  \code{\link[flowCore]{filter}} for evaluation of
+  \code{\link[flowCore:filter-methods]{filter}} for evaluation of
   \code{boundaryFilters} and \code{\link{Subset}} for subsetting of flow
   cytometry data sets based on that.
   

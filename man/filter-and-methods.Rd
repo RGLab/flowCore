@@ -26,13 +26,13 @@
   \code{\%subset\%} operator that takes an intersection, but with subset
   semantics rather than simple intersection semantics. In other words,
   when taking a subset, calculations from
-  \code{\link[flowCore]{summary}} and other methods are taken with
-  respect to the right hand filter. This primarily affects percentage
-  calculations, which are ordinarily calculated with respect to the
+  \code{\link[flowCore:filterSummary-class]{summary}} and other methods
+  are taken with respect to the right hand filter. This primarily
+  affects calculations, which are ordinarily calculated with respect to the
   entire population as well as data-driven gating procedures which will
   operate only on elements contained by the right hand filter.  This
   becomes especially important when using filters such as
-  \code{\link[flowCore]{norm2Filter}}
+  \code{\link[flowCore:norm2Filter-class]{norm2Filter}}
 
 }
 

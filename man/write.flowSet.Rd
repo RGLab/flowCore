@@ -10,7 +10,7 @@
 
 \arguments{
   
-  \item{x}{ A \code{\link[flowCore]{flowSet}}.}
+  \item{x}{ A \code{\link[flowCore:flowSet-class]{flowSet}}.}
 
   \item{filename}{A character scalar or vector giving the output file names. By
     default, the function will use the identifiers of the individual \code{flowFrames} as
@@ -24,7 +24,7 @@
     default, the output of \code{identifier(x)} is used.  }
 
   \item{\dots}{Further arguments that are passed on to
-    \code{\link{write.FCS}}.}
+    \code{\link[flowCore]{write.FCS}}.}
   
 }
 
@@ -35,11 +35,11 @@
   addition, it will write the content of the \code{phenoData} slot in
   the ASCII file \code{"annotation.txt"}. This file can subsequently be
   used to reconstruct the whole \code{flowSet} using the
-  \code{\link{read.flowSet}} function, e.g.:
+  \code{\link[flowCore]{read.flowSet}} function, e.g.:
 
   \code{read.flowSet(path=outdir, phenoData="annotation.txt"}
 
-  The function uses \code{\link{write.FCS}} for the actual writing of
+  The function uses \code{\link[flowCore]{write.FCS}} for the actual writing of
   the FCS files.
 
 }

@@ -40,7 +40,7 @@
     \item{\code{parameters}:}{Object of class \code{\link{parameters}},
       defining a single parameter for which the data in the
       \code{\linkS4class{flowFrame}} is to be clustered. This may also
-      be a \code{\link[transform-class]{transformation}} object. }
+      be a \code{\link[flowCore:transform-class]{transformation}} object. }
     
     \item{\code{filterId}:}{Object of class \code{character}, an
       identifier or name to reference the \code{kmeansFilter} object
@@ -83,9 +83,9 @@ kmeansFilter(\dots, filterId="defaultKmeansFilter")
     \code{kmeansFilter(list(SSC=1:3))}
 
     If the parameter is not fully realized, but instead is the result of a
-    \code{\link[transform-class]{transformation}} operation, two
+    \code{\link[flowCore:transform-class]{transformation}} operation, two
     arguments need to be passed to the constructor: the first one being
-    the \code{\link[transform-class]{transform}} object and the second
+    the \code{\link[flowCore:transform-class]{transform}} object and the second
     being a vector of population names which can be coerced to a
     character. For example
 
@@ -103,7 +103,7 @@ kmeansFilter(\dots, filterId="defaultKmeansFilter")
 \value{
 
   Returns a \code{kmeansFilter} object for use in filtering
-  \code{\link[flowFrame-class]{flowFrames}} or other flow cytometry
+  \code{\link[flowCore:flowFrame-class]{flowFrames}} or other flow cytometry
   objects.
   
 }

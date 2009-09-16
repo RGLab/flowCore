@@ -10,7 +10,7 @@
 
 \arguments{
   
-  \item{x}{ A \code{\link[flowCore]{flowFrame}}.}
+  \item{x}{ A \code{\link[flowCore:flowFrame-class]{flowFrame}}.}
 
   \item{filename}{A character scalar giving the output file name. By
     default, the function will use the output of \code{identifier(x)} as

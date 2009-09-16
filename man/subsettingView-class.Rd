@@ -34,8 +34,9 @@
       human-readable name}
     
     \item{\code{action}:}{Object of class \code{"fcActionReference"}. A
-      reference to the \code{\link[actionItem-class]{actionItem}} that generated the
-      view. }
+      reference to the
+      \code{\link[flowCore:actionItem-class]{actionItem}} that generated
+      the view. }
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }
@@ -71,7 +72,7 @@ subsettingView(workflow, ID=paste("subViewRef", guid(), sep="_"),
   \item{name}{ A more human-readable name of the view. }
   
   \item{data, action}{ References to the data and
-    \code{\link[actionItem-class]{actionItem}} objects, respectively. }
+    \code{\link[flowCore:actionItem-class]{actionItem}} objects, respectively. }
   
 }
 
@@ -94,7 +95,7 @@ subsettingView(workflow, ID=paste("subViewRef", guid(), sep="_"),
 	"workFlow", subSymbol = "character")}: Remove a
       \code{subsettingView} from a \code{\link{workFlow}}. This method is
       recursive and will also remove all dependent \code{views} and
-      \code{\link[actionItem-class]{actionItem}}s. }
+      \code{\link[flowCore:actionItem-class]{actionItem}}s. }
     
   }
 }

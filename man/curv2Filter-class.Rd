@@ -134,8 +134,10 @@ gridsize=rep(151, 2))
 
 \seealso{
 
-  \code{\link[flowCore]{curv1Filter}}, \code{\link{flowFrame}},
-  \code{\link{flowSet}}, \code{\link[flowCore]{filter}} for evaluation
+  \code{\link[flowCore:curv1Filter-class]{curv1Filter}},
+  \code{\link{flowFrame}}, 
+  \code{\link{flowSet}}, \code{\link[flowCore:filter-methods]{filter}}
+  for evaluation 
   of \code{curv2Filters} and \code{\link{split}} for splitting of flow
   cytometry data sets based on that.
   

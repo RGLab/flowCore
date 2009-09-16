@@ -1,4 +1,4 @@
-\name{filterResultList-class}
+\name{filterList-class}
 
 \docType{class}
 
@@ -10,7 +10,8 @@
 
 \title{Class "filterList" }
 
-\description{Container for a list of \code{\link{filter}} objects. The
+\description{Container for a list of
+  \code{\link[flowCore:filter-methods]{filter}} objects. The 
   class mainly exists for method dispatch. }
 
 \section{Objects from the Class}{
@@ -76,7 +77,7 @@ filterList(x, filterId=identifier(x[[1]]))
 \author{Florian Hahne}
 
 \seealso{
-  \code{\link[flowCore]{filter}},
+  \code{\link[flowCore:filter-methods]{filter}},
 }
 
 \examples{

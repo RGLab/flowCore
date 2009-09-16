@@ -176,7 +176,7 @@ undo(wf, n=1)
 
     \item{\$}{\code{signature(x = "workFlow", name = "character")}:
       Allow for list-like access. Note that completetion is only
-      available for \code{\link[view-class]{views}} since all other
+      available for \code{\link[flowCore:view-class]{views}} since all other
       objects in the environment are considered to be internal. }
 
     \item{get}{\code{signature(x = "character", pos = "workFlow", envir
@@ -201,8 +201,8 @@ undo(wf, n=1)
       \code{x} from the environment in the \code{workFlow}. }
 
     \item{names}{\code{signature(x = "workFlow")}: List the identifiers
-      for all \code{\link[view-class]{views}} and
-      \code{\link[actionItem-class]{actionItems}} in the
+      for all \code{\link[flowCore:view-class]{views}} and
+      \code{\link[flowCore:actionItem-class]{actionItems}} in the
       \code{workFlow}. }
 
     \item{plot}{\code{signature(x = "workFlow", y = "missing")}: Plot
@@ -226,11 +226,11 @@ undo(wf, n=1)
       the alias table. }
 
     \item{actions}{\code{signature(x = "workFlow")}: List the names of
-      the \code{\link[actionItem-class]{actionItems}} in the
+      the \code{\link[flowCore:actionItem-class]{actionItems}} in the
       \code{workFlow}. }
 
     \item{views}{\code{signature(x = "workFlow")}: List the names of
-      only the \code{\link[view-class]{views}} in the
+      only the \code{\link[flowCore:view-class]{views}} in the
       \code{workFlow}. }
 
     \item{alias}{\code{signature(object = "workFlow")}: Return the alias
@@ -269,7 +269,7 @@ undo(wf, n=1)
   which holds all objects that are created during the analysis. The
   structure of the whole workflow is a tree, where nodes represent
   \code{link{view}}s (or results of an operation) and edges represent
-  \code{\link[actionItem-class]{actionItems}} (or the operations
+  \code{\link[flowCore:actionItem-class]{actionItems}} (or the operations
   themselve).
   
 }
@@ -281,8 +281,8 @@ undo(wf, n=1)
 
 \seealso{
 	
-  \code{\linkS4class{view}},
-  \code{\linkS4class{actionItem}}
+  \code{"\linkS4class{view}"},
+  \code{"\linkS4class{actionItem}"}
   
 }
 

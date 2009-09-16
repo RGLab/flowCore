@@ -11,7 +11,7 @@
 \description{
   
   Class and methods to handle summary statistics for from filtering
-  operations on whole \code{\link[flowSet-class]{flowSets}}.
+  operations on whole \code{\link[flowCore:flowSet-class]{flowSets}}.
   
 }
 
@@ -47,7 +47,7 @@ summary(object, \dots)
 \arguments{
 
   \item{object}{ An object of class
-    \code{\link[filterResultList-class]{filterResultList}} which is to
+    \code{\link[flowCore:filterResultList-class]{filterResultList}} which is to
     be summarized. }
 
   \item{\dots}{ Further arguments that are passed to the generic. }

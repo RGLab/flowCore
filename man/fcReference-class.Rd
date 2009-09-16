@@ -317,7 +317,7 @@ Rm(symbol, envir, subSymbol, ...)
   subclass. \code{fcTreeReference}, \code{fcViewReference}, and
   \code{fcActionReference} are used to reference to
   \code{\link[graph:graphNEL-class]{graphNEL}}, \code{\link{view}}, and
-  \code{\link[actionItem-class]{actionItem}} objects,
+  \code{\link[flowCore:actionItem-class]{actionItem}} objects,
   respectively. \code{fcDataReference} should be used for
   \code{\link{flowFrame}} or \code{\link{flowSet}} objects, whereas
   \code{fcFilterResultReference}, \code{fcFilterReference},

@@ -6,9 +6,10 @@
 \usage{
 
 read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
-  descriptions,name.keyword,alter.names=FALSE, transformation =
-  "linearize", which.lines=NULL, column.pattern = NULL,
-  decades=0,sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL, \dots)
+             descriptions,name.keyword,alter.names=FALSE,
+             transformation = "linearize", which.lines=NULL,
+             column.pattern = NULL, decades=0,sep="\t",
+             as.is=TRUE, name, ncdf=FALSE, dataset=NULL, \dots)
 
 }
 
@@ -18,49 +19,49 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   
   \item{path}{Directory where to look for the files.}
   
-  \item{pattern}{This argument is passed on to \code{\link[base]{dir}},
-    see details. }
+  \item{pattern}{This argument is passed on to
+    \code{\link[base:list.files]{dir}}, see details. }
   
   \item{phenoData}{An object of class \code{AnnotatedDataFrame},
     \code{character} or a list of values to be extracted from the
-    \code{\link[flowCore]{flowFrame}} object, see
+    \code{\link[flowCore:flowFrame-class]{flowFrame}} object, see
     details.}
   
   \item{descriptions}{Character vector to annotate the object of class
-    \code{\link{flowSet-class}{flowSet}}.}
+    \code{\link[flowCore:flowSet-class]{flowSet}}.}
   
   \item{name.keyword}{An optional character vector that specifies which
     FCS keyword to use as the sample names. If this is not set, the GUID
     of the FCS file is used for sampleNames, and if that is not present
     (or not unique), then the file names are used. }
   
-  \item{alter.names}{see \code{\link{read.FCS}} for details.}
+  \item{alter.names}{see \code{\link[flowCore]{read.FCS}} for details.}
   
-  \item{transformation}{see \code{\link{read.FCS}} for details.}
+  \item{transformation}{see \code{\link[flowCore]{read.FCS}} for details.}
   
-  \item{which.lines}{see \code{\link{read.FCS}} for details.}
+  \item{which.lines}{see \code{\link[flowCore]{read.FCS}} for details.}
   
-  \item{column.pattern}{see \code{\link{read.FCS}} for details.}
+  \item{column.pattern}{see \code{\link[flowCore]{read.FCS}} for details.}
   
-  \item{decades}{see \code{\link{read.FCS}} for details.}
+  \item{decades}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{sep}{Separator character that gets passed on to
-    \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}.}
+    \code{\link[Biobase]{read.AnnotatedDataFrame}}.}
 
   \item{as.is}{Logical that gets passed on to
-    \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}}. This
+    \code{\link[Biobase]{read.AnnotatedDataFrame}}. This
     controls the automatic coercion of characters to factors in the
     \code{phenoData}slot. }
 
   \item{name}{An optional character scalar used as name of the object.}
 
   \item{ncdf}{Instead of reading all data into memory, this switches to
-    file-based data storage. See \code{\link{read.FCS}} for details. }
+    file-based data storage. See \code{\link[flowCore]{read.FCS}} for details. }
 
-  \item{dataset}{see \code{\link{read.FCS}} for details.}
+  \item{dataset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{\dots}{Further arguments that get passed on to
-    \code{\link[flowCore]{read.AnnotatedDataFrame}}, see details.}
+    \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
   
 }
 
@@ -68,14 +69,14 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   data is to be imported:
   
   First, if the argument \code{phenoData} is present and is of class
-  \code{\link[Biobase:AnnotatedDataFrame]{AnnotatedDataFrame}}, then the
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}, then the
   file names are obtained from its sample names (i.e. column
   \code{name}. The column is mandatory, and an error will be generated
   if it is not there.  Alternatively, the argument \code{phenoData} can
   be of class \code{character}, in which case this function tries to
   read a \code{AnnotatedDataFrame} object from the file with that name
   by calling
-  \code{\link[Biobase::read.AnnotatedDataFrame]{read.AnnotatedDataFrame}(file.path(path,phenoData),\dots)}.
+  \code{\link[Biobase]{read.AnnotatedDataFrame}(file.path(path,phenoData),\dots)}.  
   
   In some cases the file names are not a reasonable selection criterion
   and the user might want to import files based on some keywords within
@@ -91,7 +92,7 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   calling   \code{dir(path, pattern)}.
 }
 
-\value{An object of class \code{\link{flowSet-class}{flowSet}}.}
+\value{An object of class \code{\link[flowCore:flowSet-class]{flowSet}}.}
 
 \author{F. Hahne, N.Le Meur, B. Ellis}
 

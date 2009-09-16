@@ -23,6 +23,6 @@ Class \code{"\linkS4class{filter}"}, by class "filterResult", distance 2.
 
 
 \seealso{
-	\code{\link[flowCore]{filter}}
+	\code{\link[flowCore:filter-methods]{filter}}
 }
 \keyword{classes}
