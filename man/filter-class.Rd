@@ -31,26 +31,28 @@ more specific filter.
 
 \section{Objects from the Class}{
   
-  All \code{\link[filter-class]{filter}} objects in \code{flowCore}
+  All \code{\link[flowCore:filter-class]{filter}} objects in \code{flowCore}
   should be instantiated through their constructors. These are functions
   that share the same name with the respective \code{filter}
-  classes. E.g., \code{\link[rectangleGate]{rectangleGate()}} is the
+  classes. E.g.,
+  \code{\link[flowCore:rectangleGate]{rectangleGate()}} is the 
   constructor function for rectangular gates, and
-  \code{\link[kmeansFilter]{kmeansFilter()}} creates objects of class
-  \code{\link{kmeansFilter}}. Usually these constructors can deal with
-  various different inputs, allowing to utilize the same function in
-  different programmatic or interactive settings. For all \code{filters}
-  that operate on specific flow parameters (i.e., those inheriting from
-  \code{\link[parameterFilter-class]{parameterFilter}}), the parameters
+  \code{\link[flowCore:kmeansFilter]{kmeansFilter()}} creates
+  objects of class \code{\link{kmeansFilter}}. Usually these
+  constructors can deal with various different inputs, allowing to
+  utilize the same function in different programmatic or interactive
+  settings. For all \code{filters} that operate on specific flow
+  parameters (i.e., those inheriting from 
+  \code{\link[flowCore:parameterFilter-class]{parameterFilter}}), the parameters
   need to be passed to the constructor, either as names or colnames of
   additional input arguments or explicitely as separate arguments.  See
   the documentation of the respective \code{filter} classes for
   details. If parameters are explicitely defined as separate arguments,
   they may be of class \code{character}, in which case they will be
   evaluated literaly as colnames in a \code{\link{flowFrame}}, or of
-  class \code{\link[transform-class]{transform}}, in which case the
+  class \code{\link[flowCore:transform-class]{transform}}, in which case the
   filtering is performed on a temporarily transformed copy of the input
-  data. See \code{\link[parameterFilter-class]{here}} for details.
+  data. See \code{\link[flowCore:parameterFilter-class]{here}} for details.
   
 }
 
@@ -77,19 +79,21 @@ more specific filter.
       compose the two filters, though summary methods will use subset
       semantics when calculating proportions. Additionally, when the
       filter is data driven, such as
-      \code{\link[flowCore]{norm2Filter}}, the subset semantics are
+      \code{\link[flowCore:norm2Filter-class]{norm2Filter}}, the subset
+      semantics are 
       applied to the data used to fit the filter possibly resulting in
       quite different, and usually more desirable, results.}
 
     \item{\code{\%on\%}}{Used in conjunction with a
-      \code{\link[flowCore]{transformList}} to create a
+      \code{\link[flowCore:transformList-class]{transformList}} to create a
       \code{transformFilter}. This filter is similar to the subset
       filter in that the filtering operation takes place on transformed
       values rather than the original values.}
 
     \item{\code{filter}}{A more formal version of \code{\%in\%}, this
-      method returns a \code{\link[flowCore]{filterResult}} object that
-      can be used in subsequent filter operations as well as providing
+      method returns a
+      \code{\link[flowCore:filterResult-class]{filterResult}} object
+      that can be used in subsequent filter operations as well as providing
       more metadata about the results of the filtering operation}
 
     \item{\code{summarizeFilter}}{When implementing a new filter this
@@ -101,7 +105,8 @@ more specific filter.
 }
 
 
-\seealso{\code{\link[flowCore]{transform}},\code{\link[flowCore]{filter}}}
+\seealso{\code{\link[flowCore:transform-class]{transform}},
+  \code{\link[flowCore:filter-methods]{filter}}}   
 
 \author{B. Ellis, P.D. Haaland and N. LeMeur}
 

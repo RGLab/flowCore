@@ -79,8 +79,8 @@ summary(object, \dots)
     \item{[[}{\code{signature(x = "filterSummary", i = "numeric")}:
       Subset the \code{filterSummary} to a single population. This only
       makes sense for
-      \code{\link[multipleFilterResult-class]{multipleFilterResults}}. The
-      output is a list of summary statistics. }
+      \code{\link[flowCore:multipleFilterResult-class]{multipleFilterResults}}.
+      The output is a list of summary statistics. }
     
     \item{[[}{\code{signature(x = "filterSummary", i = "character")}:
       see above }

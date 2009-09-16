@@ -8,14 +8,17 @@
 
 }
 \usage{
-logicleTransform(transformationId="defaultLogicleTransform", w = 0, r = 262144, d = 5,tol =.Machine$double.eps^0.8, maxit = as.integer(5000))
+logicleTransform(transformationId="defaultLogicleTransform", w = 0,
+                 r = 262144, d = 5,tol =.Machine$double.eps^0.8,
+                 maxit = as.integer(5000)) 
 }
 
 
 \arguments{
-  \item{transformationId}{ A name to assign to the transformation. Used by the transform/filter integration routines. }
-  \item{w}{positive number that corresponds to the width of the negative data range and the range of linearized
-    data in natural log}
+  \item{transformationId}{ A name to assign to the transformation. Used
+  by the transform/filter integration routines. } 
+  \item{w}{positive number that corresponds to the width of the negative
+  data range and the range of linearized data in natural log}
   \item{r}{top of the scale data value, e.g, 10000 for common 4 decade
     data or 262144 for a 18 bit data range.}
   \item{d}{breath of the display in natural logarithm units.}
@@ -23,12 +26,12 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0, r = 262144, 
   \item{maxit}{ Maximum iterations allowed for the root search process}
 }
 
-\references{Parks D.R., Roederer M., Moore W.A.(2006)  A new "Logicle" display
+\references{Parks D.R., Roederer M., Moore W.A.(2006)  A new "logicle" display
   method avoids deceptive effects of logarithmic scaling for low signals
   and compensated data. CytometryA, 96(6):541-51.}
 \author{ B. Ellis N. LeMeur, N Gopalakrishnan}
 
-\seealso{\code{\link[flowCore]{biexponential}} }
+\seealso{\code{\link[flowCore]{biexponentialTransform}} }
 \examples{
 data(GvHD)
 samp <- read.FCS(system.file("extdata",

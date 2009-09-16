@@ -17,7 +17,8 @@
   
   Objects of this type are not usually created by the user, except
   perhaps in special circumstances. They are generally automatically
-  created by the inline \code{\link[flowCore]{transform}} process during
+  created by the inline
+  \code{\link[flowCore:transform-class]{transform}} process during 
   the creation of a \code{\link{transformFilter}}, or by a call to the
   \code{\link{transformList}} constructor.
 

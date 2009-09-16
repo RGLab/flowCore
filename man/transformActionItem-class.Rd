@@ -103,7 +103,7 @@ transformActionItem(ID = paste("transActionRef", guid(), sep = "_"),
 	"workFlow", subSymbol = "character")}: Remove a
 	\code{transformActionItem} from a \code{\link{workFlow}}. This
 	method is recursive and will also remove all dependent
-	\code{views} and \code{\link[actionItem-class]{actionItems}}.}
+	\code{views} and \code{\link[flowCore:actionItem-class]{actionItems}}.}
     
     \item{show}{\code{signature(object = "transformActionItem")}: Print
       details about the object. }

@@ -32,7 +32,7 @@
       directly extends \code{list}, and this slot holds the list data.}
     
     \item{\code{frameId}:}{Object of class \code{"character"} The IDs of
-      the \code{\link[flowFrame-class]{flowFrames}} in the filtered
+      the \code{\link[flowCore:flowFrame-class]{flowFrames}} in the filtered
       \code{\link{flowSet}}.}
   
     \item{\code{filterDetails}:}{Object of class \code{"list"}. Since
@@ -76,7 +76,8 @@ Class \code{"\linkS4class{filter}"}, by class "filterResult", distance 3.
     
     \item{summary}{\code{signature(object = "filterResultList")}:
       Summarize the filtering operation. This creates a
-      \code{\link[filterSummaryList-class]{filterSummaryList}} object. }
+      \code{\link[flowCore:filterSummaryList-class]{filterSummaryList}}
+      object. } 
     
   }
 }
@@ -85,7 +86,7 @@ Class \code{"\linkS4class{filter}"}, by class "filterResult", distance 3.
 \author{Florian Hahne}
 
 \seealso{
-  \code{\link[flowCore]{filter}},
+  \code{\linkS4class{filter}},
   \code{\linkS4class{filterResult}},
   \code{\linkS4class{logicalFilterResult}},
   \code{\linkS4class{multipleFilterResult}},

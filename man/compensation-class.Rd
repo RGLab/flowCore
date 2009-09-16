@@ -157,9 +157,9 @@ compensate(x, spillover, \dots)
     \item{parameters}{\code{signature(object =
 	"compensation")}: Get the parameter names of the
       \code{compensation} object. This method also tries to resolve
-      all \code{\link[transform-class]{transforms}} and
-      \code{\link[transformReference-class]{transformReferences}} before
-	returning the parameters as character vectors. Unresolvable
+      all \code{\link[flowCore:transform-class]{transforms}} and
+      \code{\link[flowCore:transformReference-class]{transformReferences}}
+	before returning the parameters as character vectors. Unresolvable
 	references retrun \code{NA}.
       
       \emph{Usage:}
@@ -210,8 +210,8 @@ compensate(x, spillover, \dots)
   spillover matrix is calculated using a series of compensation cells or
   beads collected before the experiment. If you have set of FCS files
   with one file per fluorochrome as well as an unstained FCS file you
-  can use the \code{\link[flowCore]{spillover}} method for
-  \code{\link[flowSet-class]{flowSets}} to automatically calculate a
+  can use the \code{\link[flowCore:spillover-flowSet]{spillover}} method for
+  \code{\link[flowCore:flowSet-class]{flowSets}} to automatically calculate a
   spillover matrix.
 
   The \code{compensation} class is essentially a wrapper around a
@@ -223,7 +223,7 @@ compensate(x, spillover, \dots)
 
 \seealso{
   
-  \code{\link[flowCore]{spillover}}
+  \code{\link[flowCore:spillover-flowSet]{spillover}}
   
 }
 
@@ -231,7 +231,8 @@ compensate(x, spillover, \dots)
 
 \examples{
 ## Read sample data and a sample spillover matrix
-samp   <- read.flowSet(path=system.file("extdata", "compdata", "data", package="flowCore"))
+samp   <- read.flowSet(path=system.file("extdata", "compdata", "data",
+          package="flowCore")) 
 cfile <- system.file("extdata","compdata","compmatrix", package="flowCore")
 comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
 comp.mat

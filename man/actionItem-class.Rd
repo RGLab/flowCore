@@ -62,7 +62,7 @@ cytometry workflow. }
     \item{Rm}{\code{signature(symbol = "actionItem", envir = "workFlow",
 	subSymbol = "character")}:  Remove a \code{actionItem} from a
       \code{\link{workFlow}}. This method is recursive and will also
-      remove all dependent \code{\link[view-class]{views}} and
+      remove all dependent \code{\link[flowCore:view-class]{views}} and
       \code{actionItems}. }
 
   }
@@ -76,9 +76,10 @@ cytometry workflow. }
   allpying one of the standard operations (gating, transformation,
   compensation) to a \code{\link{workFlow}} object. Each
   \code{actionItem} creates one or several new
-  \code{\link[view-class]{views}}, which again can be the basis to apply
-  further operations. One can conceptualize \code{actionItems} being the
-  edges in the workflow tree connecting \code{\link[view-class]{views}},
+  \code{\link[flowCore:view-class]{views}}, which again can be the basis
+  to apply further operations. One can conceptualize \code{actionItems}
+  being the edges in the workflow tree connecting
+  \code{\link[flowCore:view-class]{views}}, 
   which are the nodes of the tree. There are more specific subclasses
   for the three possible types of operation:
   \code{\link{gateActionItem}} for gating oprations,

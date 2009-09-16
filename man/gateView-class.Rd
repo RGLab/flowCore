@@ -47,18 +47,20 @@
       human-readable name}
     
     \item{\code{action}:}{Object of class \code{"fcActionReference"}. A
-      reference to the \code{\link[actionItem-class]{actionItem}} that generated the
-      view. }
+      reference to the
+      \code{\link[flowCore:actionItem-class]{actionItem}} that generated
+      the view. } 
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
-      evaluation environment in the \code{\link{workFlow}}. }
+      evaluation environment in the
+      \code{\link[flowCore:workFlow-class]{workFlow}}. } 
     
     \item{\code{data}:}{Object of class \code{"fcDataReference"} A
       reference to the data that is associated to the view. Subsets of
       the data are only generated when a a further action is invoced on
       a particular \code{gateView}. Summary statistics about the view
       can be acquired through the usual process of summarizing
-      \code{\link[filterResult-class]{filterResults}}. }
+      \code{\link[flowCore:filterResult-class]{filterResults}}. }
     
   }
 }
@@ -89,8 +91,8 @@ gateView(workflow, ID=paste("gateViewRef", guid(), sep="_"),
   \item{name}{ A more human-readable name of the view. }
   
   \item{data, action, filterResult}{ References to the data,
-    \code{\link{filterResult}}, and \code{\link[actionItem-class]{actionItem}} objects,
-    respectively. }
+    \code{\link{filterResult}}, and
+    \code{\link[flowCore:actionItem-class]{actionItem}} objects, respectively.}
 
   \item{indices}{ A logical vector of indices in the parent data. }
 
@@ -118,7 +120,7 @@ gateView(workflow, ID=paste("gateViewRef", guid(), sep="_"),
 	subSymbol = "character")}: Remove a \code{gateView} from a
       \code{\link{workFlow}}. This method is recursive and will also
       remove all dependent \code{views} and
-      \code{\link[actionItem-class]{actionItem}}s.  }
+      \code{\link[flowCore:actionItem-class]{actionItem}}s.  }
 
     \item{summary}{\code{signature(x = "formula", data = "gateView")}:
       Summarize the gating operation. }
@@ -135,9 +137,10 @@ gateView(workflow, ID=paste("gateViewRef", guid(), sep="_"),
   \code{gateViews} provide a means to bind the results of gating
   operations in a workflow. Each \code{gateView} represents one of the
   populations that arise from the
-  gating. \code{\link[logicalFilterResult-class]{logicalFilterResults}}
+  gating. \code{\link[flowCore:logicalFilterResult-class]{logicalFilterResults}}
   create two \code{gateViews} (events in the gate and events not in the
-  gate), \code{\link[multipleFilterResult-class]{multipleFilterResults}}
+  gate),
+  \code{\link[flowCore:multipleFilterResult-class]{multipleFilterResults}} 
   one \code{view} for each population. See the documentation of the
   parent class \code{\link{view}} for more details.
   

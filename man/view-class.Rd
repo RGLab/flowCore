@@ -45,8 +45,9 @@
       human-readable name}
     
     \item{\code{action}:}{Object of class \code{"fcActionReference"}. A
-      reference to the \code{\link[actionItem-class]{actionItem}} that generated the
-      view. }
+      reference to the
+      \code{\link[flowCore:actionItem-class]{actionItem}} that generated
+      the view. }
 
     \item{\code{env}:}{Object of class \code{"environment"}. The
       evaluation environment in the \code{\link{workFlow}}. }
@@ -91,7 +92,7 @@ alias(object, \dots)
   \item{name}{ A more human-readable name of the view. }
   
   \item{data, action}{ References to the data and
-    \code{\link[actionItem-class]{actionItem}} objects, respectively. }
+    \code{\link[flowCore:actionItem-class]{actionItem}} objects, respectively. }
 
   \item{\dots}{ Further arguments that get passed to the generic. }
 
@@ -112,7 +113,8 @@ alias(object, \dots)
   \describe{
     \item{action}{\code{signature(object = "view")}: Accessor for the
       \code{action} slot. Note that this returns the actual
-      \code{\link[actionItem-class]{actionItem}} object, i.e., the reference gets resolved. }
+      \code{\link[flowCore:actionItem-class]{actionItem}} object, i.e.,
+  the reference gets resolved. } 
 
     \item{Data}{\code{signature(object = "view")}:  Accessor for the
       \code{data} slot. Note that this returns the actual data  object,
@@ -134,7 +136,7 @@ alias(object, \dots)
 	subSymbol = "character")}: Remove a \code{view} from a
       \code{\link{workFlow}}. This method is recursive and will also
       remove all dependent \code{views} and
-      \code{\link[actionItem-class]{actionItems}}. }
+      \code{\link[flowCore:actionItem-class]{actionItems}}. }
     
     \item{show}{\code{signature(object = "view")}: Print details about the
       object. }

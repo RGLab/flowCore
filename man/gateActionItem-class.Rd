@@ -114,7 +114,7 @@ filterResult, workflow)
 	"workFlow", subSymbol = "character")}: Remove a \code{gateActionItem}
       from a \code{\link{workFlow}}. This method is recursive and will
       also remove all dependent \code{views} and
-      \code{\link[actionItem-class]{actionItem}}s.}
+      \code{\link[flowCore:actionItem-class]{actionItem}}s.}
       
     \item{show}{\code{signature(object = "gateActionItem")}: Print details
       about the object. }

@@ -24,7 +24,7 @@ importFrom(feature, featureSignif)
 
 importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 
-importFrom(graphics, hist, plot, text)
+importFrom(graphics, hist, plot, text, smoothScatter)
 
 importFrom(grDevices, contourLines)
 

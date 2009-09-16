@@ -142,8 +142,8 @@ filterId="defaultNorm2Filter")
 
 \seealso{
 
-  \code{\link[MASS::cov.rob]{cov.rob}},
-  \code{\link[rrcov::covMcd]{covMcd}}, \code{\link[flowCore]{filter}}
+  \code{\link[MASS]{cov.rob}},
+  \code{\link[rrcov]{CovMcd}}, \code{\link[flowCore:filter-methods]{filter}}
   for evaluation of \code{norm2Filters} and \code{\link{split}} and
   \code{\link{Subset}}for splitting and subsetting of flow cytometry
   data sets based on that.
