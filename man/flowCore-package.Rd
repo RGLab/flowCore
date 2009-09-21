@@ -12,7 +12,7 @@ deal with flow cytometry data.
 
   Define important flow cytometry data classes:
   \code{\link[flowCore:flowFrame-class]{flowFrame}}, 
-  \code{\link[flowCore:flowSet-class]{flowSet}} and their acdcessors.
+  \code{\link[flowCore:flowSet-class]{flowSet}} and their accessors.
   
   Provide important transformation, filter, gating, workflow, and summary
   functions for flow cytometry data analysis.
@@ -32,11 +32,13 @@ deal with flow cytometry data.
 }
 \author{
   Maintainer: Florian Hahne <fhahne@fhcrc.org>
+  
   Authors: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan
 }
-\references{
 
-}
+%\references{
+%
+%}
 
 \keyword{ package }
-}
+
