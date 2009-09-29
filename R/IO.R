@@ -696,6 +696,14 @@ collapseDesc <- function(x)
 {
     d <- description(x)
     d <- d[order(names(d))]
+	spillName <- intersect(c("SPILL", "spillover"), names(d))
+    if(length(spillName) >0){
+		mat <-  d[[spillName]]
+		rNum <- as.character(nrow(mat))
+		clNames <- paste(colnames(mat),sep=",")
+		vec <- paste(c(t(mat)),sep=",",collapse=",")
+	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
+	}
     paste("\\", iconv(paste(names(d), "\\", sapply(d, paste, collapse=" "),
                             "\\", collapse="", sep=""), to="latin1",
                       sub=" "), sep="")
