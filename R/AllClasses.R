@@ -1404,6 +1404,27 @@ logicleTransform <- function(transformationId="defaultLogicleTransform",
     t
 }
 
+### Inverse logicle transformation constructor
+inverseLogicleTransform <- function( transformationId= "defaultInvLogicleTransform",
+                            w= 0 , r = 262144, d = 5){
+		
+    if(w>d)
+          stop("Negative range decades must be smaller than total ","number of decades")
+    d <- d*log(10)
+    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
+            c(.Machine$double.eps, 2*(w+d)))$root
+    a=r*exp(-(d-w))  
+    b=1
+    c=r*exp(-(d-w))*p^2
+    d=1/p
+    f=a*(p^2-1)
+    t <- new("transform", .Data=function(x) 
+	 		x <- .Call("invLogicle_transform",x,a,b,c,d,f,w)
+	    )
+    t@transformationId <- transformationId
+    t
+}
+
 ## Truncation transformation constructor
 truncateTransform <- function(transformationId="defaultTruncateTransform",
                               a=1)

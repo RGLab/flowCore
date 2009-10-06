@@ -1,11 +1,12 @@
 \name{logicleTransform}
 \alias{logicleTransform}
 
-\title{Compute a transform using the 'logicle' function}
+\title{Computes a transform using the 'logicle_transform' function}
 \description{
   
-  Logicle transformation create a subset of \code{\link{biexponentialTransform}}
-
+  Logicle transformation creates a subset of \code{\link{biexponentialTransform}}
+  hyperbolic sine transformation functions that provides several advantages over linear/log 
+  transformations for display of flow cytometry data.
 }
 \usage{
 logicleTransform(transformationId="defaultLogicleTransform", w = 0,
