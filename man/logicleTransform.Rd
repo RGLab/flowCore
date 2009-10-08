@@ -22,7 +22,7 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0,
   data range and the range of linearized data in natural log}
   \item{r}{top of the scale data value, e.g, 10000 for common 4 decade
     data or 262144 for a 18 bit data range.}
-  \item{d}{breath of the display in natural logarithm units.}
+  \item{d}{breadth of the display in decades.}
   \item{tol}{Acceptable tolerance of the root value}
   \item{maxit}{ Maximum iterations allowed for the root search process}
 }
