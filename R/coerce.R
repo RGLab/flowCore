@@ -303,7 +303,8 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
       else {
           ## The parameters need to match all frames
           params <- parameters(from[[1]])
-          allParams <- fsApply(from, function(x) as.character(pData(parameters(x))$name))
+          allParams <- fsApply(from, function(x)
+                               as.character(pData(parameters(x))$name))
           if(!all(apply(allParams, 2, function(x) length(unique(x))==1)))
               stop("parameters must be the same for all frames")
           ## making sure we are not doing too many copies of the data
@@ -322,7 +323,8 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
           repl <-  data.frame(name="Original", range=NA, minRange=1,
                               maxRange=length(from), stringsAsFactors=FALSE)
           rownames(repl) <- "Original"
-          pData(params)["Original",colnames(repl)] <- repl
+          common <- intersect(colnames(repl), colnames(pData(params)))
+          pData(params)["Original",common] <- repl[,common]
           pData(params)[,"desc"] <- 
             c(as.character(pData(parameters(from[[1]]))[,"desc"]),
                                  "Original Frame")    
