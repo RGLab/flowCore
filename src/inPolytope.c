@@ -92,7 +92,7 @@ SEXP inPolytope(SEXP _data, SEXP _A, SEXP _b)
 
  /* check input argument _b */
   dimB = (LENGTH(_b));
-  if((!isReal(_b)) | dimB!=nRowA)
+  if((!isReal(_b)) | (dimB!=nRowA))
       error("Invalid argument 'b': must be a real vector of length 'nrow(A)'."); 
   b = REAL(AS_NUMERIC(_b));         
   /* done with b */

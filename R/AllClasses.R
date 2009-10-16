@@ -1380,46 +1380,48 @@ biexponentialTransform <-
 }
 
 ## Logicle transformation constructor
+## Input parameters are to be provided in decades
 logicleTransform <- function(transformationId="defaultLogicleTransform",
-                             w=0, r=262144, d=5,
-                          tol=.Machine$double.eps^0.8, maxit=as.integer(5000))
+                             w=0, t=262144, m=4.5,a=0,tol=.Machine$double.eps^0.8, 
+							 maxit=as.integer(5000))
 {
-    if(w>d)
-        stop("Negative range decades must be smaller than total ",
-             "number of decades")
-  #  w <- w*log(10)
-    d <- d*log(10)
-    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
-            c(.Machine$double.eps, 2*(w+d)))$root
-    a=r*exp(-(d-w))
+	if(t<=0 || m <=0)
+		stop(" t and m should be greater than zero")
+	if (w<0)
+		stop(" w should be greater than zero")
+	
+    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
+								c(.Machine$double.eps, 2*(w+m)))$root
+    k=t*10^(-(m-w-a))   ## was a 
     b=1
-    c=r*exp(-(d-w))*p^2
+    c=t*10^(-(m-w-a))*p^2
     d=1/p
-    f=a*(p^2-1)
+    f=k*(p^2-1)
     t <- new("transform", .Data=function(x) 
-		x <- .Call("logicle_transform",x,a,b,c,d,f,w,tol,maxit)
-	    )
-            
+		x <- .Call("logicle_transform",x,k,b,c,d,f,w,tol,maxit)
+	    )            
     t@transformationId <- transformationId
     t
 }
 
 ### Inverse logicle transformation constructor
 inverseLogicleTransform <- function( transformationId= "defaultInvLogicleTransform",
-                            w= 0 , r = 262144, d = 5){
+                            w = 0, t = 262144, m = 4.5, a = 0){
 		
-    if(w>d)
-          stop("Negative range decades must be smaller than total ","number of decades")
-    d <- d*log(10)
-    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log(p)/(p+1),
-            c(.Machine$double.eps, 2*(w+d)))$root
-    a=r*exp(-(d-w))  
+	if(t<=0 || m <=0)
+		stop(" t and m should be greater than zero")
+	if (w<0)
+		stop(" w should be greater than zero")
+		
+    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
+            c(.Machine$double.eps, 2*(w+m)))$root
+    k=t*10^(-(m-w-a))  
     b=1
-    c=r*exp(-(d-w))*p^2
+    c=t*10^(-(m-w-a))*p^2
     d=1/p
-    f=a*(p^2-1)
+    f=k*(p^2-1)
     t <- new("transform", .Data=function(x) 
-	 		x <- .Call("invLogicle_transform",x,a,b,c,d,f,w)
+	 		x <- .Call("invLogicle_transform",x,k,b,c,d,f,w)
 	    )
     t@transformationId <- transformationId
     t
