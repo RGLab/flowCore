@@ -4,8 +4,8 @@
 
 static const R_CallMethodDef CallEntries[] = {
    // {"biexponential_transform", (DL_FUNC)&biexponential_transform, 9},
-     {"logicle_transform", (DL_FUNC)&logicle_transform, 9},
-     {"invLogicle_transform",(DL_FUNC)&invLogicle_transform, 7},
+     {"logicle_transform", (DL_FUNC)&logicle_transform, 8},
+     {"invLogicle_transform",(DL_FUNC)&invLogicle_transform, 6},
      {"biexponential_transform", (DL_FUNC)&biexponential_transform, 9},
     {"inPolygon", (DL_FUNC)&inPolygon, 2},
     {"inPolytope", (DL_FUNC)&inPolytope, 3},

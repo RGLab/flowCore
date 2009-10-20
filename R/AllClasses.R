@@ -1392,16 +1392,11 @@ logicleTransform <- function(transformationId="defaultLogicleTransform",
 	
     p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
 								c(.Machine$double.eps, 2*(w+m)))$root
-    k=t*10^(-(m-w-a))   ## was a 
-    b=1
-    c=t*10^(-(m-w-a))*p^2
-    d=1/p
-    f=k*(p^2-1)
-    t <- new("transform", .Data=function(x) 
-		x <- .Call("logicle_transform",x,k,b,c,d,f,w,tol,maxit)
+    k <- new("transform", .Data=function(x) 
+		x <- .Call("logicle_transform",x,m,w,p,t,a,tol,maxit)
 	    )            
-    t@transformationId <- transformationId
-    t
+    k@transformationId <- transformationId
+    k
 }
 
 ### Inverse logicle transformation constructor
@@ -1415,16 +1410,12 @@ inverseLogicleTransform <- function( transformationId= "defaultInvLogicleTransfo
 		
     p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
             c(.Machine$double.eps, 2*(w+m)))$root
-    k=t*10^(-(m-w-a))  
-    b=1
-    c=t*10^(-(m-w-a))*p^2
-    d=1/p
-    f=k*(p^2-1)
-    t <- new("transform", .Data=function(x) 
-	 		x <- .Call("invLogicle_transform",x,k,b,c,d,f,w)
+    
+    k <- new("transform", .Data=function(x) 
+	 		x <- .Call("invLogicle_transform",x,m,w,p,t,a)
 	    )
-    t@transformationId <- transformationId
-    t
+    k@transformationId <- transformationId
+    k
 }
 
 ## Truncation transformation constructor
