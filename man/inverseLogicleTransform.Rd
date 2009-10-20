@@ -39,8 +39,6 @@ inverseLogicleTransform(transformationId="defaultInvLogicleTransform", w = 0,
 \examples{
 
 data(GvHD)
-samp <- read.FCS(system.file("extdata",
-  "0877408774.B08", package="flowCore"))
 samp <- GvHD[[1]] 
 logicle  <- logicleTransform(w=2, "logicle")
 transFormedData <- transform(samp, `FSC-H`=logicle(`FSC-H`))
