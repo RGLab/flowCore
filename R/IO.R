@@ -132,8 +132,8 @@ read.FCS <- function(filename,
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
             stop(paste("file", filename, "seems to be corrupted."))
     }
-
-    ## set transformed flag and fix the PnE and the Datatype keywords
+	
+	## set transformed flag and fix the PnE and the Datatype keywords
     ## also add our own PnR fields.
     txt[["FILENAME"]] <- filename
     if(transformation==TRUE)
@@ -740,7 +740,7 @@ write.FCS <- function(x, filename, what="numeric")
     endian <- "big"
     mk <- list("$BEGINANALYSIS"="0",
                "$BEGINDATA"="",
-               "$BEGINSTEXT"=begTxt,
+               "$BEGINSTEXT"=0,
                "$BYTEORD"=orders[endian],
                "$DATATYPE"=types[what, "symbol"],
                "$ENDANALYSIS"="0",
@@ -777,16 +777,15 @@ write.FCS <- function(x, filename, what="numeric")
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
     ctxt <- collapseDesc(x)
-    endTxt <- nchar(ctxt) + begTxt
+    endTxt <- nchar(ctxt) + begTxt -1
     endDat <- ld + endTxt
-    endTxt <- endTxt + nchar(endTxt) + nchar(endTxt+1) + nchar(endDat)
+    endTxt <- endTxt +nchar(endTxt+1) + nchar(endDat)
     ## Now we update the header with the new offsets and recalculate
     endDat <- ld + endTxt
-    description(x) <- list("$ENDSTEXT"=endTxt,
-                           "$BEGINDATA"=endTxt,
+    description(x) <- list("$BEGINDATA"=endTxt+1,
                            "$ENDDATA"=endTxt+ld)
     ctxt <- collapseDesc(x)
-    offsets <- c(begTxt, endTxt, endTxt, endTxt+ld, 0,0)
+    offsets <- c(begTxt, endTxt, endTxt+1, endTxt+ld, 0,0)
     ## Write out to file
     con <- file(filename, open="wb")
     on.exit(close(con))
@@ -794,6 +793,7 @@ write.FCS <- function(x, filename, what="numeric")
     writeChar(ctxt, con, eos=NULL)
     writeBin(as(t(exprs(x)), what), con, size=types[what, "bitwidth"],
              endian=endian)
+	writeChar("00000000", con, eos=NULL)
     filename
 }
 
