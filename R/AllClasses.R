@@ -1391,7 +1391,7 @@ logicleTransform <- function(transformationId="defaultLogicleTransform",
 		stop(" w should be greater than zero")
 	
     p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
-								c(.Machine$double.eps, 2*(w+m)))$root
+								c(.Machine$double.eps,10000))$root
     k <- new("transform", .Data=function(x) 
 		x <- .Call("logicle_transform",x,m,w,p,t,a,tol,maxit)
 	    )            
