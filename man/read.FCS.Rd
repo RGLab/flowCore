@@ -125,7 +125,7 @@
 
 \author{F. Hahne, N.Le Meur}
 
-\seealso{\code{link[flowCore]{read.flowSet}}}
+\seealso{\code{\link[flowCore]{read.flowSet}}}
 
 \examples{
 ## a sample file
