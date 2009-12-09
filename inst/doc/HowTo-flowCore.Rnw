@@ -413,7 +413,7 @@ pData(phenoData(fs))
 
 You can extract a \Rclass{flowFrame} from a \Rclass{flowSet} object in
 the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction
-  operators. On the other hand using he \Rfunction{[} extraction
+  operators. On the other hand using the \Rfunction{[} extraction
   operator returns a new \Rclass{flowSet} by \textbf{copying} the
   environment. However, simply assigning the \Rclass{flowFrame} to a
   new variable will \textbf{not} copy the contained frames.
@@ -442,13 +442,13 @@ the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction
 <<fsApply1, echo=true, results=verbatim>>=
 fsApply(fs, each_col, median)
 @
-
+%
 which is equivalent to the less readable
 
 <<fsApply2, echo=true,results=verbatim>>=
 fsApply(fs,function(x) apply(x, 2, median), use.exprs=TRUE)
 @
-
+%
 In this case, the \Robject{use.exprs} argument is not required in the
 first case because \Rfunction{each\_col} and \Rfunction{each\_row} are
 methods and have been defined to work on \Rclass{flowFrame} objects by
