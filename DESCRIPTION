@@ -4,7 +4,7 @@ Version: 1.13.3
 Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan
 Description: Provides S4 data structures and basic functions to deal with flow
 	     cytometry data. 
-Maintainer: F. Hahne <fhahne@fhcrc.org>
+Maintainer: F. Hahne <florian.hahne@novartis.com>
 Depends: R (>= 2.8.1), Biobase, rrcov
 Imports: Biobase, feature, graph, graphics, grDevices, MASS, methods,
          rrcov, stats, utils
