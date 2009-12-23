@@ -40,8 +40,7 @@ setMethod("[[",
 ## Valid values are 'n', 'count', 'true', 'false', 'name', 'p' and 'q'
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("$",
-          signature=signature(x="filterSummary",
-                              name="ANY"),
+          signature=signature(x="filterSummary"),
           definition=function(x, name)
       {
           switch(name, "n"=x@count, "true"=x@true, "in"=x@true,
