@@ -128,8 +128,7 @@ setMethod("[",
 
 ## By name with completion (but only for views)
 setMethod("$",
-          signature=signature(x="workFlow",
-                              name="character"),
+          signature=signature(x="workFlow"),
           definition=function(x,name) x[[name]])
           
 

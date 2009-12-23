@@ -68,9 +68,8 @@ setMethod("[[",
 
 ## to flowFrame
 setMethod("$",
-		signature=signature(x="flowSet",
-				name="character"),
-		definition=function(x, name) x[[name]])
+          signature=signature(x="flowSet"),
+          definition=function(x, name) x[[name]])
 
 ## replace a flowFrame
 setReplaceMethod("[[",
