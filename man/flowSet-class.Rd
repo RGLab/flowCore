@@ -4,7 +4,7 @@
 \alias{flowSet}
 \alias{[,flowSet-method}
 \alias{[,flowSet,ANY-method}
-\alias{$,flowSet,character-method}
+\alias{$,flowSet-method}
 \alias{[[,flowSet-method}
 \alias{[[,flowSet,ANY-method}
 \alias{[[<-,flowSet-method}

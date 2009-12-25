@@ -16,7 +16,7 @@
 \alias{assign,fcReference,ANY,workFlow,missing,missing,missing-method}
 \alias{[,workFlow,ANY-method}
 \alias{[[,workFlow,ANY-method}
-\alias{$,workFlow,character-method}
+\alias{$,workFlow-method}
 \alias{get,character,workFlow,missing,missing,missing-method}
 \alias{get,character,missing,workFlow,missing,missing-method}
 \alias{ls}
