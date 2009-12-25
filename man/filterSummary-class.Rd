@@ -5,7 +5,7 @@
 \alias{summary}
 \alias{[[,filterSummary,numeric-method}
 \alias{[[,filterSummary,character-method}
-\alias{$,filterSummary,ANY-method}
+\alias{$,filterSummary-method}
 \alias{coerce,filterSummary,data.frame-method}
 \alias{length,filterSummary-method}
 \alias{names,filterSummary-method}
