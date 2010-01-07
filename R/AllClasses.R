@@ -1658,9 +1658,14 @@ compensatedParameter <- function(parameters,
 ## ---------------------------------------------------------------------------
 ## Create quasi-random guids. This is only based on the time stamp,
 ## not on MAC address or similar.
-guid <- function()
-    as.vector(format.hexmode(as.integer(Sys.time())/
-                             runif(1)*proc.time()["elapsed"]))
+#guid <- function()
+#    as.vector(format.hexmode(as.integer(Sys.time())/
+#                             runif(1)*proc.time()["elapsed"]))
+guid <- function(len=10){
+       ltrs <- c(LETTERS,letters)
+       paste(c(sample(ltrs,1),sample(c(ltrs,0:9),len-1,replace=TRUE)),collapse="")
+}
+
 setClass("fcReference", 
          representation=representation(ID="character",
          env="environment"),
@@ -2189,6 +2194,8 @@ setClass("workFlow",
 ## make deep copy of a flowSet
 copyFlowSet <- function(x) x[1:length(x)]
 
+## copy a flowFrame
+copyFlowFrame <- function(x) x[1:nrow(x)]
 
 ## The constructor takes a flow data object (flowFrame or flowSet) and
 ## makes a copy in the evaluation environment. It also sets up the views
@@ -2213,7 +2220,11 @@ workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
         if(!is(data, "flowFrame") && !is(data, "flowSet"))
             stop("'data' must be a flow data structure (flowFrame or flowSet)",
                  call.=FALSE)
-	data <- copyFlowSet(data)
+	if(is(data,"flowSet"))
+		data <- copyFlowSet(data)
+	if(is(data,"flowFrame"))
+	    data <- copyFlowFrame(data)
+	
         dataRef <- assign(value=data, envir=wf)
         viewRef <- view(workflow=wf, name="base view", data=dataRef)
         tree <- addNode(identifier(viewRef), tree)
@@ -2634,8 +2645,10 @@ createGateActionItem <- function(wf, action, parent, name)
         fres <- filter(Data(get(pview)), action)
         if(is(action, "filterList"))
             identifier(fres) <- identifier(action)
-        if(!validFilterResultList(fres))
-            stop("Don't know how to proceed.", call.=FALSE)
+		if(is(fres,"filterResultList")){
+        	if(!validFilterResultList(fres))
+            	stop("Don't know how to proceed.", call.=FALSE)
+		}
         fresRef <-  assign(value=fres, envir=wf)
         gAction <- get(actionRef)
         gAction@filterResult <- fresRef
