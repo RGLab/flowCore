@@ -32,7 +32,8 @@ setMethod("Data",
                   if(is(object, "gateView")){
                       parentData <- Data(parent)
                       if(is(parentData, "flowFrame")){
-                          newData <- parentData[object@indices[[1]],]
+						 newData <- copyFlowFrame(parentData)
+						 #newData <- parentData[object@indices[[1]],]
                       }else{
                           newData <- copyFlowSet(parentData)
                           for(i in seq_along(object@indices)){
