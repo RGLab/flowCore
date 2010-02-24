@@ -9,11 +9,6 @@
 No methods defined with class "characterOrTransformation" in the signature.
 }
 \references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- 
-
 
 \examples{
 showClass("characterOrTransformation")
