@@ -2,10 +2,10 @@ useDynLib("flowCore",.registration=TRUE)
 
 importClassesFrom(Biobase, AnnotatedDataFrame)
 
-importClassesFrom(methods, ANY, call, character, data.frame,
-                  environment, expression, factor, formula, "function",
-                  list, logical, matrix, missing, name, "NULL",
-                  numeric, oldClass)
+importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
+                  ANY, call,character, data.frame, environment, expression, 
+                  factor, formula, "function", list, logical, matrix, missing,
+                  name, "NULL",numeric, oldClass)
 
 importMethodsFrom(Biobase, description, "description<-", exprs,
                   "exprs<-", featureNames, pData, "pData<-", phenoData,
