@@ -507,10 +507,14 @@ setMethod("transform",
               par$maxRange <- tranges[2,]
           }
           description(x) <- list(transformation="custom")
-          new("flowFrame",
-              exprs=transformed, 
-              parameters=par,
-              description=description(x))
+		  desc <- description(x)
+		  for(p in seq_along(pData(par)$name))
+		  { 
+			 desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(par)[p, "maxRange"]
+             desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(par)[p, "minRange"]
+          }
+          new("flowFrame", exprs = transformed, parameters = par,
+               description = desc)
       })
 
 
