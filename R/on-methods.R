@@ -109,10 +109,17 @@ setMethod("%on%",
               mt <- match(y@output, pars$name)
               pData(pars)[mt,c("minRange", "maxRange")] <-
                   y@f(ranges[,y@input])   
+			 
           }
           exprs(e2) <- x
           parameters(e2) <- pars
           description(e2) <- list(transformation="custom")
+		  desc <- description(e2)
+		  for(p in seq_along(pData(pars)$name)) { 
+			 desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(pars)[p, "maxRange"]
+             desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(pars)[p, "minRange"]
+          }
+		  description(e2) <- desc
           e2
       })
 

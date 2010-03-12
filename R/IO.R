@@ -107,15 +107,24 @@ read.FCS <- function(filename,
     ## transformed before
     if("transformation" %in% names(txt) &&
        txt[["transformation"]] %in% c("applied", "custom"))
-        transformation <- FALSE
+       transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
                        scale, alter.names, decades, min.limit)
     matRanges <- attr(mat,"ranges")
+
+	
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
     absMin <- apply(mat,2,min,na.rm=TRUE)
     realMin <- pmin(zeroVals,pmax(-111, absMin, na.rm=TRUE), na.rm=TRUE)
+    
+	if("transformation" %in% names(txt) && txt[["transformation"]] == "custom") {
+		for(i in seq_along(colnames(mat))) {
+			realMin[i] <- txt[[sprintf("flowCore_$P%sRmin", i)]]
+		}
+	}
+
     params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin)
     
@@ -132,23 +141,19 @@ read.FCS <- function(filename,
         if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
             stop(paste("file", filename, "seems to be corrupted."))
     }
-	
+
 	## set transformed flag and fix the PnE and the Datatype keywords
     ## also add our own PnR fields.
     txt[["FILENAME"]] <- filename
-    if(transformation==TRUE)
-    { 
-        txt[["transformation"]] <-"applied"
-        for(p in seq_along(pData(params)$name))
-        {
-             txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", max(0, pData(params)[p,"minRange"]))
-             txt[[sprintf("flowCore_$P%sR", p)]] <- matRanges[p]+1
-
-
-        }
-        txt[["$DATATYPE"]] <- "F"
+    if(transformation==TRUE) { 
+       txt[["transformation"]] <-"applied"
+       for(p in seq_along(pData(params)$name)) {
+          txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", 0) 
+          txt[[sprintf("flowCore_$P%sRmax", p)]] <- matRanges[p] +1
+          txt[[sprintf("flowCore_$P%sRmin", p)]] <- realMin[p] 
+       }
+       txt[["$DATATYPE"]] <- "F"
     }
-
     ## build description from FCS parameters
     description <- strsplit(txt,split="\n")
     names(description) <- names(txt)
@@ -188,9 +193,9 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
-    rid <- paste("flowCore_", id,"R",sep="")
+    rid <- paste("flowCore_", id,"Rmax",sep="")
     original <- is.na(txt[rid[1]])
-    range <- origRange <- if(!original) as.numeric(txt[rid]) else
+    range <- origRange <- if(!original) as.numeric(txt[rid]) + 1 else
     as.numeric(txt[paste(id,"R",sep="")])
     range <- rbind(realMin,range-1)
 
@@ -339,7 +344,14 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     
     nrpar    <- as.integer(readFCSgetPar(x, "$PAR"))
     nrowTotal <- as.integer(readFCSgetPar(x, "$TOT"))
-    range    <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
+
+    if( "transformation" %in% names(x) &&  x[["transformation"]] == "custom"){
+       range <- sapply(seq_len(nrpar),function(k){
+                x[[sprintf("flowCore_$P%sRmax", k)]]
+             })
+    } else {
+       range <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
+    }
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
     
@@ -468,34 +480,38 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     ## transform or scale if necessary
     if(transformation)
     {
-        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""),
-                                  strict=FALSE)
-        noPnE <- is.na(ampliPar)
-        if(any(noPnE))
-        {
-            warning("No '$PnE' keyword available for the following channels: ",
-                    paste(which(noPnE), collapse=", "), "\nUsing '0,0' as default.",
-                    call.=FALSE)
-            ampliPar[noPnE] <- "0,0"
-        }
-        ampli <- do.call(rbind,lapply(ampliPar, function(x)
-                                        as.integer(unlist(strsplit(x,",")))))
-        for (i in 1:nrpar){
-            if(ampli[i,1] > 0){
-                dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
-                range[i] <- 10^ampli[i,1]
-            }
-            else
-                range[i] <- range[i]-1
-        }
+       ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""),
+             strict=FALSE)
+       noPnE <- is.na(ampliPar)
+       if(any(noPnE))
+       {
+          warning("No '$PnE' keyword available for the following channels: ",
+                paste(which(noPnE), collapse=", "), "\nUsing '0,0' as default.",
+                call.=FALSE)
+          ampliPar[noPnE] <- "0,0"
+       }
+       ampli <- do.call(rbind,lapply(ampliPar, function(x)
+                   as.integer(unlist(strsplit(x,",")))))
+       for (i in 1:nrpar){
+          if(ampli[i,1] > 0){
+             dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+             range[i] <- 10^ampli[i,1]
+          }
+          else
+             range[i] <- range[i]-1
+
+       }
     }
     if(scale){
         d = 10^decades	
         for(i in 1:nrpar)
-            if(ampli[i,1] > 0)
-                dat[,i] <- d*((dat[,i]-1)/(range[i]-1))
-            else
+            if(ampli[i,1] > 0){
+               dat[,i] <- d*((dat[,i]-1)/(range[i]-1))
+               range[i] <- d*(range[i]/range[i]-1)
+            } else{
                 dat[,i] <- d*((dat[,i])/(range[i]))
+                range[i] <- d
+            }
     }
     attr(dat, "ranges") <- range
     return(dat) 
