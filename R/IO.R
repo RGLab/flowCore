@@ -697,10 +697,22 @@ writeFCSheader <- function(con, offsets)
 {
     seek(con, 0)
     writeChar("FCS3.0    ", con, eos=NULL)
-    for(i in offsets)
-        writeChar(paste(paste(rep(" ", 8-nchar(i)), collapse=""), i,
+    len <- length(offsets)/2
+    for (i in seq_len(len)) {
+        indx <- 2*(i-1) +1;
+        val1 <- offsets[indx]
+        val2 <- offsets[indx+1];
+        st1 <- 8 - nchar(val1)
+        st2 <- 8 - nchar(val2)
+        if( nchar(val1) > 8 || nchar(val2) > 8){
+             val1 <- val2 <- 0
+        }
+        writeChar(paste(paste(rep(" ", 8 - nchar(val1)), collapse=""), val1,
                         collapse="", sep=""), con, eos=NULL)
-    invisible()
+        writeChar(paste(paste(rep(" ", 8 - nchar(val2)), collapse=""), val2,
+                        collapse="", sep=""), con, eos=NULL)
+    }
+     invisible()
 }
 
 
