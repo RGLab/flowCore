@@ -21,7 +21,7 @@ setMethod("show",
                     dm[2], " observables:\n", sep=""))
           show(pData(parameters(object)))
           cat(paste(length(description(object)), " keywords are stored in the ",
-                    "'descripton' slot\n", sep = ""))
+                    "'description' slot\n", sep = ""))
           return(invisible(NULL))
       })
 
