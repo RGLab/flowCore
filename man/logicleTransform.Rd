@@ -17,10 +17,10 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0,
 \arguments{
   \item{transformationId}{ A name to assign to the transformation. Used
   by the transform/filter  routines. } 
-  \item{w}{ w is the linearization width in asymptotic decades. W should be >= 0 and 
+  \item{w}{ w is the linearization width in asymptotic decades. w should be >= 0 and 
   determines the slope of  transformation at zero.
   w can be estimated using the equation 
-  w=m-log10(t/abs(r)))/2 , where r is the most negative value to be included in the 
+  w=(m-log10(t/abs(r)))/2, where r is the most negative value to be included in the 
   display
   }
   \item{t}{Top of the scale data value, e.g, 10000 for common 4 decade
@@ -31,7 +31,7 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0,
    decades. Positive values of the argument brings additional negative input values
    into the transformed display viewing area. Default value is zero corresponding to a Standard logicle function.}
   \item{tol}{Acceptable tolerance of the root value}
-  \item{maxit}{ Maximum iterations allowed for the root search process}
+  \item{maxit}{Maximum iterations allowed for the root search process}
 }
 
 \references{Parks D.R., Roederer M., Moore W.A.(2006)  A new "logicle" display
