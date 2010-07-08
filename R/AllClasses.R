@@ -1381,42 +1381,71 @@ biexponentialTransform <-
 
 ## Logicle transformation constructor
 ## Input parameters are to be provided in decades
-logicleTransform <- function(transformationId="defaultLogicleTransform",
-                             w=0, t=262144, m=4.5,a=0,tol=.Machine$double.eps^0.8, 
-							 maxit=as.integer(5000))
-{
-	if(t<=0 || m <=0)
-		stop(" t and m should be greater than zero")
-	if (w<0)
-		stop(" w should be greater than zero")
-	
-    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
-								c(.Machine$double.eps,10000))$root
+logicleTransform <- function(transformationId="defaultLogicleTransform", 
+        w = 0.5, t = 262144, m = 4.5, a = 0) {
+
     k <- new("transform", .Data=function(x) 
-		x <- .Call("logicle_transform",x,m,w,p,t,a,tol,maxit)
-	    )            
+            x <- .Call("logicle_transform", as.double(x), as.double(t), 
+                    as.double(w), as.double(m), as.double(a))
+            )            
     k@transformationId <- transformationId
     k
 }
 
 ### Inverse logicle transformation constructor
-inverseLogicleTransform <- function( transformationId= "defaultInvLogicleTransform",
-                            w = 0, t = 262144, m = 4.5, a = 0){
-		
-	if(t<=0 || m <=0)
-		stop(" t and m should be greater than zero")
-	if (w<0)
-		stop(" w should be greater than zero")
-		
-    p <- if(w==0) 1 else uniroot(function(p) -w+2*p*log10(p)/(p+1),
-            c(.Machine$double.eps, 2*(w+m)))$root
+
+inverseLogicleTransform <- function(transformationId, trans) {
+
+    if(!is(trans, "transform"))
+        stop("trans has to be an object of class \"transform\"
+            created using the \"logicleTransform\" function")
     
-    k <- new("transform", .Data=function(x) 
-	 		x <- .Call("invLogicle_transform",x,m,w,p,t,a)
+    pars <- c("w", "t", "m", "a")
+    vals <- ls(environment(trans@.Data))
+    if(!all(pars %in% vals))
+        stop("\"trans\" is not a valid object produced using the
+           \"logicle\" function")
+
+    w = environment(trans@.Data)[["w"]] 
+    t = environment(trans@.Data)[["t"]] 
+    m = environment(trans@.Data)[["m"]]
+    a = environment(trans@.Data)[["a"]]
+    k <- new("transform", .Data=function(x)
+	 		x <- .Call("invLogicle_transform", as.double(x), as.double(t), 
+                    as.double(w), as.double(m), as.double(a))
 	    )
-    k@transformationId <- transformationId
+    if(missing(transformationId))
+        k@transformationId <- paste( "inverse", trans@transformationId, sep ="_")
     k
 }
+
+.lgclTrans  <- function(dat, p, t, m) {
+    transId <- paste(p,"logicleTransform", sep = "_")
+    dat <- exprs(dat)[,p]
+    dat <- dat[dat<0]
+    w <- 0
+    if(length(dat)) {
+        r <- .Machine$double.eps + quantile(dat, 0.05)
+        w=(m-log10(t/abs(r))) / 2
+    } 
+    logicleTransform( transformationId = transId, w=w, t=t, m =m, a =0)
+}
+
+estimateLogicle <- function(x, channels){
+            if(!is(x,"flowFrame"))
+                stop("x has to be an object of class \"flowFrame\"")
+            if(missing(channels))
+                stop("Please specify the channels to be logicle transformed");
+            indx <- channels %in% colnames(x)
+            if(!all(indx))
+                stop(paste("Channels", channels[!indx] , "were not found in x ",
+                            sep = " "))
+            rng <- range(x)
+            trans <- lapply(channels, function(p) {
+                        .lgclTrans(x, p, t = rng[,p][2], m = 4.5)               
+                    })
+            transformList( channels, trans)   
+        }
 
 ## Truncation transformation constructor
 truncateTransform <- function(transformationId="defaultTruncateTransform",
