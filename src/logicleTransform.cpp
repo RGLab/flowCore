@@ -1,8 +1,8 @@
-#include <Rinternals.h>
 #include <iostream>
 #include "logicle.h"
 extern "C" {
 #include <R.h>
+#include <Rinternals.h>
 #include <Rdefines.h>
 /**
  * Logicle tranform/inverse transform wrapper function, makes use of the Logicle
