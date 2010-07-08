@@ -8,7 +8,7 @@ Maintainer: F. Hahne <florian.hahne@novartis.com>
 Depends: R (>= 2.8.1), Biobase, rrcov
 Imports: Biobase, feature, graph, graphics, grDevices, MASS, methods,
          rrcov, stats, utils
-Suggests: flowViz
+Suggests: Rgraphviz, flowViz, ncdf
 Collate: AllGeneric.R 
 	 AllClasses.R
 	 flowFrame-accessors.R
