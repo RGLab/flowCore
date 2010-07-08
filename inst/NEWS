@@ -1,0 +1,14 @@
+
+CHANGES IN VERSION 1.15.2
+-------------------------
+
+Modified the logicle and the inverse logicle transformation to make use of the 
+C++ library provided by Wayne Moore et al.
+
+Added a function estimateLogicle to automatically estimate the logicle
+transformation parameters given a flowFrame and the channels to be transformed
+as input.
+
+Modified the inverseLogicleTransfom function to take the output of a 
+logicleTransform function as input.
+
