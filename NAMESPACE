@@ -349,4 +349,5 @@ export("action",
        "%&%",
        "%in%",
        "%subset%",
-       "%on%")
+       "%on%",
+       estimateLogicle)
