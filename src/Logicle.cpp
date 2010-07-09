@@ -287,17 +287,18 @@ double Logicle::scale (double value) const
 		x -= delta;
 
 		// if we've reached the desired precision we're done
-		if (std::abs(delta) < tolerance)
+		if (std::abs(delta) < tolerance) {
 			// handle negative arguments
 			if (negative)
 				return 2 * p->x1 - x;
 			else
 				return x;
+        }
 	}
 
      throw "DidNotConverge: scale() didn't converge";
 	//throw DidNotConverge("scale() didn't converge");
-};
+}
 
 double Logicle::inverse (double scale) const
 {
@@ -320,11 +321,11 @@ double Logicle::inverse (double scale) const
 		return -inverse;
 	else
 		return inverse;
-};
+}
 
 double Logicle::dynamicRange () const
 {
 	return slope(1) / slope(p->x1);
 }
 
-int PullInMyLibrary () { return 0; };
+int PullInMyLibrary () { return 0; }
