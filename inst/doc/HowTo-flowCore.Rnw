@@ -78,7 +78,7 @@ Bioconductor package flowCore.  We illustrate their use with X case
 studies.\\
 
 \noindent \textbf{Results} We hope that those proposed data structures
-will the base for the development of many tools for the analysis of
+will be the base for the development of many tools for the analysis of
 high throughput flow cytometry.\\
 
 \noindent \textbf{keywords} Flow cytometry, high throughput,
