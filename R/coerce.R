@@ -266,7 +266,7 @@ setAs(from="list", to="flowSet", def=function(from)
       orig.sampleNames <- names(from)
       names(from) <- paste(sprintf("%0.6d", seq_along(from)), names(from),
                            sep="_")
-      res <- as(l2e(from, new.env(hash=T, parent=emptyenv())), "flowSet")
+      res <- as(list2env(from, new.env(hash=T, parent=emptyenv())), "flowSet")
       sampleNames(res) <- orig.sampleNames
       res
   })
