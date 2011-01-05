@@ -22,7 +22,7 @@
 
 \section{Objects from the Class}{
   
-  Objects should be created using the contructor
+  Objects should be created using the constructor
   \code{subsetting()}. See the \code{Usage} and \code{Arguments}
   sections for details.
 

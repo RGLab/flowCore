@@ -165,7 +165,7 @@ undo(wf, n=1)
 	= "workFlow", envir = "missing", inherits = "missing", immediate
 	= "missing")}: same as above, but assign object using an
       existing \code{\link{fcReference}}. Note that assigning
-      \code{NULL} esentially removes the original object. }
+      \code{NULL} essentially removes the original object. }
 
     \item{[}{\code{signature(x = "workFlow", i = "ANY")}: Cast a useful
       error message. }
@@ -175,7 +175,7 @@ undo(wf, n=1)
       is equivalent to \code{get(x, i)}.  }
 
     \item{\$}{\code{signature(x = "workFlow", name = "character")}:
-      Allow for list-like access. Note that completetion is only
+      Allow for list-like access. Note that completion is only
       available for \code{\link[flowCore:view-class]{views}} since all other
       objects in the environment are considered to be internal. }
 
@@ -270,7 +270,7 @@ undo(wf, n=1)
   structure of the whole workflow is a tree, where nodes represent
   \code{link{view}}s (or results of an operation) and edges represent
   \code{\link[flowCore:actionItem-class]{actionItems}} (or the operations
-  themselve).
+  themselves).
   
 }
 

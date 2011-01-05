@@ -69,7 +69,7 @@ boundaryFilter(x, tolerance=.Machine$double.eps, side=c("both", "lower",
     which the filter is supposed to work. Note that all events on the
     margins of ay of the channels provided by \code{x} will be
     discarded, which is often not desired. Such events may not
-    convey much informtion in the particular channel on which their
+    convey much information in the particular channel on which their
     value falls on the margin, however they may well be informative in
     other channels. }
 
@@ -124,10 +124,10 @@ boundaryFilter(x, tolerance=.Machine$double.eps, side=c("both", "lower",
   removes these values, either for a single parameter, or for a
   combination of parameters. Note that it is often desirable to treat
   boundary events on a per-parameter basis, since their values might be
-  uniformative for one particular channel, but still be useful in all of
+  uninformative for one particular channel, but still be useful in all of
   the other channels.
 
-  The constructor \code{boundaryFilter} is a conveniance function for
+  The constructor \code{boundaryFilter} is a convenience function for
   object instantiation. Evaluating a \code{boundaryFilter} results in a
   single sub-populations, an hence in an object of class
   \code{\link{filterResult}}.

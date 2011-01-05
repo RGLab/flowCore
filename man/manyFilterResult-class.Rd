@@ -34,7 +34,7 @@ be a \code{\link{filter}} operation of \code{\link{filterSet}} object on a
       referencing the filter applied}
 
      \item{\code{dependency}:}{ Any dependencies between the
-       fitlers. Currently not used. }
+       filters. Currently not used. }
    
    }
 }

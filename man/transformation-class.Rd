@@ -3,7 +3,7 @@
 \alias{transformation-class}
 
 \title{Class "transformation"  }
-\description{A virtual class to abtract transformations.}
+\description{A virtual class to abstract transformations.}
 \section{Objects from the Class}{A virtual Class: No objects may be created from it.}
 \section{Extends}{
 Class \code{"\linkS4class{characterOrTransformation}"}, directly.

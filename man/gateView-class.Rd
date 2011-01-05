@@ -37,7 +37,7 @@
       the filtering operation. }
     
     \item{\code{frEntry}:}{Object of class \code{"character"} The
-      population in the \code{\link{filterResult}} that corrsponds to the
+      population in the \code{\link{filterResult}} that corresponds to the
       current view. See details for further explanation. }
 
     \item{\code{ID}:}{Object of class \code{"character"}. A unique
@@ -57,7 +57,7 @@
     
     \item{\code{data}:}{Object of class \code{"fcDataReference"} A
       reference to the data that is associated to the view. Subsets of
-      the data are only generated when a a further action is invoced on
+      the data are only generated when a a further action is invoked on
       a particular \code{gateView}. Summary statistics about the view
       can be acquired through the usual process of summarizing
       \code{\link[flowCore:filterResult-class]{filterResults}}. }

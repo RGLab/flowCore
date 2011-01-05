@@ -14,8 +14,8 @@ scaleTransform(transformationId="defaultScaleTransform", a, b)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation}
-  \item{a}{double that correponds to the value that will be transformed to 0}
-  \item{b}{double that correponds to the value that will be transformed to 1}
+  \item{a}{double that corresponds to the value that will be transformed to 0}
+  \item{b}{double that corresponds to the value that will be transformed to 1}
 }
 
 \value{

@@ -21,7 +21,7 @@
 
 \section{Objects from the Class}{
   
-  Objects should be created using the contructor
+  Objects should be created using the constructor
   \code{normalization()}. See the \code{Usage} and \code{Arguments}
   sections for details.
 
@@ -41,7 +41,7 @@
       normalization function. It has to take two mandatory arguments:
       \code{x}, the \code{flowSet}, and \code{parameters}, a character
       of parameter names that are to be normalized by the
-      function. Additional arguments have to be passed in vio
+      function. Additional arguments have to be passed in via
       \code{arguments}.}
     
     \item{\code{arguments}:}{Object of class \code{"list"} A names list
@@ -114,7 +114,7 @@ normalize(data, x)
 
 \details{
   Data normalization of a \code{flowSet} is a rather fuzzy concept and
-  the class mainly existst for method dispatch in the workflow
+  the class mainly exists for method dispatch in the workflow
   tools. The idea is to have a rather general function that takes a
   \code{flowSet} and a list of parameter names as input and applies any
   kind of normalization to the respective data columns. The output of

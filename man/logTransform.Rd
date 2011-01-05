@@ -16,9 +16,9 @@ logTransform(transformationId="defaultLogTransform", logbase=10, r=1, d=1)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation}
-  \item{logbase}{positive double that correponds to the base of the logarithm. }
-  \item{r}{positive double that correponds to a scale factor. }
-  \item{d}{positive double that correponds to a scale factor}
+  \item{logbase}{positive double that corresponds to the base of the logarithm. }
+  \item{r}{positive double that corresponds to a scale factor. }
+  \item{d}{positive double that corresponds to a scale factor}
 }
 
 \value{

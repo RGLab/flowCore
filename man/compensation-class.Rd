@@ -24,7 +24,7 @@
 
 \section{Objects from the Class}{
   
-  Objects should be created using the contructor
+  Objects should be created using the constructor
   \code{compensation()}. See the \code{Usage} and \code{Arguments}
   sections for details.
   
@@ -43,7 +43,7 @@
      \item{\code{parameters}:}{Object of class \code{parameters}. The
        flow parameters for which the compensation is defined. This can
        also be objects of class \code{\linkS4class{transform}}, in which
-       case the compensation is peformed on the compensated parameters.}
+       case the compensation is performed on the compensated parameters.}
     
   }
 }
@@ -160,7 +160,7 @@ compensate(x, spillover, \dots)
       all \code{\link[flowCore:transform-class]{transforms}} and
       \code{\link[flowCore:transformReference-class]{transformReferences}}
 	before returning the parameters as character vectors. Unresolvable
-	references retrun \code{NA}.
+	references return \code{NA}.
       
       \emph{Usage:}
       

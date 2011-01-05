@@ -77,7 +77,7 @@ ellipsoidGate(\dots, .gate, mean, distance=1, filterId="defaultEllipsoidGate")
 
   \item{distance}{ Numeric scalar giving the Mahalanobis distance
       defining the size of the ellipse. This mostly exists for
-      compliance reaons to the gatingML standard as \code{mean} and
+      compliance reasons to the gatingML standard as \code{mean} and
       \code{gate} should already uniquely define the
       ellipse. Essentially, \code{distance} is merely a factor that gets
       applied to the values in the covariance matrix.}

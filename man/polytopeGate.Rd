@@ -51,7 +51,7 @@ polytopeGate(\dots, .gate, b, filterId="defaultPolytopeGate")
   Rectangle gate objects can also be multiplied together using the
   \code{*} operator, provided that both gate have orthogonal axes.
 
-  For polygone gate, the boundaries are specified as vertices in 2
+  For polygon gate, the boundaries are specified as vertices in 2
   dimensions, for polytope gate objects as vertices in n dimensions.
 
   For quadrant gates, the boundaries are specified as a named list or

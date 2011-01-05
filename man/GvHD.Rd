@@ -15,7 +15,7 @@
 \format{
   The format is an object of class \code{flowSet} composed of 35
   \code{flowFrames}.
-  Each \code{flowFrame} correponds to one sample at one time point.
+  Each \code{flowFrame} corresponds to one sample at one time point.
   The \code{phenodata} lists:
   \describe{
   \item{Patient}{The patient Id code }

@@ -15,9 +15,9 @@ arcsinhTransform(transformationId="defaultArcsinhTransform", a=1, b=1, c=0)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation}
-  \item{a}{positive double that correponds to the base of the logarithm. }
-  \item{b}{positive double that correponds to a scale factor.}
-  \item{c}{positive double that correponds to a scale factor}
+  \item{a}{positive double that corresponds to the base of the logarithm. }
+  \item{b}{positive double that corresponds to a scale factor.}
+  \item{c}{positive double that corresponds to a scale factor}
 }
 
 \value{

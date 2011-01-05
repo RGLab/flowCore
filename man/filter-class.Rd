@@ -45,11 +45,11 @@ more specific filter.
   parameters (i.e., those inheriting from 
   \code{\link[flowCore:parameterFilter-class]{parameterFilter}}), the parameters
   need to be passed to the constructor, either as names or colnames of
-  additional input arguments or explicitely as separate arguments.  See
+  additional input arguments or explicitly as separate arguments.  See
   the documentation of the respective \code{filter} classes for
-  details. If parameters are explicitely defined as separate arguments,
+  details. If parameters are explicitly defined as separate arguments,
   they may be of class \code{character}, in which case they will be
-  evaluated literaly as colnames in a \code{\link{flowFrame}}, or of
+  evaluated literally as colnames in a \code{\link{flowFrame}}, or of
   class \code{\link[flowCore:transform-class]{transform}}, in which case the
   filtering is performed on a temporarily transformed copy of the input
   data. See \code{\link[flowCore:parameterFilter-class]{here}} for details.

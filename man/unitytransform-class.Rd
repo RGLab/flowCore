@@ -7,7 +7,7 @@
 
 \title{Class "unitytransform" }
 \description{
-Unity transform class transforms parameters names provided as characters into unity transform objects which can be evaluated to retrive the corresponding columns from the
+Unity transform class transforms parameters names provided as characters into unity transform objects which can be evaluated to retrieve the corresponding columns from the
 data frame	
 }
 

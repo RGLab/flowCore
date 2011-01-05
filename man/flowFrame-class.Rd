@@ -289,7 +289,7 @@
 
     \item{featureNames, colnames, colnames<-}{Extract parameter names (i.e., the
       colnames of the data matrix). \code{colnames} and
-      \code{featureNames} are synonymes. For \code{colnames} there is
+      \code{featureNames} are synonyms. For \code{colnames} there is
       also a replacement method. This will update the \code{name} column
       in the \code{parameters} slot as well.
 
@@ -336,7 +336,7 @@
     }
 
     \item{each\_row, each\_col}{Apply functions over rows or columns of
-      the data matrix. These are convenince methods. See
+      the data matrix. These are convenience methods. See
       \code{\link{each_col}} for details.
 
       \emph{Usage:}
@@ -419,7 +419,7 @@
 
     \item{compensate}{Apply a compensation matrix (or a
       \code{\linkS4class{compensation}} object) on a \code{flowFrame}
-      object. This returns a compensared \code{flowFrame}.
+      object. This returns a compensated \code{flowFrame}.
       
       \emph{Usage:}
       

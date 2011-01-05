@@ -8,7 +8,7 @@
 \title{Class "splitscale"  }
 \description{ The split scale transformation class defines a transformation that
  has a logarithmic scale at high values and a linear scale at low values. The transition points are chosen so that the slope of the  
-trasformation is continuos at the transition points.
+transformation is continuous at the transition points.
 
 The split scale transformation is defined by the function
 
@@ -32,12 +32,12 @@ Objects can be created by calls to the constructor
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{r}:}{Object of class \code{"numeric"}-a positive value indicating the range of the logarithmical 
+    \item{\code{r}:}{Object of class \code{"numeric"}-a positive value indicating the range of the logarithmic 
                     part of the display }
     \item{\code{maxValue}:}{Object of class \code{"numeric"} -a positive value indicating the maximum value the transformation
       is applied to}
     \item{\code{transitionChannel}:}{Object of class \code{"numeric"} -non negative value that indicates where to 
-          split the linear vs. logarithmical transformation}
+          split the linear vs. logarithmic transformation}
     \item{\code{parameters}:}{Object of class \code{"transformation"} - flow parameter to be transformed }
     \item{\code{transformationId}:}{Object of class \code{"character"}-unique ID to reference the transformation}
   }

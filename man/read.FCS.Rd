@@ -26,12 +26,12 @@
   
   \item{transformation}{An character string that defines the type of
     transformation. Valid values are \code{linearize} (default) or
-    \code{scale}.The \code{linearize} tramsformation applies the
+    \code{scale}.The \code{linearize} transformation applies the
     appropriate power transform to the data while the \code{scale}
     transformation scales all columns to $[0,10^decades]$.  defaulting
     to decades=0 as in the FCS4 specification. A logical can also be
     used: \code{TRUE} is equal to \code{linearize} and \code{FALSE}
-    correponds to no transformation.}
+    corresponds to no transformation.}
   
   \item{which.lines}{Numeric vector to specify the indices of the lines
     to be read. If NULL all the records are read, if of length 1, a
@@ -58,12 +58,12 @@
     space. The \code{\link{exprs}} and \code{\link{exprs<-}} methods
     make sure that the user always gets a matrix of data values.  Please
     note that currently all operations that call \code{\link{exprs<-}},
-    either explicitely or implicitely, will result in the creation of a
+    either explicitly or implicitely, will result in the creation of a
     new \code{netCDF} file. This behaviour may change in the
     future. Currently the software does not remove any of the
     \code{netCDF} files and it is up to the user to do clean up. The
     easiest way to do that is to delete the whole \code{netCDF}
-    directory. To this end, one can envoke the \code{cleanup}
+    directory. To this end, one can invoke the \code{cleanup}
     function. }
   
   \item{min.limit}{The minimum value in the data range that is
@@ -73,7 +73,7 @@
     this threshold. The lower data boundary is not that well defined,
     since compensation might shift some values below the original
     measurement range of the instrument. The default value of \code{-111}
-    copies the behavior of flowJo. It can be set to an arbitray number
+    copies the behavior of flowJo. It can be set to an arbitrary number
     or to \code{NULL}, in which case the original values are kept. }
 
   \item{dataset}{The FCS file specification allows for multiple data
