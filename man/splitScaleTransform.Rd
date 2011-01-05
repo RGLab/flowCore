@@ -16,7 +16,7 @@ splitScaleTransform(transformationId="defaultSplitscaleTransform", maxValue=1023
   \item{transformationId}{ A name to assign to the transformation. Used by the transform/filter integration routines. }
   \item{maxValue}{Maximum value the transformation is applied to, e.g., 1023}
   \item{transitionChannel}{Where to split the linear versus the
-    logarithmical transformation, e.g., 64}
+    logarithmic transformation, e.g., 64}
   \item{r}{Range of the logarithm part of the display, ie. it may be
     expressed as the maxChannel - transitionChannel considering the
     maxChannel as the maximum value to be obtained after the transformation.} 

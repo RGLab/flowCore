@@ -10,7 +10,7 @@
 
 \description{
 
-  Class and method to capture the reuslt of transformation operations in
+  Class and method to capture the result of transformation operations in
   a flow cytometry workflow.
 
 }

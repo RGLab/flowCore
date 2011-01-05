@@ -121,7 +121,7 @@ filterId="defaultNorm2Filter")
   The filter fits a bivariate normal distribution to the data and
   selects all events within the Mahalanobis distance multiplied by the
   \code{scale.factor} argument. The constructor \code{norm2Filter} is a
-  conveniance function for object instantiation. Evaluating a
+  convenience function for object instantiation. Evaluating a
   \code{curv2Filter} results in an object of class
   \code{\link{logicalFilterResult}}. Accordingly, \code{norm2Filters}
   can be used to subset and to split flow cytometry data sets.

@@ -5,7 +5,7 @@
 \alias{eval,logarithm,missing,missing-method}
 
 \title{Class "logarithm"  }
-\description{	Logartithmic transformation of an argument is a transforation defined by the function 
+\description{	Logartithmic transformation of an argument is a transformation defined by the function 
 
  \deqn{f(parameter,a,b)=  ln(a*prarameter)*b ~~~~a*parameter>0}
                             \deqn{0  ~~~~a*parameter<=0}

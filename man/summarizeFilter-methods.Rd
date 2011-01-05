@@ -29,7 +29,7 @@
   
     \item{result = "filterResult", filter = "filter"}{
       \code{summarizeFilter} methods are called during the process of
-      filtering. Their output is a list, and it can be arbitraty data
+      filtering. Their output is a list, and it can be arbitrary data
       that should be stored along with the results of a filtering
       operation. }
 

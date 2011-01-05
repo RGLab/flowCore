@@ -130,7 +130,7 @@ quantitative cell-based assays}
       
     }
     
-    \item{\$}{Subsetting by frame name. This wil return a single
+    \item{\$}{Subsetting by frame name. This will return a single
       \code{\linkS4class{flowFrame}} object. Note that names may have to
       be quoted if they are no valid R symbols
       (e.g. \code{flowSet$"sample 1"}}

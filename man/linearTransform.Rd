@@ -12,8 +12,8 @@ linearTransform(transformationId="defaultLinearTransform", a = 1, b = 0)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation }
-  \item{a}{double that correponds to the multiplicative factor in the equation}
-  \item{b}{double that correponds to the additive factor in the equation}
+  \item{a}{double that corresponds to the multiplicative factor in the equation}
+  \item{b}{double that corresponds to the additive factor in the equation}
 }
 \value{
   Returns an object of class \code{transform}.

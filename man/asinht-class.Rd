@@ -5,7 +5,7 @@
 \alias{eval,asinht,missing,missing-method}
 
 \title{Class "asinht"  }
-\description{ Inverse hyperbolic sin transfromation is defined by the function
+\description{ Inverse hyperbolic sin transformation is defined by the function
 \deqn{f(parameter,a,b)=sinh^{-1}(a*parameter)*b}
 }
 \section{Objects from the Class}{

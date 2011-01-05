@@ -15,8 +15,8 @@ lnTransform(transformationId="defaultLnTransform", r=1, d=1)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation}
-  \item{r}{positive double that correponds to a scale factor. }
-  \item{d}{positive double that correponds to a scale factor}
+  \item{r}{positive double that corresponds to a scale factor. }
+  \item{d}{positive double that corresponds to a scale factor}
 }
 
 \value{

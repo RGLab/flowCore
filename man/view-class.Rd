@@ -155,7 +155,7 @@ alias(object, \dots)
   operations on flow cytometry data in a workflow. Each view can be
   considered the outcome of one operation. There are more specific
   subclasses for the three possible types of operation:
-  \code{\link{gateView}} for gating oprations,
+  \code{\link{gateView}} for gating operations,
   \code{\link{transformView}} for transformations, and
   \code{\link{compensateView}} for compensation operations. See their
   documentation for details.

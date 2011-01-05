@@ -1,7 +1,7 @@
 \name{truncateTransform}
 \alias{truncateTransform}
 
-\title{Create the definition of a trucate tranformation function to be applied on a data set}
+\title{Create the definition of a truncate transformation function to be applied on a data set}
 \description{Create the definition of the truncate Transformation that will be
   applied on some parameter via the \code{transform} method. 
   The definition of this function is currently  x[x<a] <- a.
@@ -14,7 +14,7 @@ truncateTransform(transformationId="defaultTruncateTransform", a=1)
 
 \arguments{
   \item{transformationId}{character string to identify the transformation}
-  \item{a}{double that correponds to the value at which to truncate}
+  \item{a}{double that corresponds to the value at which to truncate}
 }
 
 \value{

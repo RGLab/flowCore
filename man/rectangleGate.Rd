@@ -119,7 +119,7 @@ rectangleGate(\dots, .gate, filterId="defaultRectangleGate")
   rectangle gate, \code{n=3} corresponds to a box region and \code{n>3}
   to a hyper-rectangular regions. Intervals may be open on one side, in
   which case the value for the boundary is supposed to be \code{Inf} or
-  \code{-Inf}, repsectively. \code{rectangleGates} are inclusive, that
+  \code{-Inf}, respectively. \code{rectangleGates} are inclusive, that
   means that events on the boundaries are considered to be in the gate.
   
   The constructor is designed to be useful in both direct and

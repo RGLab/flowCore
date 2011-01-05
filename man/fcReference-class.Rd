@@ -232,10 +232,10 @@ Rm(symbol, envir, subSymbol, ...)
 
 \arguments{
 
-  \item{x, f, symbol}{ An object of class or inhertiting from
+  \item{x, f, symbol}{ An object of class or inheriting from
     class \code{fcReference}.}
     
-  \item{value}{ An arbitrary R objec which is supposed to be assigned to
+  \item{value}{ An arbitrary R object which is supposed to be assigned to
     the environment in the \code{\link{workFlow}} object and to which a
     reference is returned. }
 
@@ -324,7 +324,7 @@ Rm(symbol, envir, subSymbol, ...)
   \code{fcTransformReference}, \code{fcCompensateReference}, and
   \code{fcNormalizationReference} link to \code{\link{filterResult}},
   \code{\link{filter}}, \code{\linkS4class{transform}} and
-  \code{\linkS4class{compensation}} obects. \code{fsStructureReference}
+  \code{\linkS4class{compensation}} objects. \code{fsStructureReference}
   only exists to jointly dispatch on certain subgroups of references.
   
 }

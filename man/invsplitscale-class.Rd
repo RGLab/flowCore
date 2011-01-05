@@ -28,11 +28,11 @@
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
     \item{\code{r}:}{Object of class \code{"numeric"} -a positive value indicating
-     the range of the logarithmical part of the display  }
+     the range of the logarithmic part of the display  }
     \item{\code{maxValue}:}{Object of class \code{"numeric"}  -a positive value 
            indicating the maximum value the transformation is applied to}
     \item{\code{transitionChannel}:}{Object of class \code{"numeric"} -non negative 
-          value that indicates where to split the linear vs. logarithmical transformation}
+          value that indicates where to split the linear vs. logarithmic transformation}
     \item{\code{parameters}:}{Object of class \code{"transformation"}  - flow parameter
         to be transformed}
     \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to

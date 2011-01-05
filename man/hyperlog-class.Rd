@@ -16,7 +16,7 @@ where EH is a function defined by
 
 }
 \section{Objects from the Class}{
-Objects can be created by calls to the constuctor
+Objects can be created by calls to the constructor
 \code{hyperlog(parameter,a,b,transformationId)}
 
 }

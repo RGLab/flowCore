@@ -19,7 +19,7 @@ Objects can be created by calls to the constructor
 \section{Slots}{
 \describe{
     \item{\code{.Data}:}{Object of class \code{"function"} ~~ }
-    \item{\code{a}:}{Object of class \code{"numeric"}-non zero mutiplicative 
+    \item{\code{a}:}{Object of class \code{"numeric"}-non zero multiplicative 
     constant}
     \item{\code{parameters}:}{Object of class \code{"transformation"}-flow 
     parameter to be transformed}

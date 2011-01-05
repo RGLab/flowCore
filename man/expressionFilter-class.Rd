@@ -47,7 +47,7 @@
   
   Objects can be created by calls of the form
   \code{new("expressionFilter", ...)}, using the
-  \code{\link{expressionFilter}} constructor or, programatically, from a
+  \code{\link{expressionFilter}} constructor or, programmatically, from a
   character string using the \code{char2ExpressionFilter} function.
 
 }

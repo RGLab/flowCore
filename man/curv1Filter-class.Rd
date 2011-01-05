@@ -111,7 +111,7 @@ filterId="defaultCurv1Filter")
   detecting significant curvature regions. See \cite{Duong, T. and
   Cowling, A. and Koch, I. and Wand, M.P., Computational Statistics and
   Data Analysis 52/9, 2008} for details. The constructor
-  \code{curv1Filter} is a conveniance function for object
+  \code{curv1Filter} is a convenience function for object
   instantiation. Evaluating a \code{curv1Filter} results in potentially
   multiple sub-populations, an hence in an object of class
   \code{\link{multipleFilterResult}}. Accordingly, \code{curv1Filters}

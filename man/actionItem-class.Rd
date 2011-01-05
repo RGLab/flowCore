@@ -73,7 +73,7 @@ cytometry workflow. }
   \code{actionItems} provide a means to bind standard operations on flow
   cytometry data in a workflow. Usually, the user doesn't have to create
   these objects, instead they will be automatically created when
-  allpying one of the standard operations (gating, transformation,
+  applying one of the standard operations (gating, transformation,
   compensation) to a \code{\link{workFlow}} object. Each
   \code{actionItem} creates one or several new
   \code{\link[flowCore:view-class]{views}}, which again can be the basis
@@ -82,7 +82,7 @@ cytometry workflow. }
   \code{\link[flowCore:view-class]{views}}, 
   which are the nodes of the tree. There are more specific subclasses
   for the three possible types of operation:
-  \code{\link{gateActionItem}} for gating oprations,
+  \code{\link{gateActionItem}} for gating operations,
   \code{\link{transformActionItem}} for transformations, and
   \code{\link{compensateActionItem}} for compensation operations. See
   their documentation for details.

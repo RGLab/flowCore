@@ -20,7 +20,7 @@
   \item{what}{A character scalar defining the output data type. One in
     \code{integer}, \code{numeric}, \code{double}. Note that forcing the
     data type to \code{integer} may result in considerable loss of
-    precison if the data has been transformed. We recommend using the
+    precision if the data has been transformed. We recommend using the
     default data type unless disc space is an issue. }
   
 }

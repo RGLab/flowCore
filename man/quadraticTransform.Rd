@@ -12,9 +12,9 @@ quadraticTransform(transformationId="defaultQuadraticTransform", a = 1, b = 1, c
 
 \arguments{
   \item{transformationId}{character string to identify the transformation }
-  \item{a}{double that correponds to the quadratic coefficient in the equation}
-  \item{b}{double that correponds to the linear coefficient in the equation}
-  \item{c}{double that correponds to the intercept in the equation}
+  \item{a}{double that corresponds to the quadratic coefficient in the equation}
+  \item{b}{double that corresponds to the linear coefficient in the equation}
+  \item{c}{double that corresponds to the intercept in the equation}
 }
 \value{
   Returns an object of class \code{transform}.

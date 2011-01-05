@@ -5,7 +5,7 @@
 \alias{eval,exponential,missing,missing-method}
 
 \title{Class "exponential" }
-\description{ Exponential transform class defines a trasformation given by the
+\description{ Exponential transform class defines a transformation given by the
 function
           \deqn{f(parameter,a,b)=e^{parameter/b}*\frac{1}{a}}
 

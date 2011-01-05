@@ -116,7 +116,7 @@ filterId="defaultTimeFilter")
 \details{
 
   Clods and disturbances in the laminar flow of a FACS instrument can
-  cause temporal aberations in the data acquisition that lead to
+  cause temporal aberrations in the data acquisition that lead to
   artifactual values. \code{timeFilters} try to identify such stretches
   of disturbance by computing local variance and location estimates and
   to remove them from the data.

@@ -42,7 +42,7 @@
     \item{x = "flowFrame", f = "factor", drop = "ANY"}{ Split a
       \code{\link{flowFrame}} by a factor variable. Length of \code{f}
       should be the same as \code{nrow(x)}, otherwise it will be
-      recyled, possibly leading to undesired outcomes. The optional
+      recycled, possibly leading to undesired outcomes. The optional
       argument \code{drop} works in the usual way, in that it removes
       empty levels from the factor before splitting.}
 
@@ -79,7 +79,7 @@
     \item{x = "flowFrame", f = "multipleFilterResult", drop = "ANY"}{
       Split into the several subpopulations identified by the filtering
       operation. Instead of returning a list, the additional logical
-      argument code{flowSet} makes the method return an object od class
+      argument code{flowSet} makes the method return an object of class
       \code{\linkS4class{flowSet}}. The optional \code{population}
       argument takes a character vector indicating the subpopulations to
       use for splitting (as identified by the population name in the
@@ -136,10 +136,10 @@
   \code{\linkS4class{flowFrame}}s and \code{\linkS4class{flowSet}}s is the
   logical extension of subsetting. While the latter only returns the
   events contained within a gate, the former splits the data into the
-  groups of events cotained within and those not contained within a
+  groups of events contained within and those not contained within a
   particular gate. This concept is extremely useful in applications
   where gates describe the distinction between positivity and negativity
-  for a particual marker.
+  for a particular marker.
 
 
   The flow data structures in \code{flowCore} can be split into
@@ -147,10 +147,10 @@
 
   \code{\linkS4class{flowFrame}}: row-wise splitting of the raw data. In
   most cases, this will be done according to the outcome of a filtering
-  operation, either using a filter that idenitfiers more than one
-  sub-poupulation or by a logical filter, in which case the data is
+  operation, either using a filter that identifiers more than one
+  sub-population or by a logical filter, in which case the data is
   split into two populations: "in the filter" and "not in the
-  filter". In addtion, the data can be split according to a factor (or a
+  filter". In addition, the data can be split according to a factor (or a
   numeric or character vector that can be coerced into a factor).
 
   \code{\linkS4class{flowSet}}: can be either split into subsets of
@@ -167,7 +167,7 @@
   that are defined by the gate and it is not clear which of those should
   be used for the subsetting operation). Accordingly, splitting of
   multipleFilterResults creates multiple subsets. The argument
-  \code{population} can be used to limit the ouput to only one or some
+  \code{population} can be used to limit the output to only one or some
   of the resulting subsets. It takes as values a character vector of
   names of the populations of interest. See the documentation of the
   different filter classes on how population names can be defined and
