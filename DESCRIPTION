@@ -9,7 +9,7 @@ Depends: R (>= 2.8.1), Biobase, rrcov
 Imports: Biobase, feature, graph, graphics, grDevices, MASS, methods,
          rrcov, stats, utils
 Suggests: Rgraphviz, flowViz, ncdf
-Collate: AllGeneric.R 
+Collate: AllGenerics.R 
 	 AllClasses.R
 	 flowFrame-accessors.R
 	 flowSet-accessors.R
