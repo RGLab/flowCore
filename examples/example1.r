@@ -8,7 +8,7 @@ library(prada)
 ## FOR DEVELOPMENT PURPOSES ONLY
 #library(flowcore)
 source("R/AllClasses.R")
-source("R/AllGeneric.R")
+source("R/AllGenerics.R")
 source("R/compensation-methods.R")
 source("R/filter-constructors.R")
 source("R/filter-functions.R")
