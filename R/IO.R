@@ -314,7 +314,7 @@ readFCStext <- function(con, offsets)
     sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
                     fixed=TRUE)[[1]]
     rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
-    names(rv) <- c("FCSversion", sp[seq(1, length(sp)-1, by=2)])
+    names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))
     return(rv)
 }
 
