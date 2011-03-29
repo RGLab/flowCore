@@ -173,49 +173,39 @@
 
 \usage{
 
-fcReference <- function(ID=paste("genericRef", guid(), sep="_"),
-                        env=new.env(parent=emptyenv()))
+fcReference(ID=paste("genericRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcTreeReference <- function(ID=paste("treeRef", guid(), sep="_"),
-                            env=new.env(parent=emptyenv()))
+fcTreeReference(ID=paste("treeRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcAliasReference <- function(ID=paste("aliasRef", guid(), sep="_"),
-                            env=new.env(parent=emptyenv()))
+fcAliasReference(ID=paste("aliasRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcDataReference <- function(ID=paste("dataRef", guid(), sep="_"),
-                            env=new.env(parent=emptyenv()))
+fcDataReference(ID=paste("dataRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcActionReference <- function(ID=paste("actionRef", guid(), sep="_"),
-                              env=new.env(parent=emptyenv()))
+fcActionReference(ID=paste("actionRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcViewReference <- function(ID=paste("viewRef", guid(), sep="_"),
-                            env=new.env(parent=emptyenv()))
+fcViewReference(ID=paste("viewRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcFilterResultReference <- function(ID=paste("fresRef",
-                                             guid(), sep="_"),
-                                    env=new.env(parent=emptyenv()))
+fcFilterResultReference(ID=paste("fresRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcFilterReference <- function(ID=paste("filterRef",
-                                       guid(), sep="_"),
-                              env=new.env(parent=emptyenv()))
+fcFilterReference(ID=paste("filterRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcCompensateReference <- function(ID=paste("compRef",
+fcCompensateReference(ID=paste("compRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
-fcNormalizeReference <- function(ID=paste("normRef",
+fcNormalizeReference(ID=paste("normRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
-fcSubsettingReference <- function(ID=paste("subRef",
+fcSubsettingReference(ID=paste("subRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
-fcTransformReference <- function(ID=paste("transRef",
+fcTransformReference(ID=paste("transRef",
                                           guid(), sep="_"),
                                  env=new.env(parent=emptyenv()))
 
-fcNullReference <- function(...) new("fcNullReference")
+fcNullReference(...)
 
 
 assign(x, value, pos = -1, envir = as.environment(pos), inherits = FALSE, 
