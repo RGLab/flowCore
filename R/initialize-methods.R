@@ -9,10 +9,20 @@ flowDefaultADF <- function(exprs) {
                        range="Range of Parameter",
                        minRange="Minimum Parameter Value after Transformation",
                        maxRange="Maximum Parameter Value after Transformation"))
-    pd <- data.frame(name=colnames(exprs), desc=colnames(exprs),
-                     range=apply(exprs, 2, max, na.rm=TRUE),
-                     minRange=apply(exprs, 2, min, na.rm=TRUE),
-                     maxRange=apply(exprs, 2, max, na.rm=TRUE))
+
+    pd <- if (nrow(exprs)) {
+        data.frame(name=colnames(exprs), desc=colnames(exprs),
+                   range=apply(exprs, 2, max, na.rm=TRUE),
+                   minRange=apply(exprs, 2, min, na.rm=TRUE),
+                   maxRange=apply(exprs, 2, max, na.rm=TRUE))
+
+    }else {
+        data.frame(name = character(0), description =
+                   character(0),  range = numeric(0),
+                   minRange = numeric(0), maxRange =
+                   numeric(0))
+
+    }
     new("AnnotatedDataFrame", pd, vm)
 }
 
@@ -20,15 +30,18 @@ setMethod("initialize",
           signature=signature(.Object="flowFrame"),
           definition=function(.Object, exprs, parameters,
                               description=list(note="empty"), ...)
-      {
-          if (missing(parameters))
-              parameters <- flowDefaultADF(exprs)
-          callNextMethod(.Object,
-                         exprs=exprs,
-                         parameters=parameters,
-                         description=description,
-                         ...)
-      })
+          {
+              if (missing(exprs))
+                  exprs <- matrix(numeric(0), 0 , 0)
+
+              if (missing(parameters))
+                  parameters <- flowDefaultADF(exprs)
+              callNextMethod(.Object,
+                             exprs=exprs,
+                             parameters=parameters,
+                             description=description,
+                             ...)
+          })
 
 
 
