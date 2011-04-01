@@ -193,7 +193,7 @@ fcCompensateReference(ID=paste("compRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
-fcNormalizeReference(ID=paste("normRef",
+fcNormalizationReference(ID=paste("normRef",
                                            guid(), sep="_"),
                                   env=new.env(parent=emptyenv()))
 
@@ -224,6 +224,8 @@ Rm(symbol, envir, subSymbol, ...)
 
   \item{x, f, symbol}{ An object of class or inheriting from
     class \code{fcReference}.}
+
+  \item{ID}{ The reference identifier.}
     
   \item{value}{ An arbitrary R object which is supposed to be assigned to
     the environment in the \code{\link{workFlow}} object and to which a
