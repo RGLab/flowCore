@@ -372,16 +372,71 @@ setMethod("split",
       })
 
 ## FIXME: This should replace the above list method completely at some point
+##  NOTE: This method now replaces the one with signature("flowSet","list") [Greg Finak <gfinak@fhcrc.org>, 04/13/2011]
 setMethod("split",
           signature=signature(x="flowSet",
                               f="filterResultList"),
           definition=function(x, f, drop=FALSE, population=NULL,
                               prefix=NULL, ...)
       {
-          n <- f@frameId
-          f <- f@.Data
-          names(f) <- n
-          split(x, f, drop=drop, population=NULL, prefix=NULL, ...)
+		lf<-length(f)
+		sample.name <- sampleNames(x)
+		if(length(x)!=length(f)){
+			stop("filterResultList and flowSet must be same ",
+                   "length.", call.=FALSE)		
+		}
+		lapply(f, flowCore:::compatibleFilters,  f[[1]])
+          if(is.null(population)){
+              if(all(unlist(lapply(f,function(q)!is.null(names(q))))))
+ 				population<-unique(unlist(lapply(f,names)))
+              else
+                  population <- c("positive", "negative")
+          } else if(!all(sapply(population, is, "character")))
+              stop("'population' must be a single character vector ",
+                   "or a list of character vectors", call.=FALSE)
+          if(!is.list(population)){
+              n <- population
+              population <- as.list(population)
+              names(population) <- n
+          }
+          finalRes <- vector(mode="list", length=length(population))
+          names(finalRes) <- names(population)
+          for(p in seq_along(population)){
+	          tp <- population[p]
+              res <- vector(mode="list", length=lf)
+    		for(i in 1:lf){
+				l <- try(split(x[[i]], f[[i]], population=tp,
+                           prefix=prefix, flowSet=FALSE, ...),silent=TRUE)
+				if(inherits(l,"try-error")){
+					if(geterrmessage()==paste("Error : The following are not valid population names in this filterResult:\n\t",tp,"\n",sep="")){
+						message("Creating an empty flowFrame for population ",tp,"\n")
+						#Create an empty flowFrame
+						l<-x[[i]][0,];
+						identifier(l)<-paste(identifier(l),paste("(",tp,")",sep=""),sep=" ")
+						l<-list(l);
+					}else
+						stop("Can't split flowFrame ",sampleNames(x[i])," on population ",tp);
+				}
+                res[[i]] <- l[[1]]
+                if(!is.null(prefix)){
+                    if(is.logical(prefix) && prefix)
+                        names(res)[i] <- paste(names(l), "in", sample.name[i])
+                    else if(is.character(prefix))
+                        names(res)[i] <- paste(prefix, sample.name[i])
+                }else
+                names(res)[i] <- sample.name[i]      
+			}
+			np <- names(population)[p]
+            finalRes[[np]] <- flowSet(res, phenoData=phenoData(x))
+            phenoData(finalRes[[np]])$population <- np
+            varMetadata(finalRes[[np]])["population", "labelDescription"] <-
+                "population identifier produced by splitting"
+		  }
+          #n <- f@frameId
+          #f <- f@.Data
+          #names(f) <- n
+          #split(x, f, drop=drop, population=NULL, prefix=NULL, ...)
+		return(finalRes);
       })
 
 ## Split by frames of flowSet according to a factor, character or numeric.
