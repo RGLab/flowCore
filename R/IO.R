@@ -260,7 +260,7 @@ findOffsets <- function(con)
     while(nd != 0)
     {
         addOff <- addOff + nd
-        offsets <- rbind(offsets, readFCSheader(con, nd))
+        offsets <- rbind(offsets, readFCSheader(con, addOff))
         txt <- readFCStext(con, offsets[nrow(offsets),])
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
