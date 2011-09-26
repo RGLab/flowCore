@@ -13,6 +13,8 @@ importMethodsFrom(Biobase, description, "description<-", exprs,
                   varLabels, "varLabels<-", varMetadata,
                   "varMetadata<-")
 
+importClassesFrom(methods, character, className)
+
 importMethodsFrom(graph, addEdge, addNode, adj, edgeData, "edgeData<-",
                   "edgeDataDefaults<-", nodes, removeNode)
 
