@@ -155,9 +155,13 @@ read.FCS <- function(filename,
        txt[["$DATATYPE"]] <- "F"
     }
     ## build description from FCS parameters
-    description <- strsplit(txt,split="\n")
-    names(description) <- names(txt)
-
+	
+	#patched version
+	description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}
+	
+#	description <- strsplit(txt,split="\n")
+#    names(description) <- names(txt)
+	
     ## the spillover matrix
     spID <- intersect(c("SPILL", "spillover"), names(description))
     if(length(spID)>0){
@@ -301,7 +305,7 @@ readFCSheader <- function(con, start=0)
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets)
+readFCStext <- function(con, offsets,isPatched=T)
 {
 
     seek(con, offsets["textstart"])
@@ -310,14 +314,99 @@ readFCStext <- function(con, offsets)
     ## handle just fine.
     txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
     txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
-    delimiter <- substr(txt, 1, 1)
-    sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
-                    fixed=TRUE)[[1]]
-    rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
-    names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))
+	
+	if(!isPatched)##to be deprecated
+	{
+		delimiter <- substr(txt, 1, 1)
+		sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
+				fixed=TRUE)[[1]]
+		rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
+		names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))	
+	}else
+	{
+		rv = fcs_text_parse(txt)
+		rv = c(offsets["FCSversion"], rv)
+		names(rv)[1] = "FCSversion"	
+	}
+	
+	
+	
     return(rv)
 }
 
+## ==========================================================================
+## a patch to fix the bug that delimiter exists in the keyword value
+## in FCS3.0 specification ,delimiter is allowed to be used in keyword value
+##as long as it is followed by another  delimiter immediately
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+fcs_text_parse = function(str) {
+	
+	pairs = c()
+	
+	div = substr(str, 1, 1)
+	if(nchar(div) != 1) {
+		return(c())
+	} 
+	
+	# regexes require double-escaping (*sigh*)
+	if(div == "\\") {
+		div = "\\\\"
+	}
+	
+	i = 2
+	repeat {
+		remaining = substr(str, i, nchar(str))
+		if(nchar(gsub(" ","",remaining)) == 0) {##filter out white spaces before check the length
+			break
+		}
+		
+		key_end_regex = paste("([^",div,"]",div,")", sep="")
+		value_end_regex = paste("([^",div,"]",div,"[^",div,"])", sep="")
+		final_end_regex = paste("[^",div,"]",div,"$", sep="")
+		
+		# find key end
+		divider_index = regexpr(key_end_regex, remaining, perl=TRUE)
+		if(divider_index < 0) {
+			# no divider found
+#			browser()
+			cat("ERROR: No divider found\n")
+			return(c())
+			break
+		}
+		divider_index = divider_index + 1
+		
+		value_search = substr(remaining, divider_index + 1, nchar(remaining))
+		# find value end
+		value_end_index = regexpr(value_end_regex, value_search, perl=TRUE)
+		if(value_end_index < 0) {
+			value_end_index = regexpr(final_end_regex, value_search, perl=TRUE)
+			if(value_end_index < 0) {
+				# no end found
+				cat("ERROR! 2\n")
+				return(c())
+				break
+			}
+		}
+		value_end_index = divider_index + value_end_index
+		
+		key = substr(remaining, 1, divider_index - 1)
+		value = substr(remaining, divider_index + 1, value_end_index)
+		
+		#replace double delimiters with single one in the final output
+		value = gsub(paste(div,div,sep=''), div, value)
+		
+		#    cat("key: ", key, "\n")
+		#    cat("value: ", value, "\n")
+		#    cat("-----------------------\n")
+		
+		pairs = c(pairs, value)
+		names(pairs)[length(pairs)] = key
+		
+		i = i + value_end_index + 1
+	}
+	
+	return(pairs)
+}
 
 ## ==========================================================================
 ## read FCS file data section
