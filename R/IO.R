@@ -156,11 +156,17 @@ read.FCS <- function(filename,
     }
     ## build description from FCS parameters
 	
-	#patched version
-	description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}
+	if(offsets["FCSversion"]<=2)
+	{
+		description <- strsplit(txt,split="\n")
+	    names(description) <- names(txt)
+		
+	}else
+	{
+		description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}	
+	}
 	
-#	description <- strsplit(txt,split="\n")
-#    names(description) <- names(txt)
+	
 	
     ## the spillover matrix
     spID <- intersect(c("SPILL", "spillover"), names(description))
@@ -302,10 +308,11 @@ readFCSheader <- function(con, start=0)
 }
 
 
+
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets,isPatched=T)
+readFCStext <- function(con, offsets)
 {
 
     seek(con, offsets["textstart"])
@@ -314,8 +321,8 @@ readFCStext <- function(con, offsets,isPatched=T)
     ## handle just fine.
     txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
     txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
-	
-	if(!isPatched)##to be deprecated
+#	browser()
+	if(offsets["FCSversion"]<=2)##
 	{
 		delimiter <- substr(txt, 1, 1)
 		sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
@@ -324,6 +331,7 @@ readFCStext <- function(con, offsets,isPatched=T)
 		names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))	
 	}else
 	{
+		#only apply the patch parser to FCS3
 		rv = fcs_text_parse(txt)
 		rv = c(offsets["FCSversion"], rv)
 		names(rv)[1] = "FCSversion"	
@@ -335,12 +343,12 @@ readFCStext <- function(con, offsets,isPatched=T)
 }
 
 ## ==========================================================================
-## a patch to fix the bug that delimiter exists in the keyword value
-## in FCS3.0 specification ,delimiter is allowed to be used in keyword value
-##as long as it is followed by another  delimiter immediately
+## a patch to fix the parsing issue when delimiter exists in the keyword value
+##,which is allowed only when it is followed by another delimiter immediately
+## Note that it is only applies to FCS3.0 because empty value is not valid value.   
+##however,this does not conform to FCS2.0,so this patch only applies to FCS3.0 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 fcs_text_parse = function(str) {
-	
 	pairs = c()
 	
 	div = substr(str, 1, 1)
@@ -367,10 +375,9 @@ fcs_text_parse = function(str) {
 		# find key end
 		divider_index = regexpr(key_end_regex, remaining, perl=TRUE)
 		if(divider_index < 0) {
-			# no divider found
 #			browser()
-			cat("ERROR: No divider found\n")
-			return(c())
+			stop("ERROR: No divider found\n")
+#			return(c())
 			break
 		}
 		divider_index = divider_index + 1
@@ -381,9 +388,8 @@ fcs_text_parse = function(str) {
 		if(value_end_index < 0) {
 			value_end_index = regexpr(final_end_regex, value_search, perl=TRUE)
 			if(value_end_index < 0) {
-				# no end found
-				cat("ERROR! 2\n")
-				return(c())
+				stop("ERROR! no end found\n")
+#				return(c())
 				break
 			}
 		}
@@ -812,6 +818,15 @@ writeFCSheader <- function(con, offsets)
 collapseDesc <- function(x)
 {
     d <- description(x)
+	##make sure there is no empty value for each keyword in order to conform to FCS3.0
+#	browser()
+	d <- lapply(d, function(y){
+				if(length(y)==0)
+					return(" ")
+				else
+					return(sub("^$"," ",y)) 
+						
+			})
     d <- d[order(names(d))]
 	spillName <- intersect(c("SPILL", "spillover"), names(d))
     if(length(spillName) >0){
@@ -856,12 +871,12 @@ write.FCS <- function(x, filename, what="numeric")
     orders <- c(little="1,2,3,4", big="4,3,2,1")
     endian <- "big"
     mk <- list("$BEGINANALYSIS"="0",
-               "$BEGINDATA"="",
+               "$BEGINDATA"="0",
                "$BEGINSTEXT"=0,
                "$BYTEORD"=orders[endian],
                "$DATATYPE"=types[what, "symbol"],
                "$ENDANALYSIS"="0",
-               "$ENDDATA"="",
+               "$ENDDATA"="0",
                "$ENDSTEXT"="0",
                "$MODE"="L",
                "$NEXTDATA"="0",
@@ -871,10 +886,11 @@ write.FCS <- function(x, filename, what="numeric")
     pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
     names(pnb) <- sprintf("$P%sB", 1:ncol(x))
     mk <- c(mk, pnb)
+#	browser()
     ## FlowJo seems to get confused by empty values in PnS, we fix that here
     pns <- description(x)[sprintf("$P%sS", 1:ncol(x))]
     names(pns) <- sprintf("$P%sS", 1:ncol(x))
-    pns <- lapply(pns, function(y) if(!length(y)) " " else y)
+#    pns <- lapply(pns, function(y) if(!length(y)) " " else y)
     mk <- c(mk, pns)
     ## We need all PnE keywords and assume "0,0" if they are missing
     pne <- description(x)[sprintf("$P%sE", 1:ncol(x))]
@@ -896,12 +912,14 @@ write.FCS <- function(x, filename, what="numeric")
     ctxt <- collapseDesc(x)
     endTxt <- nchar(ctxt) + begTxt -1
     endDat <- ld + endTxt
-    endTxt <- endTxt +nchar(endTxt+1) + nchar(endDat)
+    endTxt <- endTxt +(nchar(endTxt+1)-1) + (nchar(endDat)-1)
     ## Now we update the header with the new offsets and recalculate
+#	browser()
     endDat <- ld + endTxt
     description(x) <- list("$BEGINDATA"=endTxt+1,
                            "$ENDDATA"=endTxt+ld)
     ctxt <- collapseDesc(x)
+	
     offsets <- c(begTxt, endTxt, endTxt+1, endTxt+ld, 0,0)
     ## Write out to file
     con <- file(filename, open="wb")

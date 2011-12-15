@@ -12,3 +12,7 @@ as input.
 Modified the inverseLogicleTransfom function to take the output of a 
 logicleTransform function as input.
 
+CHANGES IN VERSION 1.21.1
+-------------------------
+add TEXT segment parser in readFCStext function for FCS3 when the delimiter characters existing inside of
+keyword values. Note this parser require all keywords and their values to be non-empty, which conforms to FCS3 standard
