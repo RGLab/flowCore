@@ -5,15 +5,13 @@ importClassesFrom(Biobase, AnnotatedDataFrame)
 importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
                   ANY, call,character, data.frame, environment, expression, 
                   factor, formula, "function", list, logical, matrix, missing,
-                  name, "NULL",numeric, oldClass)
+                  name, "NULL",numeric, oldClass, className)
 
 importMethodsFrom(Biobase, description, "description<-", exprs,
                   "exprs<-", featureNames, pData, "pData<-", phenoData,
                   "phenoData<-", sampleNames, "sampleNames<-",
                   varLabels, "varLabels<-", varMetadata,
                   "varMetadata<-")
-
-importClassesFrom(methods, character, className)
 
 importMethodsFrom(graph, addEdge, addNode, adj, edgeData, "edgeData<-",
                   "edgeDataDefaults<-", nodes, removeNode)
@@ -22,11 +20,13 @@ importMethodsFrom(methods, cbind2, coerce, initialize, rbind2, show)
 
 importFrom(Biobase, listLen, read.AnnotatedDataFrame)
 
+importFrom(BiocGenerics, plot)
+
 importFrom(feature, featureSignif)
 
 importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 
-importFrom(graphics, hist, plot, text, smoothScatter)
+importFrom(graphics, hist, text, smoothScatter)
 
 importFrom(grDevices, contourLines)
 
