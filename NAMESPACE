@@ -20,7 +20,7 @@ importMethodsFrom(methods, cbind2, coerce, initialize, rbind2, show)
 
 importFrom(Biobase, listLen, read.AnnotatedDataFrame)
 
-importFrom(BiocGenerics, plot)
+importFrom(stats4, plot)
 
 importFrom(feature, featureSignif)
 
