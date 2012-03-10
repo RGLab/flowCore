@@ -16,15 +16,14 @@ resolve <- function(x, df)
 ## Unity transformation
 ## ---------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="unitytransform",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr,envir,enclos)
-      {        
-          function(df)
-              return(df[, expr@parameters, drop=FALSE])
-          
-      })
+          signature=signature(expr="unitytransform", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
+          {        
+              function(df)
+                  return(df[, expr@parameters, drop=FALSE])
+          })
 
 
 ## ===========================================================================
@@ -32,10 +31,10 @@ setMethod("eval",
 ## ---------------------------------------------------------------------------
 
 setMethod("eval",
-	  signature=signature(expr="dg1polynomial",
-            envir="missing",
-            enclos="missing"),
-	  definition=function(expr, envir, enclos)
+	  signature=signature(expr="dg1polynomial", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
           {    
             function(df)
               {   
@@ -57,10 +56,10 @@ setMethod("eval",
 ## Ratio transformation of two arguments
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="ratio",
-                              envir="missing",
-                              enclos="missing"),
-          function(expr,envir,enclos)
+          signature=signature(expr="ratio", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       { 
           function(df)
           {  
@@ -75,10 +74,10 @@ setMethod("eval",
 ## Quadratic transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature=signature(expr="quadratic",
-                              envir="missing",
-                              enclos="missing"),
-	  definition=function(expr,envir,enclos)
+	  signature=signature(expr="quadratic", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {    
           function(df)
           {      
@@ -92,10 +91,10 @@ setMethod("eval",
 ## Squareroot transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature=signature(expr="squareroot",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr,envir,enclos)
+	  signature=signature(expr="squareroot", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {
           function(df)
           {
@@ -110,10 +109,10 @@ setMethod("eval",
 ## Log transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-	  signature=signature(expr="logarithm",
-                              envir="missing",
-                              enclos="missing"),
-	  definition=function(expr, envir, enclos)
+	  signature=signature(expr="logarithm", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {    
           function(df)
           {
@@ -130,10 +129,10 @@ setMethod("eval",
 ## Exponential transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="exponential",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr, envir, enclos)
+          signature=signature(expr="exponential", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {
           function(df)
           {
@@ -147,10 +146,10 @@ setMethod("eval",
 ## Inverse hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="asinht",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr, envir, enclos)
+          signature=signature(expr="asinht", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {    
           function(df)
           {
@@ -164,10 +163,10 @@ setMethod("eval",
 ## Hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="sinht",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr, envir, enclos)
+          signature=signature(expr="sinht", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {
           function(df)
           {
@@ -183,10 +182,10 @@ setMethod("eval",
 
 
 setMethod("eval", 
-	  signature=signature(expr="hyperlog",
-                              envir="missing",
-                              enclos="missing"),
-	  definition=function(expr, envir, enclos)
+	  signature=signature(expr="hyperlog", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
 	  {    
             function(df)
               {  
@@ -200,10 +199,10 @@ setMethod("eval",
 ## ---------------------------------------------------------------------------
 
 setMethod("eval", 
-	  signature=signature(expr="EHtrans",
-                              envir="missing",
-                              enclos="missing"),
-	  definition=function(expr, envir, enclos)
+	  signature=signature(expr="EHtrans", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
 	  {    
             function(df)
               {  
@@ -220,10 +219,10 @@ setMethod("eval",
 ## Splitscale transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="splitscale",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr, envir, enclos)
+          signature=signature(expr="splitscale", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {    
           function(df)
           {
@@ -253,10 +252,10 @@ setMethod("eval",
 ## Inverse Splitscale transformation 
 ## ---------------------------------------------------------------------------
 setMethod("eval", 
-          signature=signature(expr="invsplitscale",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr, envir, enclos)
+          signature=signature(expr="invsplitscale", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
       {    
           function(df)
           {
@@ -288,22 +287,23 @@ setMethod("eval",
 ## Transformation reference
 ## ---------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="transformReference",
-                              envir="missing",
-                              enclos="missing"),
-          definition=function(expr,envir,enclos)
+          signature=signature(expr="transformReference", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
+          {
               expr@searchEnv[[slot(expr,"transformationId")]]
-          )	
+          })	
 	
 ####----------------------------------------------------------------------------
 #### Reference to a predefined gate 
 ####----------------------------------------------------------------------------
 
 setMethod("eval",
-          signature=signature(expr="filterReference",
-            envir="missing",
-            enclos="missing"),
-          definition=function(expr,envir,enclos)
+          signature=signature(expr="filterReference", envir="missing"),
+          definition=function (expr, envir = parent.frame(),
+              enclos=if (is.list(envir) ||
+                is.pairlist(envir)) parent.frame() else baseenv())
           expr@env[[expr@name]]  #retrieved using name instead of the filterId
           )	
 
@@ -312,9 +312,7 @@ setMethod("eval",
 #### Eval transforms for compensations
 ####----------------------------------------------------------------------------
 setMethod("eval",
-          signature=signature(expr="compensatedParameter",
-            envir="missing",
-            enclos="missing"),
+          signature=signature(expr="compensatedParameter", envir="missing"),
           function(expr, envir, enclos)
           {    function(df)
                  { 

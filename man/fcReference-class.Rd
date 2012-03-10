@@ -30,9 +30,8 @@
 \alias{fcSubsettingReference-class}
 \alias{assign}
 \alias{fcNullReference}
-\alias{get}
-\alias{get,fcReference,missing,missing,missing,missing-method}
-\alias{get,fcNullReference,missing,missing,missing,missing-method}
+\alias{get,fcReference,missing,missing-method}
+\alias{get,fcNullReference,missing,missing-method}
 \alias{identifier,fcReference-method}
 \alias{isNull}
 \alias{isNull,fcReference-method}
@@ -211,7 +210,7 @@ fcNullReference(...)
 assign(x, value, pos = -1, envir = as.environment(pos), inherits = FALSE, 
     immediate = TRUE)
 
-get(x, pos = -1, envir = as.environment(pos), mode = "any", 
+\S4method{get}{fcReference,missing,missing}(x, pos = -1, envir = as.environment(pos), mode = "any", 
     inherits = TRUE)
 
 isNull(f)

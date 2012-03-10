@@ -15,10 +15,10 @@
 ## environment in 'workspace'.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("get",
-          signature=signature(x="character",
-                              pos="workFlow",
-          envir="missing", mode="missing", inherits="missing"),
-          definition=function(x, pos)
+          signature=signature(x="character", pos="workFlow",
+              envir="missing"),
+          definition=function(x, pos=-1, envir=as.environment(pos),
+              mode="any", inherits=TRUE)
       {
           checkClass(x, "character", 1)
           allNames <- c(ls(pos), ls(alias(pos)))
@@ -41,17 +41,17 @@ setMethod("get",
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
 setMethod("get",
-          signature=signature(x="character",
-                              pos="missing",
-          envir="workFlow", mode="missing", inherits="missing"),
-          definition=function(x, envir) get(x, envir=envir@env))
+          signature=signature(x="character", pos="missing",
+              envir="workFlow"),
+          definition=function(x, pos=-1, envir=as.environment(pos),
+              mode="any", inherits=TRUE) get(x, envir=envir@env))
 
 ## get multiple objects
 setMethod("mget",
-          signature=signature(x="character",
-                              envir="workFlow",
-          mode="missing", ifnotfound="missing", inherits="missing"),
-          definition=function(x, envir) sapply(x, get, envir))
+          signature=signature(x="character", envir="workFlow"),
+          definition=function(x, envir, mode="any",
+              ifnotfound=list(function(x) stop(paste0("value for '",
+                  x, "'not found"), call.=FALSE))) sapply(x, get, envir))
 
 
 

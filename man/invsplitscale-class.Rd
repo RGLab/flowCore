@@ -2,7 +2,7 @@
 \docType{class}
 \alias{invsplitscale-class}
 \alias{invsplitscale}
-\alias{eval,invsplitscale,missing,missing-method}
+\alias{eval,invsplitscale,missing-method}
 
 
 \title{Class "invsplitscale"  }

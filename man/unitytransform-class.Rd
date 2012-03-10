@@ -3,7 +3,7 @@
 \alias{unitytransform-class}
 \alias{unitytransform}
 \alias{show,unitytransform-method}
-\alias{eval,unitytransform,missing,missing-method}
+\alias{eval,unitytransform,missing-method}
 
 \title{Class "unitytransform" }
 \description{

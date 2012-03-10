@@ -2,7 +2,7 @@
 \docType{class}
 \alias{sinht-class}
 \alias{sinht}
-\alias{eval,sinht,missing,missing-method}
+\alias{eval,sinht,missing-method}
 
 \title{Class "sinht" }
 

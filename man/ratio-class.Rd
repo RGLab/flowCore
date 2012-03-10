@@ -2,7 +2,7 @@
 \docType{class}
 \alias{ratio-class}
 \alias{ratio}
-\alias{eval,ratio,missing,missing-method}
+\alias{eval,ratio,missing-method}
 \alias{initialize,ratio-method}
 
 \title{Class "ratio"  }

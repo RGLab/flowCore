@@ -2,7 +2,7 @@
 \docType{class}
 \alias{EHtrans-class}
 \alias{EHtrans}
-\alias{eval,EHtrans,missing,missing-method}
+\alias{eval,EHtrans,missing-method}
 
 \title{Class "EHtrans" }
 \description{	

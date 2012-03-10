@@ -2,7 +2,7 @@
 \docType{class}
 \alias{exponential-class}
 \alias{exponential}
-\alias{eval,exponential,missing,missing-method}
+\alias{eval,exponential,missing-method}
 
 \title{Class "exponential" }
 \description{ Exponential transform class defines a transformation given by the

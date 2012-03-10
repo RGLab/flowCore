@@ -21,14 +21,16 @@ setMethod("isNull",
 ## for NULL references
 setMethod("get",
           signature=signature(x="fcNullReference", pos = "missing",
-          envir = "missing",mode = "missing", inherits = "missing"),
-          definition=function(x) NULL)
+              envir = "missing"),
+          definition=function(x, pos=-1, envir=as.environment(pos),
+              mode="any", inherits=TRUE) NULL)
 
 ## for all other references
 setMethod("get",
           signature=signature(x="fcReference", pos = "missing",
-          envir = "missing",mode = "missing", inherits = "missing"),
-          definition=function(x)
+              envir = "missing"),
+          definition=function(x, pos=-1, envir=as.environment(pos),
+               mode="any", inherits=TRUE)
           {
               if(!resolved(x, FALSE)){
                   mess <- paste("Unable to resolve reference to object '",

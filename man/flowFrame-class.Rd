@@ -22,15 +22,12 @@
 \alias{plot,flowFrame,ANY-method}
 \alias{plot,flowFrame-method}
 \alias{summary,flowFrame-method}
-\alias{ncol}
 \alias{ncol,flowFrame-method}
-\alias{nrow}
 \alias{nrow,flowFrame-method}
 \alias{dim}
 \alias{dim,flowFrame-method}
 \alias{featureNames}
 \alias{featureNames,flowFrame-method}
-\alias{colnames}
 \alias{colnames,flowFrame-method}
 \alias{colnames<-}
 \alias{colnames<-,flowFrame-method}

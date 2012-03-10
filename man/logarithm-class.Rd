@@ -2,7 +2,7 @@
 \docType{class}
 \alias{logarithm-class}
 \alias{logarithm}
-\alias{eval,logarithm,missing,missing-method}
+\alias{eval,logarithm,missing-method}
 
 \title{Class "logarithm"  }
 \description{	Logartithmic transformation of an argument is a transformation defined by the function 

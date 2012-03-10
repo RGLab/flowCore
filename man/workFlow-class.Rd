@@ -17,13 +17,12 @@
 \alias{[,workFlow,ANY-method}
 \alias{[[,workFlow,ANY-method}
 \alias{$,workFlow-method}
-\alias{get,character,workFlow,missing,missing,missing-method}
-\alias{get,character,missing,workFlow,missing,missing-method}
+\alias{get,character,workFlow,missing-method}
+\alias{get,character,missing,workFlow-method}
 \alias{ls}
 \alias{ls,workFlow,missing,missing,missing,missing-method}
 \alias{ls,workFlow,missing,missing,missing,character-method}
-\alias{mget}
-\alias{mget,character,workFlow,missing,missing,missing-method}
+\alias{mget,character,workFlow-method}
 \alias{names,workFlow-method}
 \alias{plot,workFlow,missing-method}
 \alias{Rm,character,workFlow,character-method}
