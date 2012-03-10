@@ -42,14 +42,6 @@ setGeneric("print",function(x,...) standardGeneric("print"))
 
 
 ## ===========================================================================
-## Generic for ncol and nrow (defaults in base)
-## ---------------------------------------------------------------------------
-setGeneric("ncol", function(x) standardGeneric("ncol"))
-setGeneric("nrow", function(x) standardGeneric("nrow"))
-
-
-
-## ===========================================================================
 ## Generic for head and tail (already S3 in utils)
 ## ---------------------------------------------------------------------------
 setGeneric("head", function(x, ...) standardGeneric("head"))
@@ -77,8 +69,6 @@ setGeneric("parameters<-",
 ## ===========================================================================
 ## Generic to access colnames (defaults in base)
 ## ---------------------------------------------------------------------------
-setGeneric("colnames",function(x, do.NULL = TRUE, prefix = "col")
-           standardGeneric("colnames"))
 setGeneric("colnames<-",
            function(x, value) standardGeneric("colnames<-"))
 
@@ -145,13 +135,6 @@ setGeneric("summarizeFilter", function(result,filter)
 
 
 ## ===========================================================================
-## Used to summarize the operation of a filter on a frame (already S3 in base)
-## ---------------------------------------------------------------------------
-setGeneric("summary", function(object,...) standardGeneric("summary"))
-
-
-
-## ===========================================================================
 ## Generics for spillover and compensate
 ## ---------------------------------------------------------------------------
 setGeneric("spillover", function(x,...) standardGeneric("spillover"))
@@ -214,17 +197,6 @@ setGeneric("add",function(wf, action, ...) standardGeneric("add"))
 ## ===========================================================================
 ## Generics to assign values into and get values from a workflow environment
 ## ---------------------------------------------------------------------------
-setGeneric("get",function(x, pos=-1, envir=as.environment(pos),
-                          mode="any", inherits=TRUE)
-           standardGeneric("get"))
-setGeneric("mget", function (x, envir, mode="any",
-                             ifnotfound=list(function(x)
-                                             stop(paste("value for '", 
-                                                        x, "' not found",
-                                                        sep = ""),
-                                                  call.=FALSE)),
-                             inherits=FALSE)
-           standardGeneric("mget"))
 setGeneric("assign", function(x, value, pos=-1, envir=as.environment(pos),
                               inherits=FALSE, immediate=TRUE)
            standardGeneric("assign"))
@@ -297,26 +269,6 @@ setGeneric("views", function(x, ...)
 ## ---------------------------------------------------------------------------
 setGeneric("actions", function(x, ...)
            standardGeneric("actions"))
-
-
-
-## ===========================================================================
-## Generic function eval for all the transformations
-## ---------------------------------------------------------------------------
-setGeneric("eval",
-            def=function(expr,
-                        envir = parent.frame(),
-                        enclos = if (is.list(envir) ||is.pairlist(envir))    
-                                      parent.frame() 
-                                 else 
-                                      baseenv()) 
-            standardGeneric("eval"),
-            useAsDefault=function(expr,envir=new.env(),enclos)
- 	    {
-           	stop("'eval' not defined on class '",class(object), "'")
-            }
- 	  )
-
 
 
 

@@ -2,7 +2,7 @@
 \docType{class}
 \alias{dg1polynomial-class}
 \alias{dg1polynomial}
-\alias{eval,dg1polynomial,missing,missing-method}
+\alias{eval,dg1polynomial,missing-method}
 \alias{initialize,dg1polynomial-method}
 \alias{parameters<-,dg1polynomial,character-method}
 \alias{parameters<-,dg1polynomial,parameters-method}

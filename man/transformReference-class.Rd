@@ -3,7 +3,7 @@
 \alias{transformReference-class}
 \alias{transformReference}
 \alias{parameters,transformReference-method}
-\alias{eval,transformReference,missing,missing-method}
+\alias{eval,transformReference,missing-method}
 
 \title{Class "transformReference" }
 \description{ Class allowing to reference transforms, for instance as parameters.}

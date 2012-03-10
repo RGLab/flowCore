@@ -2,7 +2,7 @@
 \docType{class}
 \alias{quadratic-class}
 \alias{quadratic}
-\alias{eval,quadratic,missing,missing-method}
+\alias{eval,quadratic,missing-method}
 
 \title{Class "quadratic" }
 

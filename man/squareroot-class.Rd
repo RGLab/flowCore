@@ -2,7 +2,7 @@
 \docType{class}
 \alias{squareroot-class}
 \alias{squareroot}
-\alias{eval,squareroot,missing,missing-method}
+\alias{eval,squareroot,missing-method}
 
 \title{Class "squareroot" }
 \description{

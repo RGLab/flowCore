@@ -2,7 +2,7 @@
 \docType{class}
 \alias{compensatedParameter-class}
 \alias{compensatedParameter}
-\alias{eval,compensatedParameter,missing,missing-method}
+\alias{eval,compensatedParameter,missing-method}
 
 \title{Class "compensatedParameter" }
 

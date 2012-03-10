@@ -2,7 +2,7 @@
 \docType{class}
 \alias{filterSummary-class}
 \alias{filterSummary}
-\alias{summary}
+\alias{summary,filterResult-method}
 \alias{[[,filterSummary,numeric-method}
 \alias{[[,filterSummary,character-method}
 \alias{$,filterSummary-method}
@@ -49,7 +49,7 @@
 
 \usage{
 
-summary(object, \dots)
+\S4method{summary}{filterResult}(object, \dots)
 
 }
 

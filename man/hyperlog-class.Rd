@@ -2,7 +2,7 @@
 \docType{class}
 \alias{hyperlog-class}
 \alias{hyperlog}
-\alias{eval,hyperlog,missing,missing-method}
+\alias{eval,hyperlog,missing-method}
 
 \title{Class "hyperlog"  }
 \description{ Hyperlog transformation of a parameter is defined by 

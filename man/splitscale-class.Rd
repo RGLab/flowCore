@@ -3,7 +3,7 @@
 \docType{class}
 \alias{splitscale-class}
 \alias{splitscale}
-\alias{eval,splitscale,missing,missing-method}
+\alias{eval,splitscale,missing-method}
 
 \title{Class "splitscale"  }
 \description{ The split scale transformation class defines a transformation that

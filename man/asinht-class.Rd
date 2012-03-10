@@ -2,7 +2,7 @@
 \docType{class}
 \alias{asinht-class}
 \alias{asinht}
-\alias{eval,asinht,missing,missing-method}
+\alias{eval,asinht,missing-method}
 
 \title{Class "asinht"  }
 \description{ Inverse hyperbolic sin transformation is defined by the function
