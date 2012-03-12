@@ -16,3 +16,8 @@ CHANGES IN VERSION 1.21.1
 -------------------------
 add TEXT segment parser in readFCStext function for FCS3 when the delimiter characters existing inside of
 keyword values. Note this parser require all keywords and their values to be non-empty, which conforms to FCS3 standard
+
+CHANGES IN VERSION 1.21.4
+-------------------------
+add .readFCSdataRaw routine to read FCS containing bit-packed integer data (with odd-bitwidth like 9,11 instead of 8,16,32,64)
+.Currently the bit-wise manipulation is done within R,it can be moved to C if speed issue becomes a problem in the future.
