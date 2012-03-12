@@ -414,6 +414,41 @@ fcs_text_parse = function(str) {
 	return(pairs)
 }
 
+##read odd bitwidth by reading raw and and operating on raw vector
+.readFCSdataRaw<-function(con,dattype,count,size,signed,endian){
+#	browser()
+	if (size %in% c(1, 2, 4, 8))
+	{
+		readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
+	}else
+	{
+		#read raw byte stream first
+		nBytes<-count*size
+		oldBytes <- readBin(con=con, what="raw",n = nBytes,size=1)
+		#convert to bit vector
+		oldBits<-rawToBits(oldBytes)
+		#convert the data element to the non-odd  bitwidth
+		oldBitWidth<-size*8
+		newBitWidth<-2^ceiling(log(oldBitWidth,2))
+		newBits<-unlist(lapply(1:count,function(i){
+#							browser()
+											start<-(i-1)*oldBitWidth+1
+											c(raw(newBitWidth-oldBitWidth)
+											,oldBits[start:(start+oldBitWidth-1)])
+											}
+								)
+						)		
+		#convert raw byte to corresponding type by readBin
+		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian=endian)
+		
+		
+	}
+	
+}
+
+
+
+
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -488,8 +523,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         bitwidth <- 16
     }
     size <- bitwidth/8
-    if (!size %in% c(1, 2, 4, 8))
-        stop(paste("Don't know how to deal with bitwidth", bitwidth))
+#    if (!size %in% c(1, 2, 4, 8))
+#        stop(paste("Don't know how to deal with bitwidth", bitwidth))
 
     nwhichLines <- length(which.lines)
     ##Read all reports
@@ -501,9 +536,13 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 "). All the events have been read. \n")
         }
         seek(con, offsets["datastart"])
-        dat <- readBin(con, dattype,
-                       n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+		
+		dat <- .readFCSdataRaw(con, dattype,
+				count= (offsets["dataend"]-offsets["datastart"]+1)/size,
                        size=size, signed=FALSE, endian=endian)
+#        dat <- readBin(con, dattype,
+#                       n = (offsets["dataend"]-offsets["datastart"]+1)/size,
+#                       size=size, signed=FALSE, endian=endian)
     }else {  ##Read n lines with or without sampling
         if(length(which.lines)==1)
             which.lines <- sample(seq_len(nrowTotal), which.lines)
@@ -517,8 +556,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
             endP   <-  startP + nrpar * size
             seek(con, startP)
-            temp <- readBin(con, dattype, n = (endP - startP+1)/size,
-                            size=size, signed=FALSE, endian=endian) 
+			temp <- .readFCSdataRaw(con, dattype, count= (endP - startP+1)/size,
+					size=size, signed=FALSE, endian=endian) 
+#            temp <- readBin(con, dattype, n = (endP - startP+1)/size,
+#                            size=size, signed=FALSE, endian=endian) 
             dat <- c(dat, temp)                 
         }
     }
