@@ -349,6 +349,7 @@ readFCStext <- function(con, offsets)
 ##however,this does not conform to FCS2.0,so this patch only applies to FCS3.0 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 fcs_text_parse = function(str) {
+#	browser()
 	pairs = c()
 	
 	div = substr(str, 1, 1)
@@ -376,9 +377,14 @@ fcs_text_parse = function(str) {
 		divider_index = regexpr(key_end_regex, remaining, perl=TRUE)
 		if(divider_index < 0) {
 #			browser()
-			stop("ERROR: No divider found\n")
-#			return(c())
-			break
+			if(i==2)
+				stop("ERROR: No second divider found\n")
+			else
+			{
+				warning("keyword: ",remaining," is dropped because no value found!")
+				break
+			}
+				
 		}
 		divider_index = divider_index + 1
 		
