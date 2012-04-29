@@ -43,4 +43,4 @@ Collate: AllGenerics.R
 	 eval-methods.R
 	 gatingML.R
 License: Artistic-2.0
-biocViews:  Infrastructure, Flowcytometry, CellBasedAssays
+biocViews:  Infrastructure, FlowCytometry, CellBasedAssays
