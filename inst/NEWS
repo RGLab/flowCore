@@ -21,3 +21,9 @@ CHANGES IN VERSION 1.21.5
 -------------------------
 add .readFCSdataRaw routine to read FCS containing bit-packed integer data (with odd-bitwidth like 9,11 instead of 8,16,32,64)
 .Currently the bit-wise manipulation is done within R,it can be moved to C if speed issue becomes a problem in the future.
+
+CHANGES IN VERSION 1.23.2
+-------------------------
+add new classes "filters", "filtersList" to allow flowViz to plot multiple filters/gates for one flowFrame
+ 
+
