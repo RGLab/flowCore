@@ -256,7 +256,26 @@ setMethod("show",
                       length(object), identifier(object)))
       })
 
+## ==========================================================================
+## filters
+## --------------------------------------------------------------------------
+setMethod("show",
+		signature=signature(object="filters"),
+		definition=function(object)
+		{
+			cat(sprintf("A list of %d filters applied to a flowFrame.\n",
+							length(object)))
+		})
+## ==========================================================================
+## filtersList
+## --------------------------------------------------------------------------
 
+setMethod("show",
+		signature=signature(object="filtersList"),
+		definition=function(object)
+		{
+			cat(sprintf("A list of %d filters .\n",length(object)))
+		})
 
 ## ==========================================================================
 ## filterSet

@@ -394,9 +394,9 @@ fcs_text_parse = function(str) {
 		if(value_end_index < 0) {
 			value_end_index = regexpr(final_end_regex, value_search, perl=TRUE)
 			if(value_end_index < 0) {
-				stop("ERROR! no end found\n Please check if there is empty value of keyword value.")
+				stop("No end found\n Please check if there is empty value of keyword value.")
 #				return(c())
-				break
+#				break
 			}
 		}
 		value_end_index = divider_index + value_end_index

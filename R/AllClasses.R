@@ -233,7 +233,97 @@ setClass("parameterFilter",
          prototype=prototype(parameters=new("parameters",.Data="NULL"))
          )
 
-
+#########################################################################
+#filters is a list filters for the same flowFrame
+#thus is different from filerList which is for a flowSet
+#---------------------------------------------------------------------
+#which are supposed to be gated on the same parent population.
+#It is mainly for plotting multiple gates per flowFramein flowViz::xyplot.
+#These gates should have the same parameters(channels)
+###########################################################################
+setClass("filters",
+		 contains="list"
+		 )
+ ## Constructor
+ filters <- function(x)
+ {
+	 checkClass(x, "list")
+	 x <- new("filters", .Data=x)
+	 validFilters(x)
+	 return(x)
+ }
+ ## Check if all filters in a filters matches same paramters
+ validFilters<- function(flist)
+ {
+	 res <- TRUE
+	 checkClass(flist, "filters")
+		 
+	 fParams <- lapply(flist, function(x) parameters(x))
+	 if(length(unique(fParams))!=1)
+	 {
+		 stop("Not all filter objects in the list have the same paramters", call.=FALSE)
+		 res <- FALSE
+	 }
+	 if(any(sapply(flist, is, "filterResult")))
+	 {
+		 stop("filterResults are not allowed in a filterList") 
+		 res <- FALSE
+	 }
+	 return(res)
+ 
+ }
+		 
+		
+		 
+#########################################################################
+#filtersList is a list filters to be applied to a flowSet
+#---------------------------------------------------------------------
+ 
+setClass("filtersList",
+		 contains="list"
+		 )
+		 
+ ## Check if a filtersList matches a flowSet.
+ validFiltersList <- function(flist, set, strict=TRUE)
+ {
+	 res <- TRUE
+	 checkClass(flist, "filtersList")
+	 checkClass(strict, "logical", 1)
+	 if(!missing(set)){
+		 checkClass(set, "flowSet")
+		 if(res <- !all(names(flist) == sampleNames(set)))
+			 warning("Sample names don't match between flowSet and ",
+					 "filterResultList", call.=FALSE)
+	 }
+	 
+	 if(strict){
+		 fTypes <- unname(sapply(flist, class,simplify=F))
+		 if(length(unique(fTypes)) != 1)
+		 {
+			 warning("Not all filter objects in the list are of equal",
+					 " type.", call.=FALSE)
+			 res <- FALSE
+		 }
+		 if(any(sapply(flist, is, "filterResult")))
+		 {
+			 stop("filterResults are not allowed in a filterList") 
+				 res <- FALSE
+		 }
+		 return(res)
+	}
+ }
+ 
+ ## Constructor
+ filtersList <- function(x)
+ {
+	 checkClass(x, "list")
+	 
+	 if(is.null(names(x)))
+		 stop("Names missing in input list.")
+	 x <- new("filtersList", .Data=x)
+	 validFiltersList(x)
+	 return(x)
+ }
 ## ===========================================================================
 ## Rectangular gate
 ## ---------------------------------------------------------------------------
