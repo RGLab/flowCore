@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             alter.names=FALSE, column.pattern=NULL,
-            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL)
+            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL,emptyValue=TRUE)
 
    cleanup()
 
@@ -83,7 +83,12 @@
     import. Its value is supposed to be an integer in the range of
     available data sets. This argument is ignored if there is only a
     single data segment in the FCS file.}
-  
+ 
+ 	\item{emptyValue}{boolean indicating whether or not we allow empty value for keyword values in TEXT segment.
+		 It affects how the double delimiters are treated.
+		 IF TRUE, The double delimiters are parsed as a pair of start and end single delimiter for an empty value.
+		 Otherwise, double delimiters are parsed one part of string as the keyword value.
+		default is TRUE.} 
 }
 
 \details{
