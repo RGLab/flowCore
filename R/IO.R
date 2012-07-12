@@ -36,10 +36,10 @@ read.FCSheader <- function(files, path=".", keyword=NULL)
     res
 }
 
-header <- function(files){
+header <- function(files,emptyValue=TRUE){
     con <- file(files, open="rb")
     offsets <- readFCSheader(con)
-    txt     <- readFCStext(con, offsets)
+    txt     <- readFCStext(con, offsets,emptyValue=emptyValue)
     close(con)
     txt
 }
@@ -56,7 +56,8 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
-                     dataset=NULL)
+                     dataset=NULL
+			 		,emptyValue=TRUE)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -81,7 +82,7 @@ read.FCS <- function(filename,
     } 
 
     ## read the file  
-    offsets <- findOffsets(con)
+    offsets <- findOffsets(con,emptyValue=emptyValue)
     ## check for multiple data sets
     if(is.matrix(offsets))
     {
@@ -102,7 +103,7 @@ read.FCS <- function(filename,
             offsets <- offsets[dataset,]
         }
     }
-    txt <- readFCStext(con, offsets)
+    txt <- readFCStext(con, offsets,emptyValue=emptyValue)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
     if("transformation" %in% names(txt) &&
@@ -261,17 +262,17 @@ readFCSgetPar <- function(x, pnam, strict=TRUE)
 ## ==========================================================================
 ## Find all data sections in a file and record their offsets.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-findOffsets <- function(con)
+findOffsets <- function(con,emptyValue=TRUE)
 {
     offsets <- readFCSheader(con)
-    txt <- readFCStext(con, offsets)
+    txt <- readFCStext(con, offsets,emptyValue=emptyValue)
     addOff <- 0
     nd <- as.numeric(txt[["$NEXTDATA"]])
     while(nd != 0)
     {
         addOff <- addOff + nd
         offsets <- rbind(offsets, readFCSheader(con, addOff))
-        txt <- readFCStext(con, offsets[nrow(offsets),])
+        txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue)
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
     return(offsets)
@@ -312,7 +313,7 @@ readFCSheader <- function(con, start=0)
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets)
+readFCStext <- function(con, offsets,emptyValue)
 {
 
     seek(con, offsets["textstart"])
@@ -332,7 +333,7 @@ readFCStext <- function(con, offsets)
 	}else
 	{
 		#only apply the patch parser to FCS3
-		rv = fcs_text_parse(txt)
+		rv = fcs_text_parse(txt,emptyValue=emptyValue)
 		rv = c(offsets["FCSversion"], rv)
 		names(rv)[1] = "FCSversion"	
 	}
@@ -348,7 +349,7 @@ readFCStext <- function(con, offsets)
 ## Note that it is only applies to FCS3.0 because empty value is not valid value.   
 ##however,this does not conform to FCS2.0,so this patch only applies to FCS3.0 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-fcs_text_parse = function(str) {
+fcs_text_parse = function(str,emptyValue) {
 #	browser()
 	pairs = c()
 	
@@ -361,7 +362,9 @@ fcs_text_parse = function(str) {
 	if(div == "\\") {
 		div = "\\\\"
 	}
-	
+	if(div=="|")
+		div<-paste("\\",div,sep="")
+
 	i = 2
 	repeat {
 		remaining = substr(str, i, nchar(str))
@@ -369,14 +372,29 @@ fcs_text_parse = function(str) {
 			break
 		}
 		
-		key_end_regex = paste("([^",div,"]",div,")", sep="")
-		value_end_regex = paste("([^",div,"]",div,"[^",div,"])", sep="")
-		final_end_regex = paste("[^",div,"]",div,"$", sep="")
+
+		key_end_regex <- paste("([^",div,"]",div,")", sep="")
+		#############################################################################################
+		##1.when empty value is allowed, we assume there is no double delimiters in any values,
+		##  otherwise,it would break the parser
+		##2.when empty value is not allowed, we safely parse the double delimiters as the valid values
+		#############################################################################################
+		if(emptyValue) 
+		{
+			value_end_regex <- div
+			final_end_regex <- paste(div,"$", sep="")
+		}else
+		{
+			value_end_regex <- paste("([^",div,"]",div,"[^",div,"])", sep="")
+			final_end_regex <- paste("[^",div,"]",div,"$", sep="")			
+		}	
+			
 		
+#		browser()
 		# find key end
 		divider_index = regexpr(key_end_regex, remaining, perl=TRUE)
 		if(divider_index < 0) {
-#			browser()
+			
 			if(i==2)
 				stop("ERROR: No second divider found\n")
 			else
@@ -391,10 +409,16 @@ fcs_text_parse = function(str) {
 		value_search = substr(remaining, divider_index + 1, nchar(remaining))
 		# find value end
 		value_end_index = regexpr(value_end_regex, value_search, perl=TRUE)
+		if(emptyValue) 
+			value_end_index<-value_end_index-1
+			
 		if(value_end_index < 0) {
 			value_end_index = regexpr(final_end_regex, value_search, perl=TRUE)
 			if(value_end_index < 0) {
-				stop("No end found\n Please check if there is empty value of keyword value.")
+				if(emptyValue)
+					stop("No end found\n There could be double delimiter existing in keyword value.\nPlease set argument 'emptyValue' as FALSE and try again!")
+				else
+					stop("No end found\n There could be empty keyword value.\nPlease set argument 'emptyValue' as TRUE and try again!")
 #				return(c())
 #				break
 			}
