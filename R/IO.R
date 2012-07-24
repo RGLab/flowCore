@@ -335,7 +335,8 @@ readFCStext <- function(con, offsets,emptyValue)
 		#only apply the patch parser to FCS3
 		rv = fcs_text_parse(txt,emptyValue=emptyValue)
 		rv = c(offsets["FCSversion"], rv)
-		names(rv)[1] = "FCSversion"	
+		names(rv)[1] = "FCSversion" #not sure if this line is necessary	
+		names(rv) <- gsub("^ *| *$", "", names(rv))#trim the leading and trailing whitespaces
 	}
 	
 	
