@@ -892,14 +892,23 @@ collapseDesc <- function(x)
     d <- description(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
 #	browser()
+	
 	d <- lapply(d, function(y){
 				if(length(y)==0)
 					return(" ")
 				else
-					return(sub("^$"," ",y)) 
+				{
+					#make sure spillover matrix doesn't get converted to vector
+					if(is.matrix(y))
+						return (y)   
+					else
+						return(sub("^$"," ",y))
+				}
+					 
 						
 			})
     d <- d[order(names(d))]
+	
 	spillName <- intersect(c("SPILL", "spillover"), names(d))
     if(length(spillName) >0){
 		mat <-  d[[spillName]]
