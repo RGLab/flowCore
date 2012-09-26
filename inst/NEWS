@@ -31,3 +31,7 @@ CHANGES IN VERSION 1.23.3
 add argument "emptyValue" to read.FCS API so that parser can still work correctly when either cases below occurs : 
 1.there is double-delimiter in keyword values (sometime like \\c:\\path\\...) 
 2.there is empty keyword value  (\\keyword1\\value1\\keyword2\\\\keyword3)
+
+CHANGES IN VERSION 1.23.7
+-------------------------
+fix the bug that malformed spillover matrix in write.FCS
