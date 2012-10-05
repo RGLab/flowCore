@@ -1,6 +1,7 @@
 #include <Rinternals.h>
 #include <R.h>
 #include <R_ext/Applic.h>
+#include "zeroin.h"
 
 struct biexponential_info {
 	double a,b,c,d,f,w,y;
