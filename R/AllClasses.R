@@ -1509,19 +1509,19 @@ inverseLogicleTransform <- function(transformationId, trans) {
     k
 }
 
-.lgclTrans  <- function(dat, p, t, m) {
+.lgclTrans  <- function(dat, p, t, m,q=0.05) {
     transId <- paste(p,"logicleTransform", sep = "_")
     dat <- exprs(dat)[,p]
     dat <- dat[dat<0]
     w <- 0
     if(length(dat)) {
-        r <- .Machine$double.eps + quantile(dat, 0.05)
+        r <- .Machine$double.eps + quantile(dat, q)
         w=(m-log10(t/abs(r))) / 2
     } 
     logicleTransform( transformationId = transId, w=w, t=t, m =m, a =0)
 }
 
-estimateLogicle <- function(x, channels){
+estimateLogicle <- function(x, channels,...){
             if(!is(x,"flowFrame"))
                 stop("x has to be an object of class \"flowFrame\"")
             if(missing(channels))
@@ -1532,7 +1532,7 @@ estimateLogicle <- function(x, channels){
                             sep = " "))
             rng <- range(x)
             trans <- lapply(channels, function(p) {
-                        .lgclTrans(x, p, t = rng[,p][2], m = 4.5)               
+                        .lgclTrans(x, p, t = rng[,p][2], m = 4.5,...)               
                     })
             transformList( channels, trans)   
         }
