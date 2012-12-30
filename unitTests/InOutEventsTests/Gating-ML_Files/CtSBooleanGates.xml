@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gating:Gating-ML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gating="http://www.isac-net.org/std/Gating-ML/v1.3/"
+  xsi:schemaLocation="http://www.isac-net.org/std/Gating-ML/v1.3/ ../../../../schema/Gating-ML.v1.3.xsd">
+
+  <!-- 
+    These tests and other "CtS" tests are designed to verify that particular software 
+    applies gates based on values as they appear in the data file (e.g., channel values 
+    in FCS2/3 files). This has been changed since Gating v.1.3. No implicit transformation 
+    (including channel to scale values transformation) shall be performed. See Gating-ML 
+    specification for further details.
+        
+    Test with fcs2_int16_13367ev_8par_GvHD.fcs
+               
+    Parameters (in order) are: FSC-H, SSC-H, FL1-H, FL2-H, FL3-H, FL2-A, FL4-H, Time
+    13,367 events (data from a GvHD study)
+  -->
+
+  <!-- 5557 expected inside -->
+  <gating:RectangleGate gating:id="CtSB_R1">
+    <gating:dimension gating:parameter="FSC-H" gating:min="77.78" gating:max="248.4"/>
+  </gating:RectangleGate>
+
+  <!-- 12272 expected inside -->
+  <gating:RectangleGate gating:id="CtSB_R2">
+    <gating:dimension gating:parameter="FL1-H" gating:min="45" gating:max="7845.22"/>
+    <gating:dimension gating:parameter="FL2-H" gating:min="12" gating:max="9871.7"/>
+  </gating:RectangleGate>
+
+  <!-- 653 expected inside -->
+  <gating:RectangleGate gating:id="CtSB_R3">
+    <gating:dimension gating:parameter="SSC-H" gating:min="14.7" gating:max="100.38"/>
+    <gating:dimension gating:parameter="FL3-H" gating:min="50.6" gating:max="9000"/>
+    <gating:dimension gating:parameter="FL4-H" gating:min="80.7"/>
+  </gating:RectangleGate>
+
+  <!-- 973 expected inside -->
+  <gating:RectangleGate gating:id="CtSB_R4">
+    <gating:dimension gating:parameter="FSC-H" gating:min="62.4"/>
+    <gating:dimension gating:parameter="SSC-H" gating:min="16.23" gating:max="94.12"/>
+    <gating:dimension gating:parameter="Time" gating:min="5"/>
+    <gating:dimension gating:parameter="FL3-H" gating:max="7654.43"/>
+  </gating:RectangleGate>
+
+  <!-- 13148 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B1">
+    <gating:or>
+      <gating:gateReference gating:ref="CtSB_R1"/>
+      <gating:gateReference gating:ref="CtSB_R2"/>
+    </gating:or>
+  </gating:BooleanGate>
+
+  <!-- 13199 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B2">
+    <gating:or>
+      <gating:gateReference gating:ref="CtSB_R1"/>
+      <gating:gateReference gating:ref="CtSB_R2"/>
+      <gating:gateReference gating:ref="CtSB_R3"/>
+    </gating:or>
+  </gating:BooleanGate>
+
+  <!-- 310 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B3">
+    <gating:and>
+      <gating:gateReference gating:ref="CtSB_R2"/>
+      <gating:gateReference gating:ref="CtSB_R3"/>
+    </gating:and>
+  </gating:BooleanGate>
+
+  <!-- 257 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B4">
+    <gating:and>
+      <gating:gateReference gating:ref="CtSB_R2"/>
+      <gating:gateReference gating:ref="CtSB_R3"/>
+      <gating:gateReference gating:ref="CtSB_R4"/>
+    </gating:and>
+  </gating:BooleanGate>
+
+  <!-- 7810 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B5">
+    <gating:not>
+      <gating:gateReference gating:ref="CtSB_R1"/>
+    </gating:not>
+  </gating:BooleanGate>
+
+  <!-- 8672 expected inside -->
+  <gating:BooleanGate gating:id="CtSB_B6">
+    <gating:or>
+      <gating:gateReference gating:ref="CtSB_R4"/>
+      <gating:BooleanGate gating:id="_b1">
+        <gating:and>
+          <gating:BooleanGate gating:id="_b2">
+            <gating:not>
+              <gating:gateReference gating:ref="CtSB_R2"/>
+            </gating:not>
+          </gating:BooleanGate>
+          <gating:gateReference gating:ref="CtSB_R3"/>
+        </gating:and>
+      </gating:BooleanGate>
+      <gating:BooleanGate gating:id="_b3">
+        <gating:not>
+          <gating:gateReference gating:ref="CtSB_R1"/>
+        </gating:not>
+      </gating:BooleanGate>
+    </gating:or>
+  </gating:BooleanGate>
+
+</gating:Gating-ML>
