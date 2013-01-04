@@ -34,7 +34,7 @@ importFrom(grDevices, contourLines)
 
 importFrom(MASS, cov.rob)
 
-importFrom(methods, "@<-", as, callNextMethod, getSlots, is, new,
+importFrom(methods, as, callNextMethod, getSlots, is, new,
            selectMethod, signature, slot, "slot<-")
 
 importFrom(rrcov, CovMcd)
