@@ -698,7 +698,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          transformation="linearize", which.lines=NULL,
                          column.pattern=NULL, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
-						 min.limit=NULL,...)
+						 min.limit=NULL,emptyValue=TRUE,...)
 {
     ## A frame of phenoData information
     phenoFrame <- NULL
@@ -768,7 +768,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       column.pattern=column.pattern,
-                      decades=decades, ncdf=ncdf,min.limit=min.limit)
+                      decades=decades, ncdf=ncdf,min.limit=min.limit,emptyValue=emptyValue)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
