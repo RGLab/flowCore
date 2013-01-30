@@ -9,7 +9,7 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
              descriptions,name.keyword,alter.names=FALSE,
              transformation = "linearize", which.lines=NULL,
              column.pattern = NULL, decades=0,sep="\t",
-             as.is=TRUE, name, ncdf=FALSE, dataset=NULL, \dots)
+             as.is=TRUE, name, ncdf=FALSE, dataset=NULL,emptyValue=TRUE, \dots)
 
 }
 
@@ -59,6 +59,8 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
     file-based data storage. See \code{\link[flowCore]{read.FCS}} for details. }
 
   \item{dataset}{see \code{\link[flowCore]{read.FCS}} for details.}
+  
+  \item{emptyValue}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{\dots}{Further arguments that get passed on to
     \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
