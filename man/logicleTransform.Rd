@@ -13,7 +13,7 @@
 \usage{
 logicleTransform(transformationId="defaultLogicleTransform", w = 0.5, t = 262144,
         m = 4.5, a = 0)
- estimateLogicle(x, channels) 
+ estimateLogicle(x, channels,...) 
 }
 
 \arguments{
