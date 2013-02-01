@@ -59,7 +59,7 @@
 normalization(parameters, normalizationId="defaultNormalization",
 normFunction, arguments=list())
 
-normalize(data, x)
+normalize(data, x,...)
 
 }
 
