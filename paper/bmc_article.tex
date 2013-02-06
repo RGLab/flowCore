@@ -1,0 +1,887 @@
+%% BioMed_Central_Tex_Template_v1.05
+%%                                      %
+%  bmc_article.tex            ver: 1.05 %
+%                                       %
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                     %%
+%%  LaTeX template for BioMed Central  %%
+%%     journal article submissions     %%
+%%                                     %%
+%%         <27 January 2006>           %%
+%%                                     %%
+%%                                     %%
+%% Uses:                               %%
+%% cite.sty, url.sty, bmc_article.cls  %%
+%% ifthen.sty. multicol.sty		       %%
+%%									   %%
+%%                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%	
+%% For instructions on how to fill out this Tex template           %%
+%% document please refer to Readme.pdf and the instructions for    %%
+%% authors page on the biomed central website                      %%
+%% http://www.biomedcentral.com/info/authors/                      %%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%% BioMed Central currently use the MikTex distribution of         %%
+%% TeX for Windows) of TeX and LaTeX.  This is available from      %%
+%% http://www.miktex.org                                           %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\documentclass[10pt]{bmc_article}    
+
+
+
+% Load packages
+%\usepackage[authoryear,round]{natbib}
+\usepackage{cite} % Make references as [1-4], not [1,2,3,4]
+\usepackage{url}  % Formatting web addresses  
+\usepackage{ifthen}  % Conditional 
+\usepackage{multicol}   %Columns
+\usepackage[utf8]{inputenc} %unicode support
+\usepackage{graphicx}
+%\usepackage{setspace}
+%\usepackage[applemac]{inputenc} %applemac support if unicode package fails
+%\usepackage[latin1]{inputenc} %UNIX support if unicode package fails
+\urlstyle{rm}
+ 
+\newcommand{\Rpackage}[1]{{\textsf{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%%                                             %%
+%%  If you wish to display your graphics for   %%
+%%  your own use using includegraphic or       %%
+%%  includegraphics, then comment out the      %%
+%%  following two lines of code.               %%   
+%%  NB: These line *must* be included when     %%
+%%  submitting to BMC.                         %% 
+%%  All figure files must be submitted as      %%
+%%  separate graphics through the BMC          %%
+%%  submission process, not included in the    %% 
+%%  submitted article.                         %% 
+%%                                             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                     
+
+
+\def\includegraphic{}
+\def\includegraphics{}
+
+
+
+\setlength{\topmargin}{0.0cm}
+\setlength{\textheight}{21.5cm}
+\setlength{\oddsidemargin}{0cm} 
+\setlength{\textwidth}{16.5cm}
+\setlength{\columnsep}{0.6cm}
+
+\newboolean{publ}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                              %%
+%% You may change the following style settings  %%
+%% Should you wish to format your article       %%
+%% in a publication style for printing out and  %%
+%% sharing with colleagues, but ensure that     %%
+%% before submitting to BMC that the style is   %%
+%% returned to the Review style setting.        %%
+%%                                              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+
+%Review style settings
+\newenvironment{bmcformat}{\begin{raggedright}\baselineskip20pt\sloppy\setboolean{publ}{false}}{\end{raggedright}\baselineskip20pt\sloppy}
+
+%Publication style settings
+%\newenvironment{bmcformat}{\fussy\setboolean{publ}{true}}{\fussy}
+
+
+
+% Begin ...
+\begin{document}
+\begin{bmcformat}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the title of your article here     %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{flowCore: a Bioconductor package for high throughput flow cytometry}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors here                   %%
+%%                                          %%
+%% Ensure \and is entered between all but   %%
+%% the last two authors. This will be       %%
+%% replaced by a comma in the final article %%
+%%                                          %%
+%% Ensure there are no trailing spaces at   %% 
+%% the ends of the lines                    %%     	
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\author{Florian Hahne\correspondingauthor$^1$%
+       \email{Florian Hahne\correspondingauthor - fhahne@fhcrc.org}%
+      \and
+         Nolwenn LeMeur\correspondingauthor$^{1,2}$%
+         \email{Nolwenn LeMeur\correspondingauthor - nlemeur@irisa.fr}
+       \and 
+         Ryan R. Brinkman$^3$%
+         \email{Ryan R. Brinkman - rbrinkman@bccrc.ca}%
+        \and
+          Byron Ellis$^4$%
+          \email{Byron Ellis - byron.ellis@gmail.com}
+        \and
+          Perry Haaland$^5$%
+          \email{Perry D. Haaland - Perry\_D\_Haaland@bd.com}
+        \and
+          Deepayan Sarkar$^1$%
+          \email{Deepayan Sarkar - dsarkar@fhcrc.org}
+        \and
+         Josef Spidlen$^3$%
+         \email{Josef Spidlen - jspidlen@bccrc.ca}
+        \and
+         Errol Strain$^5$%
+         \email{Errol Strain - estrain@gmail.com}  
+       and
+          Robert Gentleman$^1$%   
+          \email{Robert Gentleman - rgentlem@fhcrc.org}
+        }
+      
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors' addresses here        %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\address{%
+  \iid(1)Life Sciences Department, Computational Biology Program,%
+  Division of Public Health Sciences, Fred Hutchinson Cancer Research Center,%
+  1100 Fairview Ave. N, M2-B876, PO Box 19024,  Seattle, Washington 98109-1024, USA\\
+  \iid(2)EA SeRAIC INSERM, IRISA - Symbiose, Campus Beaulieu, Universit\'{e} de Rennes I, % 
+  35042 Rennes Cedex, France \\
+  \iid(3)Terry Fox Laboratory, British Columbia Cancer Agency Research Centre,% 
+  675 West 10th Avenue, Vancouver, BC V5Z 1L3  Canada, Canada\\
+  \iid(4)AdBrite Inc., 731 Market St., 5th Floor, San Francisco, California 94103, USA\\
+  \iid(5)BD Biosciences, Research Triangle Park, North Carolina 27709, USA
+}%
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Abstract begins here                 %%
+%%                                          %%
+%% The Section headings here are those for  %%
+%% a Research article submitted to a        %%
+%% BMC-Series journal.                      %%  
+%%                                          %%
+%% If your article is not of this type,     %%
+%% then refer to the Instructions for       %%
+%% authors on http://www.biomedcentral.com  %%
+%% and change the section headings          %%
+%% accordingly.                             %%   
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{abstract}
+        % Do not use inserted blank lines (ie \\) until main body of text.
+  \paragraph*{Background:} Recent advances in automation technologies
+  have enabled the use of flow cytometry for high throughput
+  screening, generating large complex data sets often in clinical
+  trials or drug discovery settings. However, data management and data
+  analysis methods have not advanced sufficiently far from the initial
+  small-scale studies to support modeling in the presence of multiple
+  covariates.
+      
+  \paragraph*{Results:} We developed a set of flexible open source
+  computational tools in the R package \Rpackage{flowCore} to
+  facilitate the analysis of these complex data. A key component of
+  which is having suitable data structures that support the
+  application of similar operations to a collection of samples or a
+  clinical cohort. In addition, our software constitutes a shared and
+  extensible research platform that enables collaboration between
+  bioinformaticians, computer scientists, statisticians, biologists
+  and clinicians. This platform will foster the development of novel
+  analytic methods for flow cytometry.
+  
+  \paragraph*{Conclusions:} 
+  The software has been applied in the analysis of various data sets
+  and its data structures have proven to be highly efficient in
+  capturing and organizing the analytic work flow. Finally, a number
+  of additional Bioconductor packages successfully build on the
+  infrastructure provided by \Rpackage{flowCore}, open new avenues for
+  flow data analysis.
+  
+\end{abstract}
+
+
+
+\ifthenelse{\boolean{publ}}{\begin{multicols}{2}}{}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Main Body begins here                %%
+%%                                          %%
+%% The Section headings here are those for  %%
+%% a Research article submitted to a        %%
+%% BMC-Series journal.                      %%  
+%%                                          %%
+%% If your article is not of this type,     %%
+%% then refer to the instructions for       %%
+%% authors on:                              %%
+%% http://www.biomedcentral.com/info/authors%%
+%% and change the section headings          %%
+%% accordingly.                             %% 
+%%                                          %%
+%% See the Results and Discussion section   %%
+%% for details on how to create sub-sections%%
+%%                                          %%
+%% use \cite{...} to cite references        %%
+%%  \cite{koon} and                         %%
+%%  \cite{oreg,khar,zvai,xjon,schn,pond}    %%
+%%  \nocite{smith,marg,hunn,advi,koha,mouse}%%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%
+%% Background %%
+%%
+\section*{Background}
+Automation technologies developed during the last several years have
+enabled the use of flow cytometry (FCM) to generate large, complex
+data sets in both basic and clinical research applications
+\cite{brinkman2007hcf}. A serious bottleneck in the interpretation of
+existing studies and the application of high throughput FCM to even
+larger, more complex problems is that data management and data
+analysis methods have not advanced sufficiently far from the methods
+developed for applications of FCM to small-scale, tube-based studies
+\cite{mahnke2007omi}. In particular, the data often need to be
+organized into groups of samples based on combinations of additional
+covariates and similar operations need to be applied to these groups
+in a transparent and reproducible manner. Furthermore, the growing
+depth of knowledge in the field of immunology, for instance the
+characterization of distinct human T-cell sub-population \cite{Appay},
+clearly argues for more systematic approaches.
+%% add one of the last roederer's paper that "request" algo and
+%% automation for FC-HCS data analysis.
+
+Some of the consequences of the lag of efficient software solutions
+are difficulties in maintaining the integrity and documentation of
+large data sets, assessing measurement quality, developing validated
+assays, controlling the accuracy of gating techniques, automating
+complex gating strategies, and aggregating statistical results across
+large study sets for further analysis. In addition, new analysis
+approaches face difficulty in finding their way into standard
+practice. We believe that these barriers to the development and
+dissemination of new analysis methods is one of the fundamental
+restraints on the future expansion of FC-HCS in both clinical and
+research applications.
+
+Traditionally, for the majority, FCM experiments were being analyzed
+by manual data inspection in one or two dimensions, or by very basic
+comparisons of summary statistics. Most of the currently available
+analysis tools are designed to reflect this work flow.  We believe
+that these approaches, in addition to being expensive and labor
+intensive, do not fully address the highly complex nature of FCM data;
+in particular, they disregard many of the fundamental aspects of the
+data, such as sample groups or cohorts, the underlying distribution or
+its high-dimensional nature. Furthermore, the subjective character of
+manual analyses are a major obstacle to reproducibility. In a recent
+study of flow cytometric standardization involving 15 institutions,
+the mean inter-laboratory coefficient of variation ranged from 17 to
+44\%, even though preparation was standardized and performed using the
+same samples and reagents at each site \cite{Maecker2005}. For FC-HCS
+data, unassisted manual inspection is extremely time consuming, and
+robust statistical methods need to be developed to point investigators
+to interesting aspects of the data, or to potential problems. While
+the expert knowledge of immunologists and researchers remains crucial
+for the understanding of FCM data, we believe that collaboration with
+other research fields such as statistics and computer science can
+greatly improve the relevance of FCM in today's high-throughput
+paradigm.
+
+In this paper, we describe a set of flexible and well structured
+computational tools to efficiently analyze FC-HCS data. Our intent is
+to provide a shared research platform that enables bioinformaticians,
+computer scientists, and statisticians to work collaboratively with
+biologists and clinicians to develop novel methods for FCM data
+analysis, a process deemed crucial by many for the further development
+of the technology \cite{lizard2007fca}.
+
+ 
+%%%%%%%%%%%%%%%%%%
+\section*{Implementation}
+The computational tools we have developed are distributed in the R
+software language \cite{Rmain} as the Bioconductor \cite{BIOC} package
+\Rpackage{flowCore}.  The package \Rpackage{flowCore} is a freely
+available, highly functional, and extensible FCM data analysis
+platform that enables researchers to efficiently handle FC-HCS data
+and encourages open development of tools for their coherent
+analysis. In our implementation of \Rpackage{flowCore} we rely on two
+important lessons learned from the field of gene expression data
+analysis: the first being the importance of data structures that
+reflect the underlying data and facilitate the manipulations that are
+of most interest, while the second is the importance of a modular
+architecture that allows for many developers to extend and use the
+underlying infrastructure and to combine tools in complex work flows.
+\Rpackage{flowCore} implements such computationally efficient data
+structures and a range of specialized methods addressing all
+components of a typical FCM analysis work flow, including
+compensation, transformation, and gating. \Rpackage{flowCore} runs on
+Windows, Mac OS X, and Linux/Unix operating systems. 
+
+\subsection*{Existing data standards and conventions}
+Currently, data from FCM experiments are stored in single files
+according to the Flow Cytometry Standard (FCS) \cite{seamer1997pnd}.
+However, recent developments in high-throughput FCM are shifting the
+focus of interest away from single-tube based measurements towards
+large and complex experimental designs with dozens of covariates and
+influencing factors. For example, experiments consist of large numbers
+of samples from different patients, measured at different time points
+\cite{brinkman2007hcf} or following different drug treatments
+\cite{gasparetto2004ice}. Modern FCM data analysis tools have to deal
+with an additional layer of sample metadata and they need to provide
+infrastructure to process and to compare groups of samples in a
+concise and coordinated manner.
+
+The notion of classes from an object-oriented programming language
+provides one coherent way to describe these richer data structures.
+In addition, functions or methods that work on those classes allow for
+interaction and manipulation. Many of the currently available software
+solutions offer only limited support for such self-contained
+structures, or make use of binary storage containers that are designed
+specifically for the needs of particular user interfaces and hence are
+not easily amenable to programmatical access. In addition, the
+closed-source nature of these products often makes them impractical to
+integrate into analysis pipelines. In this manuscript we describe
+classes for FCM data analysis and their implementation in R, however,
+they could just as easily be implemented in any other language (e.g.,
+Java, C++). Software written in those languages could use similar data
+structures, thereby simplifying communication and the interchange of
+data between analysis tools.
+
+%% I think switching the last 2 paragraphs make more sense as the 2nd
+%% one of this section talk about other closed-source soft etc.
+%% But up to you
+\Rpackage{flowCore} does not provide a graphical user interface and
+all operations are done using a command line interface.  It is
+possible to add a more elaborate user interface on top of this
+infrastructure, however the focus in this paper is on a programmatic
+approach to enable the convenient development of novel analysis
+methods and automation of complex analysis approaches.  By taking the
+burden of data management from the programmer, and by providing
+well-defined application programming interfaces (APIs), it is possible
+to readily test new ideas and to easily extend the framework's
+functionality.
+
+The \Rpackage{flowCore} framework presented here can import and
+process raw data FCS files along with their complete set of
+file-specific metadata (Figure~1\ref{fig1:FrameWork}). Moreover, it is
+a software implementation of the Gating Markup Language Candidate
+Recommendation, an emerging standard developed in collaboration
+with the International Society for Analytical Cytology (ISAC) Data
+Standards Task Force, which makes it possible to integrate
+\Rpackage{flowCore} in existing work flows and to communicate with any
+other FCM tool that adheres to the proposed standard
+\cite{SpidlenInPressCytometryA}. Adherence to standards also plays a
+critical role in the ability of new methods based on
+\Rpackage{flowCore} to find their way back into the standard practices
+for FCM data analysis.
+
+
+\subsection*{Basic Data Structures}
+\subsubsection*{flowFrame: sample unit}
+\Rpackage{flowCore}'s primary task is the representation and basic
+manipulation of FCM data. This is accomplished through a data model
+very close to that adopted by other successful Bioconductor
+packages. All information from a single FCS file, \textit{i.e.}, the
+collection of events and the accompanying metadata, is stored in one
+single container. We call the structure that hold this data a
+\Rclass{flowFrame} (Figure~1\ref{fig1:FrameWork}). Raw data values as
+well as associated metadata of a \Rclass{flowFrame} can be accessed
+programmatically. Most commonly, the metadata consist of descriptors
+of the stains used in the experiment and the respective measurement
+channels, information about compensation performed at the instrument
+side and any additional keywords the user deems to be important to
+annotate the data. During the creation of a \Rclass{flowFrame}, a
+number of quality checks are performed to ensure data integrity.
+
+\subsubsection*{flowSet: a collection of  \Rclass{flowFrames}}
+In high-throughput FCM, many of the analysis tasks need to be
+performed consistently across multiple samples, hence we introduce the
+concept of a collection of \Rclass{flowFrames} called a
+\Rclass{flowSet} (Figure~1\ref{fig1:FrameWork}). A \Rclass{flowSet} is
+a container for multiple \Rclass{flowFrames} along with relevant
+information associated with each individual frame such as descriptions
+of the cell sample, the treatment to which the sample was subjected,
+or the location of that sample in a microtitre plate.  The objects are
+self-contained and can be shipped to other computers, platform
+independently. \Rclass{flowSets} manage the consistent application of
+operations on the individual \Rclass{flowFrames} and shift the burden
+of keeping score of the metadata from the user to the infrastructure,
+thus reducing the risk of errors (\textit{e.g.}, mixups of sample
+labels). Crucial operations like taking subsets, data transformations
+and gating, or computation of summary statistics are greatly
+facilitated and all relevant annotation information is constantly
+passed on along the analysis pipeline.
+
+The \Rclass{flowSet} structure can be readily extended to incorporate
+the potentially complex metadata associated with even larger FC-HCS
+experiments such as clinical trials, where hundreds of patients might
+provide samples at different time points over the course of the
+experiment. The \Rclass{flowSet} data structure is one of the key
+features in the \Rpackage{flowCore} package and it is fundamental to
+the implementation of many of the high level functionalities such as
+quality assessment and control, visualization and automated gating.
+
+\subsection*{Standard flow operations}
+Typically, the basic operations in FCM analyses adhere to the
+following common work flow: the data need to be compensated (if that
+was not already done on the instrument) and transformed, and
+sub-populations of interest need to be selected based on a set of
+(predominantly sequential) gates. All software solutions for FCM
+analysis offer support for these operations, most often in an
+interactive, graphical user interface. In \Rpackage{flowCore} we have
+taken the approach to abstractly describe these operations and build a
+set of tools to perform them on both \Rclass{flowFrames} and
+\Rclass{flowSets}. Typically, the results of these operations are
+again \Rclass{flowFrame} or \Rclass{flowSet} objects. While
+transformation, and to a certain extent compensation, are fairly
+routine operations with only limited potential for improvement, being
+able to implement new methodologies for gating of FCM data, and extend
+the capabilities of \Rpackage{flowCore} through object oriented
+programming are features that clearly sets our framework apart from
+other FCM analysis tools. By factoring out as much of the bookkeeping
+as possible, programmers can focus on the actual operations rather
+then having to deal with the tedious details of data integration and
+access. Third-party methods can act on their own as first-class
+citizens in the analysis framework, without breaking the work flow or
+the basic infrastructure. This design allows for the straightforward
+extension of \Rpackage{flowCore}'s capabilities, and has already
+fostered the development of a number of valuable add-ons
+\cite{lo2008agf,sarkar2008ufv}.
+
+\subsubsection*{Transformation and compensation}
+Data transformation is essential for both data visualization and
+modelling \cite{lo2008agf}. The major transformations that are
+routinely used in FCM analysis have been implemented in
+\Rpackage{flowCore} (\textit{e.g.,} log, bi-exponential, arcsinh or
+logicle \cite{Parks:2006}, see Table~\ref{table1} for a complete
+list). Furthermore, the design of the R language makes it easy to
+define arbitrary functions to apply to the data of individual
+\Rclass{flowFrames} or entire \Rclass{flowSets},
+respectively. Compensation, that corrects for fluorescence spillover
+originating from the inherent overlap of emission spectra from
+antibody fluorescent labels, is available for both \Rclass{flowFrames}
+and \Rclass{flowSets}. In addition, the software offers functionality
+to compute spillover or compensation matrices from a set of
+appropriate single stain controls.
+
+
+\subsubsection*{Gating}
+In \Rpackage{flowCore}, gating operations are represented by classes
+that can be extended in an object-oriented manner
+(Table~\ref{table2}). Basic gate types such as rectangular gates,
+ellipses and polygon gates are implemented as part of the
+framework. In addition, we introduce the notion of data-driven gates,
+or filters, for which the necessary parameters are computed based on
+the properties of the underlying data, for instance by modelling data
+distribution or by density estimation. This approach is fundamentally
+different from the traditional application of static gating regions
+across samples, as it is able to take into accounts unforeseen changes
+in signal intensities, such as drifts in the instrumentation
+over time or sample variability.
+
+The ability to programmatically access gates is a prerequisite for
+semi-automated or automated gating. By utilizing an unified interface
+for all different types of gates, the user is able to subset data sets
+as well as to create summary statistics, as for instance the
+proportions of events falling in a single gate or in a combination of
+gates. Complex combinations and hierarchies of gates can be captured
+in multi-step gating strategies. The definition of gates in
+\Rpackage{flowCore} follows the Gating Markup Language Candidate
+Recommendation \cite{SpidlenInPressCytometryA}, thus any
+\Rpackage{flowCore} gating strategy can be reproduced by any other
+software that also adheres to the standard and \textit{vice versa}.
+
+Gating, as well as all other operations in \Rclass{flowCore}, can be
+applied over each individual frame in a \Rclass{flowSet}, and summary
+methods provide information about the outcome of these operations. In
+addition, the result of a gating operation can be used to subset the
+input \Rclass{flowFrame} or \Rclass{flowSet}, either by filtering out
+negative events or by splitting in multiple sub-populations. This
+design allows to easily combine all of \Rpackage{flowCore}'s
+components into complex work flows.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Results and Discussion %%
+%%
+\section*{Results and Discussion}
+\subsection*{From quality assessment to batch gating}
+The \Rpackage{flowCore} package has been successfully applied in the
+analysis of several data sets, both originating from clinical trials
+\cite{brinkman2007hcf} and drug discovery experiments
+\cite{gasparetto2004ice}. A complete description of the methods
+implemented in \Rpackage{flowCore} is beyond the scope of this
+publication.  Much more comprehensive documentation and users guide
+information with programmatic examples are available online
+(\url{http://bioconductor.org/packages/2.2/bioc/html/flowCore.html}),
+as part of the package distribution. Here, we want to briefly
+exemplify some of the software's key features, that is, the coherent
+treatment of all samples in a potentially large experiment, the
+concept of data-driven automated gating, the integration of existing
+software into the framework, and the generation of publication-quality
+graphics for data visualization.
+
+Data analysis for most experiments usually begins with a quality
+assurance step. In a FCS analysis work flow, we can use functionality
+from the \Rpackage{flowQ} package, build upon \Rpackage{flowCore}, to
+create an HTML report that highlights potential quality
+issues. Assuming that the data has already been imported as the
+\Rclass{flowSet} object ``dat'', using for instance the
+\Rclass{read.flowSet} method, the following simple lines of code
+produce the output shown in Figure~2\ref{flowQ}:
+
+\begin{verbatim}
+> library(flowQ)
+> qaReport(dat, c("qaProcess.timeline", 
+                  "qaProcess.timeflow", 
+                  "qaProcess.cellnumber"))
+\end{verbatim}
+
+The report is interactive and provides drill-down to more detailed
+aspects of the analysis, starting from a concise overview. The design
+of \Rpackage{flowCore}'s data model allows for a coherent treatment of
+all the samples, hence we are able to compare features between
+individuals, or between groups of individuals, based on the available
+metadata information.
+
+
+According quality of the measurements, the next steps of a FCS
+analysis work flow are potentially the compensation and transformation
+of the data. Once again \Rpackage{flowCore}'s data structure and its
+methods allow a flexible processing. One can use the basic
+transformation and compensation functions implemented in
+\Rpackage{flowCore} (Table~1) or develop its own approaches that could
+then be apply to \Rclass{flowFrame} or \Rclass{flowSet}.
+
+Ultimately, a flow cytometry experiment aims at identifying and
+characterizing cell population of biological interest, using static
+gating or data-driven procedures (Table~2). Static gating for all
+samples in a high-throughput FCM experiment is often impossible, since
+the measured variables tend to vary between different treatments, over
+time or between different experiment batches. Automated or data-driven
+gating has the potential to estimate the gating regions from the
+underlying data, thus providing a fast objective solution to the
+analysis of potentially very large and diverse data sets
+\cite{lo2008agf}. One of the automated gating methods implemented in
+\Rpackage{flowCore} is based on identifying areas of significant
+curvature in a kernel density estimate of the data
+\cite{wand2008}. Assuming that the regions of interest are of high
+density, the software is able to reliably detect them in a one- or
+two-dimensional density landscape.
+
+\begin{verbatim}
+> cf <- curv2Filter("FL1-H", "FL3-H")
+> fres <- filter(dat, cf)
+\end{verbatim}
+
+Kernel density estimation is a well-known problem in statistical
+computing, and a lot of effort has been invested in the development of
+good software to address it. The modular design of \Rpackage{flowCore}
+allows to easily integrate these existing solutions into our
+framework. In this example, we directly use R code from the
+\Rpackage{feature} package \cite{wand2008}. Instead of
+re-writing existing code, we are able to include it via the well
+tested distribution mechanism provided by R's software package
+system. This process is bi-directional, and all functionalities
+implemented in \Rpackage{flowCore} are available to other package
+authors.
+
+Finally, we can chose one of the many visualization options from the
+\Rpackage{flowViz} package to plot the results of the recent filtering
+operation. A very basic matrix of density plots is shown in Figure~3
+\ref{xyplot}, where each panel in the matrix represents the
+fluorescent measurements of two channels for one individual patient.
+
+\begin{verbatim}
+> xyplot(`FL1-H` ~ `FL3-H` | SampleID, 
+         data=dat, filter=fres)
+\end{verbatim}
+
+Scripting languages like R provide a natural representation of work
+flows through a sequence of code instructions in regular text
+files. This allows for the rapid development and testing of new ideas,
+however it is not very well suited for routine data analysis
+tasks. Furthermore, the overhead of data management and variable
+tracking can be considerable. To that end, \Rpackage{flowCore} also
+provides data structures that help organize sequences of typical FCM
+data analysis operations and complex gating strategies into concise
+work flows. These structures are self-reflective, they contain all
+intermediate results and offer a unified user interface to assess the
+progress and the outcome of an analysis.
+
+\subsection*{Related flow packages}
+In addition to the \Rpackage{flowCore} package that offers basic
+infrastructure, we have implemented a range of additional Bioconductor
+packages that are dedicated to more specific tasks of FCM data
+analysis. As exemplified in the previous section, the
+\Rpackage{flowViz} package \cite{sarkar2008ufv} provides sophisticated
+data visualization tools, that make use off multivariate trellis
+plotting \cite{lattice}.  These functions can be used to quickly
+generate customized plots for extended cytometry data sets for both
+direct data inspection and quality control.  The objects metadata
+information can be used to arrange the layout and composition of the
+plots.  Furthermore, the design and the API of the visualization
+software is very generic, and users can readily extend its
+capabilities by providing self-defined plotting functions.  The
+\Rpackage{flowQ} package offers more advanced quality assurance
+methodology and a framework to create interactive web-based reports of
+quality assurance results. The \Rpackage{flowUtil} package implements
+data import and export including flow-cytometry specific standard
+markup language. Finally, the \Rpackage{flowStats} package provides
+elaborate statistical methods that are relevant in the context of flow
+cytometry data analysis.
+
+More recently, \cite{lo2008agf} have developed an automatic gating
+approach via robust model-based clustering using \Rpackage{flowCore}'s
+data model and infrastructure which is implemented in the Bioconductor
+package \Rpackage{flowClust}. Another package, \Rpackage{plateCore},
+providing more specialized support for experiments conducted on
+microtitre plates and facilitating the handling of spatial metadata,
+is under development.
+    
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section*{Conclusions}
+Through \Rpackage{flowCore}, we have provided the FCM community with
+an open source, freely available, highly functional, and standards
+compliant, development and analysis platform for high throughput data
+analysis.  We hope to foster collaborative development of new analysis
+methods and to facilitate the transition of these new methods to a
+larger flow community.  Our experience has been that such
+collaborative effort has proven beneficial for a number of different
+biological and computational biology challenges, greatly elevating
+their applicability.  We hope that our framework will be the
+foundation for fruitful shared research by many collaborators from
+multiple scientific fields and will help resolve bottlenecks that
+currently prevent further development and deployment of FC-HCS to
+increasingly complex and important scientific and clinical
+applications.
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section*{Availability and requirements}
+Project name: flowCore ;
+Project home page: http://bioconductor.org ;
+Operating system(s): A wide variety of UNIX platforms, Windows and MacOS.;  
+Programming language: R ;
+Licence: The Artistic License, Version 2.0 .
+
+
+The flowCore package and its associated packages are part of the
+R/Bioconductor project, an environment for statistical computing and
+bioinformatics. The R software environment is freely available at
+http://www.r-project.org. flowCore and its dependencies (flowQ,
+flowViz) are available on the Bioconductor project website
+(http://bioconductor.org) as freely distributed and open source
+software packages with an Artistic license. They are fully integrated
+into the R/Bioconductor environment for statistical computing and
+bioinformatics and run on operating systems Windows, Mac OS X, and
+Unix.
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Authors contributions}
+The project was conceived by RB, RG, PH. It was designed, and
+developed by all the authors.  NLM, FH, DS, and BE wrote most of the
+software’s code. The manuscript was prepared by FH and NLM, then
+revised and approved by all authors.
+
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements}
+  This work was supported by NIH grant EB005034 and by the Michael Smith
+Foundation for Health Research. RRB is an ISAC Scholar.
+
+
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  The Bibliography                       %%
+%%                                                         %%              
+%%  Bmc_article.bst  will be used to                       %%
+%%  create a .BBL file for submission, which includes      %%
+%%  XML structured for BMC.                                %%
+%%                                                         %%
+%%                                                         %%
+%%  Note that the displayed Bibliography will not          %% 
+%%  necessarily be rendered by Latex exactly as specified  %%
+%%  in the online Instructions for Authors.                %% 
+%%                                                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+{\ifthenelse{\boolean{publ}}{\footnotesize}{\small}
+ \bibliographystyle{bmc_article}  % Style BST file
+  \bibliography{flowCoreRef} }     % Bibliography file (usually '*.bib' ) 
+
+%%%%%%%%%%%
+
+\ifthenelse{\boolean{publ}}{\end{multicols}}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Figures                       %%
+%%                               %%
+%% NB: this is for captions and  %%
+%% Titles. All graphics must be  %%
+%% submitted separately and NOT  %%
+%% included in the Tex document  %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Do not use \listoffigures as most will included as separate files
+
+\section*{Figures}
+  \subsection*{Figure 1 - flowCore Framework}
+ \label{fig1:FrameWork}For each experiment, the content of
+        the FCS files, phenotypic and metadata are stored in a
+        \Rclass{flowSet}. Each \Rclass{flowFrame} in a \Rclass{flowSet}
+        corresponds to one FCS file. All basic operations (e.g.,
+        compensation, transformation, gating) can be applied to either
+        single \Rclass{flowFrames} or a \Rclass{flowSet} simultaneously.
+
+  
+  \subsection*{Figure 2 - Quality assessment}
+    \label{flowQ}%
+        HTML quality assessment report generated by the flowQ package for a
+        subset of data from an experiment focusing on Graft-Versus-Host
+        Disease \cite{brinkman2007hcf}. Rows correspond to the samples in
+        the set, columns to different quality checks.
+
+
+    \subsection*{Figure 3 - Batch gating}
+    \label{xyplot}{ 
+      Scatterplot matrix of a single \Rclass{flowSet}
+      from an experiment focusing on immune tolerance following kidney
+      transplantation. Outlines of the gating regions identified by a
+      \Rclass{curve2Filter} automated gating operation are added on
+      top of the density representation of the data.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Tables                        %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Use of \listoftables is discouraged.
+%%
+\section*{Tables}
+  \subsection*{Table 1 - Data transformations}
+    \begin{table}[ht]
+      \caption{\label{table1} Data transformations implemented in \Rpackage{flowCore}. Within these formulas, $x$ is the variable
+        corresponding to value being transformed, $a$, $b$, $c$, $d$, $f$, $p$, $m$, $T$, and $w$, are
+        constants affecting the transformation function, $e$ is the base of the natural logarithm (see \cite{Parks:2006} for details on the logicle transformation). Other transformations can easily be implemented in R.}
+      \begin{center}
+        \begin{tabular}{|l|l|}
+          \hline
+          \multicolumn{2}{|c|}{Data Transformations} \\
+          \hline
+          linear & $ax + b$ \\
+          quadratic & $ax^2 + bx + c$ \\
+          natural logarithm & $log_e(x)(r/d)$ \\
+          logarithm & $log_b(x)(r/d)$ \\
+          biexponential & $ae^{(b*x)}-ce^{(-d+x)}+f$ \\
+          logicle& $Te^{-(m-w)}(e^{(x-w)}-p^2e^{-(x-w)/p}+p^2-1)$ \\
+          truncate & $x_{x{\leq}a} = a$ \\
+          scale & $(x-a)/(b-a)$ \\
+          arcsinh & $arcsinh(a + bx)+c$ \\
+          \hline
+        \end{tabular}
+      \end{center}
+    \end{table}
+
+  \subsection*{Table 2 - Filter and gate classes}
+  \begin{table}[ht]
+    \caption{\label{table2} Filter and gate classes implemented in
+      \Rpackage{flowCore}. Filters are automated, data driven procedures. Gates are static, user-defined methods.} 
+    \begin{center}
+      \begin{tabular}{|l|l|}
+        \hline
+        \multicolumn{2}{|c|}{Gates} \\
+        \hline
+        rectangleGate & n-dimensional rectangular regions \\
+        quadGate & quadrant regions in two dimensions \\
+        polygonGate & polygonal regions in two dimensions \\
+        polytopeGate & generalization of polygon in n dimensions \\
+        ellipsoidGate & n-dimensional ellipsoid region \\
+        \hline
+        \multicolumn{2}{|c|}{Filters} \\
+        \hline
+        sampleFilter & random sub-sampling\\
+        expressionFilter & results of a boolean expression \\
+        kmeansFilter & K-means clustering \\
+        norm2Filter & bivariate normal distribution \\
+        curv1Filter & local density regions in 1D \\
+        curv2Filter & density regions in 2D \\
+        timeFilter & abnormal data acquisition over time \\
+        \hline
+        filterSet & gating strategies \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Additional Files              %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% \section*{Additional Files}
+%%   \subsection*{Additional file 1 --- Sample additional file title}
+%%     Additional file descriptions text (including details of how to
+%%     view the file, if it is in a non-standard format or the file extension).  This might
+%%     refer to a multi-page table or a figure.
+%% 
+%%   \subsection*{Additional file 2 --- Sample additional file title}
+%%     Additional file descriptions text.
+%% 
+%% 
+\end{bmcformat}
+\end{document}
+
+
+
+
+
+
+
