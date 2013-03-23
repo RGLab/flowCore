@@ -78,6 +78,9 @@ normalize(data, x,...)
     \code{normFunction}}
     
   \item{data}{The \code{flowSet} to normalize. }
+  \item{...}{other arguments:
+		see \code{\link[flowStats:normalize-methods]{normalize-methods}}for details.
+		}
   
 }
 
