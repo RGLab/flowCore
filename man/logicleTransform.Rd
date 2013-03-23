@@ -36,6 +36,9 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0.5, t = 262144
   \item{x}{ Input flow frame for which the logicle transformations are to be estimated.}
   \item{channels}{ Flouresence channels for which the logicle transformation is to 
       be estimated.}
+  \item{...}{other arguments:
+
+		q: a numeric type specifying quantile value, default is 0.05}
 }
 
 \references{Parks D.R., Roederer M., Moore W.A.(2006)  A new "logicle" display
