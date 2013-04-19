@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.27.0
+Version: 1.27.14
 Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan
 Description: Provides S4 data structures and basic functions to deal with flow
 	     cytometry data. 
@@ -42,5 +42,6 @@ Collate: AllGenerics.R
 	 split-methods.R
 	 eval-methods.R
 	 gatingML.R
+	 FCSTransTransform.R
 License: Artistic-2.0
 biocViews:  Infrastructure, FlowCytometry, CellBasedAssays
