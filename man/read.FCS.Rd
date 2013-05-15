@@ -29,9 +29,11 @@
     \code{scale}.The \code{linearize} transformation applies the
     appropriate power transform to the data while the \code{scale}
     transformation scales all columns to $[0,10^decades]$.  defaulting
-    to decades=0 as in the FCS4 specification. A logical can also be
-    used: \code{TRUE} is equal to \code{linearize} and \code{FALSE}
-    corresponds to no transformation.}
+    to decades=0 as in the FCS4 specification. 
+    A logical can also be used: \code{TRUE} is equal to \code{linearize} and \code{FALSE}(or \code{NULL})
+    corresponds to no transformation.
+    Also when the transformation keyword of the FCS header is set to "custom" or "applied", no transformation will be used.
+    }
   
   \item{which.lines}{Numeric vector to specify the indices of the lines
     to be read. If NULL all the records are read, if of length 1, a
@@ -107,13 +109,8 @@
   the file \url{../doc/fcs3.html} in the \code{doc} directory of the
   package.
 
-  The \code{nlines} and \code{sampling} arguments allow you to read a
-  subset of the record as you might not want to read the thousands of
-  events recorded in the FCS file.
-
-  The \code{which.lines} argument allows you to read a specific number
-  of records.
-  
+  The \code{which.lines} arguments allow you to read a subset of the record as you might not want to read the thousands of
+  events recorded in the FCS file.  
 }
 
 \value{
