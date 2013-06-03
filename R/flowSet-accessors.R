@@ -565,7 +565,8 @@ setMethod("rbind2",
 setMethod("spillover",
           signature=signature(x="flowSet"),
           definition=function(x, unstained=NULL, patt=NULL, fsc="FSC-A",
-                              ssc="SSC-A", method="median", useNormFilt=FALSE)
+                              ssc="SSC-A", method="median", useNormFilt=FALSE,
+                              regexpr=FALSE)
       {
           if(is.null(unstained)) {
               stop("Sorry, we don't yet support unstained cells blended ",
@@ -605,11 +606,36 @@ setMethod("spillover",
                   n2f <- norm2Filter(fsc, ssc, scale.factor=1.5)
                   x <- Subset(x,n2f)
               }
-              ## inten <- fsApply(Subset(x, n2f), each_col,method)[, cols]
-              inten <- fsApply(x, each_col,method)[, cols]
-              inten <- pmax(sweep(inten[-unstained,], 2,inten[unstained,]), 0)
-              inten <- sweep(inten, 1,apply(inten, 1, max), "/")
-              row.names(inten) <- colnames(inten)[apply(inten ,1, which.max)]
+
+              if (method == "mode") {
+                inten <- fsApply(x, function(curFr) {
+                  modes <- sapply(cols, function(curStain) {
+                    sig <- exprs(curFr)[, curStain]
+                    res <- density(sig)
+                    res$x[which.max(res$y)]
+                  }, USE.NAMES = T)
+                  modes
+                })
+              } else {
+                inten <- fsApply(x, each_col, method)[, cols]
+              }
+
+              # background correction
+              inten <- pmax(sweep(inten[-unstained,], 2, inten[unstained,]), 0)
+
+              # normalize by max of each row
+              inten <- sweep(inten, 1, apply(inten, 1, max), "/")
+
+              # Updates the "rownames" of inten. A regular expression can be
+              # used to match the channels with the compensation controls.
+              # Otherwise, a guess is made based on the largest statistic for
+              # the compensation control (i.e., the row).
+              if (regexpr) {
+                channel_match <- sapply(colnames(inten), grep, x = row.names(inten))
+                row.names(inten)[channel_match] <- colnames(inten)
+              } else {
+                row.names(inten) <- colnames(inten)[apply(inten, 1, which.max)]
+              }
               inten[colnames(inten),]
           }
       })
