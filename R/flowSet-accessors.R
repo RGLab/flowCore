@@ -642,7 +642,7 @@ setMethod("spillover",
               }
 
               if (pregate) {
-                if (is.na(channel_order)) {
+                if (any(is.na(channel_order))) {
                   stop("Cannot apply pregate without knowing ordering of channels. ",
                        "Match the channels to controls with 'ordered' or 'regexpr'.",
                        call. = FALSE)
@@ -661,7 +661,7 @@ setMethod("spillover",
                   # Applies flowStats:::rangeGate to select positive population
                   gate_filter <- rangeGate(flow_frame, stain = channel_name,
                                            inBetween = TRUE, borderQuant = 0,
-                                           absolute = FALSE, peakNr = 2, ...)
+                                           absolute = FALSE, ...)
                   if (plot) {
                     # Plots a kernel density for the current channel
                     plot(density(exprs(flow_frame)[, channel_name]),
