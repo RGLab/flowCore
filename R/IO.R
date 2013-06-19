@@ -56,8 +56,9 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
-                     dataset=NULL
-			 		,emptyValue=TRUE)
+                     dataset=NULL,
+                     invert.pattern = FALSE,
+                     emptyValue=TRUE)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -132,7 +133,7 @@ read.FCS <- function(filename,
     ## only keep certain parameters
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
-        i <- grep(column.pattern,n)
+        i <- grep(column.pattern, n, invert = invert.pattern)
         mat <- mat[,i]
         params <- params[i,]
     }
