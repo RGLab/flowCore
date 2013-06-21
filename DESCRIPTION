@@ -43,5 +43,6 @@ Collate: AllGenerics.R
 	 eval-methods.R
 	 gatingML.R
 	 FCSTransTransform.R
+	 median-logicle-transform.R
 License: Artistic-2.0
 biocViews:  Infrastructure, FlowCytometry, CellBasedAssays

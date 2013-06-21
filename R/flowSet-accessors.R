@@ -563,54 +563,154 @@ setMethod("rbind2",
 ## spillover method
 ## ---------------------------------------------------------------------------
 setMethod("spillover",
-          signature=signature(x="flowSet"),
-          definition=function(x, unstained=NULL, patt=NULL, fsc="FSC-A",
-                              ssc="SSC-A", method="median", useNormFilt=FALSE)
-      {
-          if(is.null(unstained)) {
+          signature = signature(x = "flowSet"),
+          definition = function(x, unstained = NULL, patt = NULL, fsc = "FSC-A",
+                                ssc = "SSC-A", method = "median",
+                                stain_match = c("intensity", "ordered", "regexpr"),
+                                useNormFilt = FALSE, pregate = FALSE,
+                                plot = FALSE, ...) {
+
+            stain_match <- match.arg(stain_match)
+            
+            if (is.null(unstained)) {
               stop("Sorry, we don't yet support unstained cells blended ",
-                   "with stained cells", call.=FALSE)
-          } else {
-              ## We often only want spillover for a subset of the columns 
+                   "with stained cells", call. = FALSE)
+            } else {
+              ## We often only want spillover for a subset of the columns
               allcols <- colnames(x)
-              cols <- if(is.null(patt)) allcols else grep(patt, allcols,
-                                                          value=TRUE)
+              cols <- if (is.null(patt)) {
+                allcols
+              } else {
+                grep(patt, allcols, value = TRUE)
+              }
 
               ## Ignore these guys if they somehow got into cols.
-              ## cols <- cols[-match(c(fsc,ssc),cols)]
-              cols <- cols[!(cols %in% c(fsc,ssc))]
+              cols <- cols[!(cols %in% c(fsc, ssc))]
               
               ## There has got to be a better way of doing this...
-              if(!is.numeric(unstained)) {
-                  unstained <- match(unstained,sampleNames(x))
-                  if(is.na(unstained))
-                      stop("Baseline not in this set.", call.=FALSE)
+              if (!is.numeric(unstained)) {
+                unstained <- match(unstained, sampleNames(x))
+                if (is.na(unstained)) {
+                  stop("Baseline not in this set.", call. = FALSE)
+                }
               }
+
               ## Check to see if the unstained sample is in the list of
               ## stains. If not, we need to add it, making it the first
               ## row and adjust the unstained index accordingly.
               ## If it is there we adjust to the appropriate index.
               
-              ## pdh: you shouldn't use the nor2Filter as a default without telling people!
-              if(useNormFilt){
-                  if(is.numeric(fsc)) fsc <- allcols[fsc]
-                  if(is.numeric(ssc)) ssc <- allcols[ssc]
-                  
-                  if(is.na(match(fsc,allcols)))
-                      stop("Could not find forward scatter parameter. ",
-                           "Please set the fsc parameter", call.=FALSE)
-                  if(is.na(match(ssc,allcols)))
-                      stop("Could not find side scatter parameter. ",
-                           "Please set the ssc parameter", call.=FALSE)
-                  n2f <- norm2Filter(fsc, ssc, scale.factor=1.5)
-                  x <- Subset(x,n2f)
+              if (useNormFilt) {
+                if (is.numeric(fsc)) {
+                  fsc <- allcols[fsc]
+                }
+                if (is.numeric(ssc)) {
+                  ssc <- allcols[ssc]
+                }
+
+                if (is.na(match(fsc, allcols))) {
+                  stop("Could not find forward scatter parameter. ",
+                       "Please set the fsc parameter", call. = FALSE)
+                }
+                if (is.na(match(ssc, allcols))) {
+                  stop("Could not find side scatter parameter. ",
+                       "Please set the ssc parameter", call. = FALSE)
+                  n2f <- norm2Filter(fsc, ssc, scale.factor = 1.5)
+                  x <- Subset(x, n2f)
+                }
               }
-              ## inten <- fsApply(Subset(x, n2f), each_col,method)[, cols]
-              inten <- fsApply(x, each_col,method)[, cols]
-              inten <- pmax(sweep(inten[-unstained,], 2,inten[unstained,]), 0)
-              inten <- sweep(inten, 1,apply(inten, 1, max), "/")
-              row.names(inten) <- colnames(inten)[apply(inten ,1, which.max)]
-              inten[colnames(inten),]
+
+              # Here, we match the stain channels with the compensation controls
+              # if the user has specified it. Otherwise, we must "guess" below
+              # based on the largest statistic for the compensation control
+              # (i.e., the row).
+              # If "ordered," we assume the ordering of the channels in the
+              # flowSet object is the same as the ordering of the
+              # compensation-control samples.
+              # Another option is to use a regular expression to match the
+              # channel names with the filenames of the compensation controls.
+              if (stain_match == "intensity") {
+                channel_order <- NA
+              } else if (stain_match == "ordered") {
+                channel_order <- seq_along(sampleNames(x))[-unstained]
+              } else if (stain_match == "regexpr") {
+                channel_order <- sapply(cols, grep, x = sampleNames(x), fixed = TRUE)
+                if (!all(sapply(channel_order, length) == 1)) {
+                  stop("Multiple stains match to a common compensation-control filename",
+                       call. = FALSE)
+                }
+              }
+
+              if (pregate) {
+                if (any(is.na(channel_order))) {
+                  stop("Cannot apply pregate without knowing ordering of channels. ",
+                       "Match the channels to controls with 'ordered' or 'regexpr'.",
+                       call. = FALSE)
+                }
+                require('flowStats')
+
+                if (plot) {
+                  oask <- devAskNewPage(TRUE)
+                  on.exit(devAskNewPage(oask))
+                }
+
+                x_gated <- lapply(sort(channel_order), function(channel_i) {
+                  flow_frame <- x[[channel_i]]
+                  channel_name <- cols[which(channel_order == channel_i)]
+
+                  # Applies flowStats:::rangeGate to select positive population
+                  gate_filter <- rangeGate(flow_frame, stain = channel_name,
+                                           inBetween = TRUE, borderQuant = 0,
+                                           absolute = FALSE, peakNr = 2, ...)
+                  if (plot) {
+                    # Plots a kernel density for the current channel
+                    plot(density(exprs(flow_frame)[, channel_name]),
+                         xlab = channel_name, ylab = "Density",
+                         main = paste("Compensation Control:", sampleNames(x)[channel_i]))
+
+                    # Adds a vertical line to show gate
+                    cutpoint <- c(gate_filter@min, gate_filter@max)
+                    cutpoint <- cutpoint[is.finite(cutpoint)]
+                    abline(v = cutpoint, col = "black", lwd = 3, lty = 2)
+                  }
+                  Subset(flow_frame, gate_filter)
+                })
+                x_gated <- x_gated[channel_order]
+                names(x_gated) <- sampleNames(x)[channel_order]
+                x <- rbind2(flowSet(x_gated), x[unstained])
+              }
+
+              if (method == "mode") {
+                inten <- fsApply(x, function(flow_frame) {
+                  modes <- sapply(cols, function(stain) {
+                    density_stain <- density(exprs(flow_frame)[, stain])
+                    with(density_stain, x[which.max(y)])
+                  }, USE.NAMES = TRUE)
+                  modes
+                })
+              } else {
+                inten <- fsApply(x, each_col, method)[, cols]
+              }
+
+              # background correction
+              inten <- pmax(sweep(inten[-unstained, ], 2, inten[unstained, ]), 0)
+
+              # normalize by max of each row
+              inten <- sweep(inten, 1, apply(inten, 1, max), "/")
+
+              # Updates the "rownames" of the intensity matrix. If the channel
+              # order was not set above, then a guess is made based on the
+              # largest statistic for the compensation control (i.e., the row).
+              if (any(is.na(channel_order))) {
+                channel_order <- apply(inten, 1, which.max)
+                if (anyDuplicated(channel_order) > 0) {
+                  stop("Unable to match stains with controls based on intensity: ",
+                       "a single stain matches to several multiple controls. ",
+                       call. = FALSE)
+                }
+              }
+              rownames(inten) <- colnames(inten)
+              inten
           }
       })
 
