@@ -936,9 +936,10 @@ write.FCS <- function(x, filename, what="numeric")
     ## Some sanity checking up front
     if(missing(filename))
     {
-        filename <- identifier(x)
-        if(!length(grep(".", filename, fixed=TRUE)))
-            filename <- paste(filename, "fcs", sep=".")
+      stop("output filename needs to be provided!")
+#        filename <- identifier(x)
+#        if(!length(grep(".", filename, fixed=TRUE)))
+#            filename <- paste(filename, "fcs", sep=".")
     }
     what <- match.arg(what, c("integer", "numeric", "double"))
     if(!is.character(filename) || length(filename)!=1)
