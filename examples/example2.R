@@ -13,7 +13,7 @@ colnames(comp.mat)
 colnames(comp.mat) = c("FL1-H","FL2-H","FL3-H","FL4-H")
 ## read in the compensation tubes
 ## I think the default linearlization is the correct thing
-comp.fset1 = read.flowSet(path="./inst/extdata/compdata/data/")
+comp.fset1 = read.flowSet(path="~/rglab/workspace/flowCore/inst/extdata/compdata/data/",dataset=2)
 ap = phenoData(comp.fset1)
 pData(ap)$Tube = 1:5
 phenoData(comp.fset1) = ap
