@@ -933,7 +933,7 @@ collapseDesc <- function(x)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.FCS <- function(x, filename, what="numeric")
 {
-  .Defunct()
+  warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
     if(missing(filename))
     {
@@ -1027,7 +1027,7 @@ write.FCS <- function(x, filename, what="numeric")
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
-  .Defunct()
+  
     ## Some sanity  checking up front
     if(missing(filename))
     {
