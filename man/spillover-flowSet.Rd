@@ -7,11 +7,20 @@
 	Spillover information for a particular experiment is often 
 obtained by running several tubes of beads or cells stained with
 a single color that can then be used to determine a spillover
-matrix for use with \code{\link{compensate}}. 
+matrix for use with \code{\link{compensate}}.
+
+When matching stain channels in \code{x} with the compensation controls, we
+provide a few options. If \code{ordered}, we assume the ordering of the channels
+in the flowSet object is the same as the ordering of the compensation-control
+samples. IF \code{regexpr}, we use a regular expression to match the channel
+names with the filenames of the compensation controls. By default, we must
+"guess" based on the largest statistic for the compensation control (i.e., the
+row).
 }
 \usage{
 \S4method{spillover}{flowSet}(x, unstained = NULL, patt = NULL, fsc = "FSC-A", 
-        ssc = "SSC-A", method = "median", useNormFilt=FALSE)
+        ssc = "SSC-A", method = "median", stain_match = c("intensity", "ordered", "regexpr"),
+        useNormFilt=FALSE, pregate = FALSE, plot = FALSE, \dots)
 }
 
 \arguments{
@@ -31,8 +40,20 @@ matrix for use with \code{\link{compensate}}.
     this has been the median so it is the default. The mean is sometimes
     more stable.}
 
+  \item{stain_match}{Determines how the stain channels are matched with the
+  compensation controls. See details.}
+
   \item{useNormFilt}{Logical Indicating whether to apply a
     \code{\link{norm2Filter}} first before computing the spillover}
+
+  \item{pregate}{logical. Should we pregate each channel before computing the
+  spillover matrix? By default, no.}
+
+  \item{plot}{logical. Plots the kernel density for each channel when
+  pregating. Displays the gate used. If \code{pregate} is set to \code{FALSE},
+  this argument is ignored.}
+
+  \item{\dots}{Additional arguments passed to \code{\link[flowStats]{rangeGate}}.}
 
 }
 
