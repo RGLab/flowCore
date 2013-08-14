@@ -5,11 +5,12 @@
   Cytometry}
 \usage{
 
-read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
-             descriptions,name.keyword,alter.names=FALSE,
+read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
+             descriptions,name.keyword, alter.names=FALSE,
              transformation = "linearize", which.lines=NULL,
-             column.pattern = NULL, decades=0,sep="\t",
-             as.is=TRUE, name, ncdf=FALSE, dataset=NULL,min.limit=NULL,emptyValue=TRUE, \dots)
+             column.pattern = NULL, invert.pattern = FALSE, decades=0, sep="\t",
+             as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
+             emptyValue=TRUE, \dots)
 
 }
 
@@ -41,7 +42,10 @@ read.flowSet(files=NULL, path=".",pattern=NULL, phenoData,
   
   \item{which.lines}{see \code{\link[flowCore]{read.FCS}} for details.}
   
-  \item{column.pattern}{see \code{\link[flowCore]{read.FCS}} for details.}
+  \item{column.pattern}{see \code{\link[flowCore]{read.FCS}} for
+    details.}
+
+  \item{invert.pattern}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{decades}{see \code{\link[flowCore]{read.FCS}} for details.}
   
