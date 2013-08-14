@@ -12,10 +12,7 @@
   
   \item{x}{ A \code{\link[flowCore:flowFrame-class]{flowFrame}}.}
 
-  \item{filename}{A character scalar giving the output file name. By
-    default, the function will use the output of \code{identifier(x)} as
-    the file name, potentially adding the \code{.fcs} suffix unless a file
-    extension is already present. }
+  \item{filename}{A character scalar giving the output file name. }
   
   \item{what}{A character scalar defining the output data type. One in
     \code{integer}, \code{numeric}, \code{double}. Note that forcing the

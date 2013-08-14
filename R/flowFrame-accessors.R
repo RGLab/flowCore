@@ -624,10 +624,13 @@ setMethod("Subset",
                               subset="filter"),
           definition=function(x,subset,select,...)
       {
-          if(!missing(select))
-              Subset(x,x %in% subset,select,...)
-          else
-              Subset(x,x %in% subset,...)
+        if (nrow(x) == 0) {
+          x
+        } else if(!missing(select)) {
+          Subset(x, x %in% subset, select, ...)
+        } else {
+          Subset(x, x %in% subset, ...)
+        }
       })
 
 setMethod("Subset",

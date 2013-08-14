@@ -56,8 +56,9 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
-                     dataset=NULL
-			 		,emptyValue=TRUE)
+                     dataset=NULL,
+                     invert.pattern = FALSE,
+                     emptyValue=TRUE)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -132,7 +133,7 @@ read.FCS <- function(filename,
     ## only keep certain parameters
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
-        i <- grep(column.pattern,n)
+        i <- grep(column.pattern, n, invert = invert.pattern)
         mat <- mat[,i]
         params <- params[i,]
     }
@@ -696,7 +697,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation="linearize", which.lines=NULL,
-                         column.pattern=NULL, decades=0,
+                         column.pattern=NULL, invert.pattern = FALSE, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
 						 min.limit=NULL,emptyValue=TRUE,...)
 {
@@ -767,8 +768,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
-                      column.pattern=column.pattern,
-                      decades=decades, ncdf=ncdf,min.limit=min.limit,emptyValue=emptyValue)
+                      column.pattern=column.pattern, invert.pattern = invert.pattern,
+                      decades=decades, ncdf=ncdf,min.limit=min.limit,emptyValue=emptyValue, dataset=dataset)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
@@ -932,12 +933,14 @@ collapseDesc <- function(x)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.FCS <- function(x, filename, what="numeric")
 {
+  warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
     if(missing(filename))
     {
-        filename <- identifier(x)
-        if(!length(grep(".", filename, fixed=TRUE)))
-            filename <- paste(filename, "fcs", sep=".")
+      stop("output filename needs to be provided!")
+#        filename <- identifier(x)
+#        if(!length(grep(".", filename, fixed=TRUE)))
+#            filename <- paste(filename, "fcs", sep=".")
     }
     what <- match.arg(what, c("integer", "numeric", "double"))
     if(!is.character(filename) || length(filename)!=1)
@@ -1024,6 +1027,7 @@ write.FCS <- function(x, filename, what="numeric")
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
+  
     ## Some sanity  checking up front
     if(missing(filename))
     {
