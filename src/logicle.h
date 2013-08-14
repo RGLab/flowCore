@@ -18,12 +18,17 @@ extern "C" {
 		int bins;
 	};
 
+	struct sfun_info{
+		double b,w;
+	};
+	double logicle_fn(double x,void*info);
 	const char * logicle_error ();
 	const struct logicle_params * logicle_initialize (double T, double W, double M, double A, int bins);
 	void logicle_destroy (const struct logicle_params * params);
 	double logicle_scale (const struct logicle_params * logicle, double value);
 	int logicle_int_scale (const struct logicle_params * logicle, double value);
 	double logicle_inverse (const struct logicle_params * logicle, double scale);
+
 
 #ifdef __cplusplus
 
@@ -105,7 +110,9 @@ public:
 	virtual double scale (double value) const;
 	virtual double inverse (double scale) const;
 	double dynamicRange () const;
-
+	static double  R_zeroin(double ax, double bx, double (*f)(double, void *), void *info, double *Tol, int *Maxit);
+	static double R_zeroin2(double ax,double bx,double fa, double fb,double (*f)(double x, void *info),void *info,double *Tol,int *Maxit);
+	static double solve (double b, double w);
 protected:
 	static const double LN_10;
 	static const double EPSILON;
@@ -116,7 +123,6 @@ protected:
 
 	Logicle (double T, double W, double M, double A, int bins);
 
-	static double solve (double b, double w);
 
 	double slope (double scale) const;
 	double seriesBiexponential (double scale) const;

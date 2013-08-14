@@ -78,16 +78,9 @@
 
 #include <float.h>
 #include <math.h>
-
 #include <R_ext/Applic.h>
-double R_zeroin2(double ax, double bx, double fa, double fb,
-		 double (*f)(double, void *), void *info, 
-		 double *Tol, int *Maxit);
-
-
-
+#include "zeroin.h"
 #define EPSILON DBL_EPSILON
-
 double R_zeroin(			/* An estimate of the root */
     double ax,				/* Left border | of the range	*/
     double bx,				/* Right border| the root is seeked*/
