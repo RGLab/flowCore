@@ -11,8 +11,8 @@
    isFCSfile(files)
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
-            alter.names=FALSE, column.pattern=NULL,
-            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL,emptyValue=TRUE)
+            alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
+            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL, emptyValue=TRUE)
 
    cleanup()
 
@@ -47,6 +47,11 @@
   \item{column.pattern}{An optional regular expression defining
   parameters we should keep when loading the file. The default is
   NULL. }
+
+  \item{invert.pattern}{logical. By default, \code{FALSE}. If \code{TRUE},
+    inverts the regular expression specified in \code{column.pattern}. This is
+    useful for indicating the channel names that we do not want to read. If
+    \code{column.pattern} is set to \code{NULL}, this argument is ignored.}
 
   \item{decades}{When scaling is activated, the number of decades to use
     for the output.}
@@ -85,7 +90,7 @@
     import. Its value is supposed to be an integer in the range of
     available data sets. This argument is ignored if there is only a
     single data segment in the FCS file.}
- 
+
  	\item{emptyValue}{boolean indicating whether or not we allow empty value for keyword values in TEXT segment.
 		 It affects how the double delimiters are treated.
 		 IF TRUE, The double delimiters are parsed as a pair of start and end single delimiter for an empty value.

@@ -53,11 +53,11 @@ read.FCS <- function(filename,
                      which.lines=NULL,
                      alter.names=FALSE,
                      column.pattern=NULL,
+                     invert.pattern = FALSE,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
-                     dataset=NULL,
-                     invert.pattern = FALSE,
+                     dataset=NULL,                     
                      emptyValue=TRUE)
 {
     ## check file name
@@ -699,7 +699,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          transformation="linearize", which.lines=NULL,
                          column.pattern=NULL, invert.pattern = FALSE, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
-						 min.limit=NULL,emptyValue=TRUE,...)
+                         min.limit=NULL, emptyValue=TRUE, ...)
 {
     ## A frame of phenoData information
     phenoFrame <- NULL
