@@ -349,7 +349,7 @@ setMethod("transform",
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filter"),
-		definition=function(x, filter)
+		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
 		{
 			if(!all(parameters(filter) %in% colnames(x)))
 				stop("parameters in the filter definition don't ",
@@ -365,7 +365,7 @@ setMethod("filter",
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filterSet"),
-		definition=function(x, filter)
+		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
 		{
 			res <- fsApply(x, function(x) filter(x, filter))
 			return(new("filterResultList", .Data=res, frameId=sampleNames(x),
@@ -376,7 +376,7 @@ setMethod("filter",
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="list"),
-		definition=function(x, filter)
+		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
       {
           filter(x, filterList(filter))
       })
@@ -388,7 +388,7 @@ setMethod("filter",
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filterList"),
-		definition=function(x, filter)
+		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
       {
           if(is.null(names(filter)))
               stop("'filter' must be a named list, where names correspond",
