@@ -472,7 +472,8 @@ fcs_text_parse = function(str,emptyValue) {
 								)
 						)		
 		#convert raw byte to corresponding type by readBin
-		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian=endian)
+        #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
+		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
 		
 		
 	}
