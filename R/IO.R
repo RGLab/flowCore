@@ -465,8 +465,9 @@ fcs_text_parse = function(str,emptyValue) {
 		newBits<-unlist(lapply(1:count,function(i){
 #							browser()
 											start<-(i-1)*oldBitWidth+1
-											c(raw(newBitWidth-oldBitWidth)
-											,oldBits[start:(start+oldBitWidth-1)])
+                                            #padding zeros 
+											c(oldBits[start:(start+oldBitWidth-1)],raw(newBitWidth-oldBitWidth)
+                                                )
 											}
 								)
 						)		

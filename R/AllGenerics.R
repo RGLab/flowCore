@@ -99,10 +99,9 @@ setGeneric("Subset",function(x,subset,...) standardGeneric("Subset"))
 
 
 ## ===========================================================================
-## Generic for filter (masking function in stats)
+## Generic for filter (using stats::filter)
 ## ---------------------------------------------------------------------------
-setGeneric("filter", function(x, filter,...) standardGeneric("filter"),
-           useAsDefault=FALSE)
+setGeneric("filter")
 
 
 
@@ -204,11 +203,9 @@ setGeneric("assign", function(x, value, pos=-1, envir=as.environment(pos),
 
 
 ## ===========================================================================
-## Generics to list the content of a workFlow object
+## Generics to list the content of a workFlow object(using base::ls)
 ## ---------------------------------------------------------------------------
-setGeneric("ls", function(name, pos=-1, envir=as.environment(pos),
-                          all.names=FALSE, pattern)
-            standardGeneric("ls"))
+setGeneric("ls")
 
 
 
