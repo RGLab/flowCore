@@ -226,10 +226,19 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
-       
+    
+    desc <- txt[paste(id,"S",sep="")]
+    desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
+    # replace the empty desc with NA
+    desc <- sapply(desc, function(thisDesc){
+            if(nchar(thisDesc) == 0)
+              NA
+            else
+              thisDesc
+          })
     new("AnnotatedDataFrame",
         data=data.frame(row.names=I(id),name=I(cn),
-        desc=I(txt[paste(id,"S",sep="")]),
+        desc=I(desc),
         range=as.numeric(txt[paste(id,"R",sep="")]), minRange=range[1,], maxRange=range[2,]),
         varMetadata=data.frame(row.names=I(c("name","desc","range",
                                "minRange", "maxRange")),
