@@ -528,7 +528,7 @@ setMethod("transform",
 setMethod("filter",
           signature=signature(x="flowFrame",
                               filter="filter"),
-          definition=function(x, filter)
+          definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
       {
           temp <- resolveTransforms(x, filter)
           x <- temp[["data"]]
@@ -549,7 +549,7 @@ setMethod("filter",
 setMethod("filter",
           signature=signature(x="flowFrame",
                               filter="filterSet"),
-          definition=function(x,filter)
+          definition=function(x,filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
       {
         ## A list of filter names sorted by dependency
           fl <- sort(filter,dependencies=TRUE)

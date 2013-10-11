@@ -226,10 +226,19 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
-       
+    
+    desc <- txt[paste(id,"S",sep="")]
+    desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
+    # replace the empty desc with NA
+    desc <- sapply(desc, function(thisDesc){
+            if(nchar(thisDesc) == 0)
+              NA
+            else
+              thisDesc
+          })
     new("AnnotatedDataFrame",
         data=data.frame(row.names=I(id),name=I(cn),
-        desc=I(txt[paste(id,"S",sep="")]),
+        desc=I(desc),
         range=as.numeric(txt[paste(id,"R",sep="")]), minRange=range[1,], maxRange=range[2,]),
         varMetadata=data.frame(row.names=I(c("name","desc","range",
                                "minRange", "maxRange")),
@@ -465,13 +474,15 @@ fcs_text_parse = function(str,emptyValue) {
 		newBits<-unlist(lapply(1:count,function(i){
 #							browser()
 											start<-(i-1)*oldBitWidth+1
-											c(raw(newBitWidth-oldBitWidth)
-											,oldBits[start:(start+oldBitWidth-1)])
+                                            #padding zeros 
+											c(oldBits[start:(start+oldBitWidth-1)],raw(newBitWidth-oldBitWidth)
+                                                )
 											}
 								)
 						)		
 		#convert raw byte to corresponding type by readBin
-		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian=endian)
+        #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
+		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
 		
 		
 	}

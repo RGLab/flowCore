@@ -30,7 +30,8 @@
 }
 
 \usage{
-filter(x, filter, \dots)
+filter(x, filter, method = c("convolution", "recursive"), 
+    sides = 2L, circular = FALSE, init = NULL)
 }
 
 \arguments{
@@ -41,7 +42,8 @@ filter(x, filter, \dots)
   \item{filter}{An object of class \code{\linkS4class{filter}} or a
     named list \code{filters}.}
   
-  \item{\dots}{Optional arguments}
+  \item{method,sides,circular,init}{These arguments are not used.}
+  
   
 }
 
