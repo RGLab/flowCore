@@ -3553,6 +3553,48 @@ sinht <- function(parameters, a=1, b=1,
 
 
 
+
+## ================================================================================
+## Inverse hyperbolic sin transformation parametrized according to Gating-ML 2.0 
+## --------------------------------------------------------------------------------
+## Inputs T, M, A of type numeric and parameter of type transformation or character
+## --------------------------------------------------------------------------------
+setClass(
+    "asinhtGml2", 		
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        M = 4.5,
+        A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Inverse hyperbolic sin transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        if (object@A < 0)
+            msg <- c(msg, "'A' should be greater than or equal to zero.")
+        if (object@A > object@M)
+            msg <- c(msg, "'A' should be less than or equal to 'M'.")		
+        msg
+    }
+)
+
+asinhtGml2 <- function(
+        parameters, 
+        T = 262144, 
+        M = 4.5, 
+        A = 0, 
+        transformationId = "defaultAsinhGml2Transform")
+    new("asinhtGml2", parameters = parameters, 
+        T = T, M = M, A = A, transformationId = transformationId)
+
+
 ## ===========================================================================
 ##  Hyperlog Transformation 
 ## ---------------------------------------------------------------------------
