@@ -1,0 +1,45 @@
+\name{filterResult-class}
+\docType{class}
+\alias{filterResult-class}
+\alias{filterResult}
+\alias{==,filterResult,flowFrame-method}
+\alias{show,filterResult-method}
+\alias{[[,filterResult,ANY-method}
+
+
+\title{Class "filterResult" }
+
+\description{Container to store the result of applying a \code{filter} on a
+  \code{flowFrame} object}
+
+\section{Slots}{
+	 \describe{
+    \item{\code{frameId}:}{Object of class \code{"character"}
+      referencing the \code{flowFrame} object filtered. Used for sanity checking.}
+    \item{\code{filterDetails}:}{Object of class \code{"list"}
+      describing the filter applied}
+    \item{\code{filterId}:}{Object of class \code{"character"}
+      referencing the filter applied}
+  }
+}
+\section{Extends}{
+Class \code{"\linkS4class{filter}"}, directly.
+}
+\section{Methods}{
+\describe{
+  \item{==}{test equality}
+  }
+}
+
+\author{B. Ellis, N. LeMeur}
+
+\seealso{
+  \code{\link[flowCore:filter-methods]{filter}},
+  \code{"\linkS4class{logicalFilterResult}"},
+  \code{"\linkS4class{multipleFilterResult}"},
+  \code{"\linkS4class{randomFilterResult}"}
+}
+\examples{
+showClass("filterResult")
+}
+\keyword{classes}
