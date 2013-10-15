@@ -158,6 +158,26 @@ setMethod("eval",
           }
       })
 
+## ================================================================================
+## Inverse hyperbolic sin transformation parametrized according to Gating-ML 2.0 
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval", 
+    signature = signature(expr = "asinhtGml2", envir = "missing"),
+    definition = function(
+        expr, 
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {    
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            # Gating-ML 2.0 fasinh is defined as
+			# (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
+            (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
+        }
+    }
+)
 
 ## ===========================================================================
 ## Hyperbolic sin transformation 
