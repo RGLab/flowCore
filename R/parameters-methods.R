@@ -92,6 +92,24 @@ setMethod("parameters",
           signature=signature(object="ratio"),
           definition=function(object) NA)
 
+# J. Spidlen: Oct 16, 2013
+# The unlist(sapply(object@parameters, as, "character"))
+# that is normally used for the transform class, gives:
+# Error in as.vector(x, "list") : cannot coerce type 'closure' to vector of type 'list'
+#
+# This does not seem to be specific to asinhtGml2, but I am "fixing" it for 
+# asinhtGml2 since that is what I am adding. The other single parameter
+# transformations (from Gating-ML 1.5) should probably also be fixed. However, I am
+# not touching the existing transforms since I am slightly worried to accidentally break
+# some existing functionality.
+#
+# It does not have any effect on the functionality of the transform 
+# (or the filter that uses this transform).
+setMethod("parameters",
+          signature=signature(object="asinhtGml2"),
+          definition=function(object) {
+              object@transformationId
+		  })
 
 setMethod("parameters",
           signature=signature(object="nullParameter"),
