@@ -350,7 +350,7 @@ setMethod("eval",
                    compObj <- expr@searchEnv[[expr@spillRefId]]
                    if (is.null(compObj) && expr@spillRefId == "SpillFromFCS") 
                    {
-                       spillMat <- getSpilloverFromFlowFrame(x)
+                       spillMat <- getSpilloverFromFlowFrame(x, parameter)
                        trans <- list()
                    }
                    else
@@ -371,10 +371,72 @@ setMethod("eval",
                  }
              })
 
-# TODO possibly also handle if the right parameter is not in the matrix
-# or if the matrix does not exist or if the matrix is in a different
-# keyword
-getSpilloverFromFlowFrame <- function(myFrame)
+# Josef Spidlen, Oct 18, 2013:
+# Gating-ML 2.0 may specify to use compensation description as prescribed
+# by the FCS data file.
+# We will look at
+#  - description[['SPILL']]
+#  - description[['$SPILLOVER']]
+#  - description[['SPILLOVER']]
+#  - description[['$SPILL']]
+# and try to extract the spillover from there.
+# If there is no spillover in the FCS datafile or if the spillover does not
+# include the required parameter, then the parameter is supposed to be used
+# uncompensated. In flowUtils/flowCore, we keep the parameter as compensated,
+# but we will provide a 1x1 identify matrix as the spillover at the point of
+# evaluation. Therefore, the calculation will essentially use the uncompensated
+# parameter. This also has the advantage that if the same filter is applied
+# to a different flowFrame, which may include a different spillover, then the
+# parameter will be compensated according to that spillover at the time of
+# evaluation.
+getSpilloverFromFlowFrame <- function(myFrame, requiredParameter)
 {
-    myFrame@description[['SPILL']]
+    mySpill <- myFrame@description[['SPILL']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['$SPILLOVER']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['SPILLOVER']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['$SPILL']]
+    if (is.null(mySpill))
+        mySpill <- getIdentityMatrixForParameter(requiredParameter)
+    if (class(mySpill) != "matrix")
+        mySpill <- parseMatrixFromString(mySpill, requiredParameter)
+    if (!(requiredParameter %in% colnames(mySpill)))
+        mySpill <- getIdentityMatrixForParameter(requiredParameter)
+	mySpill
+}
+
+# Josef Spidlen, Oct 18, 2013:
+# Return a 1x1 matrix with the value 1 and with both colnames and
+# rownames set to the provided paremeter value. This is used as dummy
+# spillover matrix that does not change the value of the parameter
+getIdentityMatrixForParameter <- function(parameter)
+{
+    ret <- matrix(c(1), dimnames=list(parameter))
+    colnames(ret) <- list(parameter)
+    ret
+}
+
+# Josef Spidlen, Oct 18, 2013:
+# Parse the spillover matrix from a string. This is what
+# flowCore's IO is doing when reading the SPILL keyword.
+# Here, we may can parse it from different keywords as well,
+# and we have a fall back strategy of returning a 1x1 identity
+# matrix if parsing doesn't work as expected (i.e, if there is
+# something else in the spilloverString.
+parseMatrixFromString <- function(spilloverString, requiredParameter)
+{
+    spmat <- NULL
+    suppressWarnings(try(
+        {
+            splt <- strsplit(spilloverString, ",")[[1]]
+            nrCols <- as.numeric(splt[1])
+            cnames <- splt[2:(nrCols+1)]
+            vals <- as.numeric(splt[(nrCols+2):length(splt)])
+            spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+            colnames(spmat) <- cnames
+        }, silent=TRUE))
+    if (is.null(spmat)) spmat <- getIdentityMatrixForParameter(requiredParameter)
+    spmat
 }
