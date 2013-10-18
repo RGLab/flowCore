@@ -345,7 +345,13 @@ setMethod("eval",
           function(expr, envir, enclos)
           {    function(x)
                  { 
-                   df <- exprs(x) 
+                   if (class(x) == "flowFrame") 
+                       df <- exprs(x)
+                   else
+                       df <- x
+				   # x will never be used below unless it is a flowFrame, which means
+                   # we got here from parsing Gating-ML 2.0, which does not have arbitrary
+                   # compound transformations
                    parameter <- expr@parameters
                    compObj <- expr@searchEnv[[expr@spillRefId]]
                    if (is.null(compObj) && expr@spillRefId == "SpillFromFCS") 
