@@ -15,6 +15,33 @@ resolveTransformReference<-function(trans,df)
     trans
 }
 
+# Josef Spidlen, Oct 17, 2013:
+# This is essentially the same as resolveTransformReference except it is
+# expecting the whole flowFrame instead of just the data matrix. It is being
+# called from resolveTransforms and only for compensatedParameter, and it
+# calls eval(trans)(x) instead of eval(trans)(df) (i.e, with the flowFrame).
+# The whole point is that Gating-ML 2.0 includes the option of specifying
+# "FCS" as the "spillover matrix", which means that parameters are supposed
+# to be compensated as per compensation description in FCS. This is why the
+# whole flowFrame is passed to eval, which then has the option of extracting
+# the spillover matrix from the SPILL (or some other) keyword.
+resolveTransformReferenceForCompensatedParametersOnly <- function(trans, x)
+{
+    df<-exprs(x)
+    if(is(trans, "transformReference")) {
+        trans <- eval(trans)
+        if(!is(trans, "compensatedParameter"))
+            trans <- resolveTransformReference(trans, df)
+        else
+            trans <- eval(trans)(x)
+    }
+    else
+    {
+        if(!is(trans, "function"))
+            trans <- eval(trans)(x)
+    }
+    trans
+}
 
 ## FIXME NG: Please document
 EH <- function(y, a, b, argument)
@@ -75,8 +102,13 @@ resolveTransforms <- function(x, filter)
                 if (is(parameters[[len]], "compensatedParameter")){
                     ##deals with compensated parameter
                     ##newCol <- eval(eval(parameters[[len]]))(x)
-                    newCol <- resolveTransformReference(parameters[[len]],
-                                                        exprs(x))
+                    #
+                    # Instead of
+                    # newCol <- resolveTransformReference(parameters[[len]],
+                    #                                     exprs(x))
+                    # we are calling resolveTransformReferenceForCompensatedParametersOnly
+                    # (which takes a flowFrame instead of the data matrix only)
+                    newCol <- resolveTransformReferenceForCompensatedParametersOnly(parameters[[len]], x)
                 }else if(is(parameters[[len]], "transformReference")){
                     ##deals with transform references
                     newCol <- resolveTransformReference(parameters[[len]],

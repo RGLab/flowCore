@@ -331,16 +331,34 @@ setMethod("eval",
 ####----------------------------------------------------------------------------
 #### Eval transforms for compensations
 ####----------------------------------------------------------------------------
+
+# Josef Spidlen, Oct 17, 2013:
+# I have changed the eval method to accept a flowFrame (x) instead of just
+# the data matrix (df).
+# The whole point is that Gating-ML 2.0 includes the option of specifying
+# "FCS" as the "spillover matrix", which means that parameters are supposed
+# to be compensated as per compensation description in FCS. This is why the
+# whole flowFrame is passed to eval, which then has the option of extracting
+# the spillover matrix from the SPILL (or some other) keyword.
 setMethod("eval",
           signature=signature(expr="compensatedParameter", envir="missing"),
           function(expr, envir, enclos)
-          {    function(df)
+          {    function(x)
                  { 
+                   df <- exprs(x) 
                    parameter <- expr@parameters
                    compObj <- expr@searchEnv[[expr@spillRefId]]
-                   spillMat <- compObj@spillover
+                   if (is.null(compObj) && expr@spillRefId == "SpillFromFCS") 
+                   {
+                       spillMat <- getSpilloverFromFlowFrame(x)
+                       trans <- list()
+                   }
+                   else
+                   {
+                       spillMat <- compObj@spillover
+                       trans <- compObj@parameters
+                   }
                    cols <- colnames(spillMat)
-                   trans <- compObj@parameters
                    for(i in trans){
                      if(is(i, "transformReference")){
                        newCol <- resolveTransformReference(i, df)
@@ -353,3 +371,10 @@ setMethod("eval",
                  }
              })
 
+# TODO possibly also handle if the right parameter is not in the matrix
+# or if the matrix does not exist or if the matrix is in a different
+# keyword
+getSpilloverFromFlowFrame <- function(myFrame)
+{
+    myFrame@description[['SPILL']]
+}
