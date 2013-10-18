@@ -21,8 +21,11 @@ setMethod("eval",
               enclos=if (is.list(envir) ||
                 is.pairlist(envir)) parent.frame() else baseenv())
           {        
-              function(df)
-                  return(df[, expr@parameters, drop=FALSE])
+              function(df) 
+              {
+                  df <- flowFrameToMatrix(df)
+                  return(df[, expr@parameters, drop=FALSE]) 
+              }
           })
 
 
@@ -43,6 +46,7 @@ setMethod("eval",
                   if(is(i, "function")) return(i)
                   resolve(i, df)
                 })
+                temp <- flowFrameToMatrix(temp)
                 coeff <- expr@a
                 res <- 0
                 for(i in seq_along(expr@parameters))
@@ -65,6 +69,8 @@ setMethod("eval",
           {  
               num <- resolve(expr@numerator, df)
               den <- resolve(expr@denominator, df)
+			  num <- flowFrameToMatrix(num)
+			  den <- flowFrameToMatrix(den)
               num/den
           }
       })
@@ -82,6 +88,7 @@ setMethod("eval",
           function(df)
           {      
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               expr@a*(parameter^2)
           }
       })
@@ -99,6 +106,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               sqrt(abs(parameter/(expr@a)))
           }
       })
@@ -117,6 +125,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               temp <- expr@a*parameter
               result <- vector(mode="numeric", length=length(temp))
               result[temp>0] <- log(temp[temp>0])*expr@b
@@ -137,6 +146,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               exp(parameter/expr@b)/expr@a
           }
       })
@@ -154,6 +164,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               expr@b*asinh(expr@a*parameter)
           }
       })
@@ -172,6 +183,7 @@ setMethod(
         function(df)
         {
             parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 fasinh is defined as
 			# (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
             (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
@@ -191,6 +203,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               sinh(parameter/(expr@b))/expr@a
           }
       }) 
@@ -210,6 +223,7 @@ setMethod("eval",
             function(df)
               {  
                   parameter <- resolve(expr@parameters, df)
+				  parameter <- flowFrameToMatrix(parameter)
                   solveEH(parameter , expr@a ,expr@b)
                }
 	  })
@@ -227,6 +241,7 @@ setMethod("eval",
             function(df)
               {  
                   parameter <- resolve(expr@parameters, df)
+				  parameter <- flowFrameToMatrix(parameter)
                   result=0
                   result[parameter>=0]=10^(parameter/expr@a)+ (expr@b*parameter)/expr@a-1
                   result[parameter<0]= -1*(10^(-parameter/expr@a))+ (expr@b*parameter)/expr@a+1
@@ -247,6 +262,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -280,7 +296,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              
+			  parameter <- flowFrameToMatrix(parameter)
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -345,13 +361,7 @@ setMethod("eval",
           function(expr, envir, enclos)
           {    function(x)
                  { 
-                   if (class(x) == "flowFrame") 
-                       df <- exprs(x)
-                   else
-                       df <- x
-				   # x will never be used below unless it is a flowFrame, which means
-                   # we got here from parsing Gating-ML 2.0, which does not have arbitrary
-                   # compound transformations
+                   df <- flowFrameToMatrix(x)
                    parameter <- expr@parameters
                    compObj <- expr@searchEnv[[expr@spillRefId]]
                    if (is.null(compObj) && expr@spillRefId == "SpillFromFCS") 
@@ -445,4 +455,14 @@ parseMatrixFromString <- function(spilloverString, requiredParameter)
         }, silent=TRUE))
     if (is.null(spmat)) spmat <- getIdentityMatrixForParameter(requiredParameter)
     spmat
+}
+
+# These eval methods are made to use either a flowFrame or a data matrix, so this
+# this mehtod is called if we want to be sure we have the data matrix only
+flowFrameToMatrix <- function(x)
+{
+    if (class(x) == "flowFrame")
+        exprs(x)
+    else
+        x
 }
