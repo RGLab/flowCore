@@ -533,25 +533,36 @@ setMethod("filter",
           temp <- resolveTransforms(x, filter)
           x <- temp[["data"]]
           filter <- temp[["filter"]]
-
-          # Josef Spidlen, Oct 21, 2013
-          # I commented this out since this is an issue for Union/Intersect filters applied on tranformed parameters
-          # I checked against older versions of flowCore and it appears that this does not have anything to do with
-          # my recent changes. The filter result seems to produced OK when this check is disabled. Otherwise, the
-          # it will complain that the transformed parameters are not in the data frame.
-          #
-          #allPar <- parameters(filter) %in% colnames(x)
-          #if(!all(allPar))
-          #    stop("The following parameter(s) are not present in this ",
-          #         "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
-          #                               collapse="\n"), call.=FALSE)
-
+          allPar <- parameters(filter) %in% colnames(x)
+          if(!all(allPar))
+              stop("The following parameter(s) are not present in this ",
+                   "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
+                                         collapse="\n"), call.=FALSE)
           result <- as(x %in% filter, "filterResult")
           identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
           result@frameId <- identifier(x)
           result
       })
+
+# Almost the same as for filter="filter" except missing the check that all parameters are
+# present in the flowFrame. This is a fix since otherwise, union/intersect filters with arguments
+# on transformed parameters will complain that these do not exist in the flowFrame (although that
+# is OK and the appropriate columns will be added later when the "argument" filters are evaluated).
+setMethod("filter",
+		signature=signature(x="flowFrame",
+				filter="setOperationFilter"),
+		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
+		{
+			temp <- resolveTransforms(x, filter)
+			x <- temp[["data"]]
+			filter <- temp[["filter"]]
+			result <- as(x %in% filter, "filterResult")
+			identifier(result) <- identifier(filter)
+			filterDetails(result, identifier(filter)) <- filter
+			result@frameId <- identifier(x)
+			result
+		})
 
 ## apply filterSet
 setMethod("filter",
