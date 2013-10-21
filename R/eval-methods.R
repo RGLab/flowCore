@@ -377,7 +377,7 @@ setMethod("eval",
                    cols <- colnames(spillMat)
                    for(i in trans){
                      if(is(i, "transformReference")){
-                       newCol <- resolveTransformReference(i, df)
+                       newCol <- resolveTransformReference(i, x)
                        colnames(newCol) <- i@transformationId
                        df <- cbind(df,newCol)
                      }

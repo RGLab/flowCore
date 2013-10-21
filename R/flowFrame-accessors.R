@@ -533,11 +533,19 @@ setMethod("filter",
           temp <- resolveTransforms(x, filter)
           x <- temp[["data"]]
           filter <- temp[["filter"]]
-          allPar <- parameters(filter) %in% colnames(x)
-          if(!all(allPar))
-              stop("The following parameter(s) are not present in this ",
-                   "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
-                                         collapse="\n"), call.=FALSE)
+
+          # Josef Spidlen, Oct 21, 2013
+          # I commented this out since this is an issue for Union/Intersect filters applied on tranformed parameters
+          # I checked against older versions of flowCore and it appears that this does not have anything to do with
+          # my recent changes. The filter result seems to produced OK when this check is disabled. Otherwise, the
+          # it will complain that the transformed parameters are not in the data frame.
+          #
+          #allPar <- parameters(filter) %in% colnames(x)
+          #if(!all(allPar))
+          #    stop("The following parameter(s) are not present in this ",
+          #         "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
+          #                               collapse="\n"), call.=FALSE)
+
           result <- as(x %in% filter, "filterResult")
           identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
