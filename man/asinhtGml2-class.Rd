@@ -59,7 +59,7 @@ The transformed parameters are returned as a matrix with a single column. (See e
 }
 
 \seealso{
-asinht
+\code{\link{asinht}}, \code{\link{transform-class}}, \code{\link{transform}}
 }
 
 \examples{

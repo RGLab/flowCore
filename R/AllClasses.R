@@ -3595,6 +3595,43 @@ asinhtGml2 <- function(
         T = T, M = M, A = A, transformationId = transformationId)
 
 
+## ================================================================================
+## Linear transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+## Inputs T, A of type numeric and parameter of type transformation or character
+## --------------------------------------------------------------------------------
+setClass(
+    "lintGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Linear transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@A < 0)
+            msg <- c(msg, "'A' should be greater than or equal to zero.")
+        if (object@A > object@T)
+            msg <- c(msg, "'A' should be less than or equal to 'T'.")
+        msg
+    }
+)
+
+lintGml2 <- function(
+    parameters,
+    T = 262144,
+    A = 0,
+    transformationId = "defaultLintGml2Transform")
+    new("lintGml2", parameters = parameters,
+        T = T, A = A, transformationId = transformationId)
+
+
 ## ===========================================================================
 ##  Hyperlog Transformation 
 ## ---------------------------------------------------------------------------
