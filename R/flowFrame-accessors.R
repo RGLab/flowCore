@@ -534,10 +534,13 @@ setMethod("filter",
           x <- temp[["data"]]
           filter <- temp[["filter"]]
           allPar <- parameters(filter) %in% colnames(x)
-          if(!all(allPar))
-              stop("The following parameter(s) are not present in this ",
-                   "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
-                                         collapse="\n"), call.=FALSE)
+          if (!is(filter, "setOperationFilter"))
+		  {
+              if(!all(allPar))
+                  stop("The following parameter(s) are not present in this ",
+                       "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
+                       collapse="\n"), call.=FALSE)
+          }
           result <- as(x %in% filter, "filterResult")
           identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
@@ -545,24 +548,6 @@ setMethod("filter",
           result
       })
 
-# Almost the same as for filter="filter" except missing the check that all parameters are
-# present in the flowFrame. This is a fix since otherwise, union/intersect filters with arguments
-# on transformed parameters will complain that these do not exist in the flowFrame (although that
-# is OK and the appropriate columns will be added later when the "argument" filters are evaluated).
-setMethod("filter",
-		signature=signature(x="flowFrame",
-				filter="setOperationFilter"),
-		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
-		{
-			temp <- resolveTransforms(x, filter)
-			x <- temp[["data"]]
-			filter <- temp[["filter"]]
-			result <- as(x %in% filter, "filterResult")
-			identifier(result) <- identifier(filter)
-			filterDetails(result, identifier(filter)) <- filter
-			result@frameId <- identifier(x)
-			result
-		})
 
 ## apply filterSet
 setMethod("filter",
