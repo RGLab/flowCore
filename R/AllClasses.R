@@ -1711,10 +1711,17 @@ compensation <- function(..., spillover, compensationId="defaultCompensation")
     parms <- parseDots(list(...))
     if(missing(spillover))
         spillover <- as.matrix(parms$values)
-    if(!is.matrix(spillover) || !is.numeric(spillover) ||
-       ncol(spillover) != nrow(spillover))
-        stop("'spillover' must be numeric matrix with same number of ",
-             "rows and columns", call.=FALSE)
+
+#    J.Spidlen, Oct 23, 2013: Removed check for square matrices
+#    We now support non-square matrices as well
+#
+#    if(!is.matrix(spillover) || !is.numeric(spillover) ||
+#       ncol(spillover) != nrow(spillover))
+#        stop("'spillover' must be numeric matrix with same number of ",
+#             "rows and columns", call.=FALSE)
+
+    if(!is.matrix(spillover) || !is.numeric(spillover))
+        stop("'spillover' must be numeric matrix", call.=FALSE)
     if(is.null(colnames(spillover)))
         stop("Spillover matrix must have colnames", call.=FALSE)
     checkClass(compensationId, "character", 1)

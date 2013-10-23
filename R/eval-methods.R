@@ -405,8 +405,22 @@ setMethod("eval",
                        df <- cbind(df,newCol)
                      }
                    }
-                   t(solve(spillMat)[parameter,]%*%t(df[,cols])) 
-                   
+                   # Josef Spidlen, Oct 23, 2013
+                   # Added pseudoinverse (from corpcor) to deal with non-square spectrum matrices
+                   if(ncol(spillMat) == nrow(spillMat))
+                   {
+                       t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                   }
+                   else
+                   {
+                       resMatrix <- df[,cols] %*% pseudoinverse(spillMat)
+                       colnames(resMatrix) <- rownames(spillMat)
+                       # Note that bellow we are using expr@transformationId rather than parameter
+                       # since the parameter of a compensatedParameter reflects the detector name,
+                       # not the fluorochrome name of a Gating-ML 2.0 spectrum matrix
+                       # Btw. compensatedParameter@parameter is not meaningful for non-square matrices
+                       as.matrix(resMatrix[,expr@transformationId])
+                   }
                  }
              })
 

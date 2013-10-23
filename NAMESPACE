@@ -44,6 +44,7 @@ importFrom(stats, kmeans, mad, median, qnorm, quantile, runif, sd,
 
 importFrom(utils, data, find, head, tail, write.table)
 
+importFrom(corpcor, pseudoinverse)
 
 exportClasses("actionItem",
               "asinht",
