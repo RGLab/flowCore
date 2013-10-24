@@ -213,6 +213,27 @@ setMethod(
     }
 )
 
+## ================================================================================
+## Log transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "logtGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            # Gating-ML 2.0 flog is defined as
+            # (1/M) * log_10(x/T) + 1
+            ((1/expr@M) * log((parameter/expr@T), base=10)) + 1
+        }
+    }
+)
 
 ## ===========================================================================
 ## Hyperbolic sin transformation 

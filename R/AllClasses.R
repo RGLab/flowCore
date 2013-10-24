@@ -3639,6 +3639,41 @@ lintGml2 <- function(
         T = T, A = A, transformationId = transformationId)
 
 
+## ================================================================================
+## Log transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+## Inputs T, M of type numeric and parameter of type transformation or character
+## --------------------------------------------------------------------------------
+setClass(
+    "logtGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        M = 4.5),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Log transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        msg
+    }
+)
+
+logtGml2 <- function(
+    parameters,
+    T = 262144,
+    M = 4.5,
+    transformationId = "defaultLogGml2Transform")
+    new("logtGml2", parameters = parameters,
+        T = T, M = M, transformationId = transformationId)
+
+
 ## ===========================================================================
 ##  Hyperlog Transformation 
 ## ---------------------------------------------------------------------------
