@@ -192,6 +192,31 @@ setMethod(
 )
 
 ## ================================================================================
+## Logicle transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "logicletGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            # We are calling the externa logicle transformation, but we are also
+            # dividing the result by M so that "reasonable" values are scaled [0,1]
+            # rather than [0,M]. This is how logicle in Gating-Ml 2.0 is defined.
+            .Call("logicle_transform", as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A)) / expr@M
+        }
+    }
+)
+
+
+## ================================================================================
 ## Linear transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
 setMethod(
