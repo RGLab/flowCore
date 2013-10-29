@@ -29,6 +29,7 @@ SEXP hyperlog_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
         for (int i = 0; i < length(output); i++) {
             REAL(output)[i] = hplg->scale(REAL(output)[i]);
         }
+        if (hplg != NULL) delete hplg;
     }
     catch(const char *str){
         Rf_error("Hyperlog Exception: %s \n", str);
@@ -46,6 +47,7 @@ SEXP invHyperlog_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
         for (int i = 0; i < length(output); i++) {
                REAL(output)[i] = hplg->inverse(REAL(output)[i])  ;
         }
+        if (hplg != NULL) delete hplg;
     }
     catch(const char *str){
       Rf_error("Hyperlog Exception: %s \n", str) ;
