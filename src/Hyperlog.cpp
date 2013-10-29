@@ -78,6 +78,8 @@ void Hyperlog::initialize (double T, double W, double M, double A, int bins)
         throw "IllegalParameter: T is not positive";
     if (W < 0)
         throw "IllegalParameter: W is negative";
+    if (W <= 0)
+        throw "IllegalParameter: W is not positive";
     if (M <= 0)
         throw "IllegalParameter: M is not positive";
     if (2 * W > M)

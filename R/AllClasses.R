@@ -3648,6 +3648,52 @@ logicletGml2 <- function(
     new("logicletGml2", parameters = parameters,
         T = T, M = M, W = W, A = A, transformationId = transformationId)
 
+## ===================================================================================
+## Hyperlog transformation parametrized according to Gating-ML 2.0
+## -----------------------------------------------------------------------------------
+## Inputs T, M, W, A of type numeric and parameter of type transformation or character
+## -----------------------------------------------------------------------------------
+setClass(
+    "hyperlogtGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        M = 4.5,
+        W = 0.5,
+        A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Logicle transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        if (object@W <= 0)
+            msg <- c(msg, "'W' should be greater than zero.")
+        if (object@W > object@M/2)
+            msg <- c(msg, "'W' should be less than or equal to half of 'M'.")
+        if (object@A < -object@W)
+            msg <- c(msg, "'A' should be greater than or equal to 'minus W'.")
+        if (object@A > object@M - 2*object@W)
+            msg <- c(msg, "'A' should be less than or equal to 'M minus two W'")
+        msg
+    }
+)
+
+hyperlogtGml2 <- function(
+    parameters,
+    T = 262144,
+    M = 4.5,
+    W = 0.5,
+    A = 0,
+    transformationId = "defaultAsinhGml2Transform")
+    new("hyperlogtGml2", parameters = parameters,
+        T = T, M = M, W = W, A = A, transformationId = transformationId)
+
 ## ================================================================================
 ## Linear transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------

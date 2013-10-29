@@ -217,6 +217,28 @@ setMethod(
 
 
 ## ================================================================================
+## Hyperlog transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "hyperlogtGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            .Call("hyperlog_transform", as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A))
+        }
+    }
+)
+
+
+## ================================================================================
 ## Linear transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
 setMethod(
