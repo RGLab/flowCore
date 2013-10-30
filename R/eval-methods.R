@@ -282,6 +282,32 @@ setMethod(
     }
 )
 
+
+## ===========================================================================
+## Ratio transformation parametrized according to Gating-ML 2.0
+## ---------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "ratiotGml2", envir="missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            num <- resolve(expr@numerator, df)
+            den <- resolve(expr@denominator, df)
+            num <- flowFrameToMatrix(num)
+            den <- flowFrameToMatrix(den)
+            # Gating-ML 2.0 fratio is defined as
+            # fratio(x, y, A, B, C) = A * (x - B) / (y - C)
+            expr@pA * (num - expr@pB) / (den - expr@pC)
+        }
+    }
+)
+
+
 ## ===========================================================================
 ## Hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------

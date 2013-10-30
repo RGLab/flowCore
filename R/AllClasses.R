@@ -3648,6 +3648,7 @@ logicletGml2 <- function(
     new("logicletGml2", parameters = parameters,
         T = T, M = M, W = W, A = A, transformationId = transformationId)
 
+
 ## ===================================================================================
 ## Hyperlog transformation parametrized according to Gating-ML 2.0
 ## -----------------------------------------------------------------------------------
@@ -3764,6 +3765,46 @@ logtGml2 <- function(
     transformationId = "defaultLogGml2Transform")
     new("logtGml2", parameters = parameters,
         T = T, M = M, transformationId = transformationId)
+
+
+
+## ========================================================================================
+## Ratio transformation parametrized according to Gating-ML 2.0
+## ----------------------------------------------------------------------------------------
+## Inputs A, B and C of type numeric and two parameters of type character or transformation
+## ----------------------------------------------------------------------------------------
+setClass("ratiotGml2",
+    contains="transform",
+    representation(
+        numerator = "transformation", denominator = "transformation",
+        pA = "numeric", pB = "numeric", pC = "numeric"),
+    prototype = prototype(
+        numerator=unitytransform(),
+        denominator=unitytransform(),
+        pA = 1,
+        pB = 0,
+        pC = 0)
+)
+
+ratiotGml2 <- function(
+    numerator = unitytransform(),
+    denominator = unitytransform(),
+	pA = 1,
+	pB = 0,
+	pC = 0,
+    transformationId = "defaultRatioTransform")
+{
+    if(!is(numerator, "transform")){
+        checkClass(numerator, "character", 1)
+        numerator <- unitytransform(numerator)
+    }
+    if(!is(denominator, "transform")){
+        checkClass(denominator, "character", 1)
+        denominator <- unitytransform(denominator)
+    }
+    new("ratiotGml2", numerator = numerator, denominator = denominator,
+        pA = pA, pB = pB, pC = pC, transformationId = transformationId)
+}
 
 
 ## ===========================================================================
