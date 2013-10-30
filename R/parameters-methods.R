@@ -92,6 +92,13 @@ setMethod("parameters",
           signature=signature(object="ratio"),
           definition=function(object) NA)
 
+setMethod(
+    "parameters",
+    signature = signature(object = "ratio"),
+    definition = function(object) NA
+)
+ 
+  
 # J. Spidlen: Oct 22, 2013
 # The unlist(sapply(object@parameters, as, "character")) that was normally used for 
 # singleParameterTransform gives:
