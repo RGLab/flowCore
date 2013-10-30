@@ -94,7 +94,7 @@ setMethod("parameters",
 
 setMethod(
     "parameters",
-    signature = signature(object = "ratio"),
+    signature = signature(object = "ratiotGml2"),
     definition = function(object) NA
 )
  
