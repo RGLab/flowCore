@@ -92,7 +92,7 @@ resolveTransforms <- function(x, filter)
                     newCol <- resolveTransformReference(parameters[[len]], x)
                 }else{
                     ##deals with all other transforms
-                    newCol <- eval(parameters[[len]])(exprs(x))
+                    newCol <- eval(parameters[[len]])(x)
                 }               
                 newCol <- as.matrix(newCol)
                 colnames(newCol) <- sprintf("_NEWCOL%03d_", len) 
