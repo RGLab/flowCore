@@ -673,7 +673,18 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                    as.integer(unlist(strsplit(x,",")))))
        for (i in 1:nrpar){
           if(ampli[i,1] > 0){
-             dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+             # J.Spidlen, Nov 5, 2013: This was a very minor bug. The linearization transformation
+             # for $PnE != "0,0" is defined as:
+             # For $PnR/r/, r>0, $PnE/f,0/, f>0: n is a logarithmic parameter with channel values
+             # from 0 to r-1. A channel value xc is converted to a scale value xs as xs=10^(f*xc/r).
+             # Note the "r" instead of the "r-1" in the formula (which would admitedly make more sense)
+			 # However, this is the standard that apparently has been followed by BD and other companies
+             # "forever" and it is therefore addoped as such by the ISAC DSTF (see FCS 3.1 specification)
+             # To bring this to compliance, I am just changing
+             # dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+             # to
+             # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
+             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
              range[i] <- 10^ampli[i,1]
           }
           else

@@ -21,8 +21,11 @@ setMethod("eval",
               enclos=if (is.list(envir) ||
                 is.pairlist(envir)) parent.frame() else baseenv())
           {        
-              function(df)
-                  return(df[, expr@parameters, drop=FALSE])
+              function(df) 
+              {
+                  df <- flowFrameToMatrix(df)
+                  return(df[, expr@parameters, drop=FALSE]) 
+              }
           })
 
 
@@ -43,6 +46,7 @@ setMethod("eval",
                   if(is(i, "function")) return(i)
                   resolve(i, df)
                 })
+                temp <- flowFrameToMatrix(temp)
                 coeff <- expr@a
                 res <- 0
                 for(i in seq_along(expr@parameters))
@@ -65,6 +69,8 @@ setMethod("eval",
           {  
               num <- resolve(expr@numerator, df)
               den <- resolve(expr@denominator, df)
+			  num <- flowFrameToMatrix(num)
+			  den <- flowFrameToMatrix(den)
               num/den
           }
       })
@@ -82,6 +88,7 @@ setMethod("eval",
           function(df)
           {      
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               expr@a*(parameter^2)
           }
       })
@@ -99,6 +106,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               sqrt(abs(parameter/(expr@a)))
           }
       })
@@ -117,6 +125,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               temp <- expr@a*parameter
               result <- vector(mode="numeric", length=length(temp))
               result[temp>0] <- log(temp[temp>0])*expr@b
@@ -137,6 +146,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               exp(parameter/expr@b)/expr@a
           }
       })
@@ -154,6 +164,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               expr@b*asinh(expr@a*parameter)
           }
       })
@@ -172,12 +183,130 @@ setMethod(
         function(df)
         {
             parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 fasinh is defined as
 			# (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
             (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
         }
     }
 )
+
+## ================================================================================
+## Logicle transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "logicletGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            # We are calling the externa logicle transformation, but we are also
+            # dividing the result by M so that "reasonable" values are scaled [0,1]
+            # rather than [0,M]. This is how logicle in Gating-Ml 2.0 is defined.
+            .Call("logicle_transform", as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A)) / expr@M
+        }
+    }
+)
+
+
+## ================================================================================
+## Hyperlog transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "hyperlogtGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            .Call("hyperlog_transform", as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A))
+        }
+    }
+)
+
+
+## ================================================================================
+## Linear transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "lintGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            # Gating-ML 2.0 flin is defined as
+            # (x + A) / (T + A)
+            (parameter + expr@A) / (expr@T + expr@A)
+        }
+    }
+)
+
+## ================================================================================
+## Log transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "logtGml2", envir = "missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            parameter <- resolve(expr@parameters, df)
+            parameter <- flowFrameToMatrix(parameter)
+            # Gating-ML 2.0 flog is defined as
+            # (1/M) * log_10(x/T) + 1
+            ((1/expr@M) * log((parameter/expr@T), base=10)) + 1
+        }
+    }
+)
+
+
+## ===========================================================================
+## Ratio transformation parametrized according to Gating-ML 2.0
+## ---------------------------------------------------------------------------
+setMethod(
+    "eval",
+    signature = signature(expr = "ratiotGml2", envir="missing"),
+    definition = function(
+        expr,
+        envir = parent.frame(),
+        enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+    {
+        function(df)
+        {
+            num <- resolve(expr@numerator, df)
+            den <- resolve(expr@denominator, df)
+            num <- flowFrameToMatrix(num)
+            den <- flowFrameToMatrix(den)
+            # Gating-ML 2.0 fratio is defined as
+            # fratio(x, y, A, B, C) = A * (x - B) / (y - C)
+            expr@pA * (num - expr@pB) / (den - expr@pC)
+        }
+    }
+)
+
 
 ## ===========================================================================
 ## Hyperbolic sin transformation 
@@ -191,6 +320,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               sinh(parameter/(expr@b))/expr@a
           }
       }) 
@@ -210,6 +340,7 @@ setMethod("eval",
             function(df)
               {  
                   parameter <- resolve(expr@parameters, df)
+				  parameter <- flowFrameToMatrix(parameter)
                   solveEH(parameter , expr@a ,expr@b)
                }
 	  })
@@ -227,6 +358,7 @@ setMethod("eval",
             function(df)
               {  
                   parameter <- resolve(expr@parameters, df)
+				  parameter <- flowFrameToMatrix(parameter)
                   result=0
                   result[parameter>=0]=10^(parameter/expr@a)+ (expr@b*parameter)/expr@a-1
                   result[parameter<0]= -1*(10^(-parameter/expr@a))+ (expr@b*parameter)/expr@a+1
@@ -247,6 +379,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
+			  parameter <- flowFrameToMatrix(parameter)
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -280,7 +413,7 @@ setMethod("eval",
           function(df)
           {
               parameter <- resolve(expr@parameters, df)
-              
+			  parameter <- flowFrameToMatrix(parameter)
               transitionChannel <- expr@transitionChannel
               r <- expr@r
               maxValue <- expr@maxValue
@@ -331,25 +464,136 @@ setMethod("eval",
 ####----------------------------------------------------------------------------
 #### Eval transforms for compensations
 ####----------------------------------------------------------------------------
+
+# Josef Spidlen, Oct 17, 2013:
+# I have changed the eval method to accept a flowFrame (x) instead of just
+# the data matrix (df).
+# The whole point is that Gating-ML 2.0 includes the option of specifying
+# "FCS" as the "spillover matrix", which means that parameters are supposed
+# to be compensated as per compensation description in FCS. This is why the
+# whole flowFrame is passed to eval, which then has the option of extracting
+# the spillover matrix from the SPILL (or some other) keyword.
 setMethod("eval",
           signature=signature(expr="compensatedParameter", envir="missing"),
           function(expr, envir, enclos)
-          {    function(df)
+          {    function(x)
                  { 
+                   df <- flowFrameToMatrix(x)
                    parameter <- expr@parameters
                    compObj <- expr@searchEnv[[expr@spillRefId]]
-                   spillMat <- compObj@spillover
+                   if (is.null(compObj) && expr@spillRefId == "SpillFromFCS") 
+                   {
+                       spillMat <- getSpilloverFromFlowFrame(x, parameter)
+                       trans <- list()
+                   }
+                   else
+                   {
+                       spillMat <- compObj@spillover
+                       trans <- compObj@parameters
+                   }
                    cols <- colnames(spillMat)
-                   trans <- compObj@parameters
                    for(i in trans){
                      if(is(i, "transformReference")){
-                       newCol <- resolveTransformReference(i, df)
+                       newCol <- resolveTransformReference(i, x)
                        colnames(newCol) <- i@transformationId
                        df <- cbind(df,newCol)
                      }
                    }
-                   t(solve(spillMat)[parameter,]%*%t(df[,cols])) 
-                   
+                   # Josef Spidlen, Oct 23, 2013
+                   # Added pseudoinverse (from corpcor) to deal with non-square spectrum matrices
+                   if(ncol(spillMat) == nrow(spillMat))
+                   {
+                       t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                   }
+                   else
+                   {
+                       resMatrix <- df[,cols] %*% pseudoinverse(spillMat)
+                       colnames(resMatrix) <- rownames(spillMat)
+                       # Note that bellow we are using expr@transformationId rather than parameter
+                       # since the parameter of a compensatedParameter reflects the detector name,
+                       # not the fluorochrome name of a Gating-ML 2.0 spectrum matrix
+                       # Btw. compensatedParameter@parameter is not meaningful for non-square matrices
+                       as.matrix(resMatrix[,expr@transformationId])
+                   }
                  }
              })
 
+# Josef Spidlen, Oct 18, 2013:
+# Gating-ML 2.0 may specify to use compensation description as prescribed
+# by the FCS data file.
+# We will look at
+#  - description[['SPILL']]
+#  - description[['$SPILLOVER']]
+#  - description[['SPILLOVER']]
+#  - description[['$SPILL']]
+# and try to extract the spillover from there.
+# If there is no spillover in the FCS datafile or if the spillover does not
+# include the required parameter, then the parameter is supposed to be used
+# uncompensated. In flowUtils/flowCore, we keep the parameter as compensated,
+# but we will provide a 1x1 identify matrix as the spillover at the point of
+# evaluation. Therefore, the calculation will essentially use the uncompensated
+# parameter. This also has the advantage that if the same filter is applied
+# to a different flowFrame, which may include a different spillover, then the
+# parameter will be compensated according to that spillover at the time of
+# evaluation.
+getSpilloverFromFlowFrame <- function(myFrame, requiredParameter)
+{
+    mySpill <- myFrame@description[['SPILL']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['$SPILLOVER']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['SPILLOVER']]
+    if (is.null(mySpill))
+        mySpill <- myFrame@description[['$SPILL']]
+    if (is.null(mySpill))
+        mySpill <- getIdentityMatrixForParameter(requiredParameter)
+    if (class(mySpill) != "matrix")
+        mySpill <- parseMatrixFromString(mySpill, requiredParameter)
+    if (!(requiredParameter %in% colnames(mySpill)))
+        mySpill <- getIdentityMatrixForParameter(requiredParameter)
+	mySpill
+}
+
+# Josef Spidlen, Oct 18, 2013:
+# Return a 1x1 matrix with the value 1 and with both colnames and
+# rownames set to the provided paremeter value. This is used as dummy
+# spillover matrix that does not change the value of the parameter
+getIdentityMatrixForParameter <- function(parameter)
+{
+    ret <- matrix(c(1), dimnames=list(parameter))
+    colnames(ret) <- list(parameter)
+    ret
+}
+
+# Josef Spidlen, Oct 18, 2013:
+# Parse the spillover matrix from a string. This is what
+# flowCore's IO is doing when reading the SPILL keyword.
+# Here, we may can parse it from different keywords as well,
+# and we have a fall back strategy of returning a 1x1 identity
+# matrix if parsing doesn't work as expected (i.e, if there is
+# something else in the spilloverString.
+parseMatrixFromString <- function(spilloverString, requiredParameter)
+{
+    spmat <- NULL
+    suppressWarnings(try(
+        {
+            splt <- strsplit(spilloverString, ",")[[1]]
+            nrCols <- as.numeric(splt[1])
+            cnames <- splt[2:(nrCols+1)]
+            vals <- as.numeric(splt[(nrCols+2):length(splt)])
+            spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+            colnames(spmat) <- cnames
+        }, silent=TRUE))
+    if (is.null(spmat)) spmat <- getIdentityMatrixForParameter(requiredParameter)
+    spmat
+}
+
+# These eval methods are made to use either a flowFrame or a data matrix, so this
+# this mehtod is called if we want to be sure we have the data matrix only
+flowFrameToMatrix <- function(x)
+{
+    if (class(x) == "flowFrame")
+        exprs(x)
+    else
+        x
+}

@@ -534,16 +534,20 @@ setMethod("filter",
           x <- temp[["data"]]
           filter <- temp[["filter"]]
           allPar <- parameters(filter) %in% colnames(x)
-          if(!all(allPar))
-              stop("The following parameter(s) are not present in this ",
-                   "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
-                                         collapse="\n"), call.=FALSE)
+          if (!is(filter, "setOperationFilter"))
+		  {
+              if(!all(allPar))
+                  stop("The following parameter(s) are not present in this ",
+                       "flowFrame:\n", paste("\t", parameters(filter)[!allPar],
+                       collapse="\n"), call.=FALSE)
+          }
           result <- as(x %in% filter, "filterResult")
           identifier(result) <- identifier(filter)
           filterDetails(result, identifier(filter)) <- filter
           result@frameId <- identifier(x)
           result
       })
+
 
 ## apply filterSet
 setMethod("filter",
