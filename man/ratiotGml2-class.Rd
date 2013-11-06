@@ -4,6 +4,7 @@
 \alias{ratiotGml2}
 \alias{eval,ratiotGml2,missing-method}
 \alias{initialize,ratiotGml2-method}
+\alias{parameters,ratiotGml2-method}
 
 \title{Class "ratiotGml2"  }
 \description{ 
