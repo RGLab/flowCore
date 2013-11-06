@@ -6,9 +6,9 @@
 
 \title{Class hyperlogtGml2}
 \description{Hyperlog transformation parameterized according to Gating-ML 2.0 is defined by the following function:
-\deqn{hyperlog(x, T, W, M, A) = root(EH(y, T, W, M, A) − x)}
+\deqn{hyperlog(x, T, W, M, A) = root(EH(y, T, W, M, A) - x)}
 and \eqn{EH} is defined as:
-\deqn{EH(y, T, W, M, A) = ae^{by} + cy − f}
+\deqn{EH(y, T, W, M, A) = ae^{by} + cy - f}
 where
 \itemize{ 
   \item x is the value that is being transformed (an FCS dimension value). Typically, x is less than or 
@@ -21,7 +21,7 @@ where
     in the approximately linear region.
   \item A is the number of additional decades of negative data values to be included. A shall be 
     greater than or equal to \eqn{-W}, and less than or equal to \eqn{M - 2W} 
-  \item root is a standard root finding algorithm (e.g., Newton’s method) that finds y such as 
+  \item root is a standard root finding algorithm (e.g., Newton's method) that finds y such as 
     \eqn{B(y, T, W, M, A) = x}.
 }
 and \eqn{a}, \eqn{b}, \eqn{c} and \eqn{f} are defined by means of \eqn{T}, \eqn{W}, \eqn{M}, 
@@ -47,7 +47,7 @@ Objects can be created by calls to the constructor
 }
 
 \section{Slots}{
-	 \describe{
+  \describe{
     \item{\code{.Data}:}{Object of class \code{function} ~~ }
     \item{\code{T}:}{Object of class \code{numeric} -positive constant (top of scale value) }
     \item{\code{M}:}{Object of class \code{numeric} -positive constant (desired number of decades) }

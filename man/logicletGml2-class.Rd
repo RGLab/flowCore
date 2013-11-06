@@ -6,9 +6,9 @@
 
 \title{Class logicletGml2}
 \description{Logicle transformation as published by Moore and Parks is defined by the following function:
-\deqn{logicle(x, T, W, M, A) = root(B(y, T, W, M, A) − x)}
+\deqn{logicle(x, T, W, M, A) = root(B(y, T, W, M, A) - x)}
 and \eqn{B} is a modified biexponential function:
-\deqn{B(y, T, W, M, A) = ae^{by} − ce^{−dy} − f}
+\deqn{B(y, T, W, M, A) = ae^{by} - ce^{-dy} - f}
 where
 \itemize{ 
   \item x is the value that is being transformed (an FCS dimension value). Typically, x is less than or 
@@ -24,7 +24,7 @@ where
     be more appropriate. The choice of \eqn{W = 0} gives essentially the hyperbolic sine function.
   \item A is the number of additional decades of negative data values to be included. A shall be 
     greater than or equal to \eqn{-W}, and less than or equal to \eqn{M - 2W} 
-  \item root is a standard root finding algorithm (e.g., Newton’s method) that finds y such as 
+  \item root is a standard root finding algorithm (e.g., Newton's method) that finds y such as 
     \eqn{B(y, T, W, M, A) = x}.
 }
 and \eqn{a}, \eqn{b}, \eqn{c}, \eqn{d} and \eqn{f} are defined by means of \eqn{T}, \eqn{W}, \eqn{M}, 
@@ -35,7 +35,7 @@ and \eqn{a}, \eqn{b}, \eqn{c}, \eqn{d} and \eqn{f} are defined by means of \eqn{
 \deqn{x0 = x2 + 2*w}
 \deqn{b = (M + A)*ln(10)}
 and \eqn{d} is a constant so that
-\deqn{2*(ln(d) − ln(b)) + w*(d + b) = 0}
+\deqn{2*(ln(d) - ln(b)) + w*(d + b) = 0}
 given \eqn{b} and \eqn{w},
 and
 \deqn{ca = e^{x0*(b+d)}}
@@ -58,7 +58,7 @@ Objects can be created by calls to the constructor
 }
 
 \section{Slots}{
-	 \describe{
+  \describe{
     \item{\code{.Data}:}{Object of class \code{function} ~~ }
     \item{\code{T}:}{Object of class \code{numeric} -positive constant (top of scale value) }
     \item{\code{M}:}{Object of class \code{numeric} -positive constant (desired number of decades) }
@@ -88,10 +88,10 @@ Gating-ML 2.0: International Society for Advancement of Cytometry (ISAC) standar
 representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20130122.pdf}
 
 Moore, WA and Parks, DR. Update for the logicle data scale including operational code
-implementations. Cytometry A., 2012:81A(4):273–277.
+implementations. Cytometry A., 2012:81A(4):273-277.
 
 Parks, DR and Roederer, M and Moore, WA. A new "Logicle" display method avoids deceptive effects of 
-logarithmic scaling for low signals and compensated data. Cytometry A., 2006:69(6):541–551.
+logarithmic scaling for low signals and compensated data. Cytometry A., 2006:69(6):541-551.
 }
 
 \author{Spidlen, J., Moore, W.}
