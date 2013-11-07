@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Data Transforms for Cytometry</title>
+</head>
+<body>
+<p>
+Provides an implementation of the standard display transformations used in flow cytometry.
+The design goals of this implementation, aside from the essential computational one,  are
+first to make these transformations comprehensible to the end users, i.e., scientists and
+secondly to ease the burden to implementers.
+To achieve the later, all transforms are implemented so that the 
+{@link edu.stanford.facs.transform.Transform#scale(double) scale} method maps
+an appropriate range of data values onto a standard unit display interval [0,1] and the 
+{@link edu.stanford.facs.transform.Transform#inverse(double)  inverse}
+mapping is always implemented.
+Note that range checking is the responsibility of the calling program and this implementation will map data values outside the range without complaint and in a sensible
+way but with results falling outside the unit interval and possibly with reduced precision.
+</p>
+
+<p>
+To make the transforms comprehensible they are all defined in terms of a consistent parameterization 
+that is closely related to the user experience. 
+All transforms are parameterized by the top of scale value <code>T</code>, which is always
+mapped to scale position <code>1</code>. 
+In addition, the logarithmic and log like transforms are parameterized
+by <code>M</code>, the number of decades of data range mapped onto the unit display interval
+by the {@link edu.stanford.facs.transform.Logarithmic} transform.
+The log like scales are also parameterized by <code>W</code> and <code>A</code>, which are commensurate
+with decades on the scale although they do not represent ten fold changes in data value. 
+<code>W</code> controls the degree of linearization for the the {@link edu.stanford.facs.transform.Logicle} 
+and {@link edu.stanford.facs.transform.Hyperlog} transforms.
+The parameter <code>A</code> specifies an an additional range of negative data values that are
+to be brought on scale.
+For the {@link edu.stanford.facs.transform.Logicle} and {@link edu.stanford.facs.transform.Hyperlog} 
+transforms this is in addition to what is already brought on scale by <code>W</code> and should
+generally not be needed.
+The {@link edu.stanford.facs.transform.Logicle}, {@link edu.stanford.facs.transform.Hyperlog} and 
+{@link edu.stanford.facs.transform.Arcsinh} transforms with <code>A = 0</code>
+will all behave like the {@link edu.stanford.facs.transform.Logarithmic Logarithmic(T,M)} transform with the same values
+of <code>T</code> and <code>M</code> for large data values.
+</p>
+<p>
+This choice of parameters also leads to a sensible fall back strategy when software does not
+implement a particular transform.
+For example if the logicle transform is not available a hyperlog transform with the same parameters
+should be a reasonable alternative and vice versa.
+In cases where neither is available 
+{@link edu.stanford.facs.transform.Arcsinh#Arcsinh(double, double, double) Arcsinh(T, M, W + A)} 
+although almost never  really satisfactory, will at least map  roughly the same data range onto the 
+unit display interval.
+Finally it should be noted that 
+{@link edu.stanford.facs.transform.Arcsinh#Arcsinh(double, double, double) Arcsinh(T, M, A)} 
+is completely equivalent to 
+{@link edu.stanford.facs.transform.Logicle#Logicle(double, double, double, double) Logicle(T, 0, M, A)}
+so it is not strictly necessary to implement the arcsinh transform as a separate class.
+One is provided here primarily to fix the relevant formulas.
+</p>
+
+<p>
+One practical drawback to using the log like functions is that standard graphics packages do not contain 
+suitable axis drawing routines.
+Fully addressing this is beyond the scope of this implementations but it does provide some help in chosing 
+suitable points on the axis to label. 
+Each transform has a {@link edu.stanford.facs.transform.Transform#axisLabels()} method, which returns an array 
+of data values such that a graphical representations of the data values located at the scale possition  for each value the 
+will produce a decent default display.
+</p>
+
+<p>
+Since the logicle and hyperlog functions cannot be represented in closed form using the standard functions
+of analysis they are actually defined in terms of their respective inverse functions. 
+Inverse functions for the logarithm and arcsinh are provided for comparison.
+<center>
+<table>
+<tr><th>Transform</th><th>Inverse function</th></tr>
+<tr><td>Logarithmic</td><td><font size="+2" >f<sup> -1</sup>(x) = a e<sup> b x</sup></font></td></tr>
+<tr><td>Logicle</td><td><font size="+2" >f<sup> -1</sup>(x) = a e<sup> b x</sup> - c e<sup> -d x</sup> + f</font></td></tr>
+<tr><td>Hyperlog</td><td><font size="+2" >f<sup> -1</sup>(x) = a e<sup> b x</sup> + c x - f</font></td></tr>
+<tr><td>Arcsinh</td><td><font size="+2" >f<sup> -1</sup>(x) = a sinh (b x - c)</font></td></tr>
+</table>
+</center>
+The actual parameters are defined from these inverse functions by subjecting them to the constraints
+imposed by the formal parameters. See the comments in each method for details.
+</p>
+
+<p>
+This is a reference implementation, generally accurate to double precision in the standard display interval.
+It is reasonably fast but highly optimized routines with lower precision that are still perfectly adequate 
+for use in flow cytometry may be several times faster.
+</p>
+
+<h2>Related Documentation</h2>
+
+<p>
+The Logicle methods was originally described in the publication:
+<blockquote>
+A new "Logicle" display method avoids deceptive effects of logarithmic scaling for low signals and compensated data
+<br>
+David R. Parks, Mario Roederer, Wayne A. Moore, 
+<br>
+Cytometry Part A, Volume 69A, Issue 6, Pages 541-551
+</blockquote>
+available online as 
+<a href="http://www3.interscience.wiley.com/cgi-bin/fulltext/112587611/PDFSTART" target="_new">
+PDF
+</a>
+or
+<a href="http://www3.interscience.wiley.com/cgi-bin/fulltext/112587611/HTMLSTART" target="_new">
+HTML
+</a>.
+Further refinements and this standard parameterization were presented in the publication
+<blockquote>
+Update for the logicle data scale including operational code implementations
+<br/>
+Wayne A. Moore, David R. Parks
+<br/>
+Cytometry Part A
+
+Volume 81A, Issue 4, pages 273–277, April 2012</blockquote>
+available online as 
+<a href="http://onlinelibrary.wiley.com/doi/10.1002/cyto.a.22030/pdf">PDF</a>
+or
+<a href="http://onlinelibrary.wiley.com/doi/10.1002/cyto.a.22030/full">HTML</a>.
+</p>
+<p>
+The Hyperlog methods was originally described in the publication:
+<blockquote>
+Hyperlog—A flexible log-like transform for negative, zero, and positive valued data
+<br>
+C. Bruce Bagwell
+<br>
+Cytometry Part A, Volume 64A, Issue 1, pages 34–42
+</blockquote>
+available online as 
+<a href="http://onlinelibrary.wiley.com/doi/10.1002/cyto.a.20114/pdf" target="_new">
+PDF
+</a>
+or
+<a href="http://onlinelibrary.wiley.com/doi/10.1002/cyto.a.20114/full" target="_new">
+HTML
+</a>.
+</p>
+<p>
+The method is included in the Gating-ML proposed standard of the International Society
+for the Advancement of Cytometry. The specifications for Gating-ML are available 
+<a href="http://flowcyt.sourceforge.net/gating/" target="_new">here</a>.
+</p>
+<h2>Copyright, License and Patent</h2>
+
+Copyright (c) 2009, 2011, 2012, The Board of Trustees of The Leland Stanford Junior University. 
+All rights reserved.
+<p>
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+<ul>
+<li>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li>
+<li>Neither the name of the Leland Stanford Junior University nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.</li>
+</ul>
+</p>
+<p>
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</p>
+
+<p>
+The Logicle method is patented under United States Patent 6,954,722. 
+However, Stanford University does not enforce the patent for non-profit academic 
+purposes or for commercial use in the field of flow cytometry.
+</p>
+
+@author Wayne A. Moore
+@version 1.0
+</body>
+</html>

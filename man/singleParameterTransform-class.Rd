@@ -2,6 +2,7 @@
 \docType{class}
 \alias{singleParameterTransform-class}
 \alias{initialize,singleParameterTransform-method}
+\alias{parameters,singleParameterTransform-method}
 
 \title{Class "singleParameterTransform"  }
 
