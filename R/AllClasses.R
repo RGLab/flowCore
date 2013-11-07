@@ -1711,10 +1711,17 @@ compensation <- function(..., spillover, compensationId="defaultCompensation")
     parms <- parseDots(list(...))
     if(missing(spillover))
         spillover <- as.matrix(parms$values)
-    if(!is.matrix(spillover) || !is.numeric(spillover) ||
-       ncol(spillover) != nrow(spillover))
-        stop("'spillover' must be numeric matrix with same number of ",
-             "rows and columns", call.=FALSE)
+
+#    J.Spidlen, Oct 23, 2013: Removed check for square matrices
+#    We now support non-square matrices as well
+#
+#    if(!is.matrix(spillover) || !is.numeric(spillover) ||
+#       ncol(spillover) != nrow(spillover))
+#        stop("'spillover' must be numeric matrix with same number of ",
+#             "rows and columns", call.=FALSE)
+
+    if(!is.matrix(spillover) || !is.numeric(spillover))
+        stop("'spillover' must be numeric matrix", call.=FALSE)
     if(is.null(colnames(spillover)))
         stop("Spillover matrix must have colnames", call.=FALSE)
     checkClass(compensationId, "character", 1)
@@ -3593,6 +3600,211 @@ asinhtGml2 <- function(
         transformationId = "defaultAsinhGml2Transform")
     new("asinhtGml2", parameters = parameters, 
         T = T, M = M, A = A, transformationId = transformationId)
+
+
+## ===================================================================================
+## Logicle transformation parametrized according to Gating-ML 2.0
+## -----------------------------------------------------------------------------------
+## Inputs T, M, W, A of type numeric and parameter of type transformation or character
+## -----------------------------------------------------------------------------------
+setClass(
+    "logicletGml2", 		
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+            T = 262144,
+            M = 4.5,
+            W = 0.5,
+            A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Logicle transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        if (object@W < 0)
+            msg <- c(msg, "'W' should be greater than or equal to zero.")
+        if (object@W > object@M/2)
+            msg <- c(msg, "'W' should be less than or equal to half of 'M'.")
+        if (object@A < -object@W)
+            msg <- c(msg, "'A' should be greater than or equal to 'minus W'.")
+        if (object@A > object@M - 2*object@W)
+            msg <- c(msg, "'A' should be less than or equal to 'M minus two W'")
+        msg
+    }
+)
+
+logicletGml2 <- function(
+    parameters,
+    T = 262144,
+    M = 4.5,
+    W = 0.5,
+    A = 0,
+    transformationId = "defaultAsinhGml2Transform")
+    new("logicletGml2", parameters = parameters,
+        T = T, M = M, W = W, A = A, transformationId = transformationId)
+
+
+## ===================================================================================
+## Hyperlog transformation parametrized according to Gating-ML 2.0
+## -----------------------------------------------------------------------------------
+## Inputs T, M, W, A of type numeric and parameter of type transformation or character
+## -----------------------------------------------------------------------------------
+setClass(
+    "hyperlogtGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        M = 4.5,
+        W = 0.5,
+        A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Logicle transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        if (object@W <= 0)
+            msg <- c(msg, "'W' should be greater than zero.")
+        if (object@W > object@M/2)
+            msg <- c(msg, "'W' should be less than or equal to half of 'M'.")
+        if (object@A < -object@W)
+            msg <- c(msg, "'A' should be greater than or equal to 'minus W'.")
+        if (object@A > object@M - 2*object@W)
+            msg <- c(msg, "'A' should be less than or equal to 'M minus two W'")
+        msg
+    }
+)
+
+hyperlogtGml2 <- function(
+    parameters,
+    T = 262144,
+    M = 4.5,
+    W = 0.5,
+    A = 0,
+    transformationId = "defaultAsinhGml2Transform")
+    new("hyperlogtGml2", parameters = parameters,
+        T = T, M = M, W = W, A = A, transformationId = transformationId)
+
+## ================================================================================
+## Linear transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+## Inputs T, A of type numeric and parameter of type transformation or character
+## --------------------------------------------------------------------------------
+setClass(
+    "lintGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", A = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        A = 0),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Linear transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@A < 0)
+            msg <- c(msg, "'A' should be greater than or equal to zero.")
+        if (object@A > object@T)
+            msg <- c(msg, "'A' should be less than or equal to 'T'.")
+        msg
+    }
+)
+
+lintGml2 <- function(
+    parameters,
+    T = 262144,
+    A = 0,
+    transformationId = "defaultLintGml2Transform")
+    new("lintGml2", parameters = parameters,
+        T = T, A = A, transformationId = transformationId)
+
+
+## ================================================================================
+## Log transformation parametrized according to Gating-ML 2.0
+## --------------------------------------------------------------------------------
+## Inputs T, M of type numeric and parameter of type transformation or character
+## --------------------------------------------------------------------------------
+setClass(
+    "logtGml2",
+    contains = "singleParameterTransform",
+    representation = representation(T = "numeric", M = "numeric"),
+    prototype = prototype(
+        parameters = unitytransform(),
+        T = 262144,
+        M = 4.5),
+    validity = function(object)
+    {
+        msg <- NULL
+        if (length(object@parameters) != 1)
+            msg <- c(msg, "Log transformation is defined for one parameter.")
+        if (object@T <= 0)
+            msg <- c(msg, "'T' should be greater than zero.")
+        if (object@M <= 0)
+            msg <- c(msg, "'M' should be greater than zero.")
+        msg
+    }
+)
+
+logtGml2 <- function(
+    parameters,
+    T = 262144,
+    M = 4.5,
+    transformationId = "defaultLogGml2Transform")
+    new("logtGml2", parameters = parameters,
+        T = T, M = M, transformationId = transformationId)
+
+
+
+## ========================================================================================
+## Ratio transformation parametrized according to Gating-ML 2.0
+## ----------------------------------------------------------------------------------------
+## Inputs A, B and C of type numeric and two parameters of type character or transformation
+## ----------------------------------------------------------------------------------------
+setClass("ratiotGml2",
+    contains="transform",
+    representation(
+        numerator = "transformation", denominator = "transformation",
+        pA = "numeric", pB = "numeric", pC = "numeric"),
+    prototype = prototype(
+        numerator=unitytransform(),
+        denominator=unitytransform(),
+        pA = 1,
+        pB = 0,
+        pC = 0)
+)
+
+ratiotGml2 <- function(
+    numerator = unitytransform(),
+    denominator = unitytransform(),
+	pA = 1,
+	pB = 0,
+	pC = 0,
+    transformationId = "defaultRatioTransform")
+{
+    if(!is(numerator, "transform")){
+        checkClass(numerator, "character", 1)
+        numerator <- unitytransform(numerator)
+    }
+    if(!is(denominator, "transform")){
+        checkClass(denominator, "character", 1)
+        denominator <- unitytransform(denominator)
+    }
+    new("ratiotGml2", numerator = numerator, denominator = denominator,
+        pA = pA, pB = pB, pC = pC, transformationId = transformationId)
+}
 
 
 ## ===========================================================================
