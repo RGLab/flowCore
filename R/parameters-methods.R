@@ -92,6 +92,23 @@ setMethod("parameters",
           signature=signature(object="ratio"),
           definition=function(object) NA)
 
+setMethod(
+    "parameters",
+    signature = signature(object = "ratiotGml2"),
+    definition = function(object) NA
+)
+ 
+  
+# J. Spidlen: Oct 22, 2013
+# The unlist(sapply(object@parameters, as, "character")) that was normally used for 
+# singleParameterTransform gives:
+# Error in as.vector(x, "list") : cannot coerce type 'closure' to vector of type 'list'
+# Returning object@transformationId instead seems to work just fine. 
+setMethod("parameters",
+          signature=signature(object="singleParameterTransform"),
+          definition=function(object) {
+              object@transformationId
+		  })
 
 setMethod("parameters",
           signature=signature(object="nullParameter"),

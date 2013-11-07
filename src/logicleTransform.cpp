@@ -19,6 +19,7 @@ SEXP logicle_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
         for (int i = 0; i < length(output); i++) {
             REAL(output)[i] = lg->scale(REAL(output)[i]) * asReal(M) ;
         }
+        if (lg != NULL) delete lg;
     }
     catch(const char * str){
       Rf_error("Logicle Exception: %s \n", str) ;
@@ -36,6 +37,7 @@ SEXP invLogicle_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A){
         for (int i = 0; i < length(output); i++) {
                REAL(output)[i] = lg->inverse(REAL(output)[i]/asReal(M))  ;
         }
+        if (lg != NULL) delete lg;
     }
     catch(const char * str){
       Rf_error("Logicle Exception: %s \n", str) ;
