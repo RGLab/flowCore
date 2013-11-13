@@ -662,7 +662,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             dat[dat<min.limit] <- min.limit
     }
 
-    ## transform or scale if necessary
+    ## Transform or scale if necessary
+    # J.Spidlen, Nov 13, 2013: added the flowCore_fcsPnGtransform keyword, which is 
+    # set to "linearize-with-PnG-scaling" when transformation="linearize-with-PnG-scaling"
+    # in read.FCS(). This does linearization for log-stored parameters and also division by
+    # gain ($PnG value) for linearly stored parameters. This is how the channel-to-scale
+    # transformation should be done according to the FCS specification (and according to 
+    # Gating-ML 2.0), but lots of software tools are ignoring the $PnG division. I added it
+    # so that it is only done when specifically asked for so that read.FCS remains backwards
+    # compatible with previous versions.
     fcsPnGtransform <- FALSE
     flowCore_fcsPnGtransform <- readFCSgetPar(x, "flowCore_fcsPnGtransform", strict=FALSE)
     if(!is.na(flowCore_fcsPnGtransform) && flowCore_fcsPnGtransform == "linearize-with-PnG-scaling") fcsPnGtransform <- TRUE
@@ -683,7 +691,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
        PnGPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "G", sep=""), strict=FALSE)
        noPnG <- is.na(PnGPar)
        if(any(noPnG)) PnGPar[noPnG] <- "1"
-       PnGPar = as.integer(PnGPar)
+       PnGPar = as.numeric(PnGPar)
 
        for (i in 1:nrpar){
           if(ampli[i,1] > 0){
