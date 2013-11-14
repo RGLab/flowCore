@@ -503,7 +503,16 @@ setMethod("eval",
                    # Added pseudoinverse (from corpcor) to deal with non-square spectrum matrices
                    if(ncol(spillMat) == nrow(spillMat))
                    {
-                       t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                       # Josef Spidlen, Nov 14, 2013:
+                       # This code is wrong and went probably unnoticed for some time
+                       # t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                       # The same issue existed in the compensate method (see flowFrame-accessors.R) and
+                       # has been fixed by "phd" long time ago
+                       tmp <- (df[,cols] %*% solve(spillMat))
+                       # that is the same as tmp <- t(solve(t(spillMat))%*%t(df[,cols]))
+                       # which is essentially what the compensate method is doing.
+                       colnames(tmp) <- cols
+                       tmp[,parameter]
                    }
                    else
                    {
