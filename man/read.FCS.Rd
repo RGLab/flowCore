@@ -25,9 +25,14 @@
   \item{filename}{Character of length 1: filename}
   
   \item{transformation}{An character string that defines the type of
-    transformation. Valid values are \code{linearize} (default) or
-    \code{scale}.The \code{linearize} transformation applies the
-    appropriate power transform to the data while the \code{scale}
+    transformation. Valid values are \code{linearize} (default),
+    \code{linearize-with-PnG-scaling}, or \code{scale}.
+    The \code{linearize} transformation applies the
+    appropriate power transform to the data. The
+    \code{linearize-with-PnG-scaling} transformation applies the
+    appropriate power transform for parameters stored on log scale, and
+    also a linear scaling transformation based on the 'gain' (FCS \$PnG keywords)
+    for parameters stored on a linear scale. The \code{scale}
     transformation scales all columns to $[0,10^decades]$.  defaulting
     to decades=0 as in the FCS4 specification. 
     A logical can also be used: \code{TRUE} is equal to \code{linearize} and \code{FALSE}(or \code{NULL})

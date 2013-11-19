@@ -69,6 +69,7 @@ read.FCS <- function(filename,
     on.exit(close(con))
 
     ## transform or scale data?
+    fcsPnGtransform <- FALSE
     if(is.logical(transformation) && transformation ||
        !is.null(transformation) && transformation == "linearize") {
         transformation <- TRUE
@@ -76,6 +77,10 @@ read.FCS <- function(filename,
     } else if ( !is.null(transformation) && transformation == "scale") {
         transformation <- TRUE
         scale <- TRUE
+    } else if ( !is.null(transformation) && transformation == "linearize-with-PnG-scaling") {
+        transformation <- TRUE
+        scale <- FALSE
+        fcsPnGtransform <- TRUE
     } else if (is.null(transformation) || is.logical(transformation) &&
                !transformation) {
         transformation <- FALSE 
@@ -107,6 +112,7 @@ read.FCS <- function(filename,
     txt <- readFCStext(con, offsets,emptyValue=emptyValue)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
+    if (fcsPnGtransform) txt[["flowCore_fcsPnGtransform"]] <- "linearize-with-PnG-scaling"
     if("transformation" %in% names(txt) &&
        txt[["transformation"]] %in% c("applied", "custom"))
        transformation <- FALSE
@@ -656,7 +662,18 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             dat[dat<min.limit] <- min.limit
     }
 
-    ## transform or scale if necessary
+    ## Transform or scale if necessary
+    # J.Spidlen, Nov 13, 2013: added the flowCore_fcsPnGtransform keyword, which is 
+    # set to "linearize-with-PnG-scaling" when transformation="linearize-with-PnG-scaling"
+    # in read.FCS(). This does linearization for log-stored parameters and also division by
+    # gain ($PnG value) for linearly stored parameters. This is how the channel-to-scale
+    # transformation should be done according to the FCS specification (and according to 
+    # Gating-ML 2.0), but lots of software tools are ignoring the $PnG division. I added it
+    # so that it is only done when specifically asked for so that read.FCS remains backwards
+    # compatible with previous versions.
+    fcsPnGtransform <- FALSE
+    flowCore_fcsPnGtransform <- readFCSgetPar(x, "flowCore_fcsPnGtransform", strict=FALSE)
+    if(!is.na(flowCore_fcsPnGtransform) && flowCore_fcsPnGtransform == "linearize-with-PnG-scaling") fcsPnGtransform <- TRUE
     if(transformation)
     {
        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""),
@@ -671,6 +688,11 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
        }
        ampli <- do.call(rbind,lapply(ampliPar, function(x)
                    as.integer(unlist(strsplit(x,",")))))
+       PnGPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "G", sep=""), strict=FALSE)
+       noPnG <- is.na(PnGPar)
+       if(any(noPnG)) PnGPar[noPnG] <- "1"
+       PnGPar = as.numeric(PnGPar)
+
        for (i in 1:nrpar){
           if(ampli[i,1] > 0){
              # J.Spidlen, Nov 5, 2013: This was a very minor bug. The linearization transformation
@@ -686,6 +708,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
              dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
              range[i] <- 10^ampli[i,1]
+          }
+          else if (fcsPnGtransform && PnGPar[i] != 1) {
+             dat[,i] <- dat[,i] / PnGPar[i]
+             range[i] <- (range[i]-1) / PnGPar[i]
           }
           else
              range[i] <- range[i]-1
