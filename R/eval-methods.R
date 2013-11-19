@@ -186,7 +186,25 @@ setMethod(
             parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 fasinh is defined as
 			# (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
-            (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
+            #
+            # (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
+            #
+            # The previous 'direct' implementation seems to work just fine for me; however,
+            # Wayne Moore suggested, that following calculation may be more stable:
+            # (it is giving the same results based on my tests)
+            myB = (expr@M + expr@A) * log(10)
+            myC = expr@A * log(10)
+            myA = expr@T / sinh(myB - myC)
+            x = parameter / myA
+            # This formula for the arcsinh loses significance when x is negative
+            # Therefore we take advantage of the fact that sinh is an odd function
+            negative = x < 0
+            x[negative] = -x[negative]
+            asinhx = log(x + sqrt(x * x + 1))
+            result = rep(NA, times=length(asinhx))
+            result[negative] = (myC - asinhx[negative]) / myB
+            result[!negative] = (asinhx[!negative] + myC) / myB
+            result
         }
     }
 )
@@ -503,7 +521,16 @@ setMethod("eval",
                    # Added pseudoinverse (from corpcor) to deal with non-square spectrum matrices
                    if(ncol(spillMat) == nrow(spillMat))
                    {
-                       t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                       # Josef Spidlen, Nov 14, 2013:
+                       # This code is wrong and went probably unnoticed for some time
+                       # t(solve(spillMat)[parameter,]%*%t(df[,cols]))
+                       # The same issue existed in the compensate method (see flowFrame-accessors.R) and
+                       # has been fixed by "phd" long time ago
+                       tmp <- (df[,cols] %*% solve(spillMat))
+                       # that is the same as tmp <- t(solve(t(spillMat))%*%t(df[,cols]))
+                       # which is essentially what the compensate method is doing.
+                       colnames(tmp) <- cols
+                       tmp[,parameter]
                    }
                    else
                    {

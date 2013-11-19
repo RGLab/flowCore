@@ -202,8 +202,9 @@ Mode Data) extensions are currently supported.
 There are also several immediate processing options
 available in this function, the most important of which is
 the \Rfunction{transformation} parameter, which can either
-``linearize'' (the default) or ``scale'' our data. To
-see how this works, first we will examine an FCS file
+``linearize'' (the default) or ``linearize-with-PnG-scaling'' 
+or ``scale'' our data. To see how this works, 
+first we will examine an FCS file
 without any transformation at all:
 
 <<ReadFiles, echo=true, results=verbatim>>=
@@ -229,6 +230,12 @@ effectively, have a ``\$P<n>E'' of ``0,0'':
 <<PrintSummary, echo=true, results=verbatim>>=
 summary(read.FCS(file.name))
 @
+
+The ``linearize-with-PnG-scaling'' option will perform the previous
+transformation and it will also apply a ``division by gain''
+to pamameters stored on linear scale with specified gain.
+The gain is specified in the \$PnG keywords. This option has been introduced
+as part of Gating-ML 2.0 compliance. 
 
 Finally, the ``scale'' option will both linearize values as
 well as ensure that output values are contained in $[0,1]$,
