@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gating:Gating-ML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gating="http://www.isac-net.org/std/Gating-ML/v1.3/"
+  xsi:schemaLocation="http://www.isac-net.org/std/Gating-ML/v1.3/ ../../../../schema/Gating-ML.v1.3.xsd">
+
+  <!-- 
+    These tests and other "CtS" tests are designed to verify that particular software 
+    applies gates based on values as they appear in the data file (e.g., channel values 
+    in FCS2/3 files). This has been changed since Gating v.1.3. No implicit transformation 
+    (including channel to scale values transformation) shall be performed. See Gating-ML 
+    specification for further details.
+    
+    Test with fcs2_int16_13367ev_8par_GvHD.fcs
+    
+    Parameters (in order) are: FSC-H, SSC-H, FL1-H, FL2-H, FL3-H, FL2-A, FL4-H, Time
+    13,367 events (data from a GvHD study)
+  -->
+
+  <!-- 661 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_01">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="54.58"/>
+      <gating:coordinate gating:value="62.87"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="124.7"/>
+      <gating:coordinate gating:value="82.71"/>
+    </gating:focus>
+    <gating:distance>153.57</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 9828 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_02">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="20.80"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="30.82"/>
+      <gating:coordinate gating:value="1600"/>
+    </gating:focus>
+    <gating:distance>1687.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 10779 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_03">
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="25.80"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="55.82"/>
+      <gating:coordinate gating:value="1600"/>
+    </gating:focus>
+    <gating:distance>1698.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 10084 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_04">
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="25.80"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="55.82"/>
+      <gating:coordinate gating:value="1600"/>
+    </gating:focus>
+    <gating:distance>1675.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 4665 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_05">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="25.80"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="55.82"/>
+      <gating:coordinate gating:value="1600"/>
+    </gating:focus>
+    <gating:distance>1675.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 6194 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_06">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="25.80"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="45.82"/>
+      <gating:coordinate gating:value="1588"/>
+    </gating:focus>
+    <gating:distance>1675.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 2589 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_07">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="25.80"/>
+      <gating:coordinate gating:value="33.74"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="45.82"/>
+      <gating:coordinate gating:value="88.41"/>
+      <gating:coordinate gating:value="1588"/>
+    </gating:focus>
+    <gating:distance>1675.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 6057 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_08">
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL2-A"/>
+    <gating:focus>
+      <gating:coordinate gating:value="1800"/>
+      <gating:coordinate gating:value="200"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="200"/>
+      <gating:coordinate gating:value="222"/>
+    </gating:focus>
+    <gating:distance>1750</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 5729 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_09">
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="500"/>
+    </gating:focus>
+    <gating:distance>574.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 9576 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_10">
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="100"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="500"/>
+    </gating:focus>
+    <gating:distance>574.5</gating:distance>
+  </gating:EllipsoidGate>
+
+  <!-- 3708 expected inside -->
+  <gating:EllipsoidGate gating:id="CtSE_11">
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:focus>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="58"/>
+      <gating:coordinate gating:value="113"/>
+    </gating:focus>
+    <gating:focus>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="142"/>
+      <gating:coordinate gating:value="487"/>
+    </gating:focus>
+    <gating:distance>598.5</gating:distance>
+  </gating:EllipsoidGate>
+
+</gating:Gating-ML>
