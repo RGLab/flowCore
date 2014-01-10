@@ -1,0 +1,120 @@
+\name{logicletGml2-class}
+\docType{class}
+\alias{logicletGml2-class}
+\alias{logicletGml2}
+\alias{eval,logicletGml2,missing-method}
+
+\title{Class logicletGml2}
+\description{Logicle transformation as published by Moore and Parks is defined by the following function:
+\deqn{logicle(x, T, W, M, A) = root(B(y, T, W, M, A) - x)}
+and \eqn{B} is a modified biexponential function:
+\deqn{B(y, T, W, M, A) = ae^{by} - ce^{-dy} - f}
+where
+\itemize{ 
+  \item x is the value that is being transformed (an FCS dimension value). Typically, x is less than or 
+    equal to T, although the transformation function is also defined for x greater than T.
+  \item y is the result of the transformation.
+  \item T is greater than zero and represents the top of scale value.
+  \item M is greater than zero and represents the number of decades that the true logarithmic scale 
+    approached at the high end of the Logicle scale would cover in the plot range.
+  \item W is non-negative and not greater than half of M and represents the number of such decades 
+    in the approximately linear region. The choice of \eqn{W = M/2} specifies a scale that is essentially 
+    linear over the whole range except for a small region of large data values. For situations in 
+    which values of W approaching \eqn{M/2} might be chosen, ordinary linear display scales will usually 
+    be more appropriate. The choice of \eqn{W = 0} gives essentially the hyperbolic sine function.
+  \item A is the number of additional decades of negative data values to be included. A shall be 
+    greater than or equal to \eqn{-W}, and less than or equal to \eqn{M - 2W} 
+  \item root is a standard root finding algorithm (e.g., Newton's method) that finds y such as 
+    \eqn{B(y, T, W, M, A) = x}.
+}
+and \eqn{a}, \eqn{b}, \eqn{c}, \eqn{d} and \eqn{f} are defined by means of \eqn{T}, \eqn{W}, \eqn{M}, 
+\eqn{A}, \eqn{w}, \eqn{x0}, \eqn{x1}, \eqn{x2}, \eqn{ca} and \eqn{fa} as:
+\deqn{w = W/(M+A)}
+\deqn{x2 = A/(M+A)}
+\deqn{x1 = x2 + w}
+\deqn{x0 = x2 + 2*w}
+\deqn{b = (M + A)*ln(10)}
+and \eqn{d} is a constant so that
+\deqn{2*(ln(d) - ln(b)) + w*(d + b) = 0}
+given \eqn{b} and \eqn{w},
+and
+\deqn{ca = e^{x0*(b+d)}}
+\deqn{fa = e^{b*x1} - (ca/(e^{d*x1}))}
+\deqn{a = T / (e^b - fa - (ca/e^d)) }
+\deqn{c = ca * a}
+\deqn{f = fa * a}
+
+The Logicle scale is the inverse of a modified biexponential function. It provides a Logicle display 
+that maps scale values onto the \eqn{[0,1]} interval such that the data value \eqn{T} is mapped to 1, 
+large data values are mapped to locations similar to an (M + A)-decade logarithmic scale, and A decades 
+of negative data are brought on scale. For implementation purposes, it is recommended to follow 
+guidance in Moore and Parks publication.
+} 
+
+\section{Objects from the Class}{
+Objects can be created by calls to the constructor
+
+\code{logicletGml2(parameter, T, M, W, A, transformationId)}
+}
+
+\section{Slots}{
+  \describe{
+    \item{\code{.Data}:}{Object of class \code{function} ~~ }
+    \item{\code{T}:}{Object of class \code{numeric} -positive constant (top of scale value) }
+    \item{\code{M}:}{Object of class \code{numeric} -positive constant (desired number of decades) }
+    \item{\code{W}:}{Object of class \code{numeric} -non-negative constant that is not greater than half of M
+      (the number of such decades in the approximately linear region) }
+    \item{\code{A}:}{Object of class \code{numeric} -a constant that is greater than or equal to -W, and also
+      less than or equal to M-2W. (A represents the number of additional decades of negative data values to 
+      be included.) }
+    \item{\code{parameters}:}{Object of class \code{"transformation"} -flow parameter to be transformed }
+    \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to reference the transformation}
+  }
+}
+
+\section{Extends}{
+Class \code{\linkS4class{singleParameterTransform}}, directly.
+Class \code{\linkS4class{transform}}, by class singleParameterTransform, distance 2.
+Class \code{\linkS4class{transformation}}, by class singleParameterTransform, distance 3.
+Class \code{\linkS4class{characterOrTransformation}}, by class singleParameterTransform, distance 4.
+}
+
+\section{Methods}{
+No methods defined with class logicletGml2 in the signature.
+}
+
+\references{
+Gating-ML 2.0: International Society for Advancement of Cytometry (ISAC) standard for 
+representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20130122.pdf}
+
+Moore, WA and Parks, DR. Update for the logicle data scale including operational code
+implementations. Cytometry A., 2012:81A(4):273-277.
+
+Parks, DR and Roederer, M and Moore, WA. A new "Logicle" display method avoids deceptive effects of 
+logarithmic scaling for low signals and compensated data. Cytometry A., 2006:69(6):541-551.
+}
+
+\author{Spidlen, J., Moore, W.}
+
+\note{
+Please note that \code{logicletGml2} and \code{\link{logicleTransform}} are similar transformations;
+however, the Gating-ML 2.0 compliant \code{logicletGml2} brings "reasonable" data values to the scale
+of \eqn{[0,1]} while the \code{\link{logicleTransform}} scales these values to \eqn{[0,M]}. 
+
+The logicle transformation object can be evaluated using the eval method by passing the data frame as an argument.
+The transformed parameters are returned as a matrix with a single column. (See example below)  
+}
+
+\seealso{
+\code{\link{logicleTransform}}, \code{\link{transform-class}}, \code{\link{transform}}
+}
+
+\examples{
+myDataIn  <- read.FCS(system.file("extdata", "0877408774.B08", 
+    package="flowCore"))
+myLogicle <- logicletGml2(parameters = "FSC-H", T = 1023, M = 4.5, 
+    W = 0.5, A = 0, transformationId="myLogicle")
+transOut  <- eval(myLogicle)(exprs(myDataIn))
+}
+
+\keyword{classes}

@@ -69,6 +69,7 @@ read.FCS <- function(filename,
     on.exit(close(con))
 
     ## transform or scale data?
+    fcsPnGtransform <- FALSE
     if(is.logical(transformation) && transformation ||
        !is.null(transformation) && transformation == "linearize") {
         transformation <- TRUE
@@ -76,6 +77,10 @@ read.FCS <- function(filename,
     } else if ( !is.null(transformation) && transformation == "scale") {
         transformation <- TRUE
         scale <- TRUE
+    } else if ( !is.null(transformation) && transformation == "linearize-with-PnG-scaling") {
+        transformation <- TRUE
+        scale <- FALSE
+        fcsPnGtransform <- TRUE
     } else if (is.null(transformation) || is.logical(transformation) &&
                !transformation) {
         transformation <- FALSE 
@@ -107,6 +112,7 @@ read.FCS <- function(filename,
     txt <- readFCStext(con, offsets,emptyValue=emptyValue)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
+    if (fcsPnGtransform) txt[["flowCore_fcsPnGtransform"]] <- "linearize-with-PnG-scaling"
     if("transformation" %in% names(txt) &&
        txt[["transformation"]] %in% c("applied", "custom"))
        transformation <- FALSE
@@ -226,10 +232,19 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
-       
+    
+    desc <- txt[paste(id,"S",sep="")]
+    desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
+    # replace the empty desc with NA
+    desc <- sapply(desc, function(thisDesc){
+            if(nchar(thisDesc) == 0)
+              NA
+            else
+              thisDesc
+          })
     new("AnnotatedDataFrame",
         data=data.frame(row.names=I(id),name=I(cn),
-        desc=I(txt[paste(id,"S",sep="")]),
+        desc=I(desc),
         range=as.numeric(txt[paste(id,"R",sep="")]), minRange=range[1,], maxRange=range[2,]),
         varMetadata=data.frame(row.names=I(c("name","desc","range",
                                "minRange", "maxRange")),
@@ -647,7 +662,18 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             dat[dat<min.limit] <- min.limit
     }
 
-    ## transform or scale if necessary
+    ## Transform or scale if necessary
+    # J.Spidlen, Nov 13, 2013: added the flowCore_fcsPnGtransform keyword, which is 
+    # set to "linearize-with-PnG-scaling" when transformation="linearize-with-PnG-scaling"
+    # in read.FCS(). This does linearization for log-stored parameters and also division by
+    # gain ($PnG value) for linearly stored parameters. This is how the channel-to-scale
+    # transformation should be done according to the FCS specification (and according to 
+    # Gating-ML 2.0), but lots of software tools are ignoring the $PnG division. I added it
+    # so that it is only done when specifically asked for so that read.FCS remains backwards
+    # compatible with previous versions.
+    fcsPnGtransform <- FALSE
+    flowCore_fcsPnGtransform <- readFCSgetPar(x, "flowCore_fcsPnGtransform", strict=FALSE)
+    if(!is.na(flowCore_fcsPnGtransform) && flowCore_fcsPnGtransform == "linearize-with-PnG-scaling") fcsPnGtransform <- TRUE
     if(transformation)
     {
        ampliPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "E", sep=""),
@@ -662,10 +688,30 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
        }
        ampli <- do.call(rbind,lapply(ampliPar, function(x)
                    as.integer(unlist(strsplit(x,",")))))
+       PnGPar <- readFCSgetPar(x, paste("$P", 1:nrpar, "G", sep=""), strict=FALSE)
+       noPnG <- is.na(PnGPar)
+       if(any(noPnG)) PnGPar[noPnG] <- "1"
+       PnGPar = as.numeric(PnGPar)
+
        for (i in 1:nrpar){
           if(ampli[i,1] > 0){
-             dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+             # J.Spidlen, Nov 5, 2013: This was a very minor bug. The linearization transformation
+             # for $PnE != "0,0" is defined as:
+             # For $PnR/r/, r>0, $PnE/f,0/, f>0: n is a logarithmic parameter with channel values
+             # from 0 to r-1. A channel value xc is converted to a scale value xs as xs=10^(f*xc/r).
+             # Note the "r" instead of the "r-1" in the formula (which would admitedly make more sense)
+			 # However, this is the standard that apparently has been followed by BD and other companies
+             # "forever" and it is therefore addoped as such by the ISAC DSTF (see FCS 3.1 specification)
+             # To bring this to compliance, I am just changing
+             # dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
+             # to
+             # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
+             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
              range[i] <- 10^ampli[i,1]
+          }
+          else if (fcsPnGtransform && PnGPar[i] != 1) {
+             dat[,i] <- dat[,i] / PnGPar[i]
+             range[i] <- (range[i]-1) / PnGPar[i]
           }
           else
              range[i] <- range[i]-1
