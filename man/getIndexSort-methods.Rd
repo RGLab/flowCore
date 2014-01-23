@@ -25,7 +25,7 @@
 
 
 \details{
-
+  The input FCS file should already be compensated.
   Index sorting permits association of cell-level fluorescence intensities with 
   downstream data collection on the sorted cells. Cells are sorted into a plate with \code{X,Y} 
   coordinates, and those coordinates are stored in the FCS file.
