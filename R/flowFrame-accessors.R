@@ -776,3 +776,61 @@ setMethod("cbind2",
           signature=signature(x="flowFrame", y="numeric"),
           definition=function(x, y)
           stop("'y' has to be numeric matrix with colnames.", call.=FALSE))
+
+## ==========================================================================
+## get Index Sorted Data from a flowFrame
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+.getIndexSort<-function(x){
+  if(class(x)!="flowFrame"){
+    stop("x must be a flowFrame")
+  }
+  #extract keywords
+  kw<-keyword(x)
+  #subset keywords
+  kw<-kw[grep("INDEX SORTING",names(kw))]
+  if(length(kw)==0){
+    message("No Index Sorting Information in this FCS")
+    return(invisible(0))
+  }
+  .getCount<-function(x){
+    cnt<-x[grep("COUNT",names(x))]
+    lcnt<-length(cnt)
+    try(cnt<-as.numeric(cnt[[1]]),silent=TRUE)
+    if(is.na(cnt)||lcnt>1){
+      stop("Invalid \"INDEX SORTING SORTED LOCATION COUNT\"")
+    }
+    cnt
+  }
+  .getDims<-function(x){
+    dims<-x[grep("DIMENSION",names(x))]
+    ldims<-length(dims)
+    dims<-dims[[1]]
+    if((ldims>1) || class(dims)!="character"){
+      stop("Invalid \" INDEX SORTING DEVICE_DIMENSION\"")
+    } 
+    dims<-eval(parse(text=paste0("c(",dims,")")))
+    return(dims)
+  }
+  .getLoc<-function(x){
+    locs<-x[grep("LOCATIONS",names(x))]
+    locs<-locs[order(names(locs))]
+    m<-do.call(rbind,lapply(locs,function(y){
+      m<-as.matrix(do.call(rbind,strsplit(strsplit(y,";")[[1]],",")))
+      mode(m)<-"numeric"
+      m
+    }))
+    return(m)
+  }
+  count<-.getCount(kw)
+  dims<-.getDims(kw)
+  locs<-.getLoc(kw)
+  colnames(locs)<-c("XLoc","YLoc")
+  mat<-cbind(exprs(x),locs)
+  mat<-data.frame(name=keyword(x,"$FIL")[[1]],mat)
+  return(mat)
+}
+
+setMethod("getIndexSort",signature="flowFrame",definition=function(x){
+  .getIndexSort(x)
+})
+
