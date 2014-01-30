@@ -274,3 +274,11 @@ setGeneric("actions", function(x, ...)
 ## ---------------------------------------------------------------------------
 setGeneric("normalize", function(data, x,...)
            standardGeneric("normalize"))
+
+## ===========================================================================
+## Generic to extract index sorted data
+## ---------------------------------------------------------------------------
+setGeneric("getIndexSort",def=function(x){
+  standardGeneric("getIndexSort")
+})
+
