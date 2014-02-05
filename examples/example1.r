@@ -1,37 +1,13 @@
-## last modified pdh 12-6-06
-##   I am working on getting up to speed on the new code
-##   I am going to go with transformation="scale" in order to get in gear with FCS4.0
 #library(rflowcyt)
 library(graph)
 library(prada)
 
-## FOR DEVELOPMENT PURPOSES ONLY
-#library(flowcore)
-source("R/AllClasses.R")
-source("R/AllGenerics.R")
-source("R/compensation-methods.R")
-source("R/filter-constructors.R")
-source("R/filter-functions.R")
-source("R/filter-methods.R")
-source("R/filter-operations.R")
-source("R/filterResult-accessors.R")
-source("R/flowFrame-methods.R")
-source("R/flowSet-functions.R")
-source("R/flowSet-methods.R")
-source("R/kmeansFilter-implementation.R")
-source("R/multipleFilterResult-methods.R")
-source("R/population-methods.R")
-source("R/readFCS-functions.R")
-source("R/transformation-functions.R")
-source("R/transformation-methods.R")
-## my local functions that will get moved eventually
 
 Sweave("inst/doc/filtering-flowCore.Rnw")
 Sweave("inst/doc/HowTo-flowCore.Rnw")
 
 ## if the package is built, you can start from here
 library(flowCore)
-#source("R/perry.r")
 ## create the data to be used
 ## these are three interesting wells from a BD FACS CAP(TM) plate
 ## with PBMS (perpheral blood monocytes) on the plate
