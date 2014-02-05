@@ -129,7 +129,7 @@ read.FCS <- function(filename,
     
 	if("transformation" %in% names(txt) && txt[["transformation"]] == "custom") {
 		for(i in seq_along(colnames(mat))) {
-			realMin[i] <- txt[[sprintf("flowCore_$P%sRmin", i)]]
+			realMin[i] <- as.numeric(txt[[sprintf("flowCore_$P%sRmin", i)]])
 		}
 	}
 
