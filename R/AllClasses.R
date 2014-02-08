@@ -253,17 +253,32 @@ setClass("filters",
 	 return(x)
  }
  ## Check if all filters in a filters matches same paramters
+ #' @param strict if FALSE, then don't check the consistency of parameters of gates
+ #'         which is useful to put multiple 1d gates into one container
  validFilters<- function(flist)
  {
 	 res <- TRUE
 	 checkClass(flist, "filters")
-		 
-	 fParams <- lapply(flist, function(x) parameters(x))
-	 if(length(unique(fParams))!=1)
-	 {
-		 stop("Not all filter objects in the list have the same paramters", call.=FALSE)
-		 res <- FALSE
-	 }
+		
+     
+     fParams <- lapply(flist, function(x) sort(parameters(x)))
+     nParam <- length(unique(fParams))
+     
+     valid <- FALSE
+     #validity check for 1d gate (nParam up to 2 is allowed)
+     if(all(sapply(fParams, length) == 1)){
+       valid <- nParam <= 2
+     }else{
+       #otherwise consider them as 2d
+      valid <- nParam == 1 
+     }
+     if(!valid)
+     {
+       stop("Not all filter objects in the list have the same paramters", call.=FALSE)
+       res <- FALSE
+     }  
+     
+	 
 	 if(any(sapply(flist, is, "filterResult")))
 	 {
 		 stop("filterResults are not allowed in a filterList") 
