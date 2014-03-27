@@ -13,7 +13,7 @@ isFCSfile <- function(files)
             con <- file(f, open="rb")
             on.exit(close(con))
             version <- readChar(con, 6)
-            isTRUE(version %in% c("FCS2.0", "FCS3.0"))
+            isTRUE(version %in% c("FCS2.0", "FCS3.0", "FCS3.1"))
         }
         else FALSE
     })
@@ -302,8 +302,8 @@ readFCSheader <- function(con, start=0)
 {
     seek(con, start)
     version <- readChar(con, 6)
-    if(!version %in% c("FCS2.0", "FCS3.0"))
-        stop("This does not seem to be a valid FCS2.0 or FCS3.0 file")
+    if(!version %in% c("FCS2.0", "FCS3.0", "FCS3.1"))
+        stop("This does not seem to be a valid FCS2.0, FCS3.0 or FCS3.1 file")
     
     version <-  substring(version, 4, nchar(version))
     tmp <- readChar(con, 4)
@@ -539,7 +539,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              "parameters")
     
     ##for DATA segment exceeding 99,999,999 byte.
-    if(offsets["FCSversion"] == 3){
+    if(offsets["FCSversion"] >= 3){
         realOff <- offsets - offsets[8]
         datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA"))
         dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA"))
