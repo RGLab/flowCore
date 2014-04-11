@@ -73,7 +73,7 @@ setReplaceMethod("[[",
                          ## Create new virtual filters to be replaced
                          ## later (or they will throw an error at some
                          ## point).
-                         if(!exists(f,env=x@env)) {
+                         if(!exists(f, envir = x@env)) {
                              e[[f]] <- filterReference(x,f)
                          }
                          filterReference(x,f)
@@ -88,7 +88,7 @@ setReplaceMethod("[[",
                          f
                      }
                  }
-                 
+
                  value <- harvest(value[[length(value)]])
                  ## Extract the names from the formula to resolve to
                  ## formula references
@@ -97,7 +97,7 @@ setReplaceMethod("[[",
                  ## Evaluate in the environment with those names! This
                  ## would be less work if RObjectTables had an R-level
                  ## interface...
-                 y <- eval(value,e) 
+                 y <- eval(value,e)
                  parent.env(x@env) <- old
                  x[[i]] <- y
                  x
@@ -169,13 +169,13 @@ setMethod("sort",
                   id <- identifier(node)
                   n2 <- sapply(f,identifier)
                   for(j in f[n2 %in% n]) {
-                      D[identifier(j),id] <- 1 
+                      D[identifier(j),id] <- 1
                   }
               }
           }
           ## Parent Set Size
           P <- colSums(D)
-          O <- NULL 
+          O <- NULL
           G <- n[P>0]
           while(length(G) > 0) {
               O2 <- n[P==0]

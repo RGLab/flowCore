@@ -2,14 +2,14 @@
 CHANGES IN VERSION 1.15.2
 -------------------------
 
-Modified the logicle and the inverse logicle transformation to make use of the 
+Modified the logicle and the inverse logicle transformation to make use of the
 C++ library provided by Wayne Moore et al.
 
 Added a function estimateLogicle to automatically estimate the logicle
 transformation parameters given a flowFrame and the channels to be transformed
 as input.
 
-Modified the inverseLogicleTransfom function to take the output of a 
+Modified the inverseLogicleTransfom function to take the output of a
 logicleTransform function as input.
 
 CHANGES IN VERSION 1.21.1
@@ -25,13 +25,20 @@ add .readFCSdataRaw routine to read FCS containing bit-packed integer data (with
 CHANGES IN VERSION 1.23.2
 -------------------------
 add new classes "filters", "filtersList" to allow flowViz to plot multiple filters/gates for one flowFrame
- 
+
 CHANGES IN VERSION 1.23.3
 -------------------------
-add argument "emptyValue" to read.FCS API so that parser can still work correctly when either cases below occurs : 
-1.there is double-delimiter in keyword values (sometime like \\c:\\path\\...) 
+add argument "emptyValue" to read.FCS API so that parser can still work correctly when either cases below occurs :
+1.there is double-delimiter in keyword values (sometime like \\c:\\path\\...)
 2.there is empty keyword value  (\\keyword1\\value1\\keyword2\\\\keyword3)
 
 CHANGES IN VERSION 1.23.7
 -------------------------
 fix the bug that malformed spillover matrix in write.FCS
+
+CHANGES IN VERSION 1.29.25
+--------------------------
+Copied 'featureSignif' and other required functions from the 'feature' package
+into 'flowCore', to remove an undesired dependency on tcltk (caught in the
+dependency chain from 'feature'). These functions have been collated into
+'feature.R'.
