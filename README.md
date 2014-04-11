@@ -1,0 +1,4 @@
+flowCore
+========
+
+Core flow infrastructure

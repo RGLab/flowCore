@@ -1,0 +1,156 @@
+\name{gateActionItem-class}
+
+\docType{class}
+
+\alias{gateActionItem-class}
+\alias{gateActionItem}
+\alias{gate}
+\alias{gate,gateActionItem-method}
+\alias{print,gateActionItem-method}
+\alias{Rm,gateActionItem,workFlow,character-method}
+\alias{show,gateActionItem-method}
+\alias{summary,gateActionItem-method}
+
+\title{Class "gateActionItem"}
+
+\description{
+
+  Class and method to capture gating operations in a flow cytometry
+  workflow.
+  
+}
+
+
+\section{Objects from the Class}{
+  
+  Objects should be created using the \code{add} method, which creates a
+  \code{gateActionItem} from a \code{\link{filter}} object and directly
+  assigns it to a \code{\link{workFlow}}. Alternatively, one can use the
+  \code{gateActionItem} constructor function for more programmatic
+  access.
+  
+}
+
+\section{Slots}{
+
+  \describe{
+    
+    \item{\code{gate}:}{Object of class \code{"fcFilterReference"}. A
+      reference to the \code{\link{filter}} that is used for the gating
+      operation. }
+    
+    \item{\code{filterResult}:}{Object of class
+      \code{"fcFilterResultReference"}. A reference to the
+      \code{\link{filterResult}} produced by the gating operation.}
+
+    \item{\code{ID}:}{Object of class \code{"character"}. A unique
+      identifier for the \code{actionItem}. }
+    
+    \item{\code{name}:}{Object of class \code{"character"}. A more
+      human-readable name}
+    
+    \item{\code{parentView}:}{Object of class \code{"fcViewReference"}. A
+      reference to the parent \code{\link{view}} the \code{gateActionItem}
+      is applied on. }
+
+    \item{\code{env}:}{Object of class \code{"environment"}. The
+      evaluation environment in the \code{\link{workFlow}}. }
+
+  }
+}
+
+\section{Extends}{
+  Class \code{"\linkS4class{actionItem}"}, directly.
+}
+
+
+\usage{
+
+gateActionItem(ID = paste("gateActionRef", guid(), sep = "_"), name =
+paste("action", identifier(get(gate)), sep = "_"), parentView, gate,
+filterResult, workflow)
+
+}
+
+\arguments{
+
+  \item{workflow}{ An object of class \code{\link{workFlow}} for which a
+    view is to be created. }
+
+  \item{ID}{ A unique identifier of the view, most likely created by
+    using the internal \code{guid} function. }
+
+  \item{name}{ A more human-readable name of the view. }
+  
+  \item{parentView, gate, filterResult}{ References to the parent
+    \code{\link{view}}, \code{\link{filter}}, and
+    \code{\link{filterResult}} objects, respectively. }
+  
+}
+
+\value{
+
+  A reference to the \code{gateActionItem} that is created inside the
+  \code{\link{workFlow}} environment as a side effect of calling the
+  \code{add} method.
+
+  A \code{gateActionItem} object for the constructor.
+  
+}
+
+
+\section{Methods}{
+  
+  \describe{
+    
+    \item{gate}{\code{signature(object = "gateActionItem")}: Accessor to
+    the \code{gate} slot. Note that this resolved the reference, i.e.,
+    the \code{\link{filter}} object is returned. }
+    
+    \item{print}{\code{signature(x = "gateActionItem")}: Print details
+      about the object. }
+    
+    \item{Rm}{\code{signature(symbol = "gateActionItem", envir =
+	"workFlow", subSymbol = "character")}: Remove a \code{gateActionItem}
+      from a \code{\link{workFlow}}. This method is recursive and will
+      also remove all dependent \code{views} and
+      \code{\link[flowCore:actionItem-class]{actionItem}}s.}
+      
+    \item{show}{\code{signature(object = "gateActionItem")}: Print details
+      about the object. }
+    
+    \item{summary}{\code{signature(object = "gateActionItem")}:
+      Summarize the gating operation and return the appropriate
+      \code{\link{filterSummary}} object. }
+    
+  }
+}
+
+
+\details{
+
+  \code{gateActionItems} provide a means to bind gating operations in a
+  workflow. Each \code{gateActionItem} represents a single
+  \code{\link{filter}}.
+  
+}
+
+\author{ Florian Hahne }
+
+\seealso{
+	
+  \code{\linkS4class{workFlow}},
+  \code{\linkS4class{actionItem}},
+  \code{\linkS4class{transformActionItem}},
+  \code{\linkS4class{compensateActionItem}},
+  \code{\linkS4class{view}}
+  
+}
+
+\examples{
+showClass("view")
+}
+
+\keyword{classes}
+
+
