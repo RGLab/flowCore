@@ -20,7 +20,7 @@ setMethod("names",
 
 ## ==========================================================================
 ## The identifiers of the flowFrames (i.e., the sampleNames of the flowSet)
-## for which the filterResults have been computed. 
+## for which the filterResults have been computed.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("names",
           signature=signature(x="filterResultList"),
@@ -33,7 +33,7 @@ setMethod("names",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("names",
           signature=signature(x="filterSet"),
-          definition=function(x) ls(env=x@env))
+          definition=function(x) ls(envir=x@env))
 
 
 
@@ -73,7 +73,7 @@ setMethod("names",
 ## ==========================================================================
 ## The names of the two populations created by the filter. For
 ## logicalFilterResults we always have one population in the filter
-## and the complement. 
+## and the complement.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("names",
           signature=signature(x="logicalFilterResult"),
@@ -154,7 +154,7 @@ setMethod("names",
           acts <- unique(unlist(sapply(nam, function(y)
                                        identifier(action(get(y, x))))))
           return(id2Alias(c(nam, acts), x))
-          
+
       })
 
 
@@ -165,7 +165,7 @@ setMethod("names",
 setMethod("views",
           signature=signature(x="workFlow"),
           definition=function(x)
-          return(id2Alias(nodes(get(x@tree)), x)))    
+          return(id2Alias(nodes(get(x@tree)), x)))
 
 
 
