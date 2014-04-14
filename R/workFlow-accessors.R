@@ -23,18 +23,18 @@ setMethod("get",
           checkClass(x, "character", 1)
           allNames <- c(ls(pos), ls(alias(pos)))
           if (!x %in% allNames) {
-              mess <- paste("Unable to resolve reference to object '", 
+              mess <- paste("Unable to resolve reference to object '",
                             x, "'", sep = "")
-              if (!is.na(w <- pmatch(tolower(x), tolower(allNames)))) 
-                  mess <- paste(mess, sprintf("Perhaps you meant %s?", 
+              if (!is.na(w <- pmatch(tolower(x), tolower(allNames))))
+                  mess <- paste(mess, sprintf("Perhaps you meant %s?",
                                               sQuote(ls(pos@env)[w])), sep = "\n")
               stop(mess, call. = FALSE)
           }
-          id <- if (!x %in% ls(pos)) 
+          id <- if (!x %in% ls(pos))
               alias(pos)[[x]]
           else x
-          if (length(id) != 1) 
-              stop("The alias '", x, "' is not unique.\n Unable to resolve", 
+          if (length(id) != 1)
+              stop("The alias '", x, "' is not unique.\n Unable to resolve",
                    " to ID.", call. = FALSE)
           get(id, envir = pos@env)
       })
@@ -83,7 +83,7 @@ isUniqueName <- function(n, wf, warn=FALSE, uid)
     if(length(atab[[n]])==0)
             stop("'", n, "' is not a view in this workFlow object.",
                  call.=FALSE)
-    res <- length(atab[[n]])==1 
+    res <- length(atab[[n]])==1
     if(!res && warn)
         warning("'", n, "' is not a unique view name in this workFlow object.\n",
                 "You will only be able to access the view using its UID",
@@ -130,7 +130,7 @@ setMethod("[",
 setMethod("$",
           signature=signature(x="workFlow"),
           definition=function(x,name) x[[name]])
-          
+
 
 
 ## ==========================================================================
@@ -248,19 +248,19 @@ setMethod("plot",
               }
               return(result)
           }
-          if (!suppressWarnings(require(Rgraphviz))) 
-              stop("You need to have Rgraphviz installed for this feature", 
+          if (!suppressWarnings(require(Rgraphviz)))
+              stop("You need to have Rgraphviz installed for this feature",
                    call.=FALSE)
           tree <- get(x@tree)
           labels <- gsub(" ", "\n", gsub("_", "_\n", views(x)))
-          cmatch <- cbind(c("view", "compensateView", "transformView", 
+          cmatch <- cbind(c("view", "compensateView", "transformView",
                             "gateView"), c("black", "green", "blue", "red"))
-          mt <- match(sapply(views(x), function(y) class(get(y, x))), 
+          mt <- match(sapply(views(x), function(y) class(get(y, x))),
                       cmatch)
           col <- cmatch[mt, 2]
           nn <- views(x)
           names(labels) <- names(col) <- getAlias(nn, x)
-          nodeRenderInfo(tree) <- list(shape="rect", fixedSize=FALSE, 
+          nodeRenderInfo(tree) <- list(shape="rect", fixedSize=FALSE,
                                        label=labels, col=col, lwd=1, fontsize=16,
                                        textCol=col, fill="lightgray")
           subGraphs <- list()
@@ -268,20 +268,20 @@ setMethod("plot",
           nAttrs <- list()
           if (!is.null(tmp)) {
               elabels <- id2Alias(mapply(function(...)
-                                         identifier(edgeData(..., at="actionItem")[[1]]),
+                                         identifier(edgeData(..., attr="actionItem")[[1]]),
                                          from=tmp[, 1], to=tmp[, 2],
                                          MoreArgs=list(self=tree)), x)
               elabels <- gsub("_", "_\n", elabels)
               names(elabels) <- apply(tmp, 1, paste, collapse="~")
-              edgeRenderInfo(tree) <- list(label=elabels, lwd=2, 
+              edgeRenderInfo(tree) <- list(label=elabels, lwd=2,
                                            fontsize=10, textCol="gray", col="gray")
               width <- rep(1.5, length(nn))
               height <- rep(0.8, length(nn))
               names(width) <- names(height) <- nn
               nAttrs <- list(width=width, height=height)
-              g <- Rgraphviz:::layoutGraph(tree, layoutType="dot", 
+              g <- Rgraphviz::layoutGraph(tree, layoutType="dot",
                                            nodeAttrs=nAttrs)
-              Rgraphviz:::renderGraph(g)
+              Rgraphviz::renderGraph(g)
               return(invisible(g))
           }
           else {
@@ -326,7 +326,7 @@ setMethod("plot",
 ##             boxWidth <- textWidth
 ##             width <<- width+delta
 ##             shift <- delta/2
-##         } 
+##         }
 ##         nodes[node, "width"] <<- boxWidth
 ##         nodes[node, "mids"] <<- as.integer(x+(boxWidth/2))
 ##         nodes[node, "shift"] <<- shift

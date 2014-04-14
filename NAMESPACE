@@ -3,7 +3,7 @@ useDynLib("flowCore",.registration=TRUE)
 importClassesFrom(Biobase, AnnotatedDataFrame)
 
 importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
-                  ANY, call,character, data.frame, environment, expression, 
+                  ANY, call,character, data.frame, environment, expression,
                   factor, formula, "function", list, logical, matrix, missing,
                   name, "NULL",numeric, oldClass, className)
 
@@ -24,8 +24,6 @@ importFrom(BiocGenerics, colnames, eval, get, mget, nrow, ncol)
 
 importFrom(stats4, plot, summary)
 
-importFrom(feature, featureSignif)
-
 importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 
 importFrom(graphics, hist, text, smoothScatter)
@@ -45,6 +43,8 @@ importFrom(stats, kmeans, mad, median, qnorm, quantile, runif, sd,
 importFrom(utils, data, find, head, tail, write.table)
 
 importFrom(corpcor, pseudoinverse)
+
+importFrom(ks, dfltCounts, drvkde)
 
 exportClasses("actionItem",
               "asinht",
@@ -117,7 +117,7 @@ exportClasses("actionItem",
               "randomFilterResult",
               "ratio",
               "ratiotGml2",
-              "rectangleGate",         
+              "rectangleGate",
               "sampleFilter",
               "setOperationFilter",
               "sinht",
