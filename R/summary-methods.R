@@ -14,7 +14,7 @@
 ## parameter.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
-          signature=signature(object="flowFrame"), 
+          signature=signature(object="flowFrame"),
           definition=function(object, ...)
       {
           apply(exprs(object), 2, summary)
@@ -26,7 +26,7 @@ setMethod("summary",
 ## For a flowSet, we iterate over each frame and provide summaries for those.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
-          signature=signature(object="flowSet"), 
+          signature=signature(object="flowSet"),
           definition=function(object, ...)
       {
           fsApply(object, function(x) apply(exprs(x), 2, summary),
@@ -155,7 +155,7 @@ setMethod("summary",
 
 ## ==========================================================================
 ## summary method for filterResultLists. We print all information on the
-## screen and return an object of class filterSummaryList.  
+## screen and return an object of class filterSummaryList.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("summary",
           signature=signature(object="filterResultList"),
@@ -187,16 +187,16 @@ setMethod("summary",
               e2 <- as(object@filters[[2]],"logical")
               true <- sum(e1&e2)
               ## count <- sum(e2)
-              count <- length(e2)		
+              count <- length(e2)
               new("filterSummary", name=identifier(object), true=true,
-                  count=count, p=true/count)			
+                  count=count, p=true/count)
           } else {
               id <- gsub("\\+$", "", identifier(object))
               true <- sum(as(result, "logical"))
               ## count <- filterDetails(result, id)$subsetCount
               count <- length(as(result, "logical"))
               new("filterSummary", name=identifier(object), true=true,
-                  count=count, p=true/count)			
+                  count=count, p=true/count)
           }
       })
 
@@ -210,7 +210,7 @@ setMethod("summary",
           definition=function(object, ...)
       {
           e <- environment(object)
-          x <- ls(env=e)
+          x <- ls(envir=e)
           structure(lapply(x, "get", env=e), names=x)
       })
 

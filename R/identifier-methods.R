@@ -106,7 +106,7 @@ setMethod("identifier",
           signature=signature(object="filterReference"),
           definition=function(object)
       {
-          if(exists(object@name, env=object@env))
+          if(exists(object@name, envir=object@env))
               identifier(as(object, "concreteFilter"))
           else
               object@name
