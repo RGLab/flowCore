@@ -175,7 +175,7 @@ setMethod("%in%",
 
           e <- exprs(x)[,parameters, drop=FALSE]
           W <- t(t(e)-table@mean)
-          as.logical(rowSums(W %*% solve(table@cov) * W) <= table@distance)
+          as.logical(rowSums(W %*% solve(table@cov) * W) <= table@distance ^ 2)
 
         })
 
