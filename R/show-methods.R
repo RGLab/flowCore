@@ -17,7 +17,7 @@ setMethod("show",
       {
           dm <- dim(exprs(object))
           cat(paste("flowFrame object '", identifier(object),
-                    "'\nwith ", dm[1], " cells and ", 
+                    "'\nwith ", dm[1], " cells and ",
                     dm[2], " observables:\n", sep=""))
           show(pData(parameters(object)))
           cat(paste(length(description(object)), " keywords are stored in the ",
@@ -73,7 +73,7 @@ setMethod("show",
 ## ---------------------------------------------------------------------------
 setMethod("show",
           signature=signature(object="filter"),
-          definition=function(object) 
+          definition=function(object)
           cat(paste("A filter named '", object@filterId, "'\n", sep="")))
 
 
@@ -85,7 +85,7 @@ setMethod("show",
           signature=signature(object="filterReference"),
           definition=function(object)
       {
-          if(exists(object@name,env=object@env))
+          if(exists(object@name,envir=object@env))
               cat(paste("A reference to a filter named '",
                         identifier(object), "'\n", sep=""))
           else
@@ -105,7 +105,7 @@ setMethod("show",
           cat("filter '", identifier(object),
               "', the complement of\n", sep="")
           print(object@filters[[1]])
-          
+
       })
 
 
@@ -192,7 +192,7 @@ setMethod("show",
 ## --------------------------------------------------------------------------
 setMethod("show",
           signature=signature(object="filterResult"),
-          definition=function(object) 
+          definition=function(object)
           cat(paste("A filterResult produced by the filter named '",
                     object@filterId, "'\n", sep="")))
 
@@ -614,7 +614,7 @@ setMethod("show",
                       }
                   }
                   cat("The following data views are provided:\n\n")
-                  print(get(nodes[1], object)) 
+                  print(get(nodes[1], object))
                  traverseShow(tree, nodes[1], object)
                 }
               }

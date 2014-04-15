@@ -62,7 +62,7 @@ setAs(from="filterResultList", to="list",
 
 ## ==========================================================================
 ## We can also convert some filterResult types directly to logical types,
-## though in general it is not possible. We provide the means for logical 
+## though in general it is not possible. We provide the means for logical
 ## and random filter types. For the rest we cast useful error messages.
 ## --------------------------------------------------------------------------
 setAs(from="filterResult", to="logical", def=function(from)
@@ -192,7 +192,7 @@ setAs(from="complementFilter", to="call", def=function(from) {
 ## --------------------------------------------------------------------------
 setAs(from="filterSet", to="list", def=function(from)
   {
-      nam <- ls(env=from@env)
+      nam <- ls(envir = from@env)
       out <- lapply(nam,function(n) as(from[[n]], "call"))
       names(out) <- nam
       out
@@ -219,15 +219,15 @@ setAs(from="list", to="filterSet", def=function(from)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs(from="environment", to="flowSet", def=function(from)
   {
-      frameList <- ls(env=from)
-      isFrame <- sapply(frameList, function(f) is(get(f,env=from),
+      frameList <- ls(envir = from)
+      isFrame <- sapply(frameList, function(f) is(get(f, envir = from),
                                                   "flowFrame"))
       if(!all(isFrame))
           warning("Some symbols are not flowFrames.",
                   "They will be ignored but left intact.")
       ## If specified, remove extraneous symbols from the environment
       ## before continuing
-      frameList <- frameList[isFrame]    
+      frameList <- frameList[isFrame]
       ## Check the column names
       colNames <- sapply(frameList, function(f) colnames(from[[f]]))
       ucol <- sort(unique(as.vector(unlist(colNames))))
@@ -325,9 +325,9 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
           rownames(repl) <- "Original"
           common <- intersect(colnames(repl), colnames(pData(params)))
           pData(params)["Original",common] <- repl[,common]
-          pData(params)[,"desc"] <- 
+          pData(params)[,"desc"] <-
             c(as.character(pData(parameters(from[[1]]))[,"desc"]),
-                                 "Original Frame")    
+                                 "Original Frame")
           desc  <- list(description="Synthetic Frame",
                         sampleNames=sampleNames(from))
           new("flowFrame",exprs=exp,parameters=params,description=desc)
@@ -340,7 +340,7 @@ setAs(from="flowSet", to="flowFrame", def=function(from)
 ## Coerce a filterSummary to a data.frame. This gets used by the toTable
 ## methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-setAs(from="filterSummary", to="data.frame", def=function(from) 
+setAs(from="filterSummary", to="data.frame", def=function(from)
       data.frame("true"=from@true, "false"=from@count-from@true,
                  "count"=from@count,"p"=from@p,
                  "q"=1-from@q,row.names=from@name))
@@ -394,14 +394,14 @@ setAs(from="transform", to="character", def=function(from)
           return(sapply(p, as, "character"))
         }
       })
-          
-      
+
+
 
 setAs(from="parameters", to="character", def=function(from){
       tmp <- sapply(from, as, "character")
       tmp
     })
-    
+
 
 
 
@@ -436,4 +436,4 @@ setAs(from="rectangleGate", to="polygonGate", def=function(from)
                      c(from@min[1], from@max[2]))
       polygonGate(.gate=bound, filterId=identifier(from))
   })
-    
+

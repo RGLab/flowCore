@@ -62,8 +62,8 @@ setMethod("%in%",
 setMethod("%in%",
           signature=signature(x="flowFrame",table="rectangleGate"),
           definition=function(x, table)
-      {   
-          parameters=unlist(parameters(table))   
+      {
+          parameters=unlist(parameters(table))
           e <- exprs(x)[,parameters, drop=FALSE]
           tmp <- sapply(seq(along=parameters),
                         function(i){
@@ -79,7 +79,7 @@ setMethod("%in%",
                                            right=FALSE
                                            ))
                             }})
-          if(nrow(e)){   
+          if(nrow(e)){
               dim(tmp) <- c(nrow(e), length(parameters))
               apply(tmp, 1, all)
           }else{
@@ -97,20 +97,20 @@ setMethod("%in%",
 setMethod("%in%",
           signature=signature(x="flowFrame", table="polygonGate"),
           definition=function(x,table)
-      {   
+      {
           parameters=unlist(parameters(table))
           ndim <- length(parameters)
 
           ## If there is only a single dimension then we have
           ## a degenerate case.
-          if(ndim==1) 
+          if(ndim==1)
               !is.na(cut(exprs(x)[,parameters[[1]]],
                          range(table@boundaries[,1]), labels=FALSE,
                          right=FALSE))
           else if(ndim==2) {
               as.logical(inpolygon(exprs(x)[,parameters,drop=FALSE],
                                               table@boundaries))
-          } else 
+          } else
           stop("Polygonal gates only support 1 or 2 dimensional gates.\n",
                "Use polytope gates for a n-dimensional represenation.",
                call.=FALSE)
@@ -133,22 +133,22 @@ inpolygon <- function(points, vertices)
         stop("Argument 'vertices' must be numeric matrix of two ",
              "columns and at least\ntwo rows specifying vertices ",
              "of a polygon on a two-dimensional plane", call.=FALSE)
-    
+
     ## call C function
     .Call("inPolygon", points, vertices, PACKAGE="flowCore")
 }
 
 ## ==========================================================================
-## 
-## Polytope gate 
+##
+## Polytope gate
 ## Add stuff
-## 
-## 
+##
+##
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature(x="flowFrame", table="polytopeGate"),
           definition=function(x, table)
-      {   
+      {
           parameters=unlist(parameters(table))
           data <- exprs(x)[, parameters, drop=FALSE]
           ## coerce to numeric matrix
@@ -172,10 +172,10 @@ setMethod("%in%",
           signature=signature(x="flowFrame", table="ellipsoidGate"),
           definition=function(x,table)
       {   parameters=unlist(parameters(table))
-          
-          e <- exprs(x)[,parameters, drop=FALSE] 
+
+          e <- exprs(x)[,parameters, drop=FALSE]
           W <- t(t(e)-table@mean)
-          as.logical(rowSums(W %*% solve(table@cov) * W) <= table@distance)
+          as.logical(rowSums(W %*% solve(table@cov) * W) <= table@distance ^ 2)
 
         })
 
@@ -201,7 +201,7 @@ setMethod("%in%",
           if(length(parameters(table)) != 2)
               stop("norm2 filters require exactly two parameters.")
           y <- exprs(x)[,parameters(table)]
-          ## drop data that has piled up on the measurement ranges         
+          ## drop data that has piled up on the measurement ranges
           r <- range(x, parameters(table))
           sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
                   y[,2] > r[1,2] & y[,2] < r[2,2])
@@ -265,7 +265,7 @@ setMethod("%in%",
 ## filter result (boundaries of regions, fSObj) are stored as
 ## attributes of the subSet vector. We use a simple naming scheme for the
 ## factor levels: peak n, where n is the number of populations and rest for
-## all data points not within one of the high density areas 
+## all data points not within one of the high density areas
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature(x="flowFrame",
@@ -321,7 +321,7 @@ setMethod("%in%",
 ## filter result (polygon vertices of populations, fSObj) are stored as
 ## attributes of the subSet vector. We use a simple naming scheme for the
 ## factor levels: peak n, where n is the number of populations and rest for
-## all data points not within one of the high density areas 
+## all data points not within one of the high density areas
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature(x="flowFrame",
@@ -348,7 +348,7 @@ setMethod("%in%",
           IQR.vals <- (Q3.vals - Q1.vals)/corr.fac
           sig.hats <- apply(cbind(st.devs, IQR.vals), 1, min)
           samp.size.fac <- nrow(values)^(-1/6)
-          bwNS <- samp.size.fac*sig.hats        
+          bwNS <- samp.size.fac*sig.hats
           ## Obtain significant high curvature regions.
           fSObj <- featureSignif(values, bw=bwFac*bwNS,
                                  addSignifCurv=TRUE,
@@ -361,10 +361,10 @@ setMethod("%in%",
           for (i in seq(along=contourLinesObj)){
               vertices <- cbind(contourLinesObj[[i]]$x,
                                 contourLinesObj[[i]]$y)
-              sel <- as.logical(flowCore:::inpolygon(ovalues,vertices))
+              sel <- as.logical(inpolygon(ovalues,vertices))
               filterInds[sel] <- i
           }
-          
+
           result <- factor(filterInds)
           levels(result) <-
               c("rest", paste("area", seq_along(contourLinesObj)))
@@ -393,14 +393,14 @@ setMethod("%in%",
           ## has to be guessed if not explicitely given before.
           ex <- exprs(x)
           if(!length(table@timeParameter))
-              time <- findTimeChannel(ex) 
+              time <- findTimeChannel(ex)
           param <- parameters(table)
           bw <- table@bandwidth
           bs <- table@binSize
           if(!length(bs))
               bs <- min(max(1, floor(nrow(x)/100)), 500)
           binned <- prepareSet(x, param, time, bs,
-                               locM=median, varM=mad)         
+                               locM=median, varM=mad)
           ## Standardize to compute meaningful scale-free scores.
           ## This is done by substracing the mean values of each
           ## bin and divide by the mean bin variance.
@@ -423,10 +423,10 @@ setMethod("%in%",
                       if(db[i+1]!=1)
                           tr <- c(tr, outBins[i]+1)
                   }else if(db[i+1]!=1)
-                      tr <- c(tr, outBins[i]+1) 
+                      tr <- c(tr, outBins[i]+1)
               }
               if(db[1]==1)
-                  br <- c(outBins[1], br)          
+                  br <- c(outBins[1], br)
               ## Now generate rectangle gates over the identified
               ## regions and use them for the filtering
               ## FIXME: This step is notoriously slow. Is there a
@@ -442,7 +442,7 @@ setMethod("%in%",
                       tmp <- filter(x, tmp & !gates[[i]])
               return(as.logical(tmp@subSet) )
           }else
-              return(rep(TRUE, nrow(x)))   
+              return(rep(TRUE, nrow(x)))
         })
 
 ## Run over a cytoFrame, bin the values according to the time domain
@@ -548,7 +548,7 @@ setMethod("%in%",
 setMethod("%in%",
           signature=signature(x="flowFrame", table="unionFilter"),
           function(x,table)
-      {	
+      {
           fr <- sapply(table@filters, filter, x=x)
 	  ## If we have a multipleFilterResult and a logical
 	  ## filter result we have to dissect the two
@@ -565,19 +565,19 @@ setMethod("%in%",
 	        stop("unionFilters are not defined for overlapping",
 		     " populations.")
 	     l <- levels(res)
-	     nl <- make.unique(c(sapply(fr[!mfr], 
+	     nl <- make.unique(c(sapply(fr[!mfr],
                      identifier), l))[1:sum(!mfr)]
              levels(res) <- c(l, nl)
 	     for(i in seq_along(nl))
 	        res[resL[,i]] <- nl[i]
-          }   
+          }
 	  else
 	  {
              res <- apply(matrix(sapply(fr, as, "logical"),
                           ncol=length(table@filters)), 1, any)
 	  }
           details <- list()
-          for(i in fr) { 
+          for(i in fr) {
               fd <- filterDetails(i)
               details[names(fd)] <- fd
           }
@@ -594,7 +594,7 @@ setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="intersectFilter"),
           definition=function(x,table)
-          {   
+          {
               fr <- sapply(table@filters, filter, x=x)
 	      ## If we have a multipleFilterResult and a logical
 	      ## filter result we have to dissect the two
@@ -614,8 +614,8 @@ setMethod("%in%",
                              )
 	      }
               details <- list()
-              for(i in fr) 
-              { 
+              for(i in fr)
+              {
                   fd <- filterDetails(i)
                   details[names(fd)] <- fd
               }
@@ -773,7 +773,7 @@ setMethod("%in%",
 ## ---------------------------------------------------------------------------
 setMethod("%in%",
           signature=signature(x="ANY",table="filterReference"),
-          definition=function(x, table) 
+          definition=function(x, table)
                      {
                       #x %in% as(table@env[[table@name]], "concreteFilter")
                       filter=as(table, "concreteFilter")
@@ -782,19 +782,19 @@ setMethod("%in%",
                       charParam=list()
                       while(len>0)
                       {
-                          if(class(parameters[[len]])!="unitytransform")  
+                          if(class(parameters[[len]])!="unitytransform")
                           {   ## process all transformed parameters
-                              charParam[[len]]=sprintf("_NEWCOL%03d_",len) 
+                              charParam[[len]]=sprintf("_NEWCOL%03d_",len)
                               newCol=eval(parameters[[len]])(exprs(x))
-                              colnames(newCol)=sprintf("_NEWCOL%03d_",len) 
+                              colnames(newCol)=sprintf("_NEWCOL%03d_",len)
                               data <- cbind(data, newCol)
-                          } 
+                          }
                           else
                           {
                               charParam[[len]]=slot(parameters[[len]],"parameters")
-                          
-                          }                
-                          len=len-1                               
+
+                          }
+                          len=len-1
                       }
                       slot(filter,"parameters")=new("parameters",.Data=charParam)
                       x %in% filter
