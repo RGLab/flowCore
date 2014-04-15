@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Flow Cytometry Gating XML File -->
+
+<gating:Gating-ML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gating="http://www.isac-net.org/std/Gating-ML/v1.3/"
+  xsi:schemaLocation="http://www.isac-net.org/std/Gating-ML/v1.3/ ../../../../schema/Gating-ML.v1.3.xsd">
+
+  <!--
+    Test with fcs2_int16_13367ev_8par_GvHD.fcs
+    Parameters (in order) are: FSC-H, SSC-H, FL1-H, FL2-H, FL3-H, FL2-A, FL4-H, Time
+    13,367 events (data from a GvHD study)
+  -->
+  
+  <!-- 3952 expected inside -->
+  <gating:RectangleGate gating:id="pgtt1">
+    <gating:dimension gating:parameter="FL1-H" gating:min="20" gating:max="200"/>
+  </gating:RectangleGate>
+  
+  <!-- 3185 expected inside -->
+  <gating:RectangleGate gating:id="pgtt2">
+    <gating:dimension gating:parameter="FL2-H" gating:min="20" gating:max="200"/>
+  </gating:RectangleGate>
+  
+  <!-- 12899 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 12661 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 2018 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_p3_p2_p1" gating:parent_id="pgtt3_p2_p1">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 2100 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3_p2_p1" gating:parent_id="pgtt2_p1">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 2172 expected inside -->
+  <gating:RectangleGate gating:id="pgtt1_p2" gating:parent_id="pgtt2">
+    <gating:dimension gating:parameter="FL1-H" gating:min="20" gating:max="200"/>
+  </gating:RectangleGate>
+  
+  <!-- 2172 expected inside -->
+  <gating:RectangleGate gating:id="pgtt2_p1" gating:parent_id="pgtt1">
+    <gating:dimension gating:parameter="FL2-H" gating:min="20" gating:max="200"/>
+  </gating:RectangleGate>
+  
+  <!-- 3557 expected inside -->
+  <gating:RectangleGate gating:id="pgtt1_p4_p3" gating:parent_id="pgtt4_p3">
+    <gating:dimension gating:parameter="FL1-H" gating:min="20" gating:max="200"/>
+  </gating:RectangleGate>
+  
+  <!-- 3058 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3_p2" gating:parent_id="pgtt2">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 2083 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_p1_p2" gating:parent_id="pgtt1_p2">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 2925 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_p3_p2" gating:parent_id="pgtt3_p2">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 12224 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_p3" gating:parent_id="pgtt3">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 4701 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1or2_pgtt4" gating:parent_id="pgtt4">
+    <gating:or>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+    </gating:or>
+  </gating:BooleanGate>
+  
+  <!-- 4701 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_1or2" gating:parent_id="pgtt_1or2">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 2925 expected inside -->
+  <gating:RectangleGate gating:id="pgtt4_2and3" gating:parent_id="pgtt_2and3">
+    <gating:dimension gating:parameter="FL4-H" gating:min="30" gating:max="700"/>
+  </gating:RectangleGate>
+  
+  <!-- 2925 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3_2and4" gating:parent_id="pgtt_2and4">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 3557 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3_1and4" gating:parent_id="pgtt_1and4">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 12419 expected inside -->
+  <gating:RectangleGate gating:id="pgtt3_1or4" gating:parent_id="pgtt_1or4">
+    <gating:dimension gating:parameter="FL3-H" gating:min="10" gating:max="800"/>
+  </gating:RectangleGate>
+  
+  <!-- 4701 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1or2_and_4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt4"/>
+      <gating:BooleanGate gating:id="pgtt_1or2_pgtt4_inside">
+        <gating:or>
+          <gating:gateReference gating:ref="pgtt1"/>
+          <gating:gateReference gating:ref="pgtt2"/>
+        </gating:or>
+      </gating:BooleanGate>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 12419 expected inside -->
+  <gating:BooleanGate gating:id="pgtt3_and_1or4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt3"/>
+      <gating:BooleanGate gating:id="pgtt_1or4">
+        <gating:or>
+          <gating:gateReference gating:ref="pgtt1"/>
+          <gating:gateReference gating:ref="pgtt4"/>
+        </gating:or>
+      </gating:BooleanGate>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 2172 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and2">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 4965 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1or2">
+    <gating:or>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+    </gating:or>
+  </gating:BooleanGate>
+  
+  <!-- 3058 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_2and3">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt3"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 12224 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_3and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt3"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 3039 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_2and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 3745 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 2100 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and2and3">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt3"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 2083 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and2and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 3557 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and3and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt3"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 2925 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_2and3and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt3"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+  
+  <!-- 2018 expected inside -->
+  <gating:BooleanGate gating:id="pgtt_1and2and3and4">
+    <gating:and>
+      <gating:gateReference gating:ref="pgtt1"/>
+      <gating:gateReference gating:ref="pgtt2"/>
+      <gating:gateReference gating:ref="pgtt3"/>
+      <gating:gateReference gating:ref="pgtt4"/>
+    </gating:and>
+  </gating:BooleanGate>
+
+</gating:Gating-ML>
