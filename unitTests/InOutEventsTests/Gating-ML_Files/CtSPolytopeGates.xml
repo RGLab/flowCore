@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gating:Gating-ML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gating="http://www.isac-net.org/std/Gating-ML/v1.3/"
+  xsi:schemaLocation="http://www.isac-net.org/std/Gating-ML/v1.3/ ../../../../schema/Gating-ML.v1.3.xsd">
+
+  <!-- 
+    These tests and other "CtS" tests are designed to verify that particular software 
+    applies gates based on values as they appear in the data file (e.g., channel values 
+    in FCS2/3 files). This has been changed since Gating v.1.3. No implicit transformation 
+    (including channel to scale values transformation) shall be performed. See Gating-ML 
+    specification for further details.
+    
+    Test with fcs2_int16_13367ev_8par_GvHD.fcs
+    
+    Parameters (in order) are: FSC-H, SSC-H, FL1-H, FL2-H, FL3-H, FL2-A, FL4-H, Time
+    13,367 events (data from a GvHD study)
+  -->
+
+  <!-- 4 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_01">
+    <gating:dimension gating:parameter="FSC-H"/>
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="50"/>
+      <gating:coordinate gating:value="15"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="120"/>
+      <gating:coordinate gating:value="18.5"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="110"/>
+      <gating:coordinate gating:value="33.0"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 172 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_02">
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="10"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="200"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 209 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_03">
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="10"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="200"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 376 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_04">
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="10"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="0"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="100"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="280"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="30"/>
+      <gating:coordinate gating:value="20"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="300"/>
+      <gating:coordinate gating:value="200"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 71 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_05">
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="SSC-H"/>
+    <gating:dimension gating:parameter="FL2-A"/>
+    <gating:point>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="7"/>
+      <gating:coordinate gating:value="8"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="8"/>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="800"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="1"/>
+      <gating:coordinate gating:value="120"/>
+      <gating:coordinate gating:value="5"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7520"/>
+      <gating:coordinate gating:value="12"/>
+      <gating:coordinate gating:value="11"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7020"/>
+      <gating:coordinate gating:value="110"/>
+      <gating:coordinate gating:value="752"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 1260 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_06">
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:dimension gating:parameter="FL2-H"/>
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="7"/>
+      <gating:coordinate gating:value="8"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="8"/>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="800"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="1"/>
+      <gating:coordinate gating:value="120"/>
+      <gating:coordinate gating:value="5"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7520"/>
+      <gating:coordinate gating:value="12"/>
+      <gating:coordinate gating:value="11"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7020"/>
+      <gating:coordinate gating:value="110"/>
+      <gating:coordinate gating:value="752"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+  <!-- 2267 expected inside -->
+  <gating:PolytopeGate gating:id="CtSPt_07">
+    <gating:dimension gating:parameter="FL4-H"/>
+    <gating:dimension gating:parameter="FL3-H"/>
+    <gating:dimension gating:parameter="FL1-H"/>
+    <gating:point>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="7"/>
+      <gating:coordinate gating:value="8"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="8"/>
+      <gating:coordinate gating:value="2"/>
+      <gating:coordinate gating:value="800"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="1"/>
+      <gating:coordinate gating:value="120"/>
+      <gating:coordinate gating:value="5"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7520"/>
+      <gating:coordinate gating:value="12"/>
+      <gating:coordinate gating:value="11"/>
+    </gating:point>
+    <gating:point>
+      <gating:coordinate gating:value="7020"/>
+      <gating:coordinate gating:value="110"/>
+      <gating:coordinate gating:value="752"/>
+    </gating:point>
+  </gating:PolytopeGate>
+
+</gating:Gating-ML>
