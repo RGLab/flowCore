@@ -156,7 +156,7 @@ setMethod("%in%",
           dim(a) <- dim(table@a)
           b <- as.numeric(table@b)
           dim(b) <- dim(table@b)
-         .Call("inPolytope", data, a, b)
+          as.logical(.Call("inPolytope", data, a, b))
       })
 
 
