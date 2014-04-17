@@ -190,6 +190,7 @@ setMethod("%in%",
                               table="norm2Filter"),
           definition=function(x, table)
       {
+          .Deprecated(msg = "norm2Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
           if(nrow(x)==0)
           {
               result <- as.logical(NULL)
@@ -272,6 +273,7 @@ setMethod("%in%",
                               table="curv1Filter"),
           definition=function(x, table)
       {
+          .Deprecated(msg = "curv1Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
           ## We accomplish the actual filtering via Matt Wands feature
           ## software
           param <- parameters(table)
@@ -328,6 +330,7 @@ setMethod("%in%",
                               table="curv2Filter"),
           definition=function(x, table)
       {
+          .Deprecated(msg = "curv2Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
           ## We accomplish the actual filtering via Matt Wands feature
           ## software
           param <- parameters(table)

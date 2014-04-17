@@ -42,3 +42,8 @@ Copied 'featureSignif' and other required functions from the 'feature' package
 into 'flowCore', to remove an undesired dependency on tcltk (caught in the
 dependency chain from 'feature'). These functions have been collated into
 'feature.R'.
+
+CHANGES IN VERSION 1.31.5
+--------------------------
+deprecate `curv1Filter`, `curv2Filter`, `norm2Filter` 
+and make them available in flowStats (3.23.2) to drop more package dependencies.

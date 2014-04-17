@@ -80,7 +80,7 @@ setMethod("summarizeFilter",
       })
 
 
-
+#TODO: to remove
 ## ==========================================================================
 ## For curv1Filters we want to strip the attributes from the subSet slot,
 ## i.e., the boundaries of the high density regions and the fsObj obects.
@@ -97,7 +97,8 @@ setMethod("summarizeFilter",
       })
 
 
-
+#TODO: to remove
+  
 ## ==========================================================================
 ## For curv2Filters we want to strip the attributes from the subSet slot,
 ## i.e., the boundaries of the high density regions and the fsObj obects.
@@ -114,7 +115,8 @@ setMethod("summarizeFilter",
       })
 
 
-
+#TODO: to remove
+  
 ## ==========================================================================
 ## For a norm2Filter we want to strip things from the attributes in the
 ## subSet slot, i.e., the details about the fitted bivariate normal

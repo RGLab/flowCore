@@ -682,6 +682,7 @@ setClass("norm2Filter",
 norm2Filter <- function(x, y, method="covMcd", scale.factor=1,
                         n=50000, filterId="defaultNorm2Filter")
 {
+    .Deprecated(msg = "norm2Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
     checkClass(method, "character", 1)
     checkClass(scale.factor, "numeric", 1)
     checkClass(n, "numeric", 1)
@@ -762,6 +763,7 @@ setClass("curv1Filter",
 curv1Filter <- function(x, bwFac=1.2, gridsize=rep(401, 2),
                         filterId="defaultCurv1Filter")
 {
+    .Deprecated(msg = "curv1Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
     checkClass(filterId, "character", 1)
     checkClass(bwFac, "numeric", 1)
     checkClass(gridsize, "numeric", 2)
@@ -796,6 +798,7 @@ setClass("curv2Filter",
 curv2Filter <- function(x, y, filterId="defaultCurv2Filter",
                         bwFac=1.2, gridsize=rep(151, 2))
 {
+    .Deprecated(msg = "curv2Filter will be moved to 'flowStats' package. So please make sure to update your depends/imports list of the user package.")
     checkClass(filterId, "character", 1)
     checkClass(bwFac, "numeric", 1)
     checkClass(gridsize, "numeric", 2) 
