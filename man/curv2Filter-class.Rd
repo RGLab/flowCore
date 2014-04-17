@@ -13,6 +13,9 @@
   Class and constructor for data-driven \code{\link{filter}} objects
   that selects high-density regions in two dimensions.
 
+  Deprecation notice:
+  This S4 Classes and its constructor and S4 methods will be moved to \sQuote{flowStats} package.
+
 }
 
 

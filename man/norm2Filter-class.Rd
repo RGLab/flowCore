@@ -15,6 +15,9 @@
   selects data points according to their standard deviation from the
   fitted distribution.
 
+  Deprecation notice:
+  This S4 Classes and its constructor and S4 methods will be moved to \sQuote{flowStats} package.
+
 }
 
 

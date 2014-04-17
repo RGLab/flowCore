@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 %\VignetteIndexEntry{Basic Functions for Flow Cytometry Data}
-%\VignetteDepends{flowCore, flowViz}
+%\VignetteDepends{flowCore, flowViz, flowStats}
 %\VignetteKeywords{}
 %\VignettePackage{flowCore}
 \documentclass[11pt]{article}
@@ -573,8 +573,8 @@ underlying data, for instance by modelling data distribution or by
 density estimation :
 
 \begin{description}
-\item[norm2Filter]{ A robust method for finding a region that most
-    resembles a bivariate Normal distribution. }
+\item[norm2Filter]{ A robust method (defined in 'flowStats' package) for finding
+a region that most resembles a bivariate Normal distribution. }
 \item[kmeansFilter]{ Identifies populations based on a one dimensional
     k-means clustering operation. Allows the specification of
     \textbf{multiple} populations. }
@@ -634,6 +634,7 @@ only with that population, we might use \Rfunction{Subset} along with
 a \Rclass{norm2Filter} object as follows:
 
 <<Norm2Filter, echo=true, results=verbatim>>=
+library(flowStats)
 morphGate <- norm2Filter("FSC-H", "SSC-H", filterId="MorphologyGate", 
                          scale=2)
 smaller <- Subset(fs, morphGate)
