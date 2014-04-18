@@ -325,57 +325,6 @@ setMethod("print",
           return(invisible(x))
       })
 
-
-
-## ==========================================================================
-## curv1Filter
-## ---------------------------------------------------------------------------
-setMethod("show",
-          signature=signature(object="curv1Filter"),
-          definition=function(object)
-          {
-            parms <- as.character(parameters(object))
-            na  <-  is.na(parms)
-            if(any(na))
-              parms[na] <- "internal transformation"
-            msg <- paste("1D curvature filter '",object@filterId,
-                         "' in dimension ",
-                         parms, "\nwith settings:",
-                       "\n  bwFac=", object@bwFac, "\n  gridsize=",
-                       paste(object@gridsize, collapse=",", sep=""),
-                       sep="")
-          cat(msg)
-          cat("\n")
-          invisible(msg)
-      })
-
-
-
-## ==========================================================================
-## curv2Filter
-## ---------------------------------------------------------------------------
-setMethod("show",
-          signature=signature(object="curv2Filter"),
-          definition=function(object)
-          {
-            parms <- as.character(parameters(object))
-            na  <-  is.na(parms)
-            if(any(na))
-              parms[na] <- "internal transformation"
-            msg <- paste("2D curvature filter '",
-                         object@filterId,"' in dimensions ",
-                         paste(parms, collapse=" and "),
-                         "\nwith settings:",
-                         "\n  bwFac=", object@bwFac, "\n  gridsize=",
-                         paste(object@gridsize, collapse=",", sep=""),
-                         sep="")
-            cat(msg)
-            cat("\n")
-            invisible(msg)
-          })
-
-
-
 ## ==========================================================================
 ## expressionFilter
 ## ---------------------------------------------------------------------------
