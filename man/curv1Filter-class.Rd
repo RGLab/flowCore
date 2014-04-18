@@ -13,10 +13,7 @@
   Class and constructor for data-driven
   \code{\link[flowCore:filter-methods]{filter}} objects 
   that selects high-density regions in one dimension.
-  
-  Deprecation notice:
-  This S4 Classes and its constructor and S4 methods will be moved to \sQuote{flowStats} package.
-  	
+
 }
 
 
