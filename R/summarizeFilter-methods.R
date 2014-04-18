@@ -80,41 +80,6 @@ setMethod("summarizeFilter",
       })
 
 
-
-## ==========================================================================
-## For curv1Filters we want to strip the attributes from the subSet slot,
-## i.e., the boundaries of the high density regions and the fsObj obects.
-## ---------------------------------------------------------------------------
-setMethod("summarizeFilter",
-          signature=signature(result="multipleFilterResult",
-                              filter="curv1Filter"),
-          definition=function(result,filter)
-      {
-          ret <- callNextMethod()
-          ret$boundaries <- attr(result@subSet, "boundaries")
-          ret$fsObj <- attr(result@subSet, "fSObj")
-          return(ret)
-      })
-
-
-
-## ==========================================================================
-## For curv2Filters we want to strip the attributes from the subSet slot,
-## i.e., the boundaries of the high density regions and the fsObj obects.
-## ---------------------------------------------------------------------------
-setMethod("summarizeFilter",
-          signature=signature(result="multipleFilterResult",
-                              filter="curv2Filter"),
-          definition=function(result,filter)
-      {
-          ret <- callNextMethod()
-          ret$polygons <- attr(result@subSet, "polygon")
-	  ret$fsObj <- attr(result@subSet, "fSObj")
-          return(ret)
-      })
-
-
-
 ## ==========================================================================
 ## For a norm2Filter we want to strip things from the attributes in the
 ## subSet slot, i.e., the details about the fitted bivariate normal

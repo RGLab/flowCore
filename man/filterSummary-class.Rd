@@ -134,6 +134,10 @@
 
 \examples{
 
+\dontrun{
+
+library(flowStats)
+
 ## Loading example data, creating and applying a curv1Filter
 dat <- read.FCS(system.file("extdata","0877408774.B08",
 package="flowCore"))
@@ -152,7 +156,7 @@ s[["peak 2"]]
 s$true
 s$n
 toTable(s)
-
+}
 }
 
 \keyword{classes}

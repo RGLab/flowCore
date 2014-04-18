@@ -28,9 +28,6 @@ importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 
 importFrom(graphics, hist, text, smoothScatter)
 
-importFrom(grDevices, contourLines)
-
-importFrom(MASS, cov.rob)
 
 importFrom(methods, as, callNextMethod, getSlots, is, new,
            selectMethod, signature, slot, "slot<-")
@@ -44,7 +41,6 @@ importFrom(utils, data, find, head, tail, write.table)
 
 importFrom(corpcor, pseudoinverse)
 
-importFrom(ks, dfltCounts, drvkde)
 
 exportClasses("actionItem",
               "asinht",
@@ -56,8 +52,6 @@ exportClasses("actionItem",
               "compensateView",
               "complementFilter",
               "concreteFilter",
-              "curv1Filter",
-              "curv2Filter",
               "dg1polynomial",
               "EHtrans",
               "ellipsoidGate",
@@ -252,8 +246,6 @@ export("action",
        "compensateView",
        "compensateActionItem",
        "compensation",
-       "curv1Filter",
-       "curv2Filter",
        "Data",
        "dg1polynomial",
        "each_col",
