@@ -96,6 +96,10 @@ summary(object, \dots)
 
 \examples{
 
+\dontrun{
+
+library(flowStats)
+
 ## Loading example data, creating and applying a curv1Filter
 data(GvHD)
 dat <- GvHD[1:3]
@@ -111,7 +115,7 @@ s[[1]]
 
 ##accessing details
 toTable(s)
-
+}
 }
 
 \keyword{classes}

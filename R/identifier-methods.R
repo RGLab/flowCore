@@ -39,7 +39,7 @@ setReplaceMethod("identifier",
              {
                  object@description[["ORIGINALGUID"]] <- object@description[["GUID"]]
                  object@description[["GUID"]] <- value
-                 tmp <- object@exprs
+#                 tmp <- object@exprs
                  return(object)
              })
 
