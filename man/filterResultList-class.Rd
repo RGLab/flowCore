@@ -95,7 +95,9 @@ Class \code{"\linkS4class{filter}"}, by class "filterResult", distance 3.
 
 
 \examples{
+\dontrun{
 
+library(flowStats)
 ## Loading example data and creating a curv1Filter
 data(GvHD)
 dat <- GvHD[1:3]
@@ -116,7 +118,7 @@ summary(fres)
 
 ## splitting based on the filterResults
 split(dat, fres)
- 
+ }
 }
 
 \keyword{classes}

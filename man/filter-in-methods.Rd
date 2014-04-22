@@ -19,8 +19,6 @@
 \alias{\%in\%,flowFrame,sampleFilter-method}
 \alias{\%in\%,flowFrame,transformFilter-method}
 \alias{\%in\%,flowFrame,expressionFilter-method}
-\alias{\%in\%,flowFrame,curv1Filter-method}
-\alias{\%in\%,flowFrame,curv2Filter-method}
 \alias{\%in\%,flowFrame,quadGate-method}
 \alias{\%in\%,flowFrame,timeFilter-method}
 \alias{\%in\%,flowFrame,boundaryFilter-method}
