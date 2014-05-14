@@ -10,8 +10,6 @@
 \alias{summarizeFilter,filterResult,subsetFilter-method}
 \alias{summarizeFilter,logicalFilterResult,norm2Filter-method}
 \alias{summarizeFilter,logicalFilterResult,parameterFilter-method}
-\alias{summarizeFilter,multipleFilterResult,curv1Filter-method}
-\alias{summarizeFilter,multipleFilterResult,curv2Filter-method}
 \alias{summarizeFilter,multipleFilterResult,parameterFilter-method}
 
 
@@ -42,10 +40,6 @@
 \item{result = "logicalFilterResult", filter = "norm2Filter"}{ see above }
 
 \item{result = "logicalFilterResult", filter = "parameterFilter"}{ see above }
-
-\item{result = "multipleFilterResult", filter = "curv1Filter"}{ see above }
-
-\item{result = "multipleFilterResult", filter = "curv2Filter"}{ see above }
 
 \item{result = "multipleFilterResult", filter = "parameterFilter"}{ see above }
 }}
