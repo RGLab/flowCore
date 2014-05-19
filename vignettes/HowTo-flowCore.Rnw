@@ -1064,6 +1064,7 @@ The \Rpackage{flowViz} package also defines \Rfunction{xyplot} and
 are usually chosen automatically, for instance to add the gate
 boundaries to the plot of a \Rclass{gateView}.
 <<plotViews>>=
+library(flowStats)
 densityplot(wf[["base view"]])
 xyplot(`FL1-H` ~ `FL2-H`, wf[["CD15 FITC+CD45 PE+"]])
 @ 
