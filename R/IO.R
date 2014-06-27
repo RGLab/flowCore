@@ -553,10 +553,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                  "starting point to read the data.")
         }
         
-        if(realOff["dataend"] != dataend && realOff["dataend"]== 0){
+        if(realOff["dataend"] != dataend && (realOff["dataend"]== 0 || realOff["dataend"]== 99999999)) {
             offsets["dataend"] <-  dataend+offsets[8]
         }
-        if(realOff["dataend"] != dataend && realOff["dataend"]!= 0){
+        if(realOff["dataend"] != dataend && realOff["dataend"]!= 0 && realOff["dataend"]!= 99999999) {
             stop("The HEADER and the TEXT segment define different ending ",
                  "point to read the data.")
         }
