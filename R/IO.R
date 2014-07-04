@@ -541,8 +541,28 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     ##for DATA segment exceeding 99,999,999 byte.
     if(offsets["FCSversion"] >= 3){
         realOff <- offsets - offsets[8]
-        datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA"))
-        dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA"))
+
+        # Let's not be too strick here as unfortunatelly, some files exported from FlowJo 
+        # are missing the $BEGINDATA and $ENDDATA keywords and we still need to read those
+        datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA", strict=FALSE))
+        if (is.na(datastart)) { 
+          if (realOff["datastart"] != 0) {
+            datastart = realOff["datastart"]
+            warning("Missing the required $BEGINDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
+          } else {
+            stop("Don't know where the data segment begins, there was no $BEGINDATA keyword and the FCS HEADER does not say it either.")
+          }
+        } 
+        dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA", strict=FALSE))
+        if (is.na(dataend)) { 
+          if (realOff["dataend"] != 0) {
+            dataend = realOff["dataend"]
+            warning("Missing the required $ENDDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
+          } else {
+            stop("Don't know where the data segment ends, there was no $ENDDATA keyword and the FCS HEADER does not say it either.")
+          }
+        } 
+
         if(realOff["datastart"] != datastart && realOff["datastart"]== 0){
             offsets["datastart"] <-  datastart+offsets[8]
         }
