@@ -4,8 +4,10 @@ comp.mat = as.matrix(read.table(system.file("extdata","compdata","compmatrix",pa
 
 tube.id = function(x,d) as.numeric(gsub("060909.","",d[["$FIL"]]))
 
-comp.fs1 = read.flowSet(path=system.file("extdata","compdata","data",package="flowCore"),phenoData=list("Tube"=tube.id))
-phenoData(comp.fs1 )$Tube 
+comp.fs1 = read.flowSet(path=system.file("extdata","compdata","data",package="flowCore")
+#                        ,phenoData=list("Tube"=tube.id)
+                        )
+#phenoData(comp.fs1 )$Tube 
 fsApply(comp.fs1,colMeans,use.exprs=TRUE)
 fsApply(comp.fs1,each_col,range,simplify=FALSE)
 
@@ -31,4 +33,15 @@ normGate  = rectangleGate("SSC-H"=c(.3,Inf))
 
 fsApply(Subset(comp.fs1,normGate %on% transform("SSC-H"=normTrans)),each_col,range,simplify=FALSE)
 
+
+# transformList
+chnls <- colnames(comp.mat)
+transList <- transformList(chnls, logicleTransform())
+trans.fs1 <- transform(comp.fs1, transList)
+fsApply(trans.fs1,colMeans,use.exprs=TRUE)
+
+#expect the error
+chnls <- c(chnls, "dummy")
+transList <- transformList(chnls, logicleTransform())
+trans.fs1 <- transform(comp.fs1, transList)
 
