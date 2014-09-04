@@ -104,7 +104,7 @@ setMethod("%on%",
           cN <- colnames(x)
           for(y in e1@transforms){
               if( !(y@output %in% cN) )
-                  stop(y@output, "is not a variable in the flowFrame")
+                  stop(y@output, " is not a variable in the flowFrame")
               x[,y@output] = y@f(x[, y@input])
               mt <- match(y@output, pars$name)
               pData(pars)[mt,c("minRange", "maxRange")] <-

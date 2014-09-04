@@ -469,11 +469,21 @@ setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, ...)
       {
+        
           ## We hack method dispatch here to allow for something like
           ## transform(flowSet, transformList). Not really nice because
           ## we also need to deal with non-standard evaluation, but so what...
-          suppressWarnings(try(if(length(list(...)) && is(..1, "transformList"))
-              return(..1 %on% `_data`), silent=TRUE))
+          res <- suppressWarnings(
+              try(
+                    if(length(list(...)) && is(..1, "transformList"))
+                        return(..1 %on% `_data`)
+                  , silent = TRUE
+                )
+            )
+          #try to throw when failure is due to the invalid channel names used in transformList
+          if(grepl("is not a variable in the flowFrame", res))
+            stop(res)
+          
           e <- substitute(list(...))
           x <- `_data`
           par <- parameters(x)
