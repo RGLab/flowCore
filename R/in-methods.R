@@ -394,7 +394,7 @@ findTimeChannel <- function(xx, strict=FALSE)
     time <- grep("^Time$", colnames(xx), value=TRUE,
                  ignore.case=TRUE)[1]
     if(is.na(time)){
-        if(is(xx, "flowSet"))
+        if(is(xx, "flowSet")||is(xx, "ncdfFlowList"))
             xx <- exprs(xx[[1]])
 		else if (is(xx, "flowFrame"))
 			xx <- exprs(xx)
