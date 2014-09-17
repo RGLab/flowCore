@@ -177,7 +177,7 @@ read.FCS <- function(filename,
 	
 	
     ## the spillover matrix
-    spID <- intersect(c("SPILL", "spillover"), names(description))
+    spID <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(description))
     if(length(spID)>0){
         sp <- description[[spID]]
         splt <- strsplit(sp, ",")[[1]]
@@ -958,7 +958,7 @@ collapseDesc <- function(x)
 			})
     d <- d[order(names(d))]
 	
-	spillName <- intersect(c("SPILL", "spillover"), names(d))
+	spillName <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(d))
     if(length(spillName) >0){
 		mat <-  d[[spillName]]
 		rNum <- as.character(nrow(mat))
