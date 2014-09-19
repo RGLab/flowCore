@@ -853,250 +853,214 @@ provide some information about the filtering operation itself in the
 
 
 
-\section{Work flows}
+\section{GatingSet}
 \Rclass{filterSets} are very limited in their use for complex
 analysis work flows. They are  result-centric and it is hard to access
-intermediate results. \Rpackage{flowCore} offers much more versatile
-tools for such tasks though the \Rclass{workFlow} class. The general
-idea is to let the software handle the organization of intermediate
-results, naming schemes and operations and to provide a unified API
+intermediate results. \Rpackage{flowWorkspace} and \Rpackage{openCyto} framework (http://opencyto.org) 
+offers much more versatile tools for such tasks though the \Rclass{GatingSet} class (the old \Rclass{workFlow} is now deprecated). The general idea is to let the software handle the organization of intermediate results, and operations and to provide a unified API
 to access and summarize these operations. 
  
 
-\subsection{Abstraction of work flows}
-There are three classes in \Rpackage{flowCore} that are used to
-abstract work flows: \Rclass{workFlow} objects are the basic container
+\subsection{Abstraction of GatingSet}
+There are two classes in \Rpackage{flowWorkspace} that are used to
+abstract work flows: \Rclass{GatingSet} objects are the basic container
 holding all the necessary bits and pieces and they are the main
-structure for user interaction. \Rclass{actionItem} objects are
-abstractions of data analysis operations like gating, transformation
-or normalization. There are sub-classes for different types of
-operations. Finally, \Rclass{view} objects are created when applying
-\Rclass{actionItems} to a \Rclass{workFlow}. One can think of
-\Rclass{views} as separate data sets, for instance a subset that is
-created by a gating operation or the modified data following a
-transformation. Again, different types of \Rclass{views} are available
-through various sub-classes. This structure allows for a unified API
-in which the user interacts with either \Rclass{views} (the most
-common application) or \Rclass{actionItems}.
+structure for user interaction. It is the container storing multiple \Rclass{GatingHierarchy} objects which are associate with individual samples. 
+One can think of \Rclass{GatingSet} corresponds to \Rclass(flowSet) and 
+\Rclass{GatingHierarchy} corresponds to \Rclass(flowFrame).
 
-It is important to know that \Rclass{workFlows} use a reference
+It is important to know that \Rclass{GatingSet} use 'exteranl pointer' to store
+the 'gating tree' and thus most of its accessors have a reference
 semantic instead of the pass-by-value semantic that is usually found
-in the R language. This design was chosen to minimize memory
-consumption and to keep the framework as flexible as possible. The
-only main consequence on the user-level is the fact that direct
-assignments to a \Rclass{workFlow} object are usually not necessary;
-i.e., functions that operate on the \Rclass{workFlow} have the
+in the R language. The main consequence on the user-level is the fact that direct
+assignments to a \Rclass{GatingSet} object are usually not necessary;
+i.e., functions that operate on the \Rclass{GatingSet} have the
 potential side-effect of modifying the object.
   
-\subsection{Naming schemes}
-One major obstacle of using scripts as a work flow representation is
-the need to keep track of object symbols or names of list
-items. Choosing arbitrary names makes it hard to access objects and
-there is no way to easily query the structure of the work flow other
-than reading through the complete script. It is also very hard to
-appreciate the hierarchical structure of the work flow from a linear
-listing of R commands. Most objects in \Rpackage{flowCore} provide
-useful names or identifiers, and the work flow framework tries to
-utilize these names as much as possible. For example, a
-\Rclass{rectangleGate} called ``Lymphocytes'' will create two
-subpopulations, namely the cells within the gate and their
-complement. Intuitive names for these subpopulation would therefore be
-``Lymphocyte+'' and ``Lymphocyte-''. These names don't necessarily
-need to be unique, and in order to be able to unambiguously address
-each item in a work flow we need additional unique identifiers. Our
-software keeps an alias table that maps these internal unique
-identifiers to more human-readable and user friendly names, and unless
-there are naming collisions, those names will also be the primary
-identifiers that are exposed in the API. Only if and alias is not
-unique, objects need to be addressed by their internal unique
-identifier.
-  
-\subsection{Creating \Rclass{workFlow} objects}
-Objects of class \Rclass{workFlow} have to be created using the
-constructor \Rfunction{workFlow}. The single mandatory argument is a
-flow data object, either a \Rclass{flowFrame} or a \Rclass{flowSet}.
-<<createWorkFlow>>=
-data(GvHD)
-wf <- workFlow(GvHD[1:5], name="myWorkflow")
-wf
+\subsection{Creating \Rclass{GatingSet} objects}
+Before creating a 'GatingSet', we need to have flow data loaded into R as a \Rclass{flowSet} or \Rclass{ncdfFlowSet}(the disk-based 'flowSet', to handle large data set that are too big for memory, see \Rpackage(ncdfFlow) package).
+<<loadData>>=
+library(flowWorkspace)
+fcsfiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = TRUE)
+fs <- read.flowSet(fcsfiles)
 @
-%
-Printing the objects shows its structure: the work flow contains a
-single \Rclass{view} ``base view'' which essentially is the
-\Rclass{flowSet} \Robject{fs}. Since the data was added by the
-constructor and is not the result of a particular data analysis
-operation, no \Rclass{actionItem} is associated to the
-\Rclass{view}. We can query the available views in the
-\Rclass{workFlow} using the \Rfunction{views} method:
-<<views>>=
-views(wf)
+Normally, we want to compensate the data firstly by using a user supplied compensation matrix:
+<<getComp, echo=FALSE>>=
+gs_manual <- load_gs(list.files(pattern = "gs_manual", system.file("extdata", package = "flowWorkspaceData"), full = TRUE))
+comp <- getCompensationMatrices(gs_manual[[1]])
+@
+<<Compensate>>=
+comp
+fs_comp <- compensate(fs, comp)
+@
+Here is the effect of compensation:
+<<plotComp>>=
+transList <- estimateLogicle(fs[[1]], c("V545-A","V450-A"))
+grid.arrange(
+xyplot(`V545-A`~`V450-A`, transform(fs[[1]], transList), smooth = FALSE, xbin = 32)
+, xyplot(`V545-A`~`V450-A`, transform(fs_comp[[1]], transList), smooth = FALSE, xbin = 32)
+, ncol = 2)
+@
+
+Then \Rclass{GatingSet} can be created using the constructor \Rfunction{GatingSet}. 
+
+<<createGatingSet>>=
+gs <- GatingSet(fs_comp)
+gs
+@
+
+We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{getNodes} method:
+<<nodes>>=
+getNodes(gs)
+@ 
+It shows the only node 'root' which corresponds to the raw 'flow data' just added.
+
+\subsection{transform the data}
+Transformation can be either done on 'flowSet' before constructing 'GatingSet' or a
+\Rclass{transformList} can be directly added to a \Rclass{GatingSet}:
+
+<<addTrans>>=
+biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+tf <- transformList(parameters(comp), biexpTrans)
+gs <- transform(gs, tf)
+grid.arrange(
+  densityplot(~`B710-A`, fs_comp[[1]], main = "raw")
+  ,densityplot(~`B710-A`, flowData(gs)[[1]], main = "trans")
+  , ncol = 2
+)
 @ 
 
-\subsection{Adding  \Rclass{actionItems}}
-Currently there are four different types of \Rclass{actionItems} that
-can be added to a \Rclass{workFlow}:
+Note that we did assign the return value of \Rfunction{transform} back to \Robject{gs}. This is because 'flow data' is stored as R object and thus transforming the data still follows the pass-by-value semantics.
 
-\begin{itemize}
-\item{\Rclass{compensateActionItem}: A \Rclass{compensation} object}
-\item{\Rclass{transformActionItem}: A \Rclass{transformList} object}
-\item{\Rclass{normalizeActionItem}: A \Rclass{normalization} object}
-\item{\Rclass{gateActionItem}: A \Rclass{filter} object}
-\end{itemize}
+\subsection{Add the gates}
+Some basic flowCore \Rclass{filter} can be added to a \Rclass{GatingSet}:
 
-The user doesn't have to bother with the details of these classes,
-they will be created internally when adding one of the above source
-objects to the \Rclass{workFlow} using the \Rfunction{add} method.
-<<addItems>>=
-tf <- transformList(colnames(GvHD[[1]])[3:6], asinh, transformationId="asinh")
-add(wf, tf)
-wf
-views(wf)
-@ 
-%
-There are several things to note here. First, we didn't assign the
-return value of \Rfunction{add} back to \Robject{wf}. This is the
-aforementioned feature of the reference semantic. Internally,
-\Rclass{workFlows} are to the most part \Rclass{environments}, and all
-modifications change the content of these \Rclass{environments} rather
-than the object itself. We also used the \Rfunction{add} methods with
-two arguments only: the \Rclass{workFlow} and the
-\Rclass{transformList}. In a hierarchical work flow we usually want to
-control to which subset (or rather to which \Rclass{view}, to stick to
-the work flow lingo) we want to add the \Rclass{actionItem} to. The
-default is to use the base view, and alternative parent \Rclass{views}
-have to be specified using the \Robject{parent} argument;
-\Robject{add(wf,tf,parent="base view")} would have been
-equivalent. Adding the transformation created a new \Rclass{view}
-called ``asinh'' and we can see that this name was automatically taken
-from the \Rclass{transformationList} object. If we want to control the
-name of the new \Rclass{view}, we can do so using the \Robject{name} argument:
-<<itemName>>=
-add(wf, tf, name="another asinh transform")
-wf
+<<addGate-nonDebris>>=
+rg1 <- rectangleGate("FSC-A"=c(50000, Inf), filterId="NonDebris")
+add(gs, rg1, parent = "root")
+getNodes(gs)
+# gate the data
+recompute(gs)
 @
-%
-This operation created a warning since we didn't use a leaf node to
-add the transformation. The software can't be sure if any of the
-downstream leafs in the work flow hierarchy are affected by the
-transformation (as it would certainly be true for most gates). One
-solution would be to update all downstream leafs in the work flow,
-but this feature is not supported yet. Also note that we used the same
-\Rclass{transformList} object twice. While we controlled the name that
-was used for the second \Rclass{view}, the alias for the
-\Rclass{actionItem} is the same in both cases, and we would have to
-use the internal unique identifier to unambiguously access the
-respective object.
+As we see, here we don't need to assign \Rclass{GatingSet} back because all the modifications are made in place to the \Rclass{external pointer} rather than the R object itself.
+And now there is one new population node under the `root' node called 'NonDebris'.
+The node is named after the 'filterId' of the gate if not explictly supplied.
+After the gates are added, the actual gating process is done by explictly calling \Rfunction{recompute} method.
+Note that the numeric value it returns is the internal ID for the new population just added, which can be normally ignored since the gating path instead of numeric id is recommended way to refer to population nodes later.
 
-Transformation operations (and also compensations or normalizations)
-only create single \Rclass{views}. This is not true for gating
-operations. Even the most simple gate creates two populations: those
-cells in the gate and the complement. Accordingly, two separate
-\Rclass{views} have to be created as well. 
-<<addGate>>=
-rg <- rectangleGate("FSC-H"=c(200,400), "SSC-H"=c(250, 400),
-                    filterId="rectangle")
-add(wf, rg, parent="asinh")
-wf
+To view the gate we just added,
+<<plotGate>>=
+plotGate(gs, "NonDebris")
 @
-%
-As we see, there are now two new \Rclass{views} under the ``asinh''
-node called ``rectangle+'' and ``rectangle-''. Other filter types may
-create more than two populations, for instance a \Rclass{quadrantGate}
-always results in four sub-populations. There is no restriction on the
-number of populations that are allowed to be created by a single
-gating operation, however, when gating a \Rclass{flowSet}, the number
-of populations have to be the same for each frame in the set.
-<<addQuadGate>>=
-qg <- quadGate("FL1-H"=2, "FL2-H"=4)
-add(wf,qg,parent="rectangle+")
-wf
-@ 
-%
-For complex work flows it becomes increasingly hard to convey all
-information by printing on the screen. There is a plotting function
-for \Rclass{workFlow} objects which plots the underlying tree. The
-function depends on the \Rpackage{Rgraphviz} package.
-<<plotwf, eval=FALSE>>=
-plot(wf)
+
+Since They are '1d` gates, we can also dispaly it in `densityplot`
+<<plotGate-density>>=
+plotGate(gs, "NonDebris", type = "densityplot")
+@
+
+To get population statistics for the given populatuion
+<<getStats>>=
+getTotal(gs[[1]], "NonDebris")#counts
+getProp(gs[[1]], "NonDebris")#proportion
+@
+
+Now we add two more gates:
+<<addGate-singlets>>=
+# add the second gate
+mat <- matrix(c(54272,59392,259071.99382782,255999.994277954,62464,43008,70656,234495.997428894,169983.997344971,34816), nrow = 5)
+colnames(mat) <-c("FSC-A", "FSC-H")
+mat
+pg <- polygonGate(mat)
+add(gs, pg, parent = "NonDebris", name = "singlets")
+
+# add the third gate
+rg2 <- rectangleGate("V450-A"=c(2000, Inf))
+add(gs, rg2, parent = "singlets", name = "CD3")
+getNodes(gs)
+
+# gate the data from "singlets"
+recompute(gs, "singlets")
+@
+
+We see two more nodes are added to 'GatingSet' and the population names are explicitly specified during the adding this time. 'recomputing' only needs to be done once from the first ungated node, which will automatically compute all its descendants.
+
+To plot all gates for one sample
+<<plotGateAll>>=
+plotGate(gs[[1]])
+@
+
+To plot the underlying tree 
+<<plotgs, eval=FALSE>>=
+plot(gs)
 @ 
 <<plotwfdo, fig=true, echo=FALSE, results=hide>>=
 if(suppressWarnings(require(Rgraphviz))){
-    plot(wf)
+    plot(gs)
 }else{
     plot(1,1, type="n", axes=FALSE, ann=FALSE)
     text(1,1,"Need to install Rgraphviz")
 }
 @ 
 
-\subsection{Accessing items in the \Rclass{workFlow} object}
-The main reason for having the \Rclass{workFlow} class is to be able
-to easily access all elements of a potentially complex analysis work
-flow. The predominant use case here is to access individual
-\Rclass{views}, either for plotting, to create summary statistics or
-to use the underlying data for subsequent analysis steps. You can do
-that using the familiar list subsetting syntax:
-<<getView>>=
-wf[["rectangle+"]]
-wf$asinh
-@
-%
-This also works for \Rclass{actionItems}:
-<<getAction>>=
-wf[["action_rectangle"]]
-@ 
-% 
-In order to retreive the underlying data for a \Rclass{view} you
-can use the \Rfunction{Data} method.
+To retreive the underlying flow data for a gated \Rclass{population}
 <<getData>>=
-Data(wf[["rectangle-"]])
-@ 
-%
-There are \Rfunction{summary} methods defined for the different
-\Rclass{view} subclasses, which basically create the respective
-summaries of the associated \Rpackage{flowCore} objects, e.g. a
-\Rclass{filterResult} for a filtering operation.
-<<summaries>>=
-summary(wf[["action_rectangle"]])
-summary(wf[["CD15 FITC+CD45 PE+"]])
-@ 
-The \Rpackage{flowViz} package also defines \Rfunction{xyplot} and
-\Rfunction{densityplot} methods for \Rclass{view} objects. Sensible defaults
-are usually chosen automatically, for instance to add the gate
-boundaries to the plot of a \Rclass{gateView}.
-<<plotViews>>=
-library(flowStats)
-densityplot(wf[["base view"]])
-xyplot(`FL1-H` ~ `FL2-H`, wf[["CD15 FITC+CD45 PE+"]])
+fs_nonDebris <- getData(gs, "NonDebris")
+fs_nonDebris 
+nrow(fs_nonDebris[[1]])
+nrow(fs[[1]])
+@
+
+To get all the population statistics
+<<getStats>>=
+getPopStats(gs)
+@
+
+\subsection{Removing nodes from \Rclass{GatingSet} object}
+There are dependencies between Rclass{nodes} in the hierarchical structure of the \Rclass{GatingSet} object. Thus, removing a particular node means also
+removing all of its associated child \Rclass{nodes}. 
+
+<<Rm>>=
+Rm('CD3', gs)
+getNodes(gs)
+Rm('NonDebris', gs)
+getNodes(gs)
 @ 
 
-\subsection{Removing items from \Rclass{workFlow} object}
-The hierarchical structur of the \Rclass{workFlow} object introduces
-dependencies between \Rclass{views} or between \Rclass{views} and
-\Rclass{actionItems}. Thus, removing a particular view means also
-removing all of its associated child \Rclass{views} and
-\Rclass{actionItems}. The easiest way to remove objects from a
-\Rclass{workFlow} is through the \Robject{undo} mechanism. The
-function takes a \Rclass{workFlow} object as first argument and an
-optional second integer argument giving the number of operartions that
-are supposed to be roled back.
-<<undo>>=
-undo(wf)
-wf
-@ 
-%
-Sometimes it is more convenient to specify a particular \Rclass{view}
-or \Rclass{action} item that is to be removed. This can be archived
-using the \Rfunction{Rm} methods for \Rclass{views} or
-\Rclass{actionItems}. As a side-effect these methods will also remove
-all dependent items and the user should be well aware of this
-potentially dangerous behaviour.
-<<RmView>>=
-Rm('rectangle-', wf)
-@ 
-<<RmAction>>=
-Rm('asinh', wf)
-@ 
+Now for the larger data set, it would be either inaccurate to apply the same hard-coded gate to all samples or impractical to manually set the gate coordinates for each individual sample. \Rpackage{openCyto} provides some data-driven gating functions to automatically generate these gates. 
 
+For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate for each sample.
+<<openCyto-nonDebris>>=
+library(openCyto)
+thisData <- getData(gs)
+nonDebris_gate <- fsApply(thisData, function(fr)openCyto:::.mindensity(fr, channels = "FSC-A"))
+add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
+recompute(gs)
+@
+
+\Rfunction{singeltGate} can be used for estimating 'singlets` 
+<<openCyto-singletGate>>=
+thisData <- getData(gs, "nonDebris") #get parent data
+singlet_gate <- fsApply(thisData, function(fr)openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
+add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
+recompute(gs)
+@
+
+and then use \Rfunction{mindensity} again for "CD3" gate
+<<openCyto-CD3>>=
+thisData <- getData(gs, "singlets") #get parent data
+CD3_gate <- fsApply(thisData, function(fr)openCyto:::.mindensity(fr, channels ="V450-A"))
+add(gs, CD3_gate, parent = "singlets", name = "CD3")
+recompute(gs)
+@
+
+and then plot the gates
+<<plotALL-openCyto>>=
+plotGate(gs[[1]])
+@
+
+Note that in order to get parent gated data by 'getData' we have to 'recompute' after adding each gate. And the result is very similar to the manual gates but more data-driven and more consistent across samples.
+
+The further ease the process, a csv gating template can be used.
 
 \clearpage
 \bibliographystyle{plainnat} 
