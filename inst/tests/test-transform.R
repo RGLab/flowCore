@@ -21,24 +21,30 @@ test_that("transform", {
       truncTrans <- truncateTransform("truncate",a=1)
       linearTrans <- linearTransform("linear",a=2,b=0)
       
+      #looks like linearTrans is only visible within global environment
+      # and won't be evaluated properly within the test R session
       #Try a linear transform
+#      expect_equal(fsApply(transform(comp.fs1, `FL1-H` = linearTrans(`FL1-H`)), each_col,range)
+#                  , expectRes[["trans.linear"]])
       
-      expect_equal(fsApply(transform(comp.fs1, `FL1-H` = linearTrans(`FL1-H`)), each_col,range)
-                  , expectRes[["trans.linear"]])
+      transList <- transformList("FL1-H", linearTrans)
+      thisRes <- fsApply(transform(comp.fs1, transList), each_col,range)
+      names(dimnames(thisRes)[[2]]) <- NULL
+      expect_equal(thisRes, expectRes[["trans.linear"]])
+      
+      
       #Truncate all columns
-      expect_equal(fsApply(transform(comp.fs1, `FL1-H`=truncTrans(`FL1-H`)
-                                                ,`FL2-H`=truncTrans(`FL2-H`)
-                                                ,`FL3-H`=truncTrans(`FL3-H`)
-                                                ,`FL4-H`=truncTrans(`FL4-H`))
-                            ,each_col,range)
-                    , expectRes[["trans.trunc"]])
+      transList <- transformList(c("FL1-H", "FL2-H", "FL3-H", "FL4-H"), truncTrans)
+      thisRes <- fsApply(transform(comp.fs1, transList),each_col,range)
+      names(dimnames(thisRes)[[2]]) <- NULL
+      expect_equal(thisRes, expectRes[["trans.trunc"]])
       
- 
+      expectRes[["trans.trunc"]] <- thisRes
       #Try to gate on a transformed value. Get ONLY side-scatter values > .3 after norming to [0,1]
       normTrans <- scaleTransform("norm",a=0,b=1023)
       normGate  <- rectangleGate("SSC-H"=c(.3,Inf))
-      
-      expect_equal(fsApply(Subset(transform(comp.fs1, `SSC-H` = normTrans(`SSC-H`)), normGate),each_col,range)
+      transList <- transformList("SSC-H", normTrans)
+      expect_equal(fsApply(Subset(transform(comp.fs1,transList), normGate),each_col,range)
                   , expectRes[["trans.normTrans"]])
       
               
