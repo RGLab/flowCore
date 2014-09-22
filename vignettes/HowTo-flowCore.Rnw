@@ -756,12 +756,16 @@ potential side-effect of modifying the object.
 Before creating a 'GatingSet', we need to have flow data loaded into R as a \Rclass{flowSet} or \Rclass{ncdfFlowSet}(the disk-based 'flowSet', to handle large data set that are too big for memory, see \Rpackage(ncdfFlow) package).
 <<loadData>>=
 library(flowWorkspace)
-fcsfiles <- list.files(pattern = "CytoTrol", system.file("extdata", package = "flowWorkspaceData"), full = TRUE)
+fcsfiles <- list.files(pattern = "CytoTrol"
+                       , system.file("extdata", package = "flowWorkspaceData")
+                       , full = TRUE)
 fs <- read.flowSet(fcsfiles)
 @
 Normally, we want to compensate the data firstly by using a user supplied compensation matrix:
 <<getComp, echo=FALSE>>=
-gs_manual <- load_gs(list.files(pattern = "gs_manual", system.file("extdata", package = "flowWorkspaceData"), full = TRUE))
+gs_manual <- load_gs(list.files(pattern = "gs_manual"
+                                , system.file("extdata", package = "flowWorkspaceData")
+                                , full = TRUE))
 comp <- getCompensationMatrices(gs_manual[[1]])
 @
 <<Compensate>>=
@@ -769,11 +773,12 @@ comp
 fs_comp <- compensate(fs, comp)
 @
 Here is the effect of compensation:
-<<plotComp>>=
+<<plotComp, fig=true,echo=true>>=
 transList <- estimateLogicle(fs[[1]], c("V545-A","V450-A"))
 grid.arrange(
 xyplot(`V545-A`~`V450-A`, transform(fs[[1]], transList), smooth = FALSE, xbin = 32)
-, xyplot(`V545-A`~`V450-A`, transform(fs_comp[[1]], transList), smooth = FALSE, xbin = 32)
+, xyplot(`V545-A`~`V450-A`, transform(fs_comp[[1]], transList)
+         , smooth = FALSE, xbin = 32)
 , ncol = 2)
 @
 
@@ -794,8 +799,9 @@ It shows the only node 'root' which corresponds to the raw 'flow data' just adde
 Transformation can be either done on 'flowSet' before constructing 'GatingSet' or a
 \Rclass{transformList} can be directly added to a \Rclass{GatingSet}:
 
-<<addTrans>>=
-biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144, pos=4.5,neg=0, widthBasis=-10)
+<<addTrans, fig=true,echo=true>>=
+biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144
+                          , pos=4.5,neg=0, widthBasis=-10)
 tf <- transformList(parameters(comp), biexpTrans)
 gs <- transform(gs, tf)
 grid.arrange(
@@ -824,12 +830,12 @@ After the gates are added, the actual gating process is done by explictly callin
 Note that the numeric value it returns is the internal ID for the new population just added, which can be normally ignored since the gating path instead of numeric id is recommended way to refer to population nodes later.
 
 To view the gate we just added,
-<<plotGate>>=
+<<plotGate, fig=true,echo=true>>=
 plotGate(gs, "NonDebris")
 @
 
 Since They are '1d` gates, we can also dispaly it in `densityplot`
-<<plotGate-density>>=
+<<plotGate-density, fig=true,echo=true>>=
 plotGate(gs, "NonDebris", type = "densityplot")
 @
 
@@ -842,7 +848,10 @@ getProp(gs[[1]], "NonDebris")#proportion
 Now we add two more gates:
 <<addGate-singlets>>=
 # add the second gate
-mat <- matrix(c(54272,59392,259071.99382782,255999.994277954,62464,43008,70656,234495.997428894,169983.997344971,34816), nrow = 5)
+mat <- matrix(c(54272,59392,259071.99382782
+                ,255999.994277954,62464,43008,70656
+                ,234495.997428894,169983.997344971,34816)
+              , nrow = 5)
 colnames(mat) <-c("FSC-A", "FSC-H")
 mat
 pg <- polygonGate(mat)
@@ -853,16 +862,20 @@ rg2 <- rectangleGate("V450-A"=c(2000, Inf))
 add(gs, rg2, parent = "singlets", name = "CD3")
 getNodes(gs)
 
+@
+
+We see two more nodes are added to 'GatingSet' and the population names are explicitly specified during the adding this time. 
+
+\Rclass{quadrantGate} that results in four sub-populationsis also supported.
+<<addQuadGate>>=
+qg <- quadGate("B710-A" = 2000, "R780-A" = 3000)
+add(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+getChildren(gs[[1]], "CD3")
 # gate the data from "singlets"
 recompute(gs, "singlets")
-@
-
-We see two more nodes are added to 'GatingSet' and the population names are explicitly specified during the adding this time. 'recomputing' only needs to be done once from the first ungated node, which will automatically compute all its descendants.
-
-To plot all gates for one sample
-<<plotGateAll>>=
-plotGate(gs[[1]])
-@
+@ 
+Here we see four children nodes are added to 'CD3' parent node. Four quadrants are named explicitly through 'names' argument by clock-wise order (start from top-left quadrant).
+'recomputing' only needs to be done once from the first ungated node, which will automatically compute all its descendants.
 
 To plot the underlying tree 
 <<plotgs, eval=FALSE>>=
@@ -876,6 +889,11 @@ if(suppressWarnings(require(Rgraphviz))){
     text(1,1,"Need to install Rgraphviz")
 }
 @ 
+
+To plot all gates for one sample
+<<plotGateAll, fig=true,echo=true>>=
+plotGate(gs[[1]])
+@
 
 To retreive the underlying flow data for a gated \Rclass{population}
 <<getData>>=
@@ -907,7 +925,8 @@ For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate 
 <<openCyto-nonDebris>>=
 library(openCyto)
 thisData <- getData(gs)
-nonDebris_gate <- fsApply(thisData, function(fr)openCyto:::.mindensity(fr, channels = "FSC-A"))
+nonDebris_gate <- fsApply(thisData, function(fr)
+                            openCyto:::.mindensity(fr, channels = "FSC-A"))
 add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
 @
@@ -915,7 +934,8 @@ recompute(gs)
 \Rfunction{singeltGate} can be used for estimating 'singlets` 
 <<openCyto-singletGate>>=
 thisData <- getData(gs, "nonDebris") #get parent data
-singlet_gate <- fsApply(thisData, function(fr)openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
+singlet_gate <- fsApply(thisData, function(fr)
+                          openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
 add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
 @
@@ -923,13 +943,27 @@ recompute(gs)
 and then use \Rfunction{mindensity} again for "CD3" gate
 <<openCyto-CD3>>=
 thisData <- getData(gs, "singlets") #get parent data
-CD3_gate <- fsApply(thisData, function(fr)openCyto:::.mindensity(fr, channels ="V450-A"))
+CD3_gate <- fsApply(thisData, function(fr)
+                        openCyto:::.mindensity(fr, channels ="V450-A"))
 add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
 @
 
+and then use more adanced version of 'quadGate': \Rfunction{quadGate.seq} for gating "CD4" and "CD8" sequentially:
+<<openCyto-Tsub>>=
+thisData <- getData(gs, "CD3") #get parent data
+Tsub_gate <- fsApply(thisData, function(fr)
+      openCyto::quadGate.seq(fr
+                             , channels = c("B710-A", "R780-A")
+                             , gFunc = 'mindensity'
+                            )
+                  )
+add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+recompute(gs)
+@
+
 and then plot the gates
-<<plotALL-openCyto>>=
+<<plotALL-openCyto, fig=true,echo=true>>=
 plotGate(gs[[1]])
 @
 
