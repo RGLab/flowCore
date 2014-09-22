@@ -19,7 +19,7 @@
 \alias{[[<-,filterSet,ANY,ANY,filterReference-method}
 \alias{[[<-,filterSet,missing,ANY,filter-method}
 
-\title{Class filterSet}
+\title{Class filterSet(deprecated)}
 
 \description{A container for a collection of related filters. }
 
@@ -95,23 +95,4 @@ also useful for planning gating strategy layouts and the like.}
 
 }
 
-\examples{
-
-fs = new("filterSet")
-
-## Simple assignment. Note that the filterId slot for the rectangle gate
-## is changed.
-fs[["filter1"]] = rectangleGate("FSC-H"=c(.2,.8),"SSC-H"=c(0,.8))
-
-## Convenience assignment using the filterId slot.
-fs[[""]] = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
-
-## We also support formula interfaces. These two statements are equivalent.
-fs[["Combined"]] = ~ filter1 \%subset\% `Live Cells`
-fs[[""]] = Combined ~ filter1 \%subset\% `Live Cells`
-fs
-as(fs,"list")
-as(as(fs,"list"),"filterSet")
-
-}
 \keyword{classes}
