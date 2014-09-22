@@ -727,132 +727,6 @@ plot(tFilter %on% smaller[[1]],c("FL1-H","FL2-H"))
 
 which has the same effect as the $\log$ transform used earlier.
 
-\section{filterSet: Organizing Filtering Strategies}
-
-\subsection{Building Filter Sets}
-
-In addition to allowing for sequential filtering, \Rpackage{flowCore}
-also provides a \Rclass{filterSet} object that serves as an analogue
-to \Rclass{flowSets} for filters. The primary use of this object is to
-organize and manipulate complex gating strategies. For example, recall
-from the filtering section we had two gates, a ``morphologyGate'' and
-a ``Fluorescence Region'' gate that we used to demonstrate the various
-logical operators available for gates. To recreate this example as a
-\Rclass{filterSet}, we would do the following:
-
-<<FilterSet1, echo=true, results=verbatim>>=
-fset1 = filterSet(
-	rectangleGate(filterId="Fluorescence Region","FL1-H"=c(50,100),
-                      "FL2-H"=c(50,100)),
-	norm2Filter("FSC-H","SSC-H",filterId="Morphology Gate", scale=2),
-	~ `Fluorescence Region` & `Morphology Gate`,
-	~ `Fluorescence Region` | `Morphology Gate`,
-	Debris ~ ! `Morphology Gate`,
-	~ `Fluorescence Region` %&% `Morphology Gate`
-)
-fset1
-
-@
-
-There are two features of note in \Rfunction{filterSet}, which can
-also take a single list argument for programmatic creation of
-\Rclass{filterSet} objects. The first is that there is a formula
-interface for the creation of \Rclass{filter} objects from
-operators. The formula interface can be used with or without a
-left-hand side, which specifies an optional filter identifier. If the
-filter identifier is not specified, as is the case with all but the
-``Debris'' gate in the example above the usual default filter
-identifier is constructed. Non-formula gates can also have an optional
-name specified which overrides the filter identifier specified in the
-gate constructor. This is discouraged at this time as it leads to
-confusion when creating new filters.
-
-
-\subsection{Manipulating Filter Sets}
-
-Manipulating a \Rclass{filterSet} is done using the normal list
-element replacement methods, though we do provide a special case where
-replacing the ``""'' element or the ``NULL'' element causes the
-\Rclass{filterSet} to use the ``filterId'' slot of the incoming filter
-to choose a name. Similarly, specifying an identifier will override
-any ``filterId'' slot in the original filter.
-
-Additionally, there are several convenience functions and methods
-available for manipulating a \Rclass{filterSet}. The \Rfunction{names}
-function provides a list of filter identifiers in an arbitrary
-order. The \Rfunction{sort} lists the filter identifiers according to
-a topological sort of the filter dependencies such that parent filters
-are always evaluated before their children. Filters without
-dependencies are provided in an arbitrary relative ordering. To obtain
-the adjacency matrix for this sorting, the option
-``dependencies=TRUE'' supplied to the \Rfunction{sort} function will
-attach an ``AdjM'' attribute to the resulting character vector.
-
-\subsection{Using Filter Sets}
-
-Though they are not explicitly filters, meaning that they cannot play
-a role in the construction of sub filters via operators,
-\Rclass{filterSet} objects do define \Rfunction{filter} and
-\Rfunction{split} methods that allow for the two most common use
-cases. Additionally, a filter can be selected from the
-\Rclass{filterSet} using ``[['' to perform a \Rfunction{Subset}
-operation if desired.
-
-For standard filtering operations, the \Rclass{filterSet} can yield
-better performance than a manual filtering operation because it
-ensures that each parent filter is only evaluated once per call to
-\Rfunction{filter} so that if many sub filters rely on a particular,
-likely expensive, filtering operation they use the original result
-rather than recalculating each time. The individual
-\Rclass{filterResult} objects may be later extracted for further
-analysis of desire, making the \Rclass{filterSet} the logical choice
-for most filtering operations. Additionally, though not presently
-implemented, it can allow visualization methods to make more
-intelligent choices about display when rendering gating strategies
-because the disposition of the entire filtering graph is known and the
-filter results are already available.
-
-Like any other filtering operation, \Rfunction{summary} methods are
-also available to collect the usual sorts of count statistics for a
-filtering operation:
-
-<<FilterSet2, echo=TRUE, verbatim=TRUE>>=
-
-f = filter(fs,fset1)
-f
-@
-
-When splitting a \Rclass{flowFrame} using \Rfunction{split}, we have
-two options. The first is to include all of the resultant subsets in
-the usual way:
-
-<<FilterSet3, echo=TRUE, verbatim=TRUE>>=
-
-split(fs[[1]], fset1, flowSet=TRUE)
-
-@
-
-While this provides access to all subsets, for automated analysis we
-will often only wish to work with the ``leaf'' gates (i.e. those
-without children of their own). In this case, we can specify
-``drop=TRUE'' to obtain only the leaf gates:
-
-<<FilterSet4, echo=TRUE, verbatim=TRUE>>=
-
-split(fs[[1]],fset1,drop=TRUE,flowSet=TRUE)
-
-@
-
-Note that in both cases, we use the ``flowSet=TRUE'' option that has
-been added to the \Rfunction{split} function to automatically create a
-\Rclass{flowSet} object from the resulting \Rclass{flowFrame}
-objects. For \Rfunction{filterSet} objects, the \Rfunction{split}
-function can take advantage of the added structure in this case to
-provide some information about the filtering operation itself in the
-\Rclass{flowSet}'s metadata as well.
-
-
-
 \section{GatingSet}
 \Rclass{filterSets} are very limited in their use for complex
 analysis work flows. They are  result-centric and it is hard to access
@@ -1026,7 +900,7 @@ Rm('NonDebris', gs)
 getNodes(gs)
 @ 
 
-Now for the larger data set, it would be either inaccurate to apply the same hard-coded gate to all samples or impractical to manually set the gate coordinates for each individual sample. \Rpackage{openCyto} provides some data-driven gating functions to automatically generate these gates. 
+Now for the larger data set, it would be either inaccurate to apply the same hard-coded gate to all samples or impractical to manually set the gate coordinates for each individual sample. \Rpackage{openCyto}(\citep{Finak2014}) provides some data-driven gating functions to automatically generate these gates. 
 
 For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate for each sample.
 <<openCyto-nonDebris>>=
@@ -1058,9 +932,9 @@ and then plot the gates
 plotGate(gs[[1]])
 @
 
-Note that in order to get parent gated data by 'getData' we have to 'recompute' after adding each gate. And the result is very similar to the manual gates but more data-driven and more consistent across samples.
+Note that in order to get parent gated data by 'getData' we have to 'recompute' after adding each gate. And the result is very similar to the manual gates but the gating process is more data-driven and more consistent across samples.
 
-The further ease the process, a csv gating template can be used.
+The further automated the process, a gating pipeline can be established through \Rpackage{OpenCyto}(\citep{Finak2014}) that defines the hierarchical gating template in a text-based csv file. (See more details from http://openCyto.org)
 
 \clearpage
 \bibliographystyle{plainnat} 

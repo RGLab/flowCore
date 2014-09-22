@@ -902,6 +902,7 @@ setClass("filterSet",
 
 ## constructor
 filterSet <- function(..., name="default") {
+    .Defunct("flowWorkspace::GatingSet")
     filters <- list(...)
     ## Allow the list(x, y, z) format as well.
     if(length(filters)==1 && is.list(filters[[1]]))
@@ -2267,6 +2268,7 @@ copyFlowFrame <- function(x) x[1:nrow(x)]
 ## graph and the alias table in the environment
 workFlow <- function(data, name="default", env=new.env(parent=emptyenv()))
 {
+  .Defunct("flowWorkspace::GatingSet")
     ## some sanity checks up front
     checkClass(name, "character", 1)
     checkClass(env, "environment")
