@@ -43,7 +43,7 @@
 \alias{tree,environment-method}
 \alias{undo}
 
-\title{Class "workFlow"}
+\title{Class "workFlow"(deprecated)}
 
 \description{Class and methods to organize standard flow cytometry data
   analysis operation in a concise workflow.}
