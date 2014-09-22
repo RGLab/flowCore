@@ -35,6 +35,7 @@
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 \maketitle
 
 \begin{abstract}
