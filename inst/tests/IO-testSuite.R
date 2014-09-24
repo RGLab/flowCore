@@ -126,3 +126,8 @@ test_that("test pre-gated data", {
 
 })
 
+test_that("test flowJo exported data with offset = 99999999 and  missing the $BEGINDATA and $ENDDATA keywords ", {
+      fr <- read.FCS(file.path(dataPath, "badFlowJoExport.fcs"))
+      keyword(fr)[["FILENAME"]] <- "setToDummy"
+      expect_equal(expectRes[["read.FCS"]][["badFlowJoExport"]], digest(fr))
+    })
