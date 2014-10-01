@@ -776,16 +776,28 @@ Here is the effect of compensation:
 <<plotComp, fig=true,echo=true>>=
 transList <- estimateLogicle(fs[[1]], c("V545-A","V450-A"))
 grid.arrange(
-xyplot(`V545-A`~`V450-A`, transform(fs[[1]], transList), smooth = FALSE, xbin = 32)
+xyplot(`V545-A`~`V450-A`, transform(fs[[1]], transList), smooth = FALSE, xbin = 32, main = "Before")
 , xyplot(`V545-A`~`V450-A`, transform(fs_comp[[1]], transList)
-         , smooth = FALSE, xbin = 32)
+         , smooth = FALSE, xbin = 32, main = "After")
 , ncol = 2)
 @
 
 Then \Rclass{GatingSet} can be created using the constructor \Rfunction{GatingSet}. 
 
-<<createGatingSet>>=
+<<createGatingSet, eval=FALSE>>=
 gs <- GatingSet(fs_comp)
+gs
+@
+
+% somehow adding trans to gs is not stable on Mac OS X Snow Leopard (10.6.8) + llvm-g++-4.2
+% even though it does work on Mac OS X Mavericks (10.9.5) + clang++ and all linux and windows
+% to pass bioc build we have to skip this and do the transformation outside of gs
+<<transOutsideOfGS,echo=FALSE, message=FALSE>>=
+biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144
+                          , pos=4.5,neg=0, widthBasis=-10)
+tf <- transformList(parameters(comp), biexpTrans)
+fs_trans <- transform(fs_comp, tf)
+gs <- GatingSet(fs_trans)
 gs
 @
 
@@ -799,11 +811,13 @@ It shows the only node 'root' which corresponds to the raw 'flow data' just adde
 Transformation can be either done on 'flowSet' before constructing 'GatingSet' or a
 \Rclass{transformList} can be directly added to a \Rclass{GatingSet}:
 
-<<addTrans, fig=true,echo=true>>=
+<<addTrans,eval=FALSE>>=
 biexpTrans <- flowJoTrans(channelRange=4096, maxValue=262144
                           , pos=4.5,neg=0, widthBasis=-10)
 tf <- transformList(parameters(comp), biexpTrans)
 gs <- transform(gs, tf)
+@
+<<plotTrans, fig=true,echo=true>>=
 grid.arrange(
   densityplot(~`B710-A`, fs_comp[[1]], main = "raw")
   ,densityplot(~`B710-A`, flowData(gs)[[1]], main = "trans")
@@ -812,6 +826,14 @@ grid.arrange(
 @ 
 
 Note that we did assign the return value of \Rfunction{transform} back to \Robject{gs}. This is because 'flow data' is stored as R object and thus transforming the data still follows the pass-by-value semantics.
+Also 'GatingSet' only supports 'flowJoTrans' at the time of writing (which works in most of scenarios though), in order to
+use other type of transformation, 'flowSet/ncdfFlowSet` can be transformed first and then construct the `GatingSet' from the transformed data:
+<<transOutsideOfGSDemo,echo=TRUE, eval=FALSE>>=
+tf <- transformList(parameters(comp), myFun)#myFun is any customized flowCore compatible transformation function
+fs_trans <- transform(fs_comp, tf)
+gs <- GatingSet(fs_trans)
+@
+Since it is done outside of 'GatingSet', the transformation functions won't be stored in 'GatingSet' as the first method does.
 
 \subsection{Add the gates}
 Some basic flowCore \Rclass{filter} can be added to a \Rclass{GatingSet}:
