@@ -3506,16 +3506,22 @@ sinht <- function(parameters, a=1, b=1,
 ## Inverse hyperbolic sin transformation parametrized according to Gating-ML 2.0 
 ## --------------------------------------------------------------------------------
 ## Inputs T, M, A of type numeric and parameter of type transformation or character
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## --------------------------------------------------------------------------------
 setClass(
     "asinhtGml2", 		
     contains = "singleParameterTransform",
-    representation = representation(T = "numeric", M = "numeric", A = "numeric"),
+    representation = representation(T = "numeric", M = "numeric", A = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         parameters = unitytransform(),
         T = 262144,
         M = 4.5,
-        A = 0),
+        A = 0,
+        boundMin = -Inf,
+        boundMax = Inf),
     validity = function(object)
     {
         msg <- NULL
@@ -3528,7 +3534,9 @@ setClass(
         if (object@A < 0)
             msg <- c(msg, "'A' should be greater than or equal to zero.")
         if (object@A > object@M)
-            msg <- c(msg, "'A' should be less than or equal to 'M'.")		
+            msg <- c(msg, "'A' should be less than or equal to 'M'.")
+        if (object@boundMin > object@boundMax)
+          msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
         msg
     }
 )
@@ -3538,26 +3546,34 @@ asinhtGml2 <- function(
         T = 262144, 
         M = 4.5, 
         A = 0, 
-        transformationId = "defaultAsinhGml2Transform")
+        transformationId = "defaultAsinhGml2Transform",
+        boundMin = -Inf,
+        boundMax = Inf)
     new("asinhtGml2", parameters = parameters, 
-        T = T, M = M, A = A, transformationId = transformationId)
+        T = T, M = M, A = A, transformationId = transformationId, boundMin = boundMin, boundMax = boundMax)
 
 
 ## ===================================================================================
 ## Logicle transformation parametrized according to Gating-ML 2.0
 ## -----------------------------------------------------------------------------------
 ## Inputs T, M, W, A of type numeric and parameter of type transformation or character
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## -----------------------------------------------------------------------------------
 setClass(
     "logicletGml2", 		
     contains = "singleParameterTransform",
-    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric"),
+    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         parameters = unitytransform(),
             T = 262144,
             M = 4.5,
             W = 0.5,
-            A = 0),
+            A = 0,
+            boundMin = -Inf,
+            boundMax = Inf),
     validity = function(object)
     {
         msg <- NULL
@@ -3575,6 +3591,8 @@ setClass(
             msg <- c(msg, "'A' should be greater than or equal to 'minus W'.")
         if (object@A > object@M - 2*object@W)
             msg <- c(msg, "'A' should be less than or equal to 'M minus two W'")
+        if (object@boundMin > object@boundMax)
+          msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
         msg
     }
 )
@@ -3585,26 +3603,34 @@ logicletGml2 <- function(
     M = 4.5,
     W = 0.5,
     A = 0,
-    transformationId = "defaultAsinhGml2Transform")
+    transformationId = "defaultLogicletGml2Transform",
+    boundMin = -Inf,
+    boundMax = Inf)
     new("logicletGml2", parameters = parameters,
-        T = T, M = M, W = W, A = A, transformationId = transformationId)
+        T = T, M = M, W = W, A = A, transformationId = transformationId, boundMin = boundMin, boundMax = boundMax)
 
 
 ## ===================================================================================
 ## Hyperlog transformation parametrized according to Gating-ML 2.0
 ## -----------------------------------------------------------------------------------
 ## Inputs T, M, W, A of type numeric and parameter of type transformation or character
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## -----------------------------------------------------------------------------------
 setClass(
     "hyperlogtGml2",
     contains = "singleParameterTransform",
-    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric"),
+    representation = representation(T = "numeric", M = "numeric", W = "numeric", A = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         parameters = unitytransform(),
         T = 262144,
         M = 4.5,
         W = 0.5,
-        A = 0),
+        A = 0,
+        boundMin = -Inf,
+        boundMax = Inf),
     validity = function(object)
     {
         msg <- NULL
@@ -3622,6 +3648,8 @@ setClass(
             msg <- c(msg, "'A' should be greater than or equal to 'minus W'.")
         if (object@A > object@M - 2*object@W)
             msg <- c(msg, "'A' should be less than or equal to 'M minus two W'")
+        if (object@boundMin > object@boundMax)
+          msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
         msg
     }
 )
@@ -3632,23 +3660,31 @@ hyperlogtGml2 <- function(
     M = 4.5,
     W = 0.5,
     A = 0,
-    transformationId = "defaultAsinhGml2Transform")
+    transformationId = "defaultHyperlogtGml2Transform",
+    boundMin = -Inf,
+    boundMax = Inf)
     new("hyperlogtGml2", parameters = parameters,
-        T = T, M = M, W = W, A = A, transformationId = transformationId)
+        T = T, M = M, W = W, A = A, transformationId = transformationId, boundMin = boundMin, boundMax = boundMax)
 
 ## ================================================================================
 ## Linear transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
 ## Inputs T, A of type numeric and parameter of type transformation or character
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## --------------------------------------------------------------------------------
 setClass(
     "lintGml2",
     contains = "singleParameterTransform",
-    representation = representation(T = "numeric", A = "numeric"),
+    representation = representation(T = "numeric", A = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         parameters = unitytransform(),
         T = 262144,
-        A = 0),
+        A = 0,
+        boundMin = -Inf,
+        boundMax = Inf),
     validity = function(object)
     {
         msg <- NULL
@@ -3660,6 +3696,8 @@ setClass(
             msg <- c(msg, "'A' should be greater than or equal to zero.")
         if (object@A > object@T)
             msg <- c(msg, "'A' should be less than or equal to 'T'.")
+        if (object@boundMin > object@boundMax)
+          msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
         msg
     }
 )
@@ -3668,24 +3706,32 @@ lintGml2 <- function(
     parameters,
     T = 262144,
     A = 0,
-    transformationId = "defaultLintGml2Transform")
+    transformationId = "defaultLintGml2Transform",
+    boundMin = -Inf,
+    boundMax = Inf)
     new("lintGml2", parameters = parameters,
-        T = T, A = A, transformationId = transformationId)
+        T = T, A = A, transformationId = transformationId, boundMin = boundMin, boundMax = boundMax)
 
 
 ## ================================================================================
 ## Log transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
 ## Inputs T, M of type numeric and parameter of type transformation or character
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## --------------------------------------------------------------------------------
 setClass(
     "logtGml2",
     contains = "singleParameterTransform",
-    representation = representation(T = "numeric", M = "numeric"),
+    representation = representation(T = "numeric", M = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         parameters = unitytransform(),
         T = 262144,
-        M = 4.5),
+        M = 4.5,
+        boundMin = -Inf,
+        boundMax = Inf),
     validity = function(object)
     {
         msg <- NULL
@@ -3695,6 +3741,8 @@ setClass(
             msg <- c(msg, "'T' should be greater than zero.")
         if (object@M <= 0)
             msg <- c(msg, "'M' should be greater than zero.")
+        if (object@boundMin > object@boundMax)
+          msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
         msg
     }
 )
@@ -3703,9 +3751,11 @@ logtGml2 <- function(
     parameters,
     T = 262144,
     M = 4.5,
-    transformationId = "defaultLogGml2Transform")
+    transformationId = "defaultLogGml2Transform",
+    boundMin = -Inf,
+    boundMax = Inf)
     new("logtGml2", parameters = parameters,
-        T = T, M = M, transformationId = transformationId)
+        T = T, M = M, transformationId = transformationId, boundMin = boundMin, boundMax = boundMax)
 
 
 
@@ -3713,18 +3763,31 @@ logtGml2 <- function(
 ## Ratio transformation parametrized according to Gating-ML 2.0
 ## ----------------------------------------------------------------------------------------
 ## Inputs A, B and C of type numeric and two parameters of type character or transformation
+##
+## October 2014: additional boundMin and boundMax attributes to all Gating-ML 2.0
+## transforms; if the result of the transform is outside of that range then set it
+## to the appropriate boundMin/boundMax.
 ## ----------------------------------------------------------------------------------------
 setClass("ratiotGml2",
     contains="transform",
     representation(
         numerator = "transformation", denominator = "transformation",
-        pA = "numeric", pB = "numeric", pC = "numeric"),
+        pA = "numeric", pB = "numeric", pC = "numeric", boundMin = "numeric", boundMax = "numeric"),
     prototype = prototype(
         numerator=unitytransform(),
         denominator=unitytransform(),
         pA = 1,
         pB = 0,
-        pC = 0)
+        pC = 0,
+        boundMin = -Inf,
+        boundMax = Inf),
+    validity = function(object)
+    {
+      msg <- NULL
+      if (object@boundMin > object@boundMax)
+        msg <- c(msg, "'boundMin' should be less than or equal to 'boundMax'")
+      msg
+    }
 )
 
 ratiotGml2 <- function(
@@ -3733,7 +3796,9 @@ ratiotGml2 <- function(
 	pA = 1,
 	pB = 0,
 	pC = 0,
-    transformationId = "defaultRatioTransform")
+	transformationId = "defaultRatioTransform",
+	boundMin = -Inf,
+	boundMax = Inf)
 {
     if(!is(numerator, "transform")){
         checkClass(numerator, "character", 1)
@@ -3744,7 +3809,8 @@ ratiotGml2 <- function(
         denominator <- unitytransform(denominator)
     }
     new("ratiotGml2", numerator = numerator, denominator = denominator,
-        pA = pA, pB = pB, pC = pC, transformationId = transformationId)
+        pA = pA, pB = pB, pC = pC, transformationId = transformationId, 
+        boundMin = boundMin, boundMax = boundMax)
 }
 
 
