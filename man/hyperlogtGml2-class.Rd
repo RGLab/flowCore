@@ -6,6 +6,8 @@
 
 \title{Class hyperlogtGml2}
 \description{Hyperlog transformation parameterized according to Gating-ML 2.0 is defined by the following function:
+\deqn{bound(hyperlog, boundMin, boundMax) = max(min(hyperlog,boundMax),boundMin))}
+where
 \deqn{hyperlog(x, T, W, M, A) = root(EH(y, T, W, M, A) - x)}
 and \eqn{EH} is defined as:
 \deqn{EH(y, T, W, M, A) = ae^{by} + cy - f}
@@ -38,12 +40,17 @@ and \eqn{a}, \eqn{b}, \eqn{c} and \eqn{f} are defined by means of \eqn{T}, \eqn{
 \deqn{c = ca * a}
 \deqn{f = fa * a}
 
+In addition, if a boundary is defined by the boundMin and/or boundMax parameters, then the result of this
+transformation is restricted to the [boundMin,boundMax] interval. Specifically, should the result of the hyperlog
+function be less than boundMin, then let the result of this transformation be boundMin. Analogically, should the 
+result of the hyperlog function be more than boundMax, then let the result of this transformation be boundMax.
+The boundMin parameter shall not be greater than the boundMax parameter.
 } 
 
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
 
-\code{hyperlogtGml2(parameter, T, M, W, A, transformationId)}
+\code{hyperlogtGml2(parameter, T, M, W, A, transformationId, boundMin, boundMax)}
 }
 
 \section{Slots}{
@@ -58,6 +65,8 @@ Objects can be created by calls to the constructor
       be included.) }
     \item{\code{parameters}:}{Object of class \code{"transformation"} -flow parameter to be transformed }
     \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to reference the transformation}
+    \item{\code{boundMin}:}{Object of class \code{numeric} -lower bound of the transformation, default -Inf}
+    \item{\code{boundMax}:}{Object of class \code{numeric} -upper bound of the transformation, default Inf}
   }
 }
 
@@ -74,7 +83,7 @@ No methods defined with class hyperlogtGml2 in the signature.
 
 \references{
 Gating-ML 2.0: International Society for Advancement of Cytometry (ISAC) standard for 
-representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20130122.pdf}
+representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20141009.pdf}
 }
 
 \author{Spidlen, J., Moore, W.}
