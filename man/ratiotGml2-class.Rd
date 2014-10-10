@@ -9,13 +9,21 @@
 \title{Class "ratiotGml2"  }
 \description{ 
 Ratio transformation as parameterized in Gating-ML 2.0 is defined by the following function:
+\deqn{bound(f, boundMin, boundMax) = max(min(f,boundMax),boundMin))}
+where
 \deqn{f(p1, p2, A, B, C) = A * (p1 - B) / (p2 - C)}
+
+If a boundary is defined by the boundMin and/or boundMax parameters, then the result of this
+transformation is restricted to the [boundMin,boundMax] interval. Specifically, should the result of the f
+function be less than boundMin, then let the result of this transformation be boundMin. Analogically, should the 
+result of the f function be more than boundMax, then let the result of this transformation be boundMax.
+The boundMin parameter shall not be greater than the boundMax parameter.
 }
 
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
 
-\code{ratiotGml2(p1, p2, A, B, C, transformationId)}
+\code{ratiotGml2(p1, p2, A, B, C, transformationId, boundMin, boundMax)}
 }
 
 \section{Slots}{
@@ -29,6 +37,8 @@ Objects can be created by calls to the constructor
     \item{\code{pB}:}{Object of class \code{numeric} constant B }
     \item{\code{pC}:}{Object of class \code{numeric} constant C }
     \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to reference the transformation}
+    \item{\code{boundMin}:}{Object of class \code{numeric} -lower bound of the transformation, default -Inf}
+    \item{\code{boundMax}:}{Object of class \code{numeric} -upper bound of the transformation, default Inf}
   }
 }
 
@@ -44,7 +54,7 @@ No methods defined with class "ratiotGml2" in the signature.
 
 \references{
 Gating-ML 2.0: International Society for Advancement of Cytometry (ISAC) standard for 
-representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20130122.pdf}
+representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20141009.pdf}
 }
 
 \author{Spidlen, J.}
