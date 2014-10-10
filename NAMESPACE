@@ -360,3 +360,5 @@ export("action",
        "%subset%",
        "%on%",
        estimateLogicle)
+       
+export(getChannelMarker)
