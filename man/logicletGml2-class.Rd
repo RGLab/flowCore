@@ -6,6 +6,8 @@
 
 \title{Class logicletGml2}
 \description{Logicle transformation as published by Moore and Parks is defined by the following function:
+\deqn{bound(logicle, boundMin, boundMax) = max(min(logicle,boundMax),boundMin))}
+where
 \deqn{logicle(x, T, W, M, A) = root(B(y, T, W, M, A) - x)}
 and \eqn{B} is a modified biexponential function:
 \deqn{B(y, T, W, M, A) = ae^{by} - ce^{-dy} - f}
@@ -49,12 +51,18 @@ that maps scale values onto the \eqn{[0,1]} interval such that the data value \e
 large data values are mapped to locations similar to an (M + A)-decade logarithmic scale, and A decades 
 of negative data are brought on scale. For implementation purposes, it is recommended to follow 
 guidance in Moore and Parks publication.
+
+In addition, if a boundary is defined by the boundMin and/or boundMax parameters, then the result of this
+transformation is restricted to the [boundMin,boundMax] interval. Specifically, should the result of the logicle
+function be less than boundMin, then let the result of this transformation be boundMin. Analogically, should the 
+result of the logicle function be more than boundMax, then let the result of this transformation be boundMax.
+The boundMin parameter shall not be greater than the boundMax parameter.
 } 
 
 \section{Objects from the Class}{
 Objects can be created by calls to the constructor
 
-\code{logicletGml2(parameter, T, M, W, A, transformationId)}
+\code{logicletGml2(parameter, T, M, W, A, transformationId, boundMin, boundMax)}
 }
 
 \section{Slots}{
@@ -69,6 +77,8 @@ Objects can be created by calls to the constructor
       be included.) }
     \item{\code{parameters}:}{Object of class \code{"transformation"} -flow parameter to be transformed }
     \item{\code{transformationId}:}{Object of class \code{"character"} -unique ID to reference the transformation}
+    \item{\code{boundMin}:}{Object of class \code{numeric} -lower bound of the transformation, default -Inf}
+    \item{\code{boundMax}:}{Object of class \code{numeric} -upper bound of the transformation, default Inf}
   }
 }
 
@@ -85,7 +95,7 @@ No methods defined with class logicletGml2 in the signature.
 
 \references{
 Gating-ML 2.0: International Society for Advancement of Cytometry (ISAC) standard for 
-representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20130122.pdf}
+representing gating descriptions in flow cytometry. \url{http://flowcyt.sourceforge.net/gating/20141009.pdf}
 
 Moore, WA and Parks, DR. Update for the logicle data scale including operational code
 implementations. Cytometry A., 2012:81A(4):273-277.

@@ -185,7 +185,7 @@ setMethod(
             parameter <- resolve(expr@parameters, df)
             parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 fasinh is defined as
-			# (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
+            # (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
             #
             # (asinh(parameter * sinh(expr@M * log(10)) / expr@T) + expr@A * log(10)) / ((expr@M + expr@A) * log(10))
             #
@@ -204,7 +204,12 @@ setMethod(
             result = rep(NA, times=length(asinhx))
             result[negative] = (myC - asinhx[negative]) / myB
             result[!negative] = (asinhx[!negative] + myC) / myB
-            result
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(result, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
@@ -227,8 +232,14 @@ setMethod(
             # We are calling the externa logicle transformation, but we are also
             # dividing the result by M so that "reasonable" values are scaled [0,1]
             # rather than [0,M]. This is how logicle in Gating-Ml 2.0 is defined.
-            .Call("logicle_transform", as.double(parameter), as.double(expr@T),
+            res <- .Call("logicle_transform", as.double(parameter), as.double(expr@T),
                 as.double(expr@W), as.double(expr@M), as.double(expr@A)) / expr@M
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
@@ -249,8 +260,14 @@ setMethod(
         {
             parameter <- resolve(expr@parameters, df)
             parameter <- flowFrameToMatrix(parameter)
-            .Call("hyperlog_transform", as.double(parameter), as.double(expr@T),
+            res <- .Call("hyperlog_transform", as.double(parameter), as.double(expr@T),
                 as.double(expr@W), as.double(expr@M), as.double(expr@A))
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
@@ -273,7 +290,13 @@ setMethod(
             parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 flin is defined as
             # (x + A) / (T + A)
-            (parameter + expr@A) / (expr@T + expr@A)
+            res <- (parameter + expr@A) / (expr@T + expr@A)
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
@@ -295,7 +318,13 @@ setMethod(
             parameter <- flowFrameToMatrix(parameter)
             # Gating-ML 2.0 flog is defined as
             # (1/M) * log_10(x/T) + 1
-            ((1/expr@M) * log((parameter/expr@T), base=10)) + 1
+            res <- ((1/expr@M) * log((parameter/expr@T), base=10)) + 1
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
@@ -320,7 +349,13 @@ setMethod(
             den <- flowFrameToMatrix(den)
             # Gating-ML 2.0 fratio is defined as
             # fratio(x, y, A, B, C) = A * (x - B) / (y - C)
-            expr@pA * (num - expr@pB) / (den - expr@pC)
+            res <- expr@pA * (num - expr@pB) / (den - expr@pC)
+
+            # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
+            # if the result is less than boundMin, then let it be boundMin; if the
+            # result is more than boundMax, then let it be boundMax. Defaults for
+            # boundMin and boundMax are -Inf and Inf.
+            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
         }
     }
 )
