@@ -1,0 +1,80 @@
+\name{Subset}
+\alias{Subset}
+\alias{Subset,flowFrame,filter-method}
+\alias{Subset,flowSet,ANY-method}
+\alias{Subset,flowFrame-method}
+\alias{Subset,flowFrame,logical-method}
+\alias{Subset,flowSet,list-method}
+\alias{Subset,flowSet,filterResultList-method}
+\alias{Subset,flowSet,ANY}
+
+\title{Subset a flowFrame or a flowSet}
+
+\description{ An equivalent of a \code{\link{subset}} function for
+\code{\linkS4class{flowFrame}} or a \code{\linkS4class{flowSet}}
+object. Alternatively, the regular subsetting operators can be used for
+most of the topics documented here.
+}
+
+\usage{
+Subset(x, subset, ...)
+}
+
+\arguments{
+  
+  \item{x}{The flow object, frame or set, to subset.}
+  
+  \item{subset}{A filter object or, in the case of \code{flowSet}
+    subsetting, a named list of filters.}
+  
+  \item{\dots}{Like the original \code{\link{subset}} function, you can
+    also select columns.}
+  
+}
+
+\details{
+
+The \code{Subset} method is the recommended method for obtaining a
+\code{\linkS4class{flowFrame}} that only contains events consistent with
+a particular filter. It is functionally equivalent to
+\code{frame[as(filter(frame,subset),"logical"),]} when used in the
+\code{\linkS4class{flowFrame}} context. Used in the
+\code{\linkS4class{flowSet}} context, it is equivalent to using
+\code{\link{fsApply}} to apply the filtering operation to each
+\code{\linkS4class{flowFrame}}.
+
+Additionally, using \code{Subset} on a \code{\linkS4class{flowSet}} can
+also take a named \code{list} as the subset. In this case, the names of
+the list object should correspond to the \code{sampleNames} of the
+flowSet, allowing a different filter to be applied to each frame. If not
+all of the names are used or excess names are present, a warning will be
+generated but the valid filters will be applied for the rare instances
+where this is the intended operation. Note that a \code{\link{filter}}
+operation will generate a list of \code{\linkS4class{filterResult}}
+objects that can be used directly with \code{Subset} in this manner.
+
+}
+
+\value{
+
+Depending on the original context, either a
+\code{\linkS4class{flowFrame}} or a \code{\linkS4class{flowSet}}.
+
+}
+
+\author{B. Ellis}
+
+\seealso{\code{\link{split}}, \code{\link{subset}}}
+
+\examples{
+
+sample <- read.flowSet(path=system.file("extdata", package="flowCore"),
+pattern="0877408774")
+result <- filter(sample, rectangleGate("FSC-H"=c(-Inf, 1024)))
+result
+Subset(sample,result)
+
+}
+
+\keyword{manip}
+

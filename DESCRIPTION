@@ -1,0 +1,49 @@
+Package: flowCore
+Title: flowCore: Basic structures for flow cytometry data
+Version: 1.32.1
+Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan, J. Spidlen
+Description: Provides S4 data structures and basic functions to deal with flow
+	     cytometry data.
+Maintainer: M.Jiang <wjiang2@fhcrc.org>
+Depends: R (>= 2.10.0)
+Imports: Biobase, BiocGenerics (>= 0.1.14), graph, graphics,
+         methods, rrcov, stats, utils, stats4, corpcor
+Suggests: Rgraphviz, flowViz, ncdf, flowStats, testthat, flowWorkspace,openCyto
+Collate: AllGenerics.R
+	 AllClasses.R
+	 flowFrame-accessors.R
+	 flowSet-accessors.R
+	 Rm-methods.R
+	 actionItem-accessors.R
+	 coerce.R
+	 logicalFilterResult-accessors.R
+	 summarizeFilter-methods.R
+	 filterSummary-accessors.R
+	 fcReference-accessors.R
+	 manyFilterResult-accessors.R
+	 summary-methods.R
+	 multipleFilterResult-accessors.R
+	 on-methods.R
+	 transformList-accessors.R
+	 identifier-methods.R
+	 parameters-methods.R
+	 view-accessors.R
+	 initialize-methods.R
+	 filterResult-accessors.R
+	 in-methods.R
+	 rectangleGate-accessors.R
+	 workFlow-accessors.R
+	 filterResultList-accessors.R
+	 IO.R
+	 show-methods.R
+	 length-methods.R
+	 names-methods.R
+	 filterSet-accessors.R
+	 split-methods.R
+	 eval-methods.R
+	 gatingML.R
+	 FCSTransTransform.R
+	 median-logicle-transform.R
+	 utils.R
+License: Artistic-2.0
+biocViews:  Infrastructure, FlowCytometry, CellBasedAssays
