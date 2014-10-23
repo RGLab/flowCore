@@ -144,7 +144,7 @@ Logicle::Logicle (const Logicle & logicle)
 
 Logicle::~Logicle ()
 {
-	delete p->taylor;
+	delete[] p->taylor;
 	delete p;
 }
 

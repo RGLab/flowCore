@@ -155,7 +155,7 @@ Hyperlog::Hyperlog (const Hyperlog & hyperlog)
 
 Hyperlog::~Hyperlog ()
 {
-    delete p->taylor;
+    delete[] p->taylor;
     delete p;
 }
 
