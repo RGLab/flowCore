@@ -594,7 +594,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     size <- bitwidth/8
 #    if (!size %in% c(1, 2, 4, 8))
 #        stop(paste("Don't know how to deal with bitwidth", bitwidth))
-
+    signed <- !(size%in%c(1,2))
+    
     nwhichLines <- length(which.lines)
     ##Read all reports
     if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
@@ -605,13 +606,13 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 "). All the events have been read. \n")
         }
         seek(con, offsets["datastart"])
-		
+	
+        
+        
 		dat <- .readFCSdataRaw(con, dattype,
 				count= (offsets["dataend"]-offsets["datastart"]+1)/size,
-                       size=size, signed=FALSE, endian=endian)
-#        dat <- readBin(con, dattype,
-#                       n = (offsets["dataend"]-offsets["datastart"]+1)/size,
-#                       size=size, signed=FALSE, endian=endian)
+                       size=size, signed=signed, endian=endian)
+
     }else {  ##Read n lines with or without sampling
         if(length(which.lines)==1)
             which.lines <- sample(seq_len(nrowTotal), which.lines)
@@ -626,9 +627,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             endP   <-  startP + nrpar * size
             seek(con, startP)
 			temp <- .readFCSdataRaw(con, dattype, count= (endP - startP+1)/size,
-					size=size, signed=FALSE, endian=endian) 
-#            temp <- readBin(con, dattype, n = (endP - startP+1)/size,
-#                            size=size, signed=FALSE, endian=endian) 
+					size=size, signed=signed, endian=endian) 
+ 
             dat <- c(dat, temp)                 
         }
     }
