@@ -120,7 +120,8 @@
   package.
 
   The \code{which.lines} arguments allow you to read a subset of the record as you might not want to read the thousands of
-  events recorded in the FCS file.  
+  events recorded in the FCS file.  It is mainly used when there is not enough memory to read one single FCS (which probably will not happen).
+  It will probably take more time than reading the entire FCS (due to the multiple disk IO).
 }
 
 \value{
