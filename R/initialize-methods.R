@@ -56,7 +56,7 @@ setMethod("initialize",
           {
             if (!missing(parameters))
               parameters(.Object) <- parameters
-            callNextMethod()
+            callNextMethod(.Object, ...)
           })
 
 
@@ -71,7 +71,7 @@ setMethod("initialize",
           definition=function(.Object, parameters, ...)
           {
             parameters(.Object) <- parameters
-            callNextMethod()
+            callNextMethod(.Object, ...)
           })
 
 ## this is a multi parameter transform, we need to set up the parameters
@@ -90,7 +90,7 @@ setMethod("initialize",
                     res <- res + temp[,i,drop=FALSE]*coeff[i]
                 res <- res+.Object@b
             }
-            callNextMethod()
+            callNextMethod(.Object, ...)
           })
 
 ## this is a multi parameter transform, we need to set up the parameters
