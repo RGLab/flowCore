@@ -58,7 +58,8 @@ read.FCS <- function(filename,
                      ncdf=FALSE,
                      min.limit=NULL,
                      dataset=NULL,                     
-                     emptyValue=TRUE)
+                     emptyValue=TRUE
+                    , ...)
 {
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
@@ -88,7 +89,7 @@ read.FCS <- function(filename,
     } 
 
     ## read the file  
-    offsets <- findOffsets(con,emptyValue=emptyValue)
+    offsets <- findOffsets(con,emptyValue=emptyValue,...)
     ## check for multiple data sets
     if(is.matrix(offsets))
     {
@@ -109,7 +110,7 @@ read.FCS <- function(filename,
             offsets <- offsets[dataset,]
         }
     }
-    txt <- readFCStext(con, offsets,emptyValue=emptyValue)
+    txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
     if (fcsPnGtransform) txt[["flowCore_fcsPnGtransform"]] <- "linearize-with-PnG-scaling"
@@ -278,17 +279,17 @@ readFCSgetPar <- function(x, pnam, strict=TRUE)
 ## ==========================================================================
 ## Find all data sections in a file and record their offsets.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-findOffsets <- function(con,emptyValue=TRUE)
+findOffsets <- function(con,emptyValue=TRUE, ...)
 {
     offsets <- readFCSheader(con)
-    txt <- readFCStext(con, offsets,emptyValue=emptyValue)
+    txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
     addOff <- 0
     nd <- as.numeric(txt[["$NEXTDATA"]])
     while(nd != 0)
     {
         addOff <- addOff + nd
         offsets <- rbind(offsets, readFCSheader(con, addOff))
-        txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue)
+        txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue, ...)
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
     return(offsets)
@@ -329,7 +330,7 @@ readFCSheader <- function(con, start=0)
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets,emptyValue)
+readFCStext <- function(con, offsets,emptyValue, cpp = TRUE)
 {
 
     seek(con, offsets["textstart"])
@@ -349,7 +350,10 @@ readFCStext <- function(con, offsets,emptyValue)
 	}else
 	{
 		#only apply the patch parser to FCS3
-		rv = fcs_text_parse(txt,emptyValue=emptyValue)
+        if(cpp)
+          rv = fcsTextParse(txt,emptyValue=emptyValue)
+        else
+		  rv = fcs_text_parse(txt,emptyValue=emptyValue)
 		rv = c(offsets["FCSversion"], rv)
 		names(rv)[1] = "FCSversion" #not sure if this line is necessary	
 		names(rv) <- gsub("^ *| *$", "", names(rv))#trim the leading and trailing whitespaces
