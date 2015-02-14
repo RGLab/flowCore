@@ -1,0 +1,4 @@
+PKG_CPPFLAGS =-DROUT -I$(LIB_XML2)/$(R_ARCH)/include/libxml2  -I$(LIB_BOOST)/$(R_ARCH)/include -I$(LIB_PROTOBUF)/$(R_ARCH)/include -DLIBXML_STATIC
+
+PKG_LIBS +=`${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"` -L/usr/lib/x86_64-linux-gnu -L$(LIB_XML2)/$(R_ARCH)/lib $(LIB_XML2)/$(R_ARCH)/lib/libxml2.a $(LIB_BOOST)/$(R_ARCH)/lib/libboost_serialization-mgw46-mt-1_52.a $(LIB_BOOST)/$(R_ARCH)/lib/libboost_regex-mgw46-mt-1_52.a $(LIB_PROTOBUF)/$(R_ARCH)/lib/libprotobuf.a -lws2_32
+

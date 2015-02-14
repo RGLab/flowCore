@@ -6,6 +6,7 @@
  */
 #include <Rcpp.h>
 #include "pairVectorRcppWrap.hpp"
+
 namespace Rcpp {
 	template <> SEXP wrap(const myPairs & kw){
 		unsigned nSize = kw.size();
@@ -20,6 +21,7 @@ namespace Rcpp {
 		return res;
 	}
 }
+
 
 
 

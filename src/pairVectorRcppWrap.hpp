@@ -8,11 +8,13 @@
 #ifndef PAIRVECTORRCPPWRAP_HPP_
 #define PAIRVECTORRCPPWRAP_HPP_
 
+#include <RcppCommon.h>
+#include <Rcpp.h>
+using namespace Rcpp;
+
 typedef std::pair<std::string, std::string> myPair;
 typedef std::vector<myPair> myPairs;
 
-using namespace Rcpp;
-#include <RcppCommon.h>
 
 namespace Rcpp {
 

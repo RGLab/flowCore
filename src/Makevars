@@ -1,0 +1,32 @@
+#  GNUMakefile
+ 
+# Just a snippet to stop executing under other make(1) commands
+# that won't understand these lines
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
+bregex_src=${wildcard boost_regex/*.cpp}
+bregex_objs=${bregex_src:.cpp=.o}
+
+USERDIR =	../inst/lib
+USERLIB	=	libboost_regex.a
+ 
+PKG_LIBS = $(USERLIB) 
+
+.PHONY: all clean USERLIB
+
+all: 	$(SHLIB) $(USERLIB) 
+
+$(SHLIB):  $(OBJECTS) $(USERLIB) 
+
+$(USERLIB): bst
+		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
+		$(AR) rs $(USERLIB) ${bregex_objs} 
+	 	cp $(USERLIB) $(USERDIR)$(R_ARCH)
+
+bst: ${bregex_objs}
+
+clean:
+		rm -f $(OBJECTS) $(SHLIB) $(USERLIB)
+ 
