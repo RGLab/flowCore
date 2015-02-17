@@ -9,23 +9,22 @@ endif
 bregex_src=${wildcard boost_regex/*.cpp}
 bregex_objs=${bregex_src:.cpp=.o}
 
+REGEXLIB = libboost_regex.a
 USERDIR =	../inst/lib
-USERLIB	=	libboost_regex.a
- 
+USERLIB = $(USERDIR)$(R_ARCH)/$(REGEXLIB)
+
 PKG_LIBS = $(USERLIB) 
 
-.PHONY: all clean USERLIB
+.PHONY: all clean 
 
-all: 	$(SHLIB) $(USERLIB) 
+all: 	$(SHLIB) 
 
-$(SHLIB):  $(OBJECTS) $(USERLIB) 
+$(SHLIB):  $(OBJECTS) $(USERLIB)  
 
-$(USERLIB): bst
+
+$(USERLIB): ${bregex_objs}
 		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
-		$(AR) rs $(USERLIB) ${bregex_objs} 
-	 	cp $(USERLIB) $(USERDIR)$(R_ARCH)
-
-bst: ${bregex_objs}
+		$(AR) rs $(USERLIB) ${bregex_objs}
 
 clean:
 		rm -f $(OBJECTS) $(SHLIB) $(USERLIB)
