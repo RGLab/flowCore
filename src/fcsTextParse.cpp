@@ -5,6 +5,7 @@
  *      Author: wjiang2
  */
 #include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #include "pairVectorRcppWrap.hpp"
 //#include <Rcpp.h>
 // [[Rcpp::plugins(myRegEx)]]
@@ -14,74 +15,77 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 
 		myPairs pairs;
 
-		//remove trailing whitespace
-//		txt = boost::regex_replace(txt,boost::regex("\s+$"), "");
-		std::string div = txt.substr(0,1);
+		/*
+		 * get the first character as delimiter
+		 */
+		std::string delimiter = txt.substr(0,1);
 
-//		# regexes require double-escaping (*sigh*)
-		if(div == "\\" || div == "|")
-			div = "\\" + div;
-//		Rcout << div << std::endl;
+		/*
+		 * check if string ends with delimiter
+		 */
+		bool isDelimiterEnd = txt.substr(txt.size()-1, 1) == delimiter;
 
-		boost::regex token_ex;
-		unsigned i;
+//		regexes require double-escaping (*sigh*)
+		if(delimiter == "\\" || delimiter == "|")
+			delimiter = "\\" + delimiter;
+
+
+
+		std::string doubleDelimiter,magicString;
+		doubleDelimiter = delimiter + delimiter;
+		magicString = "\\0QuickAndDirty\\0";
+//		std::cout << doubleDelimiter << ":" << magicString <<std::endl;
+		unsigned i = 0; //counter
 		myPair kw;
-		if(emptyValue)
-		{
-//			when empty value is allowed, we have to take the assumption that there is no double delimiters in any keys or values,
-			token_ex.set_expression(div);
-			boost::sregex_token_iterator token_begin(txt.begin() + 1, txt.end(), token_ex, -1), token_end;
-			i = 1;
+		/*
+		 *	when empty value is allowed, we have to take the assumption that there is no double delimiters in any keys or values,
+		 */
+		if(!emptyValue)//replace the double delimiter with a magic strings
+			txt = boost::regex_replace(txt, boost::regex(doubleDelimiter), magicString);//somehow boost::replace_all won't do the job for \\\\
+		std::cout << txt << std::endl;
 
-			while(token_begin != token_end){
-
-				std::string token = *token_begin++;
-//				Rcout << i << ":" << std::endl;
-				if((i++)%2 == 1)
-					kw.first = token;//set key
-				else{
-					kw.second = token;//set value
-					pairs.push_back(kw);//add the pair
-				}
-
-
+		/*
+		 * then split by single delimiter
+		 */
+		boost::sregex_token_iterator token_begin(txt.begin() + 1, txt.end(), boost::regex(delimiter), -1), token_end;
+		while(token_begin != token_end){
+			i++;
+			std::string token = *token_begin++;
+//			std::cout << token << " ";
+			if(!emptyValue){
+				/*
+				 * restore double delimiter when needed
+				 * (this slows down things quite a bit, but still a lot faster than R version,
+				 *  and this double delimiter logic is not normally invoked anyway)
+				 */
+				token = boost::regex_replace(token, boost::regex(magicString), doubleDelimiter);
+//				std::cout << token;
 			}
-		}else
-		{
-			 txt = txt + " "; //prepend a dummy space for token_iterater to work
+//			std::cout << std::endl;
 
-//		  when empty value is not allowed, we safely parse the double delimiters as the valid values
-//		  token_ex.set_expression("([^" + div + "]*)" + div ); //e.g. blahblah/
+			if((i)%2 == 1)
+			{
+				if(token.empty())
+					Rcpp::stop("Empty keyword name detected!If it is due to the double delimiters in keyword value, please set emptyValue to FALSE and try again!");
+				kw.first = token;//set key
+			}
+			else{
+				kw.second = token;//set value
+				pairs.push_back(kw);//add the pair
+			}
 
-			div  =  "([^"+ div + "])" + div + "([^" + div + "])";
-			token_ex.set_expression(div);
-			int submatch[] = {-1,1,2};
-			boost::sregex_token_iterator token_begin(txt.begin()+1,txt.end(), token_ex, submatch), token_end;
 
-			i = 1;
-			std::string prev, first, second, next;
-			while(token_begin != token_end){
-					prev = *token_begin++;
-					if(token_begin == token_end)
-							break;
-					first = *token_begin++;
-					second = *token_begin++;
-					std::string token = next + prev + first;
-					next = second;
-//                      std::cout << i << ":" << std::endl;
-					if((i++)%2 == 1)
-						kw.first = token;//set key
-//							std::cout << "K:" << token << std::endl;//set key
-					else{
-						kw.second = token;//set value
-						pairs.push_back(kw);//add the pair
-//							std::cout << "V:" << token << std::endl;//set key
-						}
-
-					}
 		}
 
-
+		/*
+		 * check if kw and value are paired
+		 */
+		 if(i%2 == 1){
+			 if(isDelimiterEnd)
+				 Rcpp::stop("uneven number of tokens: " + boost::lexical_cast<std::string>(i-1));
+			 else
+				 Rcpp::Rcout << "the text section does not end with delimiter: " << delimiter << ". The last keyword is dropped." << std::endl;;
+		 }
 
 
 
