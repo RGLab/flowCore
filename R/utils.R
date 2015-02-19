@@ -70,3 +70,7 @@ getChannelMarker <- function(frm, name, ...) {
   pd
   
 }
+
+LdFlags <- function(){
+  cat(tools::file_path_as_absolute( base::system.file("lib/libboost_regex.a", package = "flowCore" )))
+}
