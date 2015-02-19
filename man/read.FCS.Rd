@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
-            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL, emptyValue=TRUE)
+            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL, emptyValue=TRUE, ...)
 
    cleanup()
 
@@ -100,7 +100,9 @@
 		 It affects how the double delimiters are treated.
 		 IF TRUE, The double delimiters are parsed as a pair of start and end single delimiter for an empty value.
 		 Otherwise, double delimiters are parsed one part of string as the keyword value.
-		default is TRUE.} 
+		default is TRUE.}
+		 
+	\item{...}{other arguments. }		
 }
 
 \details{

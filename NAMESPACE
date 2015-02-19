@@ -1,5 +1,7 @@
 useDynLib("flowCore",.registration=TRUE)
 
+import(Rcpp)
+
 importClassesFrom(Biobase, AnnotatedDataFrame)
 
 importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
