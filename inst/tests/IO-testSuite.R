@@ -39,8 +39,8 @@ test_that("test other FCS", {
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["Blank"]], digest(fr))
     
-    expect_warning(fr <- read.FCS(file.path(dataPath, "Bendall et al Cell Sample A_basal.fcs"))
-                  , "F is dropped because no value found")
+    expect_output(fr <- read.FCS(file.path(dataPath, "Bendall et al Cell Sample A_basal.fcs"))
+                  , "dropped")
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["Bendall"]], digest(fr))              
 })
@@ -49,7 +49,7 @@ test_that("test other FCS", {
 test_that("test delimiter issue", {
      
       expect_error(read.FCS(file.path(dataPath, "GFP_2Kfold_011911_noKan_QA-1.fcs"))
-          , "double delimiter existing in keyword value")
+          , "Empty keyword name detected")
       fr <- read.FCS(file.path(dataPath, "GFP_2Kfold_011911_noKan_QA-1.fcs"), emptyValue = F)
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["GFP2Kfold"]], digest(fr))
@@ -62,12 +62,13 @@ test_that("test delimiter issue", {
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["RAINBOWEmptyValue"]], digest(fr))               
 
-      
+      #\ as delimiter  with empty value
       fr <- read.FCS(file.path(dataPath, "sample_1071.001"))
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["sample1071"]], digest(fr))
-      expect_error(read.FCS(file.path(dataPath, "sample_1071.001"),emptyValue=F)
-                  , "could be empty keyword value")
+      fr <-read.FCS(file.path(dataPath, "sample_1071.001"),emptyValue=F)
+      keyword(fr)[["FILENAME"]] <- "setToDummy"
+      expect_equal(expectRes[["read.FCS"]][["sample1071.double"]], digest(fr))
     })
 
 
