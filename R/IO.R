@@ -1107,7 +1107,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
     }
     else
     {
-        ferr <- paste("Argument fileame has to be a character scalar or",
+        ferr <- paste("Argument filename has to be a character scalar or",
                       "a character vector of the same length as 'x'.")
         if(is.character(filename))
         {

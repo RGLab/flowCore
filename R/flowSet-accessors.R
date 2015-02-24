@@ -550,10 +550,10 @@ setMethod("rbind2",
 		{
 			## create dummy phenoData
 			pd <- phenoData(x)[1,]
-			sampleNames(pd)
+			
 			pData(pd)[1,] <- NA
 			tmp <- as(y, "flowSet")
-			sampleNames(pd) <- sampleNames(tmp) <- "anonymous frame"
+            pData(pd)[1, "name"] <- sampleNames(pd) <- sampleNames(tmp) <- "anonymous frame"
 			phenoData(tmp) <- pd
 			rbind2(x, tmp)
 		})
