@@ -132,9 +132,15 @@ setMethod("phenoData<-",
 			## Make sure all of the original frames appear in the new one.
 			if(!all(sampleNames(current)%in%sampleNames(value)))
 				stop("The sample names no longer match.")
-            #check name column
-            if(!"name" %in% colnames(pData(value)))
-              stop("'name' is missing from the phenoData!")
+            #validity check for 'name' column
+            df <- pData(value)
+            if("name" %in% colnames(df)){
+              if(!all(df[["name"]] == rownames(df)))
+                stop("'name' column is not consistent with rownames in phenoData!")  
+            }else{
+              pData(value)[["name"]] = rownames(df)
+            }
+              
 			object@phenoData <- value
 			object
 		})
@@ -224,7 +230,7 @@ setReplaceMethod("sampleNames",
 			}
 			pd <- phenoData(object)
 			sampleNames(pd) <- value
-                        pd$name <- value
+            pd$name <- value
 			object@phenoData <- pd
 			object@frames <- env
 			return(object)
