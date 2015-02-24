@@ -1098,6 +1098,7 @@ write.FCS <- function(x, filename, what="numeric")
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
+    checkClass(x, "flowSet")
   
     ## Some sanity  checking up front
     if(missing(filename))
@@ -1106,7 +1107,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
     }
     else
     {
-        ferr <- paste("Argument 'fileame has to be a character scalar or",
+        ferr <- paste("Argument fileame has to be a character scalar or",
                       "a character vector of the same length as 'x'.")
         if(is.character(filename))
         {
