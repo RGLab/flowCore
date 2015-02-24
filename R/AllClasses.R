@@ -42,23 +42,11 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
 ## and description. exprs contains measurement values, description contains 
 ## information from file headers of FCS file and parameters contains
 ## information about the FCS measurement parameters (i.e. channels) available.
-## Exprs may either be a matrix (values are stored in internal memory) or an
-## object of class ncdfHandler (values are stored as netCDF files on the disk)
+## Exprs is a matrix (values are stored in internal memory) 
 ## ---------------------------------------------------------------------------
-## Need this to be able to use the S3 class as a slot
-setOldClass("ncdf")
-## The pointer/file stuff might go away soon. My initial idea was to provide
-## both a reference to the ncdf file in case it hasn't been opened yet and
-## also a pointer.
-setClass("ncdfHandler",
-         representation=representation(file="character",
-                                       pointer="ncdf",
-                                       open="logical"))
-## We want both matrices and ncdfHandlers in the exprs slot
-setClassUnion("NcdfOrMatrix", c("ncdfHandler","matrix"))
 
 setClass("flowFrame",                
-         representation=representation(exprs="NcdfOrMatrix",
+         representation=representation(exprs="matrix",
          parameters="AnnotatedDataFrame",
          description="list"),
          prototype=list(exprs=matrix(numeric(0),

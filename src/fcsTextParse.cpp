@@ -6,7 +6,7 @@
  */
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
-#include "pairVectorRcppWrap.hpp"
+#include "pairVectorRcppWrap.h"
 //#include <Rcpp.h>
 // [[Rcpp::plugins(myRegEx)]]
 // [[Rcpp::depends(BH)]]

@@ -35,10 +35,17 @@ setMethod("show",
           definition=function(object)
       {
           cat("A flowSet with",length(object),"experiments.\n\n")
-          if(any(varMetadata(phenoData(object))$labelDescription != "Name")){
+          
+          pd <- phenoData(object)
+          varDesc <- varMetadata(pd)$labelDescription
+          varDesc <- varDesc[!is.na(varDesc)]
+          
+          if(length(varDesc) > 0){
+            if(any(varDesc != "Name")){
               show(phenoData(object))
               cat("\n")
           }
+        }
           cat("  column names:\n  ")
           cat(paste(object@colnames,sep=","))
           cat("\n")
