@@ -1,12 +1,12 @@
 /*
- * pairVectorRcppWrap.hpp
+ * pairVectorRcppWrap.h
  *
  *  Created on: Feb 9, 2015
  *      Author: wjiang2
  */
 
-#ifndef PAIRVECTORRCPPWRAP_HPP_
-#define PAIRVECTORRCPPWRAP_HPP_
+#ifndef PAIRVECTORRCPPWRAP_H_
+#define PAIRVECTORRCPPWRAP_H_
 
 #include <RcppCommon.h>
 #include <Rcpp.h>
@@ -23,4 +23,4 @@ namespace Rcpp {
 
 
 
-#endif /* PAIRVECTORRCPPWRAP_HPP_ */
+#endif /* PAIRVECTORRCPPWRAP_H_ */

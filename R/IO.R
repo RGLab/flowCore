@@ -61,6 +61,8 @@ read.FCS <- function(filename,
                      emptyValue=TRUE
                     , ...)
 {
+  if(ncdf)
+    .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for disk-based data structure.")
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
         stop("'filename' must be character skalar")
@@ -192,14 +194,7 @@ read.FCS <- function(filename,
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
     identifier(tmp) <- basename(identifier(tmp))
-    if(ncdf && nrow(tmp) > 0){
-        if(!require(ncdf))
-            stop("You need to have package 'ncdf' installed in order for ",
-                 "this feature to work.", call.=FALSE)
-        ttmp <- ncdfExpressionMatrix(tmp)
-        handler <- new("ncdfHandler", file=ttmp$file, pointer=ttmp$pointer, open=TRUE)
-        tmp@exprs <- handler
-    }
+    
     return(tmp)
 }
 
@@ -773,6 +768,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
                          min.limit=NULL, emptyValue=TRUE, ...)
 {
+    if(ncdf)
+      .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
     ## A frame of phenoData information
     phenoFrame <- NULL
     
@@ -841,7 +838,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       column.pattern=column.pattern, invert.pattern = invert.pattern,
-                      decades=decades, ncdf=ncdf,min.limit=min.limit,emptyValue=emptyValue, dataset=dataset)
+                      decades=decades,min.limit=min.limit,emptyValue=emptyValue, dataset=dataset)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
@@ -924,6 +921,8 @@ write.AnnotatedDataFrame <- function(frame, file)
 
 
 cleanup <- function() if(file.exists(".flowCoreNcdf"))
+    
+     .Deprecated("'ncdf' is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
     unlink(".flowCoreNcdf", recursive=TRUE)
 
 

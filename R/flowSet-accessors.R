@@ -132,6 +132,9 @@ setMethod("phenoData<-",
 			## Make sure all of the original frames appear in the new one.
 			if(!all(sampleNames(current)%in%sampleNames(value)))
 				stop("The sample names no longer match.")
+            #check name column
+            if(!"name" %in% colnames(pData(value)))
+              stop("'name' is missing from the phenoData!")
 			object@phenoData <- value
 			object
 		})
