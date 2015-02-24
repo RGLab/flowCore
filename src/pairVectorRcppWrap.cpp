@@ -5,7 +5,7 @@
  *      Author: wjiang2
  */
 #include <Rcpp.h>
-#include "pairVectorRcppWrap.hpp"
+#include "pairVectorRcppWrap.h"
 
 namespace Rcpp {
 	template <> SEXP wrap(const myPairs & kw){
