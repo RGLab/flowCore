@@ -14,8 +14,6 @@
             alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
             decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL, emptyValue=TRUE, ...)
 
-   cleanup()
-
 }
 
 \arguments{
@@ -61,22 +59,7 @@
   \item{decades}{When scaling is activated, the number of decades to use
     for the output.}
 
-  \item{ncdf}{Instead of reading all data into memory, this switches to
-    file-based data storage. A \code{netCDF} file is creates for each
-    \code{\link[flowCore:flowFrame-class]{flowFrame}} in the
-    \code{.flowCoreNcdf} 
-    subdirectory. For large data sets this significantly reduces the
-    memory profile of the R session, to the cost of speed and disk
-    space. The \code{\link{exprs}} and \code{\link{exprs<-}} methods
-    make sure that the user always gets a matrix of data values.  Please
-    note that currently all operations that call \code{\link{exprs<-}},
-    either explicitly or implicitely, will result in the creation of a
-    new \code{netCDF} file. This behaviour may change in the
-    future. Currently the software does not remove any of the
-    \code{netCDF} files and it is up to the user to do clean up. The
-    easiest way to do that is to delete the whole \code{netCDF}
-    directory. To this end, one can invoke the \code{cleanup}
-    function. }
+  \item{ncdf}{Deprecated. Please use 'ncdfFlow' package for cdf based storage.}
   
   \item{min.limit}{The minimum value in the data range that is
     allowed. Some instruments produce extreme artifactual values. The

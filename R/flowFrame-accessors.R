@@ -124,43 +124,8 @@ setMethod("[",
 setMethod("exprs",
           signature=signature(object="flowFrame"),
           definition=function(object){
-              tmp <- object@exprs
-              if(is(tmp, "ncdfHandler")){
-                   if(!require(ncdf))
-                       stop("You need to have package 'ncdf' installed in order for ",
-                            "this feature to work.", call.=FALSE)
-                  ## Need to figure out how to better use that
-                  ##pointer <- if(!tmp@open) open.ncdf(tmp@file) else tmp@pointer
-                  pointer <- open.ncdf(tmp@file)
-                  tmp <- get.var.ncdf(pointer, "exprs")
-                  if(!is.matrix(tmp)) 
-                      tmp <- matrix(tmp, ncol=1)
-                  colnames(tmp) <- object@parameters$name
-                  close.ncdf(pointer)
-              }
-              return(tmp)
+              object@exprs
           })
-
-
-## create a netCDF file from a data matrix for a single flowFrame
-ncdfExpressionMatrix <- function(flowFrame,
-                                 file=file.path(getwd(), ".flowCoreNcdf",
-                                                paste(flowCore:::guid(),".ncdf", sep="")))
-{
-    if(nrow(flowFrame) == 0)
-        return(NULL)
-    if(!file.exists(".flowCoreNcdf"))
-       dir.create(".flowCoreNcdf")
-    ID <- "exprs"
-    x <- dim.def.ncdf("cells", "counts", as.integer(seq_len(nrow(flowFrame))))
-    y <- dim.def.ncdf("parameters", "stains", as.integer(seq_len(ncol(flowFrame))))
-    dat <- var.def.ncdf(ID, "channels", list(x,y), NA, prec="double")
-    if(is(flowFrame, "flowFrame")) flowFrame <- exprs(flowFrame)
-    ncdf <- create.ncdf(file, dat)
-    put.var.ncdf(ncdf, ID, flowFrame)
-    close.ncdf(ncdf)
-    return(list(file=file, pointer=ncdf))
-}
 
 
 
@@ -184,24 +149,9 @@ setReplaceMethod("exprs",
                           "\nunable to replace", call.=FALSE)
                  object@parameters <- object@parameters[mt,,drop=FALSE]
                  tmp <- object@exprs
-                 if(is(tmp, "ncdfHandler")){
-                     if(!require(ncdf))
-                         stop("You need to have package 'ncdf' installed in order for ",
-                              "this feature to work.", call.=FALSE)
-                     ## The following overwrites files, but for now lets
-                     ## create new ones.
-                     ## res <- ncdfExpressionMatrix(value, tmp@file)
-                     res <- ncdfExpressionMatrix(value)
-                     if(!is.null(res)){
-                         object@exprs@open <- TRUE
-                         object@exprs@pointer <- res$pointer
-                         object@exprs@file <- res$file
-                     }else{
-                         object@exprs <- value
-                     }
-                 }else{
-                     object@exprs <- value
-                 }
+                 
+                 object@exprs <- value
+                 
                  return(object)
              })
 

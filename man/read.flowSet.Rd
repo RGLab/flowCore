@@ -59,8 +59,7 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
 
   \item{name}{An optional character scalar used as name of the object.}
 
-  \item{ncdf}{Instead of reading all data into memory, this switches to
-    file-based data storage. See \code{\link[flowCore]{read.FCS}} for details. }
+  \item{ncdf}{Deprecated. Please refer to 'ncdfFlow' package for cdf based storage.}
 
   \item{dataset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
