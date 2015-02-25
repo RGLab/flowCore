@@ -42,6 +42,17 @@ test_that("read.flowSet", {
       pData(pd)[["name"]] <- paste0(pData(pd)[["name"]], "dummy")
       suppressWarnings(expect_error(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd), "'name' column is not consistent with rownames "))
       
+      #create duplicated folder
+      tmpdir1 <- tempfile()
+      suppressWarnings(write.flowSet(fs, tmpdir1))
+      #try to read both folders in
+      files <- list.files(tmpdir, pattern = "fcs", full = T)
+      files1 <- list.files(tmpdir1, pattern = "fcs", full = T)
+      fs2 <- read.flowSet(c(files, files1))
+      #check duplicates
+      sn <- basename(files)
+      sn1 <- paste0(sn, ".1")
+      expect_equal(sampleNames(fs2), c(sn, sn1)) 
       
     })
 
