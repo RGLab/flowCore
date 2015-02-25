@@ -78,7 +78,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
   First, if the argument \code{phenoData} is present and is of class
   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}, then the
   file names are obtained from its sample names (i.e. row names of the underlying data.frame).
-  Also column \code{name} will be generated based on sample names if it is not there.  Alternatively, the argument \code{phenoData} can
+  Also column \code{name} will be generated based on sample names if it is not there. This column is mainly used by visualization methods in flowViz.   
+  Alternatively, the argument \code{phenoData} can
   be of class \code{character}, in which case this function tries to
   read a \code{AnnotatedDataFrame} object from the file with that name
   by calling
