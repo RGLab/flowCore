@@ -72,5 +72,6 @@ getChannelMarker <- function(frm, name, ...) {
 }
 
 LdFlags <- function(){
-  cat(tools::file_path_as_absolute( base::system.file("lib/libboost_regex.a", package = "flowCore" )))
+  libpath <- paste0("lib", Sys.getenv("R_ARCH"), "/libboost_regex.a")
+  cat(tools::file_path_as_absolute( base::system.file(libpath, package = "flowCore" )))
 }
