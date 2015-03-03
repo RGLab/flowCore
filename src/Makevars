@@ -10,22 +10,21 @@ bregex_src=${wildcard boost_regex/*.cpp}
 bregex_objs=${bregex_src:.cpp=.o}
 
 REGEXLIB = libboost_regex.a
-USERDIR =	../inst/lib
-USERLIB = $(USERDIR)$(R_ARCH)/$(REGEXLIB)
+USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
+USERLIB = ${USERDIR}/${REGEXLIB}
 
-PKG_LIBS = $(USERLIB) 
+PKG_LIBS = "${USERLIB}"
 
 .PHONY: all clean 
 
-all: 	$(SHLIB) 
+all: $(SHLIB) 
 
-$(SHLIB):  $(OBJECTS) $(USERLIB)  
-
+$(SHLIB): $(USERLIB)
 
 $(USERLIB): ${bregex_objs}
-		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
-		$(AR) rs $(USERLIB) ${bregex_objs}
+	mkdir -p "${USERDIR}"
+	$(AR) rs "${USERLIB}" ${bregex_objs}
 
 clean:
-		rm -f $(OBJECTS) $(SHLIB) $(USERLIB)
+	rm -f $(OBJECTS) $(SHLIB)
  
