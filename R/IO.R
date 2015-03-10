@@ -782,7 +782,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                                                  as.is=as.is, ...)
             ## the sampleNames of the Annotated data frame must match the
             ## file names and we try to guess them from the input
-            fnams <- grep("name|file|filename", varLabels(phenoData),
+            fnams <- grep("file|filename", varLabels(phenoData),
                           ignore.case=TRUE)
             if(length(fnams)){
                 fn <- as.character(unlist(pData(phenoData[,fnams[1]])))
