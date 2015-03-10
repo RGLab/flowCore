@@ -8,7 +8,7 @@ Maintainer: M.Jiang <wjiang2@fhcrc.org>
 Depends: R (>= 2.10.0)
 Imports: Biobase, BiocGenerics (>= 0.1.14), graph, graphics,
          methods, rrcov, stats, utils, stats4, corpcor, Rcpp
-Suggests: Rgraphviz, flowViz, flowStats, testthat, flowWorkspace,openCyto
+Suggests: Rgraphviz, flowViz, flowStats, testthat, flowWorkspace,flowWorkspaceData,openCyto
 Collate: AllGenerics.R
 	 AllClasses.R
 	 flowFrame-accessors.R
