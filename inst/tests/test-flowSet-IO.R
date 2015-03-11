@@ -5,6 +5,8 @@ fs <- GvHD[1:2]
 expectPD <- pData(fs)
 expectPD[["Patient"]] <- as.integer(as.vector(expectPD[["Patient"]]))
 expectPD[["Visit"]] <- as.integer(expectPD[["Visit"]])
+expectPD[["name"]] <- I(paste0(expectPD[["name"]], ".fcs"))
+rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 
 tmpdir <- tempfile()
 
@@ -17,30 +19,29 @@ test_that("read.flowSet", {
       files <- list.files(tmpdir, pattern = "fcs")
       #no phenoData supplied
       fs1 <- read.flowSet(files, path = tmpdir)
-      sampleNames(fs1) <- gsub(".fcs", "", sampleNames(fs1)) 
       expect_equal(pData(fs1), expectPD[, "name", drop = F])
       
       
       anno <- list.files(tmpdir, pattern = "txt", full = T)
       pd <- Biobase::read.AnnotatedDataFrame(anno)
-      
+      pd[["name"]] <- I(paste0(pd[["name"]], ".fcs"))
       #with phenoData supplied
       suppressWarnings(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd))
-      sampleNames(fs1) <- gsub(".fcs", "", sampleNames(fs1))
       pData(fs1)["FCS_File"] <- NULL
       expect_equal(pData(fs1), expectPD)
       
       #pd without name
       pData(pd)[["name"]] <- NULL
       suppressWarnings(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd))
-      sampleNames(fs1) <- gsub(".fcs", "", sampleNames(fs1))
+      pData(fs1)[["name"]] <- I(pData(fs1)[["name"]])
       pData(fs1)["FCS_File"] <- NULL
       expect_equal(pData(fs1), expectPD)
       
       #pd with wrong name
       pd <- Biobase::read.AnnotatedDataFrame(anno)
       pData(pd)[["name"]] <- paste0(pData(pd)[["name"]], "dummy")
-      suppressWarnings(expect_error(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd), "'name' column is not consistent with rownames "))
+      suppressWarnings(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd))
+      expect_equal(pData(fs1), pData(pd))
       
       #create duplicated folder
       tmpdir1 <- tempfile()
@@ -61,13 +62,17 @@ test_that("phenoData<-", {
       
       # without name column
       pd[["name"]] <- NULL
+      
+      sampleNames(fs) <- paste0(sampleNames(fs), ".fcs") 
       pData(fs) <- pd
       #name column is added
-      expect_equal(expectPD[["name"]], pData(fs)[["name"]])
+      expect_equal(expectPD[["name"]], I(pData(fs)[["name"]]))
       
-      # wrong name
+      # name to be different from rownames
       pd[["name"]] <- letters[1:2] 
-      expect_error(pData(fs) <- pd, "'name' column is not consistent with rownames ")
+      pData(fs) <- pd
+      expect_equal(pData(fs)[["name"]], pd[["name"]])
+      expect_equal(rownames(pData(fs)), rownames(expectPD))
       
       
     })
