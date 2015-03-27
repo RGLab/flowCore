@@ -1437,16 +1437,26 @@ inverseLogicleTransform <- function(transformationId, trans) {
     k
 }
 
-.lgclTrans  <- function(dat, p, t, m,q=0.05) {
+#' It is mainly trying to estimate w (linearization width in asymptotic decades) value based on given m and data range
+#' @param dat flowFrame
+#' @param p channel name
+#' @param m full length of transformed display in decodes
+#' @param t top of the scale of data value
+#' @param a additional negative range to be included in display in decades
+#' @param q quantile of negative data value (used to adjust w calculation)
+.lgclTrans  <- function(dat, p, t, m = 4.5, a = 0, q = 0.05) {
     transId <- paste(p,"logicleTransform", sep = "_")
     dat <- exprs(dat)[,p]
+    
     dat <- dat[dat<0]
     w <- 0
     if(length(dat)) {
         r <- .Machine$double.eps + quantile(dat, q)
         w=(m-log10(t/abs(r))) / 2
+        if(w<0)
+          stop("w is negative!Try to increase 'm'")
     } 
-    logicleTransform( transformationId = transId, w=w, t=t, m =m, a =0)
+    logicleTransform( transformationId = transId, w=w, t = t, m = m, a = a)
 }
 
 estimateLogicle <- function(x, channels,...){
@@ -1460,7 +1470,7 @@ estimateLogicle <- function(x, channels,...){
                             sep = " "))
             rng <- range(x)
             trans <- lapply(channels, function(p) {
-                        .lgclTrans(x, p, t = rng[,p][2], m = 4.5,...)               
+                        .lgclTrans(x, p, t = rng[,p][2], ...)               
                     })
             transformList( channels, trans)   
         }

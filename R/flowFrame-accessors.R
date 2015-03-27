@@ -420,64 +420,70 @@ setMethod("transform",
           definition=function(`_data`, ...)
       {
         
-          ## We hack method dispatch here to allow for something like
-          ## transform(flowSet, transformList). Not really nice because
-          ## we also need to deal with non-standard evaluation, but so what...
-          res <- suppressWarnings(
-              try(
-                    if(length(list(...)) && is(..1, "transformList"))
-                        return(..1 %on% `_data`)
-                  , silent = TRUE
-                )
-            )
-          #try to throw when failure is due to the invalid channel names used in transformList
-          if(grepl("is not a variable in the flowFrame", res))
-            stop(res)
           
-          e <- substitute(list(...))
-          x <- `_data`
-          par <- parameters(x)
-          ranges <- range(x)
-          tranges <- as.matrix(transform(as.data.frame(ranges),...))
-          transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
-          nc <- colnames(transformed)[-c(1:ncol(exprs(x)))]
-          colnames(transformed) <- c(colnames(x), nc)
-          if(ncol(transformed) > ncol(exprs(x))) {
-              ## Add new parameter descriptions if there are any
-              oCol <- lapply(e[2:length(e)], all.vars)
-              nCol <- nc
-              oparFrame <- pData(par)
-              mt <- match(oCol[nc], oparFrame$name)
-              nparFrame <- data.frame(name=nc,
-                                      desc=paste("derived from",
-                                                 "transformation of",
-                                                 sapply(oCol[nc], paste,
-                                                        collapse=" and ")),
-                                      range=oparFrame[mt, "range"],
-                                      minRange=tranges[1, nc],
-                                      maxRange=tranges[2,nc])
-              rownames(nparFrame) <- sprintf("$P%d", seq_len(nrow(nparFrame))+
-                                             nrow(oparFrame))
-              pData(par) <- rbind(oparFrame, nparFrame)
-          }
-          else
-          {
-              cnames <- colnames(x)
-              par$minRange <- tranges[1,]
-              par$maxRange <- tranges[2,]
-          }
-          description(x) <- list(transformation="custom")
-		  desc <- description(x)
-		  for(p in seq_along(pData(par)$name))
-		  { 
-			 desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(par)[p, "maxRange"]
-             desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(par)[p, "minRange"]
-          }
-          new("flowFrame", exprs = transformed, parameters = par,
-               description = desc)
+          args <- substitute(list(...))
+          arg_names <- names(args)
+#          browser()
+          #if it is not named argument, we assume it is a transformList
+          if(is.null(arg_names)){
+            arg <- args[[2]]
+            #check if it is a transformList
+            expr <- substitute(class(arg), list(arg = arg))
+            res <- try(eval(expr), silent = TRUE)
+            if(class(res) == "try-error")
+              stop("the unnamed argument must be a 'transformList'!")
+            else
+                return(..1 %on% `_data`)
+          }else# dispach to .transform for named argument, assuming it is like `FSC-H`=asinhTrans(`FSC-H`) 
+            .transform(`_data`, ...)
+   
       })
 
-
+#' take formal of transform(fs, `FSC-H`=asinhTrans(`FSC-H`))
+#' which do the lazy evaluation
+.transform <- function(`_data`, ...){
+      e <- substitute(list(...))
+      x <- `_data`
+      par <- parameters(x)
+      ranges <- range(x)
+      tranges <- as.matrix(transform(as.data.frame(ranges),...))
+      transformed <- as.matrix(transform(as.data.frame(exprs(x)),...))
+      nc <- colnames(transformed)[-c(1:ncol(exprs(x)))]
+      colnames(transformed) <- c(colnames(x), nc)
+      if(ncol(transformed) > ncol(exprs(x))) {
+        ## Add new parameter descriptions if there are any
+        oCol <- lapply(e[2:length(e)], all.vars)
+        nCol <- nc
+        oparFrame <- pData(par)
+        mt <- match(oCol[nc], oparFrame$name)
+        nparFrame <- data.frame(name=nc,
+            desc=paste("derived from",
+                "transformation of",
+                sapply(oCol[nc], paste,
+                    collapse=" and ")),
+            range=oparFrame[mt, "range"],
+            minRange=tranges[1, nc],
+            maxRange=tranges[2,nc])
+        rownames(nparFrame) <- sprintf("$P%d", seq_len(nrow(nparFrame))+
+                nrow(oparFrame))
+        pData(par) <- rbind(oparFrame, nparFrame)
+      }
+      else
+      {
+        cnames <- colnames(x)
+        par$minRange <- tranges[1,]
+        par$maxRange <- tranges[2,]
+      }
+      description(x) <- list(transformation="custom")
+      desc <- description(x)
+      for(p in seq_along(pData(par)$name))
+      { 
+        desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(par)[p, "maxRange"]
+        desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(par)[p, "minRange"]
+      }
+      new("flowFrame", exprs = transformed, parameters = par,
+          description = desc)
+}
 
 ## ==========================================================================
 ## filter method
