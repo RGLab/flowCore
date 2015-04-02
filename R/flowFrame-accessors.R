@@ -428,7 +428,7 @@ setMethod("transform",
           if(!(missing(translist))){
             #check if it is a transformList
             res <- try(class(translist), silent = TRUE)
-            if(class(res) == "try-error")
+            if(res != "transformList")
               stop("the unnamed argument must be a 'transformList'!")
             else
                 return(translist %on% `_data`)
