@@ -28,7 +28,7 @@ truncateTransform(transformationId="defaultTruncateTransform", a=1)
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   truncateTrans <- truncateTransform(transformationId="Truncate-transformation", a=5)
-  dataTransform <- transform(samp,`FSC-H`=truncateTrans(`FSC-H`))
+  dataTransform <- transform(samp,transformList('FSC-H', truncateTrans))
 
 }
 

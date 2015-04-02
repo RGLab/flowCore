@@ -35,7 +35,7 @@ splitScaleTransform(transformationId="defaultSplitscaleTransform", maxValue=1023
 
 data(GvHD)
 ssTransform  <- splitScaleTransform("mySplitTransform")
-after.1 <- transform(GvHD, `FSC-H`= ssTransform(`FSC-H`))
+after.1 <- transform(GvHD, transformList('FSC-H', ssTransform))
 
 opar = par(mfcol=c(2, 1))
 plot(density(exprs(GvHD[[1]])[, 1]), main="Original")

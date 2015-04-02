@@ -29,7 +29,7 @@ scaleTransform(transformationId="defaultScaleTransform", a, b)
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   scaleTrans <- scaleTransform(transformationId="Truncate-transformation", a=1, b=10^4)
-  dataTransform <- transform(samp,`FSC-H`=scaleTrans(`FSC-H`))
+  dataTransform <- transform(samp, transformList('FSC-H', scaleTrans))
 }
 
 \keyword{ methods }

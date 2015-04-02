@@ -460,7 +460,7 @@ summary(samp[[1]])
 ## transformation
 opar <- par(mfcol=c(1:2))
 plot(set[[1]], c("FL1.H", "FL2.H"))
-set <- transform(set, FL1.H=log(FL1.H), FL2.H=log(FL2.H))
+set <- transform(set, transformList(c("FL1.H", "FL2.H"), log))
 plot(set[[1]], c("FL1.H", "FL2.H"))
 par(opar)
 

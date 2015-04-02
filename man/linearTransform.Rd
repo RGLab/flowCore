@@ -26,7 +26,7 @@ linearTransform(transformationId="defaultLinearTransform", a = 1, b = 0)
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   linearTrans <- linearTransform(transformationId="Linear-transformation", a=2, b=0)
-  dataTransform <- transform(samp,`FSC-H`=linearTrans(`FSC-H`))
+  dataTransform <- transform(samp, transformList('FSC-H' ,linearTrans))
 
 }
 

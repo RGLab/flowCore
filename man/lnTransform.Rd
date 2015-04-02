@@ -29,7 +29,7 @@ lnTransform(transformationId="defaultLnTransform", r=1, d=1)
 \examples{
   data(GvHD)
   lnTrans <- lnTransform(transformationId="ln-transformation", r=1, d=1)
-  ln1 <- transform(GvHD,`FSC-H`=lnTrans(`FSC-H`))
+  ln1 <- transform(GvHD, transformList('FSC-H', lnTrans))
 
 opar = par(mfcol=c(2, 1))
 plot(density(exprs(GvHD[[1]])[ ,1]), main="Original")
