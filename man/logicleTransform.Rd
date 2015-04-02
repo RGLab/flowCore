@@ -53,9 +53,11 @@ data(GvHD)
 samp <- GvHD[[1]] 
 ## User defined logicle function
 lgcl <- logicleTransform( w = 0.5, t= 10000, m =4.5)
-after <- transform(samp, `FL1-H` = lgcl(`FL1-H`), `FL2-H` = lgcl(`FL2-H`))
+trans <- transformList(c("FL1-H", "FL2-H"), lgcl)
+after <- transform(samp, trans)
 invLgcl <- inverseLogicleTransform(trans = lgcl)
-before <- transform (after,  `FL1-H`= invLgcl(`FL1-H`), `FL2-H` = invLgcl(`FL2-H`))
+trans <- transformList(c("FL1-H", "FL2-H"), invLgcl)
+before <- transform (after,  trans)
 
 ## Automatically estimate the logicle transformation based on the data
 lgcl <- estimateLogicle(samp, channels = c("FL1-H", "FL2-H", "FL3-H", "FL2-A", "FL4-H"))
