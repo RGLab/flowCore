@@ -353,7 +353,7 @@
       
       \emph{Usage:}
       
-      \code{   transform(flowFrame, ...)}
+      \code{   transform(flowFrame, translist, ...)}
 
     }
     

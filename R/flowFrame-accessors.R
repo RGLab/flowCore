@@ -409,31 +409,29 @@ setMethod("compensate",
 
 
 
-## ==========================================================================
-## transform method
-## we are also making sure that the values of the dynamic range in the
-## parameters slot are transformed accordingly. Note that this does not
-## happen in the inline form of transformation!
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#' transform method
+#' we are also making sure that the values of the dynamic range in the
+#' parameters slot are transformed accordingly. Note that this does not
+#' happen in the inline form of transformation!
+#' 
+#' @param _data flowFrame object
+#' @param translist transformList object. The recommended way of using this method.
+#' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
+#'            but this form is not intended to be used in programmatic way since use non-standard evalution could fail to find
+#'            'myFunc' definition.   
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
-          definition=function(`_data`, ...)
+          definition=function(`_data`, translist, ...)
       {
         
-          
-          args <- substitute(list(...))
-          arg_names <- names(args)
-#          browser()
-          #if it is not named argument, we assume it is a transformList
-          if(is.null(arg_names)){
-            arg <- args[[2]]
+          if(!(missing(translist))){
             #check if it is a transformList
-            expr <- substitute(class(arg), list(arg = arg))
-            res <- try(eval(expr), silent = TRUE)
+            res <- try(class(translist), silent = TRUE)
             if(class(res) == "try-error")
               stop("the unnamed argument must be a 'transformList'!")
             else
-                return(..1 %on% `_data`)
+                return(translist %on% `_data`)
           }else# dispach to .transform for named argument, assuming it is like `FSC-H`=asinhTrans(`FSC-H`) 
             .transform(`_data`, ...)
    
