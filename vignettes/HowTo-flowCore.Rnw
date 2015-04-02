@@ -528,6 +528,33 @@ which we can then use on the parameter of interest in the usual way
 transform(fs,`FL1-H`=aTrans(`FL1-H`))
 @
 
+However this form of transform call is not intended to used in the programmatic
+context because locally defined transform function (e.g. 'aTrans')
+may not be always visible to the non-standard evaluation environment. .e.g
+<<Transfo4.1, echo=true,results=verbatim>>=
+f1 <- function(fs,...){
+  transform(fs, ...)[,'FL1-H']
+}
+
+f2 <- function(fs){
+  aTrans <- truncateTransform("truncate at 1", a=1)
+  f1(fs, `FL1-H` = aTrans(`FL1-H`))
+}
+res <- try(f2(fs), silent = TRUE)
+res
+@
+
+So this form of usage of 'transform' method is only useful for the interactive
+exploratary.
+we highly recommend the usage of \Robject{transformList} instead for the more
+robust and reproducible code.
+
+<<Transfo4.2, echo=true,results=verbatim>>=
+myTrans <- transformList('FL1-H', aTrans)
+transform(fs, myTrans)
+@
+
+
 \section{Gating}
 
 The most common task in the analysis of flow cytometry data is some

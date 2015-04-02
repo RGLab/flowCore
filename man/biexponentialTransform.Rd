@@ -34,10 +34,11 @@ biexponentialTransform(transformationId="defaultBiexponentialTransform", a = 0.5
 # Construct some "flow-like" data which tends to be hetereoscedastic.
 data(GvHD)
 biexp  <- biexponentialTransform("myTransform")
-after.1 <- transform(GvHD, `FSC-H`= biexp(`FSC-H`))
+
+after.1 <- transform(GvHD, transformList('FSC-H', biexp))
 
 biexp  <- biexponentialTransform("myTransform",w=10)
-after.2 <- transform(GvHD, `FSC-H`= biexp(`FSC-H`))
+after.2 <- transform(GvHD, transformList('FSC-H', biexp))
 
 opar = par(mfcol=c(3, 1))
 plot(density(exprs(GvHD[[1]])[, 1]), main="Original")

@@ -37,11 +37,11 @@ data(GvHD)
 samp <- GvHD[[1]] 
 logicle  <- logicleTransform(t = 10000, w = 0.5, m = 4.5 , a =0 ,"logicle")
 ## transform FL1-H parameter using logicle transformation
-after <- transform(samp, `FL1-H` = logicle(`FL1-H`))
+after <- transform(samp, transformList('FL1-H', logicle))
 
 ## Inverse transform the logicle transformed data to retrieve the original data
 invLogicle <- inverseLogicleTransform(trans = logicle)
-before <- transform (after,  `FL1-H`= invLogicle(`FL1-H`))
+before <- transform (after, transformList('FL1-H', invLogicle))
 
 }
 \keyword{methods}

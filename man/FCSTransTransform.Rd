@@ -45,8 +45,8 @@ FCSTransTransform(transformationId = "defaultFCSTransTransform", channelrange = 
 data(GvHD)
 samp <- GvHD[[1]] 
 ## User defined logicle function
-lgcl <- FCSTransTransform()
-after <- transform(samp, `FL1-H` = lgcl(`FL1-H`), `FL2-H` = lgcl(`FL2-H`))
+lgcl <- transformList(c('FL1-H', 'FL2-H'), FCSTransTransform())
+after <- transform(samp, lgcl)
 }
 
 \keyword{methods}
