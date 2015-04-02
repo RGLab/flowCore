@@ -27,7 +27,7 @@ quadraticTransform(transformationId="defaultQuadraticTransform", a = 1, b = 1, c
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   quadTrans <- quadraticTransform(transformationId="Quadratic-transformation", a=1, b=1, c=0)
-  dataTransform <- transform(samp,`FSC-H`=quadTrans(`FSC-H`))
+  dataTransform <- transform(samp, transformList('FSC-H', quadTrans))
 
 }
 

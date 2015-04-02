@@ -21,45 +21,45 @@ test_that("transform", {
       truncTrans <- truncateTransform("truncate",a=1)
       linearTrans <- linearTransform("linear",a=2,b=0)
       
-      #looks like linearTrans is only visible within global environment
-      # and won't be evaluated properly within the test R session
+      #linearTrans is not visible from transform method
+      #since non-standard evaluation  will only evaluate its direct parent environment
       #Try a linear transform
 #      expect_equal(fsApply(transform(comp.fs1, `FL1-H` = linearTrans(`FL1-H`)), each_col,range)
 #                  , expectRes[["trans.linear"]])
       
       #the new lazy evaluation is still not working perfectly within test R session
-#      transList <- transformList("FL1-H", linearTrans)
-#      thisRes <- fsApply(transform(comp.fs1, transList), each_col,range)
-#      names(dimnames(thisRes)[[2]]) <- NULL
-#      expect_equal(thisRes, expectRes[["trans.linear"]])
-#      
-#      
-#      #Truncate all columns
-#      transList <- transformList(c("FL1-H", "FL2-H", "FL3-H", "FL4-H"), truncTrans)
-#      thisRes <- fsApply(transform(comp.fs1, transList),each_col,range)
-#      names(dimnames(thisRes)[[2]]) <- NULL
-#      expect_equal(thisRes, expectRes[["trans.trunc"]])
-#      
-#      expectRes[["trans.trunc"]] <- thisRes
-#      #Try to gate on a transformed value. Get ONLY side-scatter values > .3 after norming to [0,1]
-#      normTrans <- scaleTransform("norm",a=0,b=1023)
-#      normGate  <- rectangleGate("SSC-H"=c(.3,Inf))
-#      transList <- transformList("SSC-H", normTrans)
-#      expect_equal(fsApply(Subset(transform(comp.fs1,transList), normGate),each_col,range)
-#                  , expectRes[["trans.normTrans"]])
-#      
-#              
-#      # transformList
-#      chnls <- colnames(comp.mat)
-#      transList <- transformList(chnls, logicleTransform())
-#      trans.fs1 <- transform(comp.fs1, transList)
-#      expect_equal(fsApply(trans.fs1,colMeans,use.exprs=TRUE)
-#                  , expectRes[["trans.transformList"]])
-#      
-#      #expect the error by giving bad channel name
-#      chnls <- c(chnls, "dummy")
-#      transList <- transformList(chnls, logicleTransform())
-#      expect_error(transform(comp.fs1, transList), "dummy is not a variable in the flowFrame")
+      transList <- transformList("FL1-H", linearTrans)
+      thisRes <- fsApply(transform(comp.fs1, transList), each_col,range)
+      names(dimnames(thisRes)[[2]]) <- NULL
+      expect_equal(thisRes, expectRes[["trans.linear"]])
+      
+      
+      #Truncate all columns
+      transList <- transformList(c("FL1-H", "FL2-H", "FL3-H", "FL4-H"), truncTrans)
+      thisRes <- fsApply(transform(comp.fs1, transList),each_col,range)
+      names(dimnames(thisRes)[[2]]) <- NULL
+      expect_equal(thisRes, expectRes[["trans.trunc"]])
+      
+      expectRes[["trans.trunc"]] <- thisRes
+      #Try to gate on a transformed value. Get ONLY side-scatter values > .3 after norming to [0,1]
+      normTrans <- scaleTransform("norm",a=0,b=1023)
+      normGate  <- rectangleGate("SSC-H"=c(.3,Inf))
+      transList <- transformList("SSC-H", normTrans)
+      expect_equal(fsApply(Subset(transform(comp.fs1,transList), normGate),each_col,range)
+                  , expectRes[["trans.normTrans"]])
+      
+              
+      # transformList
+      chnls <- colnames(comp.mat)
+      transList <- transformList(chnls, logicleTransform())
+      trans.fs1 <- transform(comp.fs1, transList)
+      expect_equal(fsApply(trans.fs1,colMeans,use.exprs=TRUE)
+                  , expectRes[["trans.transformList"]])
+      
+      #expect the error by giving bad channel name
+      chnls <- c(chnls, "dummy")
+      transList <- transformList(chnls, logicleTransform())
+      expect_error(transform(comp.fs1, transList), "dummy is not a variable in the flowFrame")
       
       
     })

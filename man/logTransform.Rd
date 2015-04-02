@@ -32,7 +32,8 @@ logTransform(transformationId="defaultLogTransform", logbase=10, r=1, d=1)
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   logTrans <- logTransform(transformationId="log10-transformation", logbase=10, r=1, d=1)
-  dataTransform <- transform(samp,`FSC-H`=logTrans(`FSC-H`))
+  trans <- transformList('FSC-H', logTrans)
+  dataTransform <- transform(samp, trans)
 }
 
 \keyword{ methods }

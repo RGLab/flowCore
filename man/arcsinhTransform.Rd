@@ -33,7 +33,8 @@ arcsinhTransform(transformationId="defaultArcsinhTransform", a=1, b=1, c=0)
 samp <- read.FCS(system.file("extdata",
    "0877408774.B08", package="flowCore"))
   asinhTrans <- arcsinhTransform(transformationId="ln-transformation", a=1, b=1, c=1)
-  dataTransform <- transform(samp,`FSC-H`=asinhTrans(`FSC-H`))
+  translist <- transformList('FSC-H', asinhTrans) 
+  dataTransform <- transform(samp, translist)
 }
 
 \keyword{ methods }
