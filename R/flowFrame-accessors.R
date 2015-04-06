@@ -428,9 +428,11 @@ setMethod("transform",
           if(!(missing(translist))){
             #check if it is a transformList
             res <- try(class(translist), silent = TRUE)
-            if(res != "transformList")
-              stop("the unnamed argument must be a 'transformList'!")
-            else
+            if(res != "transformList"){
+              err_msg <- attr(res, "condition")[["message"]]
+              err_msg <- paste(err_msg, "!Please make sure the unnamed argument is a valid 'transformList' object!")
+              stop(err_msg)
+            }else
                 return(translist %on% `_data`)
           }else# dispach to .transform for named argument, assuming it is like `FSC-H`=asinhTrans(`FSC-H`) 
             .transform(`_data`, ...)
