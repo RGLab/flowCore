@@ -1444,10 +1444,27 @@ inverseLogicleTransform <- function(transformationId, trans) {
 #' @param t top of the scale of data value
 #' @param a additional negative range to be included in display in decades
 #' @param q quantile of negative data value (used to adjust w calculation)
-.lgclTrans  <- function(dat, p, t, m = 4.5, a = 0, q = 0.05) {
+.lgclTrans  <- function(dat, p, t , m, a = 0, q = 0.05, type = "instrument") {
+    type <- match.arg(type, c("instrument", "data"))
     transId <- paste(p,"logicleTransform", sep = "_")
+    
+    rng <- range(dat)
     dat <- exprs(dat)[,p]
     
+    if(missing(t)){
+      if(type == "instrument")
+        t <- rng[,p][2]
+      else
+        t <- max(dat)
+    }
+    
+    if(missing(m)){
+      if(type == "instrument")
+        m <- 4.5#hardcoded value to keep consistency with the legacy behavior
+      else
+        m <- log10(t)
+    }
+      
     dat <- dat[dat<0]
     w <- 0
     if(length(dat)) {
@@ -1468,9 +1485,8 @@ estimateLogicle <- function(x, channels,...){
             if(!all(indx))
                 stop(paste("Channels", channels[!indx] , "were not found in x ",
                             sep = " "))
-            rng <- range(x)
             trans <- lapply(channels, function(p) {
-                        .lgclTrans(x, p, t = rng[,p][2], ...)               
+                        .lgclTrans(x, p, ...)               
                     })
             transformList( channels, trans)   
         }
