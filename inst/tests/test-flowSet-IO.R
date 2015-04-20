@@ -53,7 +53,7 @@ test_that("read.flowSet", {
       #check duplicates
       sn <- basename(files)
       sn1 <- paste0(sn, ".1")
-      expect_equal(sampleNames(fs2), c(sn, sn1)) 
+      expect_equal(sampleNames(fs2), sort(c(sn, sn1))) 
       
     })
 
