@@ -1462,7 +1462,7 @@ inverseLogicleTransform <- function(transformationId, trans) {
       if(type == "instrument")
         m <- 4.5#hardcoded value to keep consistency with the legacy behavior
       else
-        m <- log10(t)
+        m <- log10(t) + 1 
     }
       
     dat <- dat[dat<0]

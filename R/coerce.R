@@ -263,9 +263,9 @@ setAs(from="list", to="flowSet", def=function(from)
   {
       if(is.null(names(from)))
           names(from) <- paste("V", seq(1, length(from)), sep="")
-      orig.sampleNames <- names(from)
+#      orig.sampleNames <- names(from)
       res <- as(list2env(from, new.env(hash=T, parent=emptyenv())), "flowSet")
-      sampleNames(res) <- orig.sampleNames
+#      sampleNames(res) <- orig.sampleNames
       res
   })
 
