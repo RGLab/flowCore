@@ -263,9 +263,16 @@ setAs(from="list", to="flowSet", def=function(from)
   {
       if(is.null(names(from)))
           names(from) <- paste("V", seq(1, length(from)), sep="")
-#      orig.sampleNames <- names(from)
+        
+      orig.sampleNames <- names(from)
       res <- as(list2env(from, new.env(hash=T, parent=emptyenv())), "flowSet")
-#      sampleNames(res) <- orig.sampleNames
+      #must sort it alphabeticlly because list2env call potentially shuffled list
+      #and within setAs(from="environment", to="flowSet") method 'ls` call reorder
+      #the list by alphabet order
+      #This assignment(sampleNames<-) could have been avoided, but we rely on its side effect 
+      #that overwrites the GUID keyword in flow data, which will prevent read.flowSet from
+      #renaming the flowSet with GUID (which could be a design bug in itself).
+      sampleNames(res) <- sort(orig.sampleNames) 
       res
   })
 
