@@ -1,13 +1,14 @@
 useDynLib("flowCore",.registration=TRUE)
 
+import(methods)
 import(Rcpp)
 
 importClassesFrom(Biobase, AnnotatedDataFrame)
 
-importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
-                  ANY, call,character, data.frame, environment, expression,
-                  factor, formula, "function", list, logical, matrix, missing,
-                  name, "NULL",numeric, oldClass, className)
+#importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
+                  # ANY, call,character, data.frame, environment, expression,
+                  # factor, formula, "function", list, logical, matrix, missing,
+                  # name, "NULL",numeric, oldClass, className)
 
 importMethodsFrom(Biobase, description, "description<-", exprs,
                   "exprs<-", featureNames, pData, "pData<-", phenoData,
@@ -18,7 +19,7 @@ importMethodsFrom(Biobase, description, "description<-", exprs,
 importMethodsFrom(graph, addEdge, addNode, adj, edgeData, "edgeData<-",
                   "edgeDataDefaults<-", nodes, removeNode)
 
-importMethodsFrom(methods, cbind2, coerce, initialize, rbind2, show)
+#importMethodsFrom(methods, cbind2, coerce, initialize, rbind2, show)
 
 importFrom(Biobase, listLen, read.AnnotatedDataFrame)
 
@@ -31,8 +32,7 @@ importFrom(graph, "edgeRenderInfo<-", "nodeRenderInfo<-")
 importFrom(graphics, hist, text, smoothScatter)
 
 
-importFrom(methods, as, callNextMethod, getSlots, is, new,
-           selectMethod, signature, slot, "slot<-")
+#importFrom(methods, as, callNextMethod, getSlots, is, new, selectMethod, signature, slot, "slot<-")
 
 importFrom(rrcov, CovMcd)
 
