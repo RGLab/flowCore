@@ -127,7 +127,7 @@ filterId="defaultTimeFilter")
 \note{
 
   See the documentation of
-  \code{\link[flowViz:timeLinePlot-methods]{timeLinePlot}} in the 
+  \code{\link[flowViz:timeLinePlot]{timeLinePlot}} in the 
   \code{\link[flowViz:flowViz-package]{flowViz}} package for details on
   visualizing temporal problems in flow cytometry data.
 
