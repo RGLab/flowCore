@@ -57,6 +57,7 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
+                     truncate_max_range = TRUE, 
                      dataset=NULL,                     
                      emptyValue=TRUE
                     , ...)
@@ -120,7 +121,7 @@ read.FCS <- function(filename,
        txt[["transformation"]] %in% c("applied", "custom"))
        transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
-                       scale, alter.names, decades, min.limit)
+                       scale, alter.names, decades, min.limit, truncate_max_range)
     matRanges <- attr(mat,"ranges")
 
 	
@@ -501,7 +502,7 @@ fcs_text_parse = function(str,emptyValue) {
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, which.lines,
-                        scale, alter.names, decades, min.limit=-111) {
+                        scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE) {
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
@@ -680,12 +681,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
     colnames(dat) <- if(alter.names)  structure(make.names(cn),
                                                 names=names(cn))else cn
-
+    
     ## truncate data at max range
     if(is.na(x["transformation"]))
     {
-        for(i in seq_len(ncol(dat)))
-            dat[dat[,i]>range[i],i] <- range[i]
+        if(truncate_max_range){
+          for(i in seq_len(ncol(dat)))
+            dat[dat[,i]>range[i],i] <- range[i]  
+        }
+        
         if(!is.null(min.limit))
             dat[dat<min.limit] <- min.limit
     }

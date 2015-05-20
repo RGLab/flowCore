@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
-            decades=0, ncdf = FALSE, min.limit=NULL, dataset=NULL, emptyValue=TRUE, ...)
+            decades=0, ncdf = FALSE, min.limit=NULL, truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, ...)
 
 }
 
@@ -71,6 +71,9 @@
     copies the behavior of flowJo. It can be set to an arbitrary number
     or to \code{NULL}, in which case the original values are kept. }
 
+  \item{truncate_max_range}{logical type. Default is TRUE. can be optionally turned off
+  							to avoid truncating the extreme positive value to the instrument measurement range .i.e.'$PnR'.
+  							}
   \item{dataset}{The FCS file specification allows for multiple data
     segments in a single file. Since the output of \code{read.FCS} is a
     single \code{flowFrame} we can't automatically read in all available
