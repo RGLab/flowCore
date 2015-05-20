@@ -233,7 +233,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
     # replace the empty desc with NA
     desc <- sapply(desc, function(thisDesc){
-            if(nchar(thisDesc) == 0)
+            if(!nzchar(thisDesc))
               NA
             else
               thisDesc
@@ -528,8 +528,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 x[[sprintf("flowCore_$P%sRmax", k)]]
              })
     } else {
-       range <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
+        range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
+        if(dattype=="integer")
+          range <- as.integer(range_str)
+        else
+          range <- as.numeric(range_str)
+       if(any(is.na(range)))
+         stop("$PnR is larger than the integer limit: ", range_str[is.na(range)][1])
     }
+    
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
     
@@ -591,8 +598,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         bitwidth <- 16
     }
     size <- bitwidth/8
-#    if (!size %in% c(1, 2, 4, 8))
-#        stop(paste("Don't know how to deal with bitwidth", bitwidth))
+
+    # since signed = FALSE is not supported by readBin when size > 2
+    # we set it to TRUE automatically then to avoid warning flooded by readBin
+    # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits 
     signed <- !(size%in%c(1,2))
     
     nwhichLines <- length(which.lines)
