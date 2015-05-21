@@ -57,6 +57,7 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
+                     truncate_max_range = TRUE, 
                      dataset=NULL,                     
                      emptyValue=TRUE
                     , ...)
@@ -120,7 +121,7 @@ read.FCS <- function(filename,
        txt[["transformation"]] %in% c("applied", "custom"))
        transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
-                       scale, alter.names, decades, min.limit)
+                       scale, alter.names, decades, min.limit, truncate_max_range)
     matRanges <- attr(mat,"ranges")
 
 	
@@ -233,7 +234,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
     # replace the empty desc with NA
     desc <- sapply(desc, function(thisDesc){
-            if(nchar(thisDesc) == 0)
+            if(!nzchar(thisDesc))
               NA
             else
               thisDesc
@@ -501,7 +502,7 @@ fcs_text_parse = function(str,emptyValue) {
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, which.lines,
-                        scale, alter.names, decades, min.limit=-111) {
+                        scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE) {
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
@@ -528,8 +529,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 x[[sprintf("flowCore_$P%sRmax", k)]]
              })
     } else {
-       range <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep="")))
+        range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
+        if(dattype=="integer")
+          range <- as.integer(range_str)
+        else
+          range <- as.numeric(range_str)
+       if(any(is.na(range)))
+         stop("$PnR is larger than the integer limit: ", range_str[is.na(range)][1])
     }
+    
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
     
@@ -591,8 +599,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         bitwidth <- 16
     }
     size <- bitwidth/8
-#    if (!size %in% c(1, 2, 4, 8))
-#        stop(paste("Don't know how to deal with bitwidth", bitwidth))
+
+    # since signed = FALSE is not supported by readBin when size > 2
+    # we set it to TRUE automatically then to avoid warning flooded by readBin
+    # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits 
     signed <- !(size%in%c(1,2))
     
     nwhichLines <- length(which.lines)
@@ -671,12 +681,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
     colnames(dat) <- if(alter.names)  structure(make.names(cn),
                                                 names=names(cn))else cn
-
+    
     ## truncate data at max range
     if(is.na(x["transformation"]))
     {
-        for(i in seq_len(ncol(dat)))
-            dat[dat[,i]>range[i],i] <- range[i]
+        if(truncate_max_range){
+          for(i in seq_len(ncol(dat)))
+            dat[dat[,i]>range[i],i] <- range[i]  
+        }
+        
         if(!is.null(min.limit))
             dat[dat<min.limit] <- min.limit
     }
