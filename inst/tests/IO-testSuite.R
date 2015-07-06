@@ -135,3 +135,9 @@ test_that("test flowJo exported data with offset = 99999999 and  missing the $BE
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["badFlowJoExport"]], digest(fr))
     })
+
+test_that("test integer overflow issue", {
+      expect_warning(expect_error(read.FCS(file.path(dataPath, "intOverFlow.fcs"))
+                                  , "\\$PnR is larger than the integer limit")
+                    , "NAs introduced by coercion to integer range") 
+    })
