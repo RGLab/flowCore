@@ -959,10 +959,8 @@ writeFCSheader <- function(con, offsets)
         if( nchar(val1) > 8 || nchar(val2) > 8){
              val1 <- val2 <- 0
         }
-        writeChar(paste(paste(rep(" ", 8 - nchar(val1)), collapse=""), val1,
-                        collapse="", sep=""), con, eos=NULL)
-        writeChar(paste(paste(rep(" ", 8 - nchar(val2)), collapse=""), val2,
-                        collapse="", sep=""), con, eos=NULL)
+        writeChar(sprintf("%8s", val1), con, eos=NULL)
+        writeChar(sprintf("%8s", val2), con, eos=NULL)
     }
      invisible()
 }
@@ -972,7 +970,7 @@ writeFCSheader <- function(con, offsets)
 ## ==========================================================================
 ## collapse the content of the description slot into a character vector
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-collapseDesc <- function(x)
+collapseDesc <- function(x, delimiter = "\\")
 {
     d <- description(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
@@ -986,8 +984,16 @@ collapseDesc <- function(x)
 					#make sure spillover matrix doesn't get converted to vector
 					if(is.matrix(y))
 						return (y)   
-					else
-						return(sub("^$"," ",y))
+					else{
+					  
+					  y <- sub("^$"," ",y)
+					  delimiter <- paste0("\\", delimiter) #escape it in case of special character
+            #escape delimiter character by doubling it
+            double_delimiter <- paste0(delimiter, delimiter)
+					  return(gsub(delimiter, double_delimiter, y))
+            
+					}
+						
 				}
 					 
 						
@@ -1002,8 +1008,8 @@ collapseDesc <- function(x)
 		vec <- paste(c(t(mat)),sep=",",collapse=",")
 	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
 	}
-    paste("\\", iconv(paste(names(d), "\\", sapply(d, paste, collapse=" "),
-                            "\\", collapse="", sep=""), to="latin1",
+    paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
+                                 delimiter, collapse="", sep=""), to="latin1",
                       sub=" "), sep="")
    
 }
@@ -1015,7 +1021,7 @@ collapseDesc <- function(x)
 ## is taken from the idnetifier of the flowFrame. 'what' controls the output
 ## data type.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-write.FCS <- function(x, filename, what="numeric")
+write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
 {
   warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
@@ -1077,7 +1083,7 @@ write.FCS <- function(x, filename, what="numeric")
     description(x) <- mk
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
-    ctxt <- collapseDesc(x)
+    ctxt <- collapseDesc(x, delimiter = delimiter)
     endTxt <- nchar(ctxt) + begTxt -1
     endDat <- ld + endTxt
     endTxt <- endTxt +(nchar(endTxt+1)-1) + (nchar(endDat)-1)
@@ -1086,7 +1092,7 @@ write.FCS <- function(x, filename, what="numeric")
     endDat <- ld + endTxt
     description(x) <- list("$BEGINDATA"=endTxt+1,
                            "$ENDDATA"=endTxt+ld)
-    ctxt <- collapseDesc(x)
+    ctxt <- collapseDesc(x, delimiter = delimiter)
 	
     offsets <- c(begTxt, endTxt, endTxt+1, endTxt+ld, 0,0)
     ## Write out to file
