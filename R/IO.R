@@ -959,10 +959,8 @@ writeFCSheader <- function(con, offsets)
         if( nchar(val1) > 8 || nchar(val2) > 8){
              val1 <- val2 <- 0
         }
-        writeChar(paste(paste(rep(" ", 8 - nchar(val1)), collapse=""), val1,
-                        collapse="", sep=""), con, eos=NULL)
-        writeChar(paste(paste(rep(" ", 8 - nchar(val2)), collapse=""), val2,
-                        collapse="", sep=""), con, eos=NULL)
+        writeChar(sprintf("%8s", val1), con, eos=NULL)
+        writeChar(sprintf("%8s", val2), con, eos=NULL)
     }
      invisible()
 }
