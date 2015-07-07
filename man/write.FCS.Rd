@@ -5,7 +5,7 @@
 \description{Write FCS file from a flowFrame}
 
 \usage{
-   write.FCS(x, filename, what="numeric")
+   write.FCS(x, filename, what="numeric", delimiter = "\\\\")
 }
 
 \arguments{
@@ -19,7 +19,8 @@
     data type to \code{integer} may result in considerable loss of
     precision if the data has been transformed. We recommend using the
     default data type unless disc space is an issue. }
-  
+    
+  \item{delimiter}{a single character to separate the FCS keyword/value pairs. Default is back-slash: "\\"}
 }
 
 \details{

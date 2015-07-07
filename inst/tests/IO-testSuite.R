@@ -107,10 +107,24 @@ test_that("test write.FCS", {
     write.FCS(fr,tmp)
     
     # When I read the file back in, the SPILL matrix appears to be malformed.
-    fr <- read.FCS(tmp)
-    keyword(fr)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["NHLBIWrite"]], digest(fr))
-
+    fr1 <- read.FCS(tmp)
+    keyword(fr1)[["FILENAME"]] <- "setToDummy"
+    expect_equal(expectRes[["read.FCS"]][["NHLBIWrite"]], digest(fr1))
+    
+    # test delimiter(\) escaping 
+    description(fr)[["$DATE"]] <- "05\\JUN\\2012"
+    write.FCS(fr,tmp)
+    fr1 <- read.FCS(tmp, emptyValue = F)
+    keyword(fr1)[["FILENAME"]] <- "setToDummy"
+    expect_equal(description(fr1)[["$DATE"]], "05\\\\JUN\\\\2012")
+    
+    write.FCS(fr,tmp, delimiter = "|")
+    fr2 <- read.FCS(tmp, emptyValue = F)
+    keyword(fr2)[["FILENAME"]] <- "setToDummy"
+    keyword(fr1)[["$DATE"]] <- "05\\JUN\\2012"
+    description(fr1)[["$ENDDATA"]]<- "5741162"
+    description(fr1)[["$BEGINDATA"]] <- "3675"
+    expect_equal(fr2, fr1)
 })
 
 
@@ -134,4 +148,10 @@ test_that("test flowJo exported data with offset = 99999999 and  missing the $BE
       fr <- read.FCS(file.path(dataPath, "badFlowJoExport.fcs"))
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["badFlowJoExport"]], digest(fr))
+    })
+
+test_that("test integer overflow issue", {
+      expect_warning(expect_error(read.FCS(file.path(dataPath, "intOverFlow.fcs"))
+                                  , "\\$PnR is larger than the integer limit")
+                    , "NAs introduced by coercion to integer range") 
     })
