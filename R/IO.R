@@ -987,11 +987,18 @@ collapseDesc <- function(x, delimiter = "\\")
 					else{
 					  
 					  y <- sub("^$"," ",y)
-					  delimiter <- paste0("\\", delimiter) #escape it in case of special character
-            #escape delimiter character by doubling it
-            double_delimiter <- paste0(delimiter, delimiter)
-					  return(gsub(delimiter, double_delimiter, y))
-            
+					  double_delimiter <- paste0(delimiter, delimiter)
+                      
+#                      browser()
+                      #replace the existing double delimiter with a temp string
+                      # to skip escapping operation
+                      tempString <- guid()
+                      y <- gsub(double_delimiter, tempString, y, fixed = TRUE)
+                      #escape single delimiter character by doubling it
+					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE)
+                      #restore the original double delimiter
+                      
+                      return(gsub(tempString, double_delimiter, y, fixed = TRUE))
 					}
 						
 				}

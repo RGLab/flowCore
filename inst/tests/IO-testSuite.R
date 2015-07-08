@@ -118,7 +118,23 @@ test_that("test write.FCS", {
     keyword(fr1)[["FILENAME"]] <- "setToDummy"
     expect_equal(description(fr1)[["$DATE"]], "05\\\\JUN\\\\2012")
     
-    write.FCS(fr,tmp, delimiter = "|")
+    # write it again to see if the existing double delimiter is handled properly
+    write.FCS(fr1,tmp)
+    fr2 <- read.FCS(tmp, emptyValue = F)
+    keyword(fr2)[["FILENAME"]] <- "setToDummy"
+    description(fr2)[["$DATE"]]
+#    expect_equal
+#    setdiff(
+#        length(unique(names(description(fr2))))
+#    %in%
+#    description(fr1)[109:121]
+#    grep("FCSversion", names(description(fr1)))
+    
+
+
+#  )
+      
+    write.FCS(fr,tmp, delimiter = "_")
     fr2 <- read.FCS(tmp, emptyValue = F)
     keyword(fr2)[["FILENAME"]] <- "setToDummy"
     keyword(fr1)[["$DATE"]] <- "05\\JUN\\2012"
