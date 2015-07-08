@@ -350,8 +350,10 @@ readFCStext <- function(con, offsets,emptyValue, cpp = TRUE)
           rv = fcsTextParse(txt,emptyValue=emptyValue)
         else
 		  rv = fcs_text_parse(txt,emptyValue=emptyValue)
-		rv = c(offsets["FCSversion"], rv)
-		names(rv)[1] = "FCSversion" #not sure if this line is necessary	
+        
+        if(!"FCSversion"%in%names(rv))
+		  rv <- c(offsets["FCSversion"], rv)
+			
 		names(rv) <- gsub("^ *| *$", "", names(rv))#trim the leading and trailing whitespaces
 	}
 	
