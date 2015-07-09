@@ -27,7 +27,7 @@ test_that("test odd-bitwidth FCS", {
 
 
 test_that("test other FCS", {
-    fr <- read.FCS("~/rglab/workspace/QUALIFIER/misc/ITN029ST/20110125240_F06_I025.fcs")
+    fr <- read.FCS(file.path(dataPath, "20110125240_F06_I025.fcs"))
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["ITN029ST"]], digest(fr))
     
@@ -108,23 +108,45 @@ test_that("test write.FCS", {
     
     # When I read the file back in, the SPILL matrix appears to be malformed.
     fr1 <- read.FCS(tmp)
-    keyword(fr1)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["NHLBIWrite"]], digest(fr1))
+    keys <- description(fr)
+    keys[["$TOT"]] <- trimws(keys[["$TOT"]])
+    keys[c("$BEGINDATA", "$ENDDATA")] <- NULL
+    keys.new <- description(fr1)
+    keys.new[["FILENAME"]] <- "setToDummy"
+    expect_equal(keys.new[names(keys)], keys)
+    expect_equivalent(exprs(fr), exprs(fr1))
     
     # test delimiter(\) escaping 
     description(fr)[["$DATE"]] <- "05\\JUN\\2012"
     write.FCS(fr,tmp)
     fr1 <- read.FCS(tmp, emptyValue = F)
-    keyword(fr1)[["FILENAME"]] <- "setToDummy"
-    expect_equal(description(fr1)[["$DATE"]], "05\\\\JUN\\\\2012")
+    keys.new <- description(fr1)
+    keys.new[["FILENAME"]] <- "setToDummy"
+    expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+    keys.new[["$DATE"]] <- keys[["$DATE"]]
+    expect_equal(keys.new[names(keys)], keys)
+    expect_equivalent(exprs(fr), exprs(fr1))
     
-    write.FCS(fr,tmp, delimiter = "|")
-    fr2 <- read.FCS(tmp, emptyValue = F)
-    keyword(fr2)[["FILENAME"]] <- "setToDummy"
-    keyword(fr1)[["$DATE"]] <- "05\\JUN\\2012"
-    description(fr1)[["$ENDDATA"]]<- "5741162"
-    description(fr1)[["$BEGINDATA"]] <- "3675"
-    expect_equal(fr2, fr1)
+    # write it again to see if the existing double delimiter is handled properly
+    write.FCS(fr1,tmp)
+    fr1 <- read.FCS(tmp, emptyValue = F)
+    keys.new <- description(fr1)
+    keys.new[["FILENAME"]] <- "setToDummy"
+    expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+    keys.new[["$DATE"]] <- keys[["$DATE"]]
+    expect_equal(keys.new[names(keys)], keys)
+    expect_equivalent(exprs(fr), exprs(fr1))
+
+    #test other delimiter
+    write.FCS(fr,tmp, delimiter = ";")
+    fr1 <- read.FCS(tmp, emptyValue = F)
+    keys.new <- description(fr1)
+    keys.new[["FILENAME"]] <- "setToDummy"
+    expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
+    keys.new[["$DATE"]] <- keys[["$DATE"]]
+    expect_equal(keys.new[names(keys)], keys)
+    expect_equivalent(exprs(fr), exprs(fr1))
+    
 })
 
 

@@ -350,8 +350,10 @@ readFCStext <- function(con, offsets,emptyValue, cpp = TRUE)
           rv = fcsTextParse(txt,emptyValue=emptyValue)
         else
 		  rv = fcs_text_parse(txt,emptyValue=emptyValue)
-		rv = c(offsets["FCSversion"], rv)
-		names(rv)[1] = "FCSversion" #not sure if this line is necessary	
+        
+        if(!"FCSversion"%in%names(rv))
+		  rv <- c(offsets["FCSversion"], rv)
+			
 		names(rv) <- gsub("^ *| *$", "", names(rv))#trim the leading and trailing whitespaces
 	}
 	
@@ -987,11 +989,19 @@ collapseDesc <- function(x, delimiter = "\\")
 					else{
 					  
 					  y <- sub("^$"," ",y)
-					  delimiter <- paste0("\\", delimiter) #escape it in case of special character
-            #escape delimiter character by doubling it
-            double_delimiter <- paste0(delimiter, delimiter)
-					  return(gsub(delimiter, double_delimiter, y))
-            
+					  double_delimiter <- paste0(delimiter, delimiter)
+                      
+#                      browser()
+                      #replace the existing double delimiter with a temp string
+                      # to skip escapping operation
+                      tempString <- guid()
+                      # useBytes = TRUE to avoid  errors/warnings about invalid inputs (e.g. "CELLQuest\xaa")
+                      y <- gsub(double_delimiter, tempString, y, fixed = TRUE, useBytes = TRUE)
+                      #escape single delimiter character by doubling it
+					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
+                      #restore the original double delimiter
+                      
+                      return(gsub(tempString, double_delimiter, y, fixed = TRUE, useBytes = TRUE))
 					}
 						
 				}
