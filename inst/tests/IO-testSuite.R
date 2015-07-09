@@ -27,7 +27,7 @@ test_that("test odd-bitwidth FCS", {
 
 
 test_that("test other FCS", {
-    fr <- read.FCS("~/rglab/workspace/QUALIFIER/misc/ITN029ST/20110125240_F06_I025.fcs")
+    fr <- read.FCS(file.path(dataPath, "20110125240_F06_I025.fcs"))
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["ITN029ST"]], digest(fr))
     

@@ -995,12 +995,13 @@ collapseDesc <- function(x, delimiter = "\\")
                       #replace the existing double delimiter with a temp string
                       # to skip escapping operation
                       tempString <- guid()
-                      y <- gsub(double_delimiter, tempString, y, fixed = TRUE)
+                      # useBytes = TRUE to avoid  errors/warnings about invalid inputs (e.g. "CELLQuest\xaa")
+                      y <- gsub(double_delimiter, tempString, y, fixed = TRUE, useBytes = TRUE)
                       #escape single delimiter character by doubling it
-					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE)
+					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
                       #restore the original double delimiter
                       
-                      return(gsub(tempString, double_delimiter, y, fixed = TRUE))
+                      return(gsub(tempString, double_delimiter, y, fixed = TRUE, useBytes = TRUE))
 					}
 						
 				}
