@@ -256,8 +256,7 @@ setAs(from="environment", to="flowSet", def=function(from)
 
 ## ==========================================================================
 ## Convert a list to a flowSet by creating an environment and coerce THAT,
-## We have to trick around the fact that environments are not ordered, hence
-## the flowFrames get shuffeld around...
+## 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setAs(from="list", to="flowSet", def=function(from)
   {
@@ -265,14 +264,14 @@ setAs(from="list", to="flowSet", def=function(from)
           names(from) <- paste("V", seq(1, length(from)), sep="")
         
       orig.sampleNames <- names(from)
+      #this is the trick that forces the current sample names in alphabetic order by prepending serial numbers so that the original order of samples is preserved instead of being shuffled by list2env call (and within setAs(from="environment", to="flowSet") method 'ls` call reorder the list by alphabet order)
+      names(from) <- paste(sprintf("%0.6d", seq_along(from)), names(from), sep="_")
       res <- as(list2env(from, new.env(hash=T, parent=emptyenv())), "flowSet")
-      #must sort it alphabeticlly because list2env call potentially shuffled list
-      #and within setAs(from="environment", to="flowSet") method 'ls` call reorder
-      #the list by alphabet order
-      #This assignment(sampleNames<-) could have been avoided, but we rely on its side effect 
-      #that overwrites the GUID keyword in flow data, which will prevent read.flowSet from
+      #by reassigning the original sample names, we are also using its side effect to overwrite the GUID keyword in flow data, which will prevent read.flowSet from
       #renaming the flowSet with GUID (which could be a design bug in itself).
-      sampleNames(res) <- sort(orig.sampleNames) 
+      sampleNames(res) <- orig.sampleNames
+      #restore name column in pData as well (since it is no longer taken care of by sampleNames<- method)
+      pData(res)[["name"]] <- I(orig.sampleNames)
       res
   })
 
