@@ -19,7 +19,7 @@ test_that("read.flowSet", {
       files <- list.files(tmpdir, pattern = "fcs")
       #no phenoData supplied
       fs1 <- read.flowSet(files, path = tmpdir)
-      expect_equal(pData(fs1), expectPD[, "name", drop = F])
+      expect_equivalent(pData(fs1), expectPD[, "name", drop = F])
       
       
       anno <- list.files(tmpdir, pattern = "txt", full = T)
@@ -53,7 +53,7 @@ test_that("read.flowSet", {
       #check duplicates
       sn <- basename(files)
       sn1 <- paste0(sn, ".1")
-      expect_equal(sampleNames(fs2), sort(c(sn, sn1))) 
+      expect_equal(sampleNames(fs2), c(sn, sn1))
       
     })
 
