@@ -189,6 +189,8 @@ read.FCS <- function(filename,
         cnames <- splt[2:(nrCols+1)]
         vals <- as.numeric(splt[(nrCols+2):length(splt)])
         spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+        if(alter.names)
+          cnames <- make.names(cnames)
         colnames(spmat) <- cnames
         description[[spID]] <- spmat
     }
