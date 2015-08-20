@@ -426,11 +426,13 @@
     }
 
     \item{spillover}{Extract spillover matrix from description slot if
-      present.
+      present. It is equivalent to 
+	\code{keyword(x, c("spillover", "SPILL"))}
+	Thus will simply return a list of keywords value for "spillover" and "SPILL".
       
       \emph{Usage:}
       
-      \code{   spillover(flowFrame, matrix)}
+      \code{   spillover(flowFrame)}
 
     }
     
