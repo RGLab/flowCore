@@ -329,7 +329,19 @@ setMethod("featureNames",
           object@parameters$name
           )
 
-
+## ==========================================================================
+## accessor method for markernames names
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+setGeneric("markernames",function(object,...) standardGeneric("markernames"))
+setMethod("markernames",
+    signature=signature(object="flowFrame"),
+    definition=function(object){
+      
+      markers <- as.vector(object@parameters$desc)
+      ind <- grepl("time|fsc|ssc", object@parameters$name, ignore.case = TRUE)
+      markers <- markers[!ind]
+      markers[!is.na(markers)]
+    })
 
 ## ==========================================================================
 ## accessor and replace methods for colnames of exprs slot
