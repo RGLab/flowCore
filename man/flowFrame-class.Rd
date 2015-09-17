@@ -28,6 +28,8 @@
 \alias{dim,flowFrame-method}
 \alias{featureNames}
 \alias{featureNames,flowFrame-method}
+\alias{markernames}
+\alias{markernames,flowFrame-method}
 \alias{colnames,flowFrame-method}
 \alias{colnames<-}
 \alias{colnames<-,flowFrame-method}
@@ -284,15 +286,19 @@
 
     }
 
-    \item{featureNames, colnames, colnames<-}{Extract parameter names (i.e., the
-      colnames of the data matrix). \code{colnames} and
-      \code{featureNames} are synonyms. For \code{colnames} there is
+    \item{featureNames, markernames, colnames, colnames<-}{. \code{colnames} and
+      \code{featureNames} are synonyms, they extract parameter names (i.e., the
+      colnames of the data matrix) .
+      \code{markernames} extract marker/stain names.
+      For \code{colnames} there is
       also a replacement method. This will update the \code{name} column
       in the \code{parameters} slot as well.
 
       \emph{Usage:}
       
       \code{   featureNames(flowFrame)}
+      
+      \code{   markernames(flowFrame)}
       
       \code{   colnames(flowFrame)}
 
