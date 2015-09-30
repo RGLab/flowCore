@@ -54,3 +54,5 @@ colnames(comp.fset1d)
 eapply(comp.fset1d@frames,function(x) apply(x@exprs,2,range))
 apply(comp.fset1d[[1]]@exprs,2,range)
 
+
+

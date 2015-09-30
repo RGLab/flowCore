@@ -5,3 +5,7 @@ fcsTextParse <- function(txt, emptyValue) {
     .Call('flowCore_fcsTextParse', PACKAGE = 'flowCore', txt, emptyValue)
 }
 
+uint2double <- function(input, isBigEndian) {
+    .Call('flowCore_uint2double', PACKAGE = 'flowCore', input, isBigEndian)
+}
+
