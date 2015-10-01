@@ -466,11 +466,26 @@ fcs_text_parse = function(str,emptyValue) {
 }
 
 ##read odd bitwidth by reading raw and and operating on raw vector
-.readFCSdataRaw<-function(con,dattype,count,size,signed,endian){
+.readFCSdataRaw<-function(con,dattype,count,size,signed,endian, splitInt = FALSE){
 #	browser()
 	if (size %in% c(1, 2, 4, 8))
 	{
-		readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
+      
+        if(splitInt&&dattype == "integer"){
+          if(size == 4){
+            #read uint32 as two uint16
+            splitted <- readBin(con=con, what=dattype
+                                ,n = as.integer(count * 2) #coerce count again to ensure it is within the int limit
+                                , size = size / 2, signed=FALSE, endian=endian)
+                            
+            uint2double(splitted, endian == "big")
+            
+            
+          }
+          else
+            stop("'splitInt = TRUE' is only valid for uint32!")
+        }else
+		  readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
 	}else
 	{
 		#read raw byte stream first
@@ -534,12 +549,40 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              })
     } else {
         range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
-        if(dattype=="integer")
-          range <- as.integer(range_str)
-        else
+        if(dattype=="integer"){
+          suppressWarnings(range <- as.integer(range_str))
+          
+          #when any channel has range > 2147483647 (i.e. 2^31-1)
+          if(any(is.na(range))){
+            #try to represent the entire range vector as numeric
+            range <- as.numeric(range_str)
+            
+            if(any(is.na(range)))#throws if still fails
+              stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
+            else if(any(range>2^32)){ 
+              #check if larger than C's uint32 limit ,which should be 2^32-1 
+              #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
+              #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
+              stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
+            }else
+              splitInt <- TRUE #try to split into two uint16 
+            
+          }else
+            splitInt <- FALSE
+            
+            
+        } 
+        else{
+          splitInt <- FALSE
           range <- as.numeric(range_str)
-       if(any(is.na(range)))
-         stop("$PnR is larger than the integer limit: ", range_str[is.na(range)][1])
+          if(any(is.na(range)))
+            stop("$PnR", range_str[is.na(range)][1], "is larger than R's numeric limit:", .Machine$double.xmax)
+        }
+          
+        
+       
+       
+         
     }
     
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
@@ -623,8 +666,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         
         
 		dat <- .readFCSdataRaw(con, dattype,
-				count= (offsets["dataend"]-offsets["datastart"]+1)/size,
-                       size=size, signed=signed, endian=endian)
+				count= as.integer(offsets["dataend"]-offsets["datastart"]+1)/size,
+                       size=size, signed=signed, endian=endian, splitInt = splitInt)
 
     }else {  ##Read n lines with or without sampling
         if(length(which.lines)==1)
@@ -639,8 +682,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
             endP   <-  startP + nrpar * size
             seek(con, startP)
-			temp <- .readFCSdataRaw(con, dattype, count= (endP - startP+1)/size,
-					size=size, signed=signed, endian=endian) 
+			temp <- .readFCSdataRaw(con, dattype, count= as.integer(endP - startP+1)/size,
+					size=size, signed=signed, endian=endian, splitInt = splitInt) 
  
             dat <- c(dat, temp)                 
         }

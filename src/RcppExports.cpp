@@ -9,15 +9,23 @@ using namespace Rcpp;
 myPairs fcsTextParse(std::string txt, bool emptyValue);
 RcppExport SEXP flowCore_fcsTextParse(SEXP txtSEXP, SEXP emptyValueSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< std::string >::type txt(txtSEXP );
-        Rcpp::traits::input_parameter< bool >::type emptyValue(emptyValueSEXP );
-        myPairs __result = fcsTextParse(txt, emptyValue);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::string >::type txt(txtSEXP);
+    Rcpp::traits::input_parameter< bool >::type emptyValue(emptyValueSEXP);
+    __result = Rcpp::wrap(fcsTextParse(txt, emptyValue));
+    return __result;
+END_RCPP
+}
+// uint2double
+std::vector<double> uint2double(std::vector<unsigned> input, bool isBigEndian);
+RcppExport SEXP flowCore_uint2double(SEXP inputSEXP, SEXP isBigEndianSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<unsigned> >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< bool >::type isBigEndian(isBigEndianSEXP);
+    __result = Rcpp::wrap(uint2double(input, isBigEndian));
+    return __result;
 END_RCPP
 }
