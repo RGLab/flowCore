@@ -74,27 +74,25 @@ test_that("test delimiter issue", {
 
 # latest R no longer permit overflowed coersion by as.integer
 test_that("test Beckman_Coulter_XDP issue", {
-      expect_error(read.FCS(file.path(dataPath, "Beckman_Coulter/Beckman_Coulter_XDP/120607 normal 96394 spiked_PE-p16 Cy5-MCM5.fcs"))
-                    , "larger than the integer limit")
                 
-#      frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter/Beckman_Coulter_XDP/"),full=T)
-#                        , function(thisFile){
-#                          fr <- read.FCS(thisFile)
-#                          keyword(fr)[["FILENAME"]] <- "setToDummy"
-#                        })
-#      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterXDP"]], digest(frList))
+      frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter/Beckman_Coulter_XDP/"),full=T)
+                        , function(thisFile){
+                          fr <- read.FCS(thisFile)
+                          keyword(fr)[["FILENAME"]] <- "setToDummy"
+                        })
+      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterXDP"]], digest(frList))
       
     })
 
-#test_that("test Beckman_Coulter $SPILLOVER keyword", {
-#      frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter"),full=T, pattern = ".fcs")
-#                    , function(thisFile){
-#                     fr <- read.FCS(thisFile)
-#                     keyword(fr)[["FILENAME"]] <- "setToDummy"
-#                    })
-#      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterSPILLOVER"]], digest(frList))
-#      
-#    })
+test_that("test Beckman_Coulter $SPILLOVER keyword", {
+      frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter"),full=T, pattern = ".fcs")
+                    , function(thisFile){
+                     fr <- read.FCS(thisFile)
+                     keyword(fr)[["FILENAME"]] <- "setToDummy"
+                    })
+      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterSPILLOVER"]], digest(frList))
+      
+    })
 
 test_that("test write.FCS", {
       
@@ -173,7 +171,10 @@ test_that("test flowJo exported data with offset = 99999999 and  missing the $BE
     })
 
 test_that("test integer overflow issue", {
-      expect_warning(expect_error(read.FCS(file.path(dataPath, "intOverFlow.fcs"))
-                                  , "\\$PnR is larger than the integer limit")
-                    , "NAs introduced by coercion to integer range") 
+      fr <- read.FCS(file.path(dataPath, "intOverFlow.fcs"))
+      keyword(fr)[["FILENAME"]] <- "setToDummy"
+      expect_equal(expectRes[["read.FCS"]][["intOverFlow"]], digest(fr))
+      fr <- read.FCS(file.path(dataPath,"/Beckman_Coulter/MoFlo Astrios EQ 9C bis all.fcs"))
+      keyword(fr)[["FILENAME"]] <- "setToDummy"
+      expect_equal(expectRes[["read.FCS"]][["MoFlo EQ 9C"]],  digest(fr))
     })
