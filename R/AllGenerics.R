@@ -52,7 +52,7 @@ setGeneric("tail", function(x, ...) standardGeneric("tail"))
 ## ===========================================================================
 ## Generic for keyword
 ## ---------------------------------------------------------------------------
-setGeneric("keyword",function(object,keyword) standardGeneric("keyword"))
+setGeneric("keyword",function(object,keyword, ...) standardGeneric("keyword"))
 setGeneric("keyword<-",function(object,value) standardGeneric("keyword<-"))
 
 
