@@ -27,7 +27,7 @@
 }
 
 \usage{
-keyword(object, keyword)
+keyword(object, keyword, ...)
 }
 \arguments{
   
@@ -35,6 +35,10 @@ keyword(object, keyword)
   
   \item{keyword}{Character vector or list of potential keywords or
     function. If missing all keywords are returned.}
+  \item{...}{
+  compact: logical scaler to indicate whether to hide all the
+  cytometer instrument and laser settings from keywords. 
+  }  
   
 }
 
@@ -95,6 +99,7 @@ keyword(object, keyword)
 
 samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
 keyword(samp)
+keyword(samp, compact = TRUE)
 
 keyword(samp, "FCSversion")
 

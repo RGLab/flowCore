@@ -215,8 +215,8 @@ setMethod("keyword",
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="function"),
-          definition=function(object,keyword)
-          keyword(object)
+          definition=function(object,keyword, ...)
+          keyword(object, ...)
           )
 
 ## select keywords by combination of name and/or function
@@ -238,9 +238,21 @@ setMethod("keyword",
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="missing"),
-          function(object)
-              object@description
-          )
+          function(object, compact = FALSE)
+          {           
+                       
+                       desc <- object@description
+                       if(!compact)
+                         desc
+                       else
+                       {
+                         kn <- names(desc)
+                         pattern <- '(\\$)|(LASER)|(^P[1-9]{1,2})|(^FJ_)|(FCS)|FSC ASF|(CYTOMETER)|COMPENSATION|WINDOW|THRESHOLD|(CST )|SPILL|EXPORT |CREATOR|AUTOBS'
+                         kn <- kn[!grepl(pattern, kn)]  
+                         keyword(object, kn)
+                       } 
+                       
+          })
 
 ## replace keywords
 kwdError <- "Replacement value must be a named character vector or list."
