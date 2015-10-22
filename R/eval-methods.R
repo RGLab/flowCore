@@ -182,8 +182,12 @@ setMethod(
     {    
         function(df)
         {
-            parameter <- resolve(expr@parameters, df)
-            parameter <- flowFrameToMatrix(parameter)
+            if(is(df, "flowFrame")){
+              parameter <- resolve(expr@parameters, df)
+              parameter <- flowFrameToMatrix(parameter)  
+            }else
+              parameter <- df
+            
             # Gating-ML 2.0 fasinh is defined as
             # (asinh(x * sinh(M * log(10)) / T) + A * log(10)) / ((M + A) * log(10))
             #
