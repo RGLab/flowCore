@@ -544,46 +544,44 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     nrowTotal <- as.integer(readFCSgetPar(x, "$TOT"))
 
     if( "transformation" %in% names(x) &&  x[["transformation"]] == "custom"){
-       range <- sapply(seq_len(nrpar),function(k){
+      range_str <- sapply(seq_len(nrpar),function(k){
                 x[[sprintf("flowCore_$P%sRmax", k)]]
              })
     } else {
         range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
-        if(dattype=="integer"){
-          suppressWarnings(range <- as.integer(range_str))
-          
-          #when any channel has range > 2147483647 (i.e. 2^31-1)
-          if(any(is.na(range))){
-            #try to represent the entire range vector as numeric
-            range <- as.numeric(range_str)
-            
-            if(any(is.na(range)))#throws if still fails
-              stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
-            else if(any(range>2^32)){ 
-              #check if larger than C's uint32 limit ,which should be 2^32-1 
-              #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
-              #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
-              stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
-            }else
-              splitInt <- TRUE #try to split into two uint16 
-            
-          }else
-            splitInt <- FALSE
-            
-            
-        } 
-        else{
-          splitInt <- FALSE
-          range <- as.numeric(range_str)
-          if(any(is.na(range)))
-            stop("$PnR", range_str[is.na(range)][1], "is larger than R's numeric limit:", .Machine$double.xmax)
-        }
-          
-        
-       
-       
-         
     }
+    
+    #determine how to deal with raw data based on the range information
+    if(dattype=="integer"){
+      suppressWarnings(range <- as.integer(range_str))
+      
+      #when any channel has range > 2147483647 (i.e. 2^31-1)
+      if(any(is.na(range))){
+        #try to represent the entire range vector as numeric
+        range <- as.numeric(range_str)
+        
+        if(any(is.na(range)))#throws if still fails
+          stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
+        else if(any(range>2^32)){ 
+          #check if larger than C's uint32 limit ,which should be 2^32-1 
+          #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
+          #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
+          stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
+        }else
+          splitInt <- TRUE #try to split into two uint16 
+        
+      }else
+        splitInt <- FALSE
+      
+      
+    } 
+    else{
+      splitInt <- FALSE
+      range <- as.numeric(range_str)
+      if(any(is.na(range)))
+        stop("$PnR", range_str[is.na(range)][1], "is larger than R's numeric limit:", .Machine$double.xmax)
+    }
+    
     
     bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth)
