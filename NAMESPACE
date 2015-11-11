@@ -2,7 +2,7 @@ useDynLib("flowCore",.registration=TRUE)
 
 import(methods)
 import(Rcpp)
-
+importFrom(matrixStats, colMins)
 importClassesFrom(Biobase, AnnotatedDataFrame)
 
 #importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,

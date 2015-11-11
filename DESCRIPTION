@@ -7,7 +7,7 @@ Description: Provides S4 data structures and basic functions to deal with flow
 Maintainer: M.Jiang <wjiang2@fhcrc.org>
 Depends: R (>= 2.10.0)
 Imports: Biobase, BiocGenerics (>= 0.1.14), graph, graphics,
-         methods, rrcov, stats, utils, stats4, corpcor, Rcpp
+         methods, rrcov, stats, utils, stats4, corpcor, Rcpp, matrixStats
 Suggests: Rgraphviz, flowViz, flowStats, testthat, flowWorkspace,flowWorkspaceData,openCyto
 Collate: AllGenerics.R
 	 AllClasses.R
