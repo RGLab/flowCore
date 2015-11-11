@@ -128,7 +128,9 @@ read.FCS <- function(filename,
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
-    absMin <- apply(mat,2,min,na.rm=TRUE)
+    
+    absMin <- colMins(mat,,na.rm=TRUE) # replace apply with matrixStats::colMins to speed up
+    # absMin <- apply(mat,2,min,na.rm=TRUE)
     realMin <- pmin(zeroVals,pmax(-111, absMin, na.rm=TRUE), na.rm=TRUE)
     
 	if("transformation" %in% names(txt) && txt[["transformation"]] == "custom") {
@@ -724,9 +726,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
         
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
-    colnames(dat) <- if(alter.names)  structure(make.names(cn),
-                                                names=names(cn))else cn
-    
+    cn <- if(alter.names)  structure(make.names(cn),names=names(cn)) else cn
+    dimnames(dat) <- list(NULL, cn)
     ## truncate data at max range
     if(is.na(x["transformation"]))
     {
