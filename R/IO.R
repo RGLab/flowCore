@@ -585,12 +585,14 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
     
     
-    bitwidth <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
-    bitwidth <- unique(bitwidth)
+    bitwidth_vec <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
+    bitwidth <- unique(bitwidth_vec)
+    multiSize <- length(bitwidth) > 1
     
-    if(length(bitwidth)!=1)
-        stop("Sorry, I am expecting the bitwidth to be the same for all ",
-             "parameters")
+    if(dattype=="numeric"&&multiSize)
+        stop("Sorry, Numeric data type expects the same bitwidth for all parameters!")
+    
+    
     
     ##for DATA segment exceeding 99,999,999 byte.
     if(offsets["FCSversion"] >= 3){
@@ -635,22 +637,37 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                  "point to read the data.")
         }
     }
-    if(bitwidth==10 ){
+    if(!multiSize){
+      if(bitwidth==10){
         if(!gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp")
-            warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
-                    "Coulter's CPX software.\nThe data might be corrupted if produced ",
-                    "by another software.", call.=FALSE)
+          warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
+                  "Coulter's CPX software.\nThe data might be corrupted if produced ",
+                  "by another software.", call.=FALSE)
         else
-            warning("Beckma Coulter CPX data.\nCorrected for invalid bitwidth 10.",
-                    call.=FALSE)
+          warning("Beckma Coulter CPX data.\nCorrected for invalid bitwidth 10.",
+                  call.=FALSE)
         bitwidth <- 16
+      }  
     }
-    size <- bitwidth/8
-
-    # since signed = FALSE is not supported by readBin when size > 2
-    # we set it to TRUE automatically then to avoid warning flooded by readBin
-    # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits 
-    signed <- !(size%in%c(1,2))
+    # multiSize <- T
+    
+    if(multiSize){
+      size <- bitwidth_vec/8
+      
+      smallSize <- size%in%c(1,2)
+      smallSize <- unique(smallSize)
+      if(length(smallSize)>1)
+        stop("Can't determine value for 'signed' parameter because not all parameters are of size 1 or 2!")
+      signed <- !(smallSize)
+    }else{
+      size <- bitwidth/8
+      
+      # since signed = FALSE is not supported by readBin when size > 2
+      # we set it to TRUE automatically then to avoid warning flooded by readBin
+      # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits 
+      signed <- !(size%in%c(1,2))
+    }
+      
     
     nwhichLines <- length(which.lines)
     ##Read all reports
@@ -661,15 +678,55 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                  than the number of collected events (",nrowTotal,
                 "). All the events have been read. \n")
         }
-        seek(con, offsets["datastart"])
-	
+      seek(con, offsets["datastart"])
         
-        
-		dat <- .readFCSdataRaw(con, dattype,
-				count= as.integer(offsets["dataend"]-offsets["datastart"]+1)/size,
-                       size=size, signed=signed, endian=endian, splitInt = splitInt)
+      nBytes <- as.integer(offsets["dataend"]-offsets["datastart"]+1)
+      
+	    if(multiSize){
+	      if(splitInt&&dattype=="integer")
+	        stop("Mutliple bitwidths with big integer are not supported!")
+	      bytes <- readBin(con=con, what="raw",n = nBytes, size = 1)
+	      #convert bytes into respective type for each parameter
+	      
+	      nTotal <- nrowTotal * nrpar
+	      dat <- vector(length = nTotal)
+	      pos <- 1
+	      
+	      for(i in 1:nrowTotal){#each row
+	        # message(i)
+	        for(j in 1:nrpar){#each column
+	          # message(j, "par")
+	          thisStart <- pos
+	          thisSize <- size[j] 
+	          if(!thisSize %in% c(1, 2, 4, 8))
+	            stop("Multiple different odd bitwidths are not supported!")
+	          thisEnd <- pos + thisSize - 1
+	          # message(thisStart, ":", thisEnd)
+	          if(thisEnd > nBytes){
+	            stop("Index exceeds the boundary of byte vector!")
+	          }
+	            
+	          thisBytes <- bytes[thisStart:thisEnd]
+	          
+	          dat[(i-1) * nrpar + j] <- readBin(thisBytes, dattype, n = 1, size = thisSize, signed = signed,endian = endian)
+            pos <- thisEnd + 1	          
+	        } 
+	      }
+	        
+	      
+	      
+	    }else{
+	      dat <- .readFCSdataRaw(con, dattype
+	                             , count= nBytes/size
+	                             , size= size
+	                             , signed=signed, endian=endian, splitInt = splitInt)
+	    }
+    
 
-    }else {  ##Read n lines with or without sampling
+    }else {
+      if(multiSize)
+        stop("'which.lines' can not be used when bitwidths are different across parameters!")
+      ##Read n lines with or without sampling
         if(length(which.lines)==1)
             which.lines <- sample(seq_len(nrowTotal), which.lines)
         which.lines <- sort(which.lines)
