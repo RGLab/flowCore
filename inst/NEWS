@@ -51,3 +51,10 @@ Enhancement
 + support 'SPILLOVER` in `read.FCS` besides the existing keywords ("SPILL", "spillover")
 + support reading(`read.FCS` ) bad FCS files exported by flowJo that do not follow standards strictly
 + support 'ncdfFlowList' in 'findTimeChannel' function
+
+CHANGES IN VERSION 1.37.6
+read.FCS
++ supports FCS that has diverse bit widths across parameters/channels
++ supports FCS that uses big integer (i.e. uint32 > R's integer.max)
+write.FCS
++ Fixes several bugs so that this API is now more usable 
