@@ -686,33 +686,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	      if(splitInt&&dattype=="integer")
 	        stop("Mutliple bitwidths with big integer are not supported!")
 	      bytes <- readBin(con=con, what="raw",n = nBytes, size = 1)
-	      #convert bytes into respective type for each parameter
 	      
-	      nTotal <- nrowTotal * nrpar
-	      dat <- vector(length = nTotal)
-	      pos <- 1
-	      
-	      for(i in 1:nrowTotal){#each row
-	        # message(i)
-	        for(j in 1:nrpar){#each column
-	          # message(j, "par")
-	          thisStart <- pos
-	          thisSize <- size[j] 
-	          if(!thisSize %in% c(1, 2, 4, 8))
-	            stop("Multiple different odd bitwidths are not supported!")
-	          thisEnd <- pos + thisSize - 1
-	          # message(thisStart, ":", thisEnd)
-	          if(thisEnd > nBytes){
-	            stop("Index exceeds the boundary of byte vector!")
-	          }
-	            
-	          thisBytes <- bytes[thisStart:thisEnd]
-	          
-	          dat[(i-1) * nrpar + j] <- readBin(thisBytes, dattype, n = 1, size = thisSize, signed = signed,endian = endian)
-            pos <- thisEnd + 1	          
-	        } 
-	      }
-	        
+	      if(dattype == "numeric" && length(unique(size)) > 1)
+	        stop("we don't support different bitwdiths for numeric data type!")
+	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
 	      
 	      
 	    }else{
