@@ -13,7 +13,9 @@ REGEXLIB = libboost_regex.a
 USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
 USERLIB = ${USERDIR}/${REGEXLIB}
 
+CXX_STD = CXX11
 PKG_LIBS = "${USERLIB}"
+PKG_CPPFLAGS += -I../inst/include/ 
 
 .PHONY: all clean 
 
