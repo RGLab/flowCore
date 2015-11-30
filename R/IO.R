@@ -553,28 +553,36 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
     }
     
-    #determine how to deal with raw data based on the range information
+    bitwidth_vec <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
+    bitwidth <- unique(bitwidth_vec)
+    multiSize <- length(bitwidth) > 1
+    
+    if(dattype=="numeric"&&multiSize)
+      stop("Sorry, Numeric data type expects the same bitwidth for all parameters!")
+    
+    
     if(dattype=="integer"){
       suppressWarnings(range <- as.integer(range_str))
       
       #when any channel has range > 2147483647 (i.e. 2^31-1)
-      if(any(is.na(range))){
-        #try to represent the entire range vector as numeric
+      if(any(is.na(range)))
         range <- as.numeric(range_str)
         
-        if(any(is.na(range)))#throws if still fails
-          stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
-        else if(any(range>2^32)){ 
-          #check if larger than C's uint32 limit ,which should be 2^32-1 
-          #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
-          #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
-          stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
-        }else
-          splitInt <- TRUE #try to split into two uint16 
-        
-      }else
-        splitInt <- FALSE
+      if(any(is.na(range)))#throws if still fails
+        stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
+      else if(any(range>2^32)){ 
+        #check if larger than C's uint32 limit ,which should be 2^32-1 
+        #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
+        #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
+        stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
+      }
       
+      if(multiSize){
+        splitInt <- FALSE
+      }else
+      {
+        splitInt <- bitwidth == 32
+      }
       
     } 
     else{
@@ -585,12 +593,6 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
     
     
-    bitwidth_vec <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
-    bitwidth <- unique(bitwidth_vec)
-    multiSize <- length(bitwidth) > 1
-    
-    if(dattype=="numeric"&&multiSize)
-        stop("Sorry, Numeric data type expects the same bitwidth for all parameters!")
     
     
     
