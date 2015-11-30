@@ -178,3 +178,9 @@ test_that("test integer overflow issue", {
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["MoFlo EQ 9C"]],  digest(fr))
     })
+
+test_that("test diverse Bitwidths", {
+      fr <- read.FCS(file.path(dataPath, "diverseBitwidths.fcs"))
+      keyword(fr)[["FILENAME"]] <- "setToDummy"
+      expect_equal(expectRes[["read.FCS"]][["diverseBitwidths"]], digest(fr))
+    })
