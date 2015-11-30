@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // convertRawBytes
-SEXP convertRawBytes(BYTES bytes, bool isInt, std::vector<unsigned short> colSize, unsigned short ncol, bool isBigEndian);
+std::vector<double> convertRawBytes(BYTES bytes, bool isInt, std::vector<unsigned short> colSize, unsigned short ncol, bool isBigEndian);
 RcppExport SEXP flowCore_convertRawBytes(SEXP bytesSEXP, SEXP isIntSEXP, SEXP colSizeSEXP, SEXP ncolSEXP, SEXP isBigEndianSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
