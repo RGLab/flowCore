@@ -655,12 +655,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     
     if(multiSize){
       size <- bitwidth_vec/8
-      
-      smallSize <- size%in%c(1,2)
-      smallSize <- unique(smallSize)
-      if(length(smallSize)>1)
-        stop("Can't determine value for 'signed' parameter because not all parameters are of size 1 or 2!")
-      signed <- !(smallSize)
+      signed <- FALSE #dummy. not used in mutliSize logic.
     }else{
       size <- bitwidth/8
       
@@ -740,7 +735,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     if(dattype=="integer"){
         if(length(unique(range))==1)
         {
-            usedBits <- log2(range[1])
+            usedBits <- ceiling(log2(range[1]))
             if(usedBits<bitwidth)
                 dat <- dat %% (2^usedBits)
             dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
@@ -750,8 +745,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
             for(i in 1:ncol(dat))
             {
-                usedBits <- log2(range[i])
-                if(usedBits<bitwidth)
+                usedBits <- ceiling(log2(range[i]))
+                if(usedBits<bitwidth_vec[i])
                     dat[,i] <- dat[,i] %% (2^usedBits)
             }
         }
