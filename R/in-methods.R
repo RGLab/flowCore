@@ -618,8 +618,9 @@ setMethod("%in%",
           definition=function(x, table)
       {
           data <- flowFrame2env(x)
-          if(length(table@args)>1){
-              res <- eval(table@expr, data, enclos=table@args)
+	  data <- as.list(data)
+          if(length(table@args)==1){
+              res <- eval(table@expr, data, enclos=table@args[[1]])
           }else{
               res <- eval(table@expr, data, enclos=baseenv())
           }
