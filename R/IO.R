@@ -60,8 +60,8 @@ read.FCS <- function(filename,
                      truncate_max_range = TRUE,
                      dataset=NULL,
                      emptyValue=TRUE,
-					 ignore_TEXT_offsets=FALSE,
-					 debug=TRUE
+                     ignore_TEXT_offsets=FALSE,
+                     debug=TRUE
                     , ...)
 {
   if(ncdf)
@@ -852,7 +852,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          column.pattern=NULL, invert.pattern = FALSE, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
                          min.limit=NULL, emptyValue=TRUE, ignore_TEXT_offsets=FALSE,
-						 debug=TRUE, ...)
+                         debug=TRUE, ...)
 {
     if(ncdf)
       .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
