@@ -4,7 +4,7 @@
 \description{Read (part of) the TEXT section of a Data File Standard for Flow
   Cytometry that contains FACS keywords.}
 \usage{
-   read.FCSheader(files, path=".", keyword=NULL)
+   read.FCSheader(files, path=".", keyword=NULL, emptyValue = TRUE)
 }
 
 \arguments{
@@ -12,6 +12,7 @@
   \item{path}{Directory where to look for the files.}
   \item{keyword}{An optional character vector that specifies the FCS
     keyword to read.}
+  \item{emptyValue}{see \code{link[flowCore]{read.FCS}}}
 }
 
 \details{

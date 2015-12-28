@@ -23,13 +23,13 @@ isFCSfile <- function(files)
 ## ==========================================================================
 ## Reading FCS file header and TEXT section only
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-read.FCSheader <- function(files, path=".", keyword=NULL)
+read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
 {
     stopifnot(is.character(files), length(files)>=1, files!="")
     filenames <- files
     if(path != ".")
         files = file.path(path, files)
-    res <- lapply(files, header)
+    res <- lapply(files, header, emptyValue = emptyValue)
     if (!is.null(keyword))
         res <- lapply(res, function(x) x[keyword])
     names(res) <- filenames
