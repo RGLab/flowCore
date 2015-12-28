@@ -4,6 +4,20 @@ dataPath <- "~/rglab/workspace/flowCore/misc/"
 # 'FILENAME' keyword may change when file path is changed 
 # so we hard code it to make the comparsion consistent in case the file is moved
 
+test_that("test flowJo exported data with missing some of PnR keywords ", {
+  expect_error(fr <- read.FCS(file.path(dataPath, "missing_PnR_flowJoExport.fcs"))
+               , "not contained")
+  
+})
+
+
+test_that("test in consistent datastart between header and TEXT", {
+      expect_error(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE)
+                   , "HEADER and the TEXT")
+      
+     expect_error(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A01 H2O.fcs"), emptyValue = FALSE)
+         , "HEADER and the TEXT")
+    })
 
 test_that("test odd-bitwidth FCS", {
       fr <- read.FCS(file.path(dataPath, "Sample 2.fcs"))
