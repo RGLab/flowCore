@@ -48,5 +48,5 @@ Collate: AllGenerics.R
 	 RcppExports.R
 License: Artistic-2.0
 biocViews:  Infrastructure, FlowCytometry, CellBasedAssays
-LinkingTo: Rcpp, BH
+LinkingTo: Rcpp, BH(>= 1.60.0-1)
 SystemRequirements: GNU make
