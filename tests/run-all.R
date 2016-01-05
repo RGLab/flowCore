@@ -6,4 +6,4 @@ test_package("flowCore")
 
 
 #the FCS files are not included in package due to the size , thus only for internal testing
-  #test_file(system.file("tests/IO-testSuite.R", package = "flowCore"))
+  #test_file("/home/wjiang2/rglab/workspace/flowCore/inst/tests/IO-testSuite.R")

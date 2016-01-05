@@ -10,7 +10,7 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
              transformation = "linearize", which.lines=NULL,
              column.pattern = NULL, invert.pattern = FALSE, decades=0, sep="\t",
              as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
-             emptyValue=TRUE, \dots)
+             emptyValue=TRUE, ignore.text.offset = FALSE, \dots)
 
 }
 
@@ -66,6 +66,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
   \item{min.limit}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{emptyValue}{see \code{\link[flowCore]{read.FCS}} for details.}
+  
+  \item{ignore.text.offset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{\dots}{Further arguments that get passed on to
     \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
