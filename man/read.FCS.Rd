@@ -88,7 +88,10 @@
 		 Otherwise, double delimiters are parsed one part of string as the keyword value.
 		default is TRUE.}
 		 
-	\item{...}{other arguments. }		
+	\item{...}{ignore.text.offset: whether to ignore the keyword values in TEXT segment when they don't agree with the HEADER.
+								   Default is FALSE, which throws the error when such discrepancy is found.
+								   User can turn it on to ignore TEXT segment when he is sure of the accuracy of HEADER so that the file still can be read. 
+				 }		
 }
 
 \details{

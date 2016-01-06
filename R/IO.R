@@ -92,7 +92,7 @@ read.FCS <- function(filename,
     } 
 
     ## read the file  
-    offsets <- findOffsets(con,emptyValue=emptyValue,...)
+    offsets <- findOffsets(con,emptyValue=emptyValue, ...)
     ## check for multiple data sets
     if(is.matrix(offsets))
     {
@@ -292,9 +292,72 @@ findOffsets <- function(con,emptyValue=TRUE, ...)
         txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue, ...)
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
+    
+#    browser()
+    offsets <- checkOffset(offsets, txt, ...)
     return(offsets)
 }
 
+#' Fix the offset when its values recorded in header and TEXT don't agree
+#' @param offsets the named vector returned by \code{findOffsets}
+#' @param x the text segmented returned by \code{readFCStext}
+#' @return the updated offsets
+checkOffset <- function(offsets, x, ignore.text.offset = FALSE, ...){
+  ##for DATA segment exceeding 99,999,999 byte.
+  if(offsets["FCSversion"] >= 3){
+    realOff <- offsets - offsets[8]
+    
+    # Let's not be too strick here as unfortunatelly, some files exported from FlowJo 
+    # are missing the $BEGINDATA and $ENDDATA keywords and we still need to read those
+    datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA", strict=FALSE))
+    if (is.na(datastart)) { 
+      if (realOff["datastart"] != 0) {
+        datastart = realOff["datastart"]
+        warning("Missing the required $BEGINDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
+      } else {
+        stop("Don't know where the data segment begins, there was no $BEGINDATA keyword and the FCS HEADER does not say it either.")
+      }
+    } 
+    dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA", strict=FALSE))
+    if (is.na(dataend)) { 
+      if (realOff["dataend"] != 0) {
+        dataend = realOff["dataend"]
+        warning("Missing the required $ENDDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
+      } else {
+        stop("Don't know where the data segment ends, there was no $ENDDATA keyword and the FCS HEADER does not say it either.")
+      }
+    } 
+    
+    # when both are present and they don't agree with each other
+    if(realOff["datastart"] != datastart && realOff["datastart"]== 0){ #use the TEXT when header is 0
+      offsets["datastart"] <-  datastart+offsets[8]
+    }
+    if(realOff["datastart"] != datastart && realOff["datastart"]!= 0){#trust the header when it is non-zero
+      msg <- paste0("The HEADER and the TEXT segment define different starting point ("
+                    , offsets["datastart"], ":", datastart
+                    , ") to read the data.")
+      if(ignore.text.offset)
+        warning(msg, " The values in TEXT are ignored!")
+      else
+        stop(msg)
+    }
+    #both are present and they don't agree
+    if(realOff["dataend"] != dataend && (realOff["dataend"]== 0 || realOff["dataend"]== 99999999)) {#use TEXT when either header is 0 or TEXT is 99999999
+      offsets["dataend"] <-  dataend+offsets[8]
+    }
+    if(realOff["dataend"] != dataend && realOff["dataend"]!= 0 && realOff["dataend"]!= 99999999) {#otherwise trust the header
+      msg <- paste0("The HEADER and the TEXT segment define different ending point ("
+          , offsets["dataend"], ":", dataend
+          , ") to read the data.")
+      if(ignore.text.offset)
+        warning(msg, " The values in TEXT are ignored!")
+      else
+        stop(msg)
+      
+    }
+  }
+  offsets
+}
 
 ## ==========================================================================
 ## parse FCS file header
@@ -330,7 +393,7 @@ readFCSheader <- function(con, start=0)
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets,emptyValue, cpp = TRUE)
+readFCStext <- function(con, offsets,emptyValue, cpp = TRUE, ...)
 {
 
     seek(con, offsets["textstart"])
@@ -594,51 +657,6 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     
     
     
-    
-    
-    ##for DATA segment exceeding 99,999,999 byte.
-    if(offsets["FCSversion"] >= 3){
-        realOff <- offsets - offsets[8]
-
-        # Let's not be too strick here as unfortunatelly, some files exported from FlowJo 
-        # are missing the $BEGINDATA and $ENDDATA keywords and we still need to read those
-        datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA", strict=FALSE))
-        if (is.na(datastart)) { 
-          if (realOff["datastart"] != 0) {
-            datastart = realOff["datastart"]
-            warning("Missing the required $BEGINDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
-          } else {
-            stop("Don't know where the data segment begins, there was no $BEGINDATA keyword and the FCS HEADER does not say it either.")
-          }
-        } 
-        dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA", strict=FALSE))
-        if (is.na(dataend)) { 
-          if (realOff["dataend"] != 0) {
-            dataend = realOff["dataend"]
-            warning("Missing the required $ENDDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
-          } else {
-            stop("Don't know where the data segment ends, there was no $ENDDATA keyword and the FCS HEADER does not say it either.")
-          }
-        } 
-
-        if(realOff["datastart"] != datastart && realOff["datastart"]== 0){
-            offsets["datastart"] <-  datastart+offsets[8]
-        }
-        if(realOff["datastart"] != datastart && realOff["datastart"]!= 0){
-            print(datastart)
-            print(offsets["datastart"])
-            stop("The HEADER and the TEXT segment define different ",
-                 "starting point to read the data.")
-        }
-        
-        if(realOff["dataend"] != dataend && (realOff["dataend"]== 0 || realOff["dataend"]== 99999999)) {
-            offsets["dataend"] <-  dataend+offsets[8]
-        }
-        if(realOff["dataend"] != dataend && realOff["dataend"]!= 0 && realOff["dataend"]!= 99999999) {
-            stop("The HEADER and the TEXT segment define different ending ",
-                 "point to read the data.")
-        }
-    }
     if(!multiSize){
       if(bitwidth==10){
         if(!gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp")
@@ -856,7 +874,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          transformation="linearize", which.lines=NULL,
                          column.pattern=NULL, invert.pattern = FALSE, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
-                         min.limit=NULL, emptyValue=TRUE, ...)
+                         min.limit=NULL, emptyValue=TRUE, ignore.text.offset = FALSE, ...)
 {
     if(ncdf)
       .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
@@ -928,7 +946,9 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       column.pattern=column.pattern, invert.pattern = invert.pattern,
-                      decades=decades,min.limit=min.limit,emptyValue=emptyValue, dataset=dataset)
+                      decades=decades,min.limit=min.limit,emptyValue=emptyValue
+                      , ignore.text.offset = ignore.text.offset
+                      , dataset=dataset)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.
