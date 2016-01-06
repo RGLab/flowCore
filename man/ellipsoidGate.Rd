@@ -172,6 +172,11 @@ Subset(dat, fres)
 ## not in the gate as separate populations
 split(dat, fres)
 
+##ellipsoidGate can be converted to polygonGate by interpolation
+pg <- as(eg, "polygonGate")
+pg
+
+
 }
 \keyword{methods}
 

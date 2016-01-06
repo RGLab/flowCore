@@ -210,6 +210,9 @@ rg1 * rg2
 ## Subset rectangle gates
 rg["FSC-H"]
 
+##2d rectangleGate can be coerced to polygonGate
+as(rg, "polygonGate")
+
 }
 
 
