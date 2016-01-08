@@ -27,7 +27,7 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 		bool isDelimiterEnd = txt.substr(txt.size()-1, 1) == delimiter;
 
 //		regexes require double-escaping (*sigh*)
-		if(delimiter == "\\" || delimiter == "|")
+//		if(delimiter == "\\" || delimiter == "|")
 			delimiter = "\\" + delimiter;
 
 

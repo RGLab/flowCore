@@ -4,6 +4,14 @@ dataPath <- "~/rglab/workspace/flowCore/misc/"
 # 'FILENAME' keyword may change when file path is changed 
 # so we hard code it to make the comparsion consistent in case the file is moved
 
+test_that("test special delimiter character: '*' ", {
+  
+    fr <- read.FCS(file.path(dataPath, "specialDelimiter.fcs"))
+    expect_equal(summary(fr), expectRes[["read.FCS"]][["specialDelimiter"]])
+  
+})
+
+
 test_that("test flowJo exported data with missing some of PnR keywords ", {
   expect_error(fr <- read.FCS(file.path(dataPath, "missing_PnR_flowJoExport.fcs"))
                , "not contained")
