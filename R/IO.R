@@ -445,10 +445,10 @@ fcs_text_parse = function(str,emptyValue) {
 	} 
 	
 	# regexes require double-escaping (*sigh*)
-	if(div == "\\") {
-		div = "\\\\"
-	}
-	if(div=="|")
+# 	if(div == "\\") {
+# 		div = "\\\\"
+# 	}
+# 	if(div=="|")
 		div<-paste("\\",div,sep="")
 
 	i = 2
