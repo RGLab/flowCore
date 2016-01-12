@@ -205,15 +205,18 @@ setMethod(
             negative = x < 0
             x[negative] = -x[negative]
             asinhx = log(x + sqrt(x * x + 1))
-            result = rep(NA, times=length(asinhx))
-            result[negative] = (myC - asinhx[negative]) / myB
-            result[!negative] = (asinhx[!negative] + myC) / myB
+            res = rep(NA, times=length(asinhx))
+            res[negative] = (myC - asinhx[negative]) / myB
+            res[!negative] = (asinhx[!negative] + myC) / myB
 
             # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(result, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
@@ -243,7 +246,11 @@ setMethod(
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+        
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
@@ -271,7 +278,10 @@ setMethod(
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
@@ -300,7 +310,10 @@ setMethod(
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
@@ -328,7 +341,10 @@ setMethod(
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
@@ -359,7 +375,10 @@ setMethod(
             # if the result is less than boundMin, then let it be boundMin; if the
             # result is more than boundMax, then let it be boundMax. Defaults for
             # boundMin and boundMax are -Inf and Inf.
-            sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            if(!is.infinite(expr@boundMax)||!is.infinite(expr@boundMin))
+              res <- sapply(res, function(x) max(min(x,expr@boundMax),expr@boundMin))
+            
+            res
         }
     }
 )
