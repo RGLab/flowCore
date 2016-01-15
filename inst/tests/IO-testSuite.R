@@ -3,6 +3,14 @@ library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 # 'FILENAME' keyword may change when file path is changed 
 # so we hard code it to make the comparsion consistent in case the file is moved
+test_that("test special delimiter character: '*' ", {
+      
+      expect_warning(fr <- read.FCS(file.path(dataPath, "multi_data_segment.LMD")), "1 additional data")
+      expect_equal(summary(fr), expectRes[["read.FCS"]][["multi_data_segment"]])
+      
+    })
+
+
 
 test_that("test special delimiter character: '*' ", {
   

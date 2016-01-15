@@ -92,27 +92,8 @@ read.FCS <- function(filename,
     } 
 
     ## read the file  
-    offsets <- findOffsets(con,emptyValue=emptyValue, ...)
-    ## check for multiple data sets
-    if(is.matrix(offsets))
-    {
-        nd <- nrow(offsets)
-        if(is.null(dataset))
-        {
-            warning(sprintf("The file contains %d additional data segment%s.\n",
-                            nd-1, ifelse(nd>2, "s", "")),
-                    "The default is to read the first segment only.\nPlease consider ",
-                    "setting the 'dataset' argument.", call.=FALSE)
-            offsets <- offsets[1,]
-        }
-        else    
-        {
-            if(!is.numeric(dataset) || !dataset %in% seq_len(nd))
-                stop(sprintf("Argument 'dataset' must be an integer value in [1,%d].",
-                             nd))
-            offsets <- offsets[dataset,]
-        }
-    }
+    offsets <- findOffsets(con,emptyValue=emptyValue, dataset = dataset, ...)
+    
     txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
@@ -279,10 +260,11 @@ readFCSgetPar <- function(x, pnam, strict=TRUE)
 ## ==========================================================================
 ## Find all data sections in a file and record their offsets.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-findOffsets <- function(con,emptyValue=TRUE, ...)
+findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
 {
     offsets <- readFCSheader(con)
     txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
+    
     addOff <- 0
     nd <- as.numeric(txt[["$NEXTDATA"]])
     while(nd != 0)
@@ -293,6 +275,26 @@ findOffsets <- function(con,emptyValue=TRUE, ...)
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
     
+    ## check for multiple data sets
+    if(is.matrix(offsets))
+    {
+      nDataset <- nrow(offsets)
+      if(is.null(dataset))
+      {
+        warning(sprintf("The file contains %d additional data segment%s.\n",
+                nDataset-1, ifelse(nDataset>2, "s", "")),
+            "The default is to read the first segment only.\nPlease consider ",
+            "setting the 'dataset' argument.", call.=FALSE)
+        offsets <- offsets[1,]
+      }
+      else    
+      {
+        if(!is.numeric(dataset) || !dataset %in% seq_len(nDataset))
+          stop(sprintf("Argument 'dataset' must be an integer value in [1,%d].",
+                  nDataset))
+        offsets <- offsets[dataset,]
+      }
+    }
 #    browser()
     offsets <- checkOffset(offsets, txt, ...)
     return(offsets)
