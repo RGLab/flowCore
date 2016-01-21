@@ -110,8 +110,31 @@ setReplaceMethod("colnames",
 			x
 		})
 
-
-
+#' @rdname markernames
+#' @export
+setMethod("markernames",
+          signature=signature(object="flowSet"),
+          definition=function(object){
+            
+          res <- lapply(object@frames, function(fr){
+              markernames(fr)
+            })
+          
+          res <- unique(res)
+          if(length(res) > 1)
+            warning("marker names are not consistent across samples within flowSet")
+          else
+            res <- res[[1]]
+          res
+        })
+#' @rdname markernames
+#' @export
+setReplaceMethod("markernames",
+                 signature=signature(object="flowSet", value="ANY"), function(object, value){
+                   for(i in ls(object@frames))
+                     markernames(object@frames[[i]]) <- value
+                   object
+         })
 ## ==========================================================================
 ## Allow for the extraction and replacement of phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -340,11 +340,34 @@ setMethod("featureNames",
           definition=function(object)
           object@parameters$name
           )
-
-## ==========================================================================
-## accessor method for markernames names
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @rdname markernames
 setGeneric("markernames",function(object,...) standardGeneric("markernames"))
+#' get or update the marker names 
+#' 
+#' marker names corresponds to the 'desc' column of the phenoData of the flowFrame.
+#' 
+#' When extract marker names from a flowSet, it throws the warning if the marker names are not all the same across samples.
+#' 
+#' @param object flowFrame or flowSet
+#' @param ... not used
+#' @return marker names as a character vector. The marker names for FSC,SSC and Time channels are automatically excluded in the returned value.
+#' When object is a flowSet and the marker names are not consistent across flowFrames, it returns a list of unique marker sets.
+#' @rdname markernames
+#' @examples 
+#' 
+#' data(GvHD)
+#' fr <- GvHD[[1]]
+#' markernames(fr)
+#' 
+#' chnls <- c("FL1-H", "FL3-H")
+#' markers <- c("CD15", "CD14")
+#' names(markers) <- chnls
+#' markernames(fr) <- markers
+#' markernames(fr)
+#' 
+#' fs <- GvHD[1:3]
+#' markernames(fs)
+#' @export
 setMethod("markernames",
     signature=signature(object="flowFrame"),
     definition=function(object){
@@ -354,6 +377,31 @@ setMethod("markernames",
       markers <- markers[!ind]
       markers[!is.na(markers)]
     })
+#' @rdname markernames
+setGeneric("markernames<-",function(object, value) standardGeneric("markernames<-"))
+#' @rdname markernames
+#' @param value a named list or character vector. the names corresponds to the name(channel) and actual values are the desc(marker).
+#' @export
+setReplaceMethod("markernames",
+                 signature=signature(object="flowFrame", value="ANY"), function(object, value){
+                   
+                   if(!is.character(value)){
+                     stop("value must be a named character vector!")
+                   }else{
+                     chnls <- names(value)
+                     if(is.null(chnls))
+                       stop("value must be a named character vector!")
+                     ind <- match(chnls, colnames(object))
+                     misMatch <- is.na(ind)
+                     if(any(misMatch))
+                       stop("channel names not found in flow data: ", paste0(chnls[misMatch], collapse = ","))
+                     pData(parameters(object))[ind, "desc"] <- as.vector(value)
+                     
+                     object
+                   }
+                   
+                   
+                 })
 
 ## ==========================================================================
 ## accessor and replace methods for colnames of exprs slot
@@ -434,16 +482,16 @@ setMethod("compensate",
 
 
 
-#' transform method
-#' we are also making sure that the values of the dynamic range in the
-#' parameters slot are transformed accordingly. Note that this does not
-#' happen in the inline form of transformation!
-#' 
-#' @param _data flowFrame object
-#' @param translist transformList object. The recommended way of using this method.
-#' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
-#'            but this form is not intended to be used in programmatic way since use non-standard evalution could fail to find
-#'            'myFunc' definition.   
+# transform method
+# we are also making sure that the values of the dynamic range in the
+# parameters slot are transformed accordingly. Note that this does not
+# happen in the inline form of transformation!
+# 
+# @param _data flowFrame object
+# @param translist transformList object. The recommended way of using this method.
+# @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
+#            but this form is not intended to be used in programmatic way since use non-standard evalution could fail to find
+#            'myFunc' definition.   
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, translist, ...)
