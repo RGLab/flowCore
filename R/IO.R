@@ -303,6 +303,8 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
 #' Fix the offset when its values recorded in header and TEXT don't agree
 #' @param offsets the named vector returned by \code{findOffsets}
 #' @param x the text segmented returned by \code{readFCStext}
+#' @param ignore.text.offset whether to ignore the offset info stored in TEXT segment
+#' @param ... not used.
 #' @return the updated offsets
 checkOffset <- function(offsets, x, ignore.text.offset = FALSE, ...){
   ##for DATA segment exceeding 99,999,999 byte.

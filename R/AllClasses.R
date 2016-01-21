@@ -240,9 +240,9 @@ setClass("filters",
 	 validFilters(x)
 	 return(x)
  }
- ## Check if all filters in a filters matches same paramters
- #' @param strict if FALSE, then don't check the consistency of parameters of gates
- #'         which is useful to put multiple 1d gates into one container
+ #' Check if all filters in a filters matches same paramters
+ #' @param flist a filters object
+ #' @return TRUE or FALSE
  validFilters<- function(flist)
  {
 	 res <- TRUE
