@@ -1,12 +1,13 @@
+comp.fs1 <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore")
+                         #                        ,phenoData=list("Tube"=tube.id)
+                              )
 test_that("transform", {
       
       comp.mat <- as.matrix(read.table(system.file("extdata","compdata","compmatrix",package="flowCore"),header=TRUE,skip=2,check.names=FALSE))
       
       tube.id <- function(x,d) as.numeric(gsub("060909.","",d[["$FIL"]]))
       
-      comp.fs1 <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore")
-#                        ,phenoData=list("Tube"=tube.id)
-                  )
+      
       
       
     # Compensate
@@ -64,3 +65,26 @@ test_that("transform", {
       
     })
 
+test_that("hyperlogGml2", {
+  fr <- comp.fs1[[1]]
+  trans <- hyperlogtGml2("FL1-H")
+  trans <- eval(trans)
+  res <- trans(fr)
+  expect_equal(summary(res), expectRes[["hyperlogGml2"]])
+})
+
+test_that("logicle", {
+  fr <- comp.fs1[[1]]
+  trans <- logicletGml2("FL1-H", A = 2)
+  trans <- eval(trans)
+  res <- trans(fr)
+  expect_equal(summary(res), expectRes[["logicleGml2"]])
+  
+  trans <- logicleTransform(a = 2)
+  raw <- exprs(fr)[,"FL1-H"]
+  res <- trans(raw)
+  expect_equal(summary(res), expectRes[["logicle"]])
+  
+  inv <- inverseLogicleTransform("", trans)
+  expect_equal(inv(res), raw)
+})
