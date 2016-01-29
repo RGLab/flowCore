@@ -13,6 +13,14 @@ hyperlog_transform <- function(input, T, W, M, A, isInverse) {
     .Call('flowCore_hyperlog_transform', PACKAGE = 'flowCore', input, T, W, M, A, isInverse)
 }
 
+inPolygon <- function(data, vertices) {
+    .Call('flowCore_inPolygon', PACKAGE = 'flowCore', data, vertices)
+}
+
+inPolytope <- function(data, A, b) {
+    .Call('flowCore_inPolytope', PACKAGE = 'flowCore', data, A, b)
+}
+
 logicle_transform <- function(input, T, W, M, A, isInverse) {
     .Call('flowCore_logicle_transform', PACKAGE = 'flowCore', input, T, W, M, A, isInverse)
 }

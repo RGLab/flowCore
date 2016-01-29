@@ -49,6 +49,31 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// inPolygon
+std::vector<bool> inPolygon(NumericMatrix data, NumericMatrix vertices);
+RcppExport SEXP flowCore_inPolygon(SEXP dataSEXP, SEXP verticesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type vertices(verticesSEXP);
+    __result = Rcpp::wrap(inPolygon(data, vertices));
+    return __result;
+END_RCPP
+}
+// inPolytope
+std::vector<bool> inPolytope(NumericMatrix data, NumericMatrix A, NumericVector b);
+RcppExport SEXP flowCore_inPolytope(SEXP dataSEXP, SEXP ASEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    __result = Rcpp::wrap(inPolytope(data, A, b));
+    return __result;
+END_RCPP
+}
 // logicle_transform
 std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse);
 RcppExport SEXP flowCore_logicle_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
