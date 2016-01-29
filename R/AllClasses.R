@@ -1391,8 +1391,7 @@ biexponentialTransform <-
              tol=.Machine$double.eps^0.25, maxit=as.integer(5000))
 {
     t <- new("transform", .Data=function(x)
-             x <- .Call("biexponential_transform", x, a, b, c,
-                        d, f, w, tol, maxit))
+             x <- biexponential_transform(x, a, b, c, d, f, w, tol, maxit))
     t@transformationId <- transformationId
     t
 }

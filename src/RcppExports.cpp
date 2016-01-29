@@ -6,6 +6,25 @@
 
 using namespace Rcpp;
 
+// biexponential_transform
+std::vector<double> biexponential_transform(std::vector<double> input, double A, double B, double C, double D, double F, double W, double Tol, int MaxIt);
+RcppExport SEXP flowCore_biexponential_transform(SEXP inputSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP DSEXP, SEXP FSEXP, SEXP WSEXP, SEXP TolSEXP, SEXP MaxItSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type A(ASEXP);
+    Rcpp::traits::input_parameter< double >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< double >::type D(DSEXP);
+    Rcpp::traits::input_parameter< double >::type F(FSEXP);
+    Rcpp::traits::input_parameter< double >::type W(WSEXP);
+    Rcpp::traits::input_parameter< double >::type Tol(TolSEXP);
+    Rcpp::traits::input_parameter< int >::type MaxIt(MaxItSEXP);
+    __result = Rcpp::wrap(biexponential_transform(input, A, B, C, D, F, W, Tol, MaxIt));
+    return __result;
+END_RCPP
+}
 // convertRawBytes
 std::vector<double> convertRawBytes(BYTES bytes, bool isInt, std::vector<unsigned short> colSize, unsigned short ncol, bool isBigEndian);
 RcppExport SEXP flowCore_convertRawBytes(SEXP bytesSEXP, SEXP isIntSEXP, SEXP colSizeSEXP, SEXP ncolSEXP, SEXP isBigEndianSEXP) {
