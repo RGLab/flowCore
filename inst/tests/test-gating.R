@@ -46,3 +46,4 @@ test_that("polygonGateUsage", {
     p2   = polygonGate(vertices[-nrow(vertices),])
    	expect_equal(sum(x),sum(b08 %in% p2))
 })
+#polytopeGate will be deprecated because even gatingML2 no longer supports it
