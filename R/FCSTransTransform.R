@@ -31,7 +31,7 @@ iplogicore <- function (x, w, r, d, scale, rescale = TRUE, maxit = 5000,
   c <- r * exp(-(d - w)) * p^2
   d <- 1 / p
   f <- a * (p^2 - 1)
-  y <- .Call("biexponential_transform", x, a, b, c, d, f, w, tol, maxit)
+  y <- biexponential_transform(x, a, b, c, d, f, w, tol, maxit)
 
   sapply(y * scale, ipfloor)
 }
