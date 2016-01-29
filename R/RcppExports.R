@@ -9,6 +9,14 @@ fcsTextParse <- function(txt, emptyValue) {
     .Call('flowCore_fcsTextParse', PACKAGE = 'flowCore', txt, emptyValue)
 }
 
+hyperlog_transform <- function(input, T, W, M, A, isInverse) {
+    .Call('flowCore_hyperlog_transform', PACKAGE = 'flowCore', input, T, W, M, A, isInverse)
+}
+
+logicle_transform <- function(input, T, W, M, A, isInverse) {
+    .Call('flowCore_logicle_transform', PACKAGE = 'flowCore', input, T, W, M, A, isInverse)
+}
+
 uint2double <- function(input, isBigEndian) {
     .Call('flowCore_uint2double', PACKAGE = 'flowCore', input, isBigEndian)
 }

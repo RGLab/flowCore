@@ -239,8 +239,8 @@ setMethod(
             # We are calling the externa logicle transformation, but we are also
             # dividing the result by M so that "reasonable" values are scaled [0,1]
             # rather than [0,M]. This is how logicle in Gating-Ml 2.0 is defined.
-            res <- .Call("logicle_transform", as.double(parameter), as.double(expr@T),
-                as.double(expr@W), as.double(expr@M), as.double(expr@A)) / expr@M
+            res <- logicle_transform(as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A), FALSE) / expr@M
 
             # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
             # if the result is less than boundMin, then let it be boundMin; if the
@@ -271,8 +271,8 @@ setMethod(
         {
             parameter <- resolve(expr@parameters, df)
             parameter <- flowFrameToMatrix(parameter)
-            res <- .Call("hyperlog_transform", as.double(parameter), as.double(expr@T),
-                as.double(expr@W), as.double(expr@M), as.double(expr@A))
+            res <- hyperlog_transform(as.double(parameter), as.double(expr@T),
+                as.double(expr@W), as.double(expr@M), as.double(expr@A), FALSE)
 
             # New in Gating-ML 2.0: this transformation has an optional boundary, i.e.,
             # if the result is less than boundMin, then let it be boundMin; if the
