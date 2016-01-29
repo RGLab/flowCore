@@ -8,55 +8,37 @@
   integrated it with R/flowCore.
 */
 
-#include <iostream>
+#include <Rcpp.h>
 #include "hyperlog.h"
-extern "C" {
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
+
 
 /**
  * Hyperlog tranform/inverse transform wrapper function, makes use of the Hyperlog
  * class adapted from Wayne Moore's Java Hyperlog implementation for the underlying
  * calculation of the transformation.
  **/
+//[[Rcpp::export]]
+std::vector<double> hyperlog_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
+	unsigned nLen = input.size();
 
-SEXP hyperlog_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
-    SEXP output;
-    PROTECT(output = duplicate(input));
-    try{
-        Hyperlog *hplg = new Hyperlog(asReal(T), asReal(W), asReal(M), asReal(A));
-        for (int i = 0; i < length(output); i++) {
-            REAL(output)[i] = hplg->scale(REAL(output)[i]);
-        }
-        if (hplg != NULL) delete hplg;
-    }
-    catch(const char *str){
-        Rf_error("Hyperlog Exception: %s \n", str);
-    }
+	    try{
+	    	Hyperlog lg = Hyperlog(T, W, M, A);
+				for (int i = 0; i < nLen; i++) {
+					if(isInverse)
+						input.at(i) = lg.inverse(input.at(i));
+					else
+						input.at(i) = lg.scale(input.at(i));
+				}
+	    	}
+	    catch(const char * str){
+	      std::string tmp= "Hyperlog Exception: ";
 
-    UNPROTECT(1);
-    return(output);
+	    	Rcpp::stop(tmp.append(str));
+	    }
+
+        return(input);
 }
 
-SEXP invHyperlog_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
-    SEXP output;
-    PROTECT(output = duplicate(input));
-    try{
-        Hyperlog *hplg = new Hyperlog(asReal(T), asReal(W), asReal(M), asReal(A));
-        for (int i = 0; i < length(output); i++) {
-               REAL(output)[i] = hplg->inverse(REAL(output)[i])  ;
-        }
-        if (hplg != NULL) delete hplg;
-    }
-    catch(const char *str){
-      Rf_error("Hyperlog Exception: %s \n", str) ;
-    }
-    UNPROTECT(1);
-    return(output);
-}
-
-} // end of extern c 
 
 
 

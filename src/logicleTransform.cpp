@@ -1,52 +1,33 @@
-#include <iostream>
+//#include <iostream>
 #include "logicle.h"
-extern "C" {
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
+#include <Rcpp.h>
+
 /**
  * Logicle tranform/inverse transform wrapper function, makes use of the Logicle
  *  class provided Wayne Moore for the underlying calculation of the transformation.
  *
  * */
+//[[Rcpp::export]]
+std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
 
-SEXP logicle_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A) {
+	unsigned nLen = input.size();
 
-    SEXP output;
-	PROTECT(output = duplicate(input));
     try{
-        Logicle *lg = new Logicle(asReal(T), asReal(W), asReal(M), asReal(A));
-        for (int i = 0; i < length(output); i++) {
-            REAL(output)[i] = lg->scale(REAL(output)[i]) * asReal(M) ;
-        }
-        if (lg != NULL) delete lg;
-    }
+			Logicle lg = Logicle(T, W, M, A);
+			for (int i = 0; i < nLen; i++) {
+				if(isInverse)
+					input.at(i) = lg.inverse(input.at(i)/M);
+				else
+					input.at(i) = lg.scale(input.at(i)) * M;
+			}
+    	}
     catch(const char * str){
-      Rf_error("Logicle Exception: %s \n", str) ;
+      std::string tmp= "Logicle Exception: ";
+   	
+    	Rcpp::stop(tmp.append(str));
     }
 
-    UNPROTECT(1);
-    return(output);
+
+    return(input);
 }
-
-SEXP invLogicle_transform(SEXP input, SEXP T, SEXP W, SEXP M, SEXP A){
-	SEXP output;
-    PROTECT(output = duplicate(input));
-    try{
-        Logicle *lg = new Logicle(asReal(T), asReal(W), asReal(M), asReal(A));
-        for (int i = 0; i < length(output); i++) {
-               REAL(output)[i] = lg->inverse(REAL(output)[i]/asReal(M))  ;
-        }
-        if (lg != NULL) delete lg;
-    }
-    catch(const char * str){
-      Rf_error("Logicle Exception: %s \n", str) ;
-    }
-    UNPROTECT(1);
-    return(output);
-}
-
-}// end of extern c 
-
-
 

@@ -1403,8 +1403,7 @@ logicleTransform <- function(transformationId="defaultLogicleTransform",
         w = 0.5, t = 262144, m = 4.5, a = 0) {
 
     k <- new("transform", .Data=function(x) 
-            x <- .Call("logicle_transform", as.double(x), as.double(t), 
-                    as.double(w), as.double(m), as.double(a))
+            x <- logicle_transform(as.double(x), as.double(t),as.double(w), as.double(m), as.double(a), FALSE)
             )            
     k@transformationId <- transformationId
     k
@@ -1429,8 +1428,7 @@ inverseLogicleTransform <- function(transformationId, trans) {
     m = environment(trans@.Data)[["m"]]
     a = environment(trans@.Data)[["a"]]
     k <- new("transform", .Data=function(x)
-	 		x <- .Call("invLogicle_transform", as.double(x), as.double(t), 
-                    as.double(w), as.double(m), as.double(a))
+	 		x <- logicle_transform(as.double(x), as.double(t),as.double(w), as.double(m), as.double(a), TRUE)
 	    )
     if(missing(transformationId))
         k@transformationId <- paste( "inverse", trans@transformationId, sep ="_")

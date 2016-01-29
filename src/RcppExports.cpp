@@ -33,6 +33,38 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// hyperlog_transform
+std::vector<double> hyperlog_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse);
+RcppExport SEXP flowCore_hyperlog_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    Rcpp::traits::input_parameter< double >::type W(WSEXP);
+    Rcpp::traits::input_parameter< double >::type M(MSEXP);
+    Rcpp::traits::input_parameter< double >::type A(ASEXP);
+    Rcpp::traits::input_parameter< bool >::type isInverse(isInverseSEXP);
+    __result = Rcpp::wrap(hyperlog_transform(input, T, W, M, A, isInverse));
+    return __result;
+END_RCPP
+}
+// logicle_transform
+std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse);
+RcppExport SEXP flowCore_logicle_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    Rcpp::traits::input_parameter< double >::type W(WSEXP);
+    Rcpp::traits::input_parameter< double >::type M(MSEXP);
+    Rcpp::traits::input_parameter< double >::type A(ASEXP);
+    Rcpp::traits::input_parameter< bool >::type isInverse(isInverseSEXP);
+    __result = Rcpp::wrap(logicle_transform(input, T, W, M, A, isInverse));
+    return __result;
+END_RCPP
+}
 // uint2double
 std::vector<double> uint2double(std::vector<unsigned> input, bool isBigEndian);
 RcppExport SEXP flowCore_uint2double(SEXP inputSEXP, SEXP isBigEndianSEXP) {
