@@ -156,7 +156,7 @@ double R_zeroin2(			/* An estimate of the root */
 	if( fabs(prev_step) >= tol_act	/* If prev_step was large enough*/
 	    && fabs(fa) > fabs(fb) ) {	/* and was in true direction,
 					 * Interpolation may be tried	*/
-	    register double t1,cb,t2;
+	    double t1,cb,t2;
 	    cb = c-b;
 	    if( a==c ) {		/* If we have only two distinct	*/
 					/* points linear interpolation	*/
