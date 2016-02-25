@@ -234,8 +234,12 @@ setMethod(
     {
         function(df)
         {
-            parameter <- resolve(expr@parameters, df)
-            parameter <- flowFrameToMatrix(parameter)
+            if(is(df, "flowFrame")){
+              parameter <- resolve(expr@parameters, df)
+              parameter <- flowFrameToMatrix(parameter)  
+            }else
+              parameter <- df
+            
             # We are calling the externa logicle transformation, but we are also
             # dividing the result by M so that "reasonable" values are scaled [0,1]
             # rather than [0,M]. This is how logicle in Gating-Ml 2.0 is defined.
