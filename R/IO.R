@@ -1185,6 +1185,14 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
     names(pnr) <- sprintf("$P%sR", 1:ncol(x))
     pnr[sapply(pnr, length)==0] <- "1024"
     mk <- c(mk, pnr)
+    ##update flowCore_$PnRMax to reflect the transformed range stored in parameter slots (that was during flowWorkspace parsing)
+    #so that the correct range info can be picked up by read.FCS. It should have been updated in flowWorkspace:::.transformRange
+    rng <- range(x)
+    for(i in 1:ncol(x))
+    { 
+      description(x)[[sprintf("flowCore_$P%sRmin", i)]] <- rng[1,i]
+      description(x)[[sprintf("flowCore_$P%sRmax", i)]] <- rng[2,i]
+    }
     ## Now update the PnN keyword
     pnn <- colnames(x)
     names(pnn) <- sprintf("$P%sN", 1:ncol(x))
