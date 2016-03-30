@@ -147,6 +147,13 @@ test_that("test write.FCS", {
     keys[c("$BEGINDATA", "$ENDDATA")] <- NULL
     keys.new <- description(fr1)
     keys.new[["FILENAME"]] <- "setToDummy"
+    #update flowCore range in keyword
+    rng <- range(fr)
+    for(i in 1:ncol(fr))
+    { 
+      keys[[sprintf("flowCore_$P%sRmin", i)]] <- as.character(rng[1,i])
+      keys[[sprintf("flowCore_$P%sRmax", i)]] <- as.character(rng[2,i])
+    }
     expect_equal(keys.new[names(keys)], keys)
     expect_equivalent(exprs(fr), exprs(fr1))
     
