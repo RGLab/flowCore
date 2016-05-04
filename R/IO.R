@@ -57,8 +57,8 @@ read.FCS <- function(filename,
                      decades=0,
                      ncdf=FALSE,
                      min.limit=NULL,
-                     truncate_max_range = TRUE, 
-                     dataset=NULL,                     
+                     truncate_max_range = TRUE,
+                     dataset=NULL,
                      emptyValue=TRUE
                     , ...)
 {
@@ -87,13 +87,13 @@ read.FCS <- function(filename,
         fcsPnGtransform <- TRUE
     } else if (is.null(transformation) || is.logical(transformation) &&
                !transformation) {
-        transformation <- FALSE 
+        transformation <- FALSE
         scale <- FALSE
-    } 
+    }
 
-    ## read the file  
+    ## read the file
     offsets <- findOffsets(con,emptyValue=emptyValue, dataset = dataset, ...)
-    
+
     txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
     ## We only transform if the data in the FCS file hasn't already been
     ## transformed before
@@ -105,15 +105,15 @@ read.FCS <- function(filename,
                        scale, alter.names, decades, min.limit, truncate_max_range)
     matRanges <- attr(mat,"ranges")
 
-	
+
     id <- paste("$P",1:ncol(mat),sep="")
     zeroVals <- as.numeric(sapply(strsplit(txt[paste(id,"E",sep="")], ","),
                                   function(x) x[2]))
-    
+
     absMin <- colMins(mat,,na.rm=TRUE) # replace apply with matrixStats::colMins to speed up
     # absMin <- apply(mat,2,min,na.rm=TRUE)
     realMin <- pmin(zeroVals,pmax(-111, absMin, na.rm=TRUE), na.rm=TRUE)
-    
+
 	if("transformation" %in% names(txt) && txt[["transformation"]] == "custom") {
 		for(i in seq_along(colnames(mat))) {
 			realMin[i] <- as.numeric(txt[[sprintf("flowCore_$P%sRmin", i)]])
@@ -122,7 +122,7 @@ read.FCS <- function(filename,
 
     params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin)
-    
+
     ## only keep certain parameters
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
@@ -140,29 +140,29 @@ read.FCS <- function(filename,
 	## set transformed flag and fix the PnE and the Datatype keywords
     ## also add our own PnR fields.
     txt[["FILENAME"]] <- filename
-    if(transformation==TRUE) { 
+    if(transformation==TRUE) {
        txt[["transformation"]] <-"applied"
        for(p in seq_along(pData(params)$name)) {
-          txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", 0) 
+          txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", 0)
           txt[[sprintf("flowCore_$P%sRmax", p)]] <- matRanges[p] +1
-          txt[[sprintf("flowCore_$P%sRmin", p)]] <- realMin[p] 
+          txt[[sprintf("flowCore_$P%sRmin", p)]] <- realMin[p]
        }
        txt[["$DATATYPE"]] <- "F"
     }
     ## build description from FCS parameters
-	
+
 	if(offsets["FCSversion"]<=2)
 	{
 		description <- strsplit(txt,split="\n")
 	    names(description) <- names(txt)
-		
+
 	}else
 	{
-		description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}	
+		description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}
 	}
-	
-	
-	
+
+
+
     ## the spillover matrix
     spID <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(description))
     if(length(spID)>0){
@@ -180,7 +180,7 @@ read.FCS <- function(filename,
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
     identifier(tmp) <- basename(identifier(tmp))
-    
+
     return(tmp)
 }
 
@@ -201,7 +201,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 
     ## make sure the ranges are transformed along with the data
     if(transformation & !scale){
-      
+
         ampliPar <- txt[paste(id,"E",sep="")]
         noPnE <- is.na(ampliPar)
         if(any(noPnE))
@@ -214,7 +214,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
-    
+
     desc <- txt[paste(id,"S",sep="")]
     desc <- gsub("^\\s+|\\s+$", "", desc)#trim the leading and tailing whitespaces
     # replace the empty desc with NA
@@ -242,7 +242,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 readFCSgetPar <- function(x, pnam, strict=TRUE)
 {
 
-    stopifnot(is.character(x), is.character(pnam)) 
+    stopifnot(is.character(x), is.character(pnam))
     i <- match(pnam, names(x))
     if(any(is.na(i)) && strict)
         stop(paste("Parameter(s)", pnam[is.na(i)], "not contained in 'x'\n"))
@@ -264,14 +264,14 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
 {
     offsets <- readFCSheader(con)
     txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
-    
+
     addOff <- 0
-    
+
     if("$NEXTDATA" %in% names(txt)){
-      nd <- as.numeric(txt[["$NEXTDATA"]])  
+      nd <- as.numeric(txt[["$NEXTDATA"]])
     }else
       nd <- 0
-    
+
     while(nd != 0)
     {
         addOff <- addOff + nd
@@ -279,7 +279,7 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
         txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue, ...)
         nd <- as.numeric(txt[["$NEXTDATA"]])
     }
-    
+
     ## check for multiple data sets
     if(is.matrix(offsets))
     {
@@ -292,7 +292,7 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
             "setting the 'dataset' argument.", call.=FALSE)
         offsets <- offsets[1,]
       }
-      else    
+      else
       {
         if(!is.numeric(dataset) || !dataset %in% seq_len(nDataset))
           stop(sprintf("Argument 'dataset' must be an integer value in [1,%d].",
@@ -315,28 +315,28 @@ checkOffset <- function(offsets, x, ignore.text.offset = FALSE, ...){
   ##for DATA segment exceeding 99,999,999 byte.
   if(offsets["FCSversion"] >= 3){
     realOff <- offsets - offsets[8]
-    
-    # Let's not be too strick here as unfortunatelly, some files exported from FlowJo 
+
+    # Let's not be too strick here as unfortunatelly, some files exported from FlowJo
     # are missing the $BEGINDATA and $ENDDATA keywords and we still need to read those
     datastart <- as.numeric(readFCSgetPar(x, "$BEGINDATA", strict=FALSE))
-    if (is.na(datastart)) { 
+    if (is.na(datastart)) {
       if (realOff["datastart"] != 0) {
         datastart = realOff["datastart"]
         warning("Missing the required $BEGINDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
       } else {
         stop("Don't know where the data segment begins, there was no $BEGINDATA keyword and the FCS HEADER does not say it either.")
       }
-    } 
+    }
     dataend <- as.numeric(readFCSgetPar(x, "$ENDDATA", strict=FALSE))
-    if (is.na(dataend)) { 
+    if (is.na(dataend)) {
       if (realOff["dataend"] != 0) {
         dataend = realOff["dataend"]
         warning("Missing the required $ENDDATA keyword! Reading data based on information in the FCS HEADER only.", call.=FALSE)
       } else {
         stop("Don't know where the data segment ends, there was no $ENDDATA keyword and the FCS HEADER does not say it either.")
       }
-    } 
-    
+    }
+
     # when both are present and they don't agree with each other
     if(realOff["datastart"] != datastart && realOff["datastart"]== 0){ #use the TEXT when header is 0
       offsets["datastart"] <-  datastart+offsets[8]
@@ -362,7 +362,7 @@ checkOffset <- function(offsets, x, ignore.text.offset = FALSE, ...){
         warning(msg, " The values in TEXT are ignored!")
       else
         stop(msg)
-      
+
     }
   }
   offsets
@@ -377,20 +377,20 @@ readFCSheader <- function(con, start=0)
     version <- readChar(con, 6)
     if(!version %in% c("FCS2.0", "FCS3.0", "FCS3.1"))
         stop("This does not seem to be a valid FCS2.0, FCS3.0 or FCS3.1 file")
-    
+
     version <-  substring(version, 4, nchar(version))
     tmp <- readChar(con, 4)
     stopifnot(tmp=="    ")
-    
+
     coffs <- character(6)
     for(i in 1:length(coffs))
         coffs[i] <- readChar(con=con, nchars=8)
-    
+
     ioffs <- c(as.double(version), as.integer(coffs), as.integer(start))
     names(ioffs) <- c("FCSversion", "textstart", "textend", "datastart",
                       "dataend", "anastart", "anaend", "additional")
     ioffs[2:7] <- ioffs[2:7]+ioffs[8]
-    
+
     if(all(is.na(ioffs[2:5]) || ioffs[2:5]==""))
         stop("Missing header information to start parsing the binary ",
              "section of the file")
@@ -407,7 +407,7 @@ readFCStext <- function(con, offsets,emptyValue, cpp = TRUE, ...)
 
     seek(con, offsets["textstart"])
     ## Certain software (e.g. FlowJo 8 on OS X) likes to put characters into
-    ## files that readChar can't read, yet readBin, rawToChar and iconv can 
+    ## files that readChar can't read, yet readBin, rawToChar and iconv can
     ## handle just fine.
     txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
     txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
@@ -418,7 +418,7 @@ readFCStext <- function(con, offsets,emptyValue, cpp = TRUE, ...)
 		sp  <- strsplit(substr(txt, 2, nchar(txt)), split=delimiter,
 				fixed=TRUE)[[1]]
 		rv <- c(offsets["FCSversion"], sp[seq(2, length(sp), by=2)])
-		names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))	
+		names(rv) <- gsub("^ *| *$", "", c("FCSversion", sp[seq(1, length(sp)-1, by=2)]))
 	}else
 	{
 		#only apply the patch parser to FCS3
@@ -426,33 +426,33 @@ readFCStext <- function(con, offsets,emptyValue, cpp = TRUE, ...)
           rv = fcsTextParse(txt,emptyValue=emptyValue)
         else
 		  rv = fcs_text_parse(txt,emptyValue=emptyValue)
-        
+
         if(!"FCSversion"%in%names(rv))
 		  rv <- c(offsets["FCSversion"], rv)
-			
+
 		names(rv) <- gsub("^ *| *$", "", names(rv))#trim the leading and trailing whitespaces
 	}
-	
-	
-	
+
+
+
     return(rv)
 }
 
 ## ==========================================================================
 ## a patch to fix the parsing issue when delimiter exists in the keyword value
 ##,which is allowed only when it is followed by another delimiter immediately
-## Note that it is only applies to FCS3.0 because empty value is not valid value.   
-##however,this does not conform to FCS2.0,so this patch only applies to FCS3.0 
+## Note that it is only applies to FCS3.0 because empty value is not valid value.
+##however,this does not conform to FCS2.0,so this patch only applies to FCS3.0
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 fcs_text_parse = function(str,emptyValue) {
 #	browser()
 	pairs = c()
-	
+
 	div = substr(str, 1, 1)
 	if(nchar(div) != 1) {
 		return(c())
-	} 
-	
+	}
+
 	# regexes require double-escaping (*sigh*)
 # 	if(div == "\\") {
 # 		div = "\\\\"
@@ -466,7 +466,7 @@ fcs_text_parse = function(str,emptyValue) {
 		if(nchar(gsub(" ","",remaining)) == 0) {##filter out white spaces before check the length
 			break
 		}
-		
+
 
 		key_end_regex <- paste("([^",div,"]",div,")", sep="")
 		#############################################################################################
@@ -474,22 +474,22 @@ fcs_text_parse = function(str,emptyValue) {
 		##  otherwise,it would break the parser
 		##2.when empty value is not allowed, we safely parse the double delimiters as the valid values
 		#############################################################################################
-		if(emptyValue) 
+		if(emptyValue)
 		{
 			value_end_regex <- div
 			final_end_regex <- paste(div,"$", sep="")
 		}else
 		{
 			value_end_regex <- paste("([^",div,"]",div,"[^",div,"])", sep="")
-			final_end_regex <- paste("[^",div,"]",div,"$", sep="")			
-		}	
-			
-		
+			final_end_regex <- paste("[^",div,"]",div,"$", sep="")
+		}
+
+
 #		browser()
 		# find key end
 		divider_index = regexpr(key_end_regex, remaining, perl=TRUE)
 		if(divider_index < 0) {
-			
+
 			if(i==2)
 				stop("ERROR: No second divider found\n")
 			else
@@ -497,16 +497,16 @@ fcs_text_parse = function(str,emptyValue) {
 				warning("keyword: ",remaining," is dropped because no value found!")
 				break
 			}
-				
+
 		}
 		divider_index = divider_index + 1
-		
+
 		value_search = substr(remaining, divider_index + 1, nchar(remaining))
 		# find value end
 		value_end_index = regexpr(value_end_regex, value_search, perl=TRUE)
-		if(emptyValue) 
+		if(emptyValue)
 			value_end_index<-value_end_index-1
-			
+
 		if(value_end_index < 0) {
 			value_end_index = regexpr(final_end_regex, value_search, perl=TRUE)
 			if(value_end_index < 0) {
@@ -519,23 +519,23 @@ fcs_text_parse = function(str,emptyValue) {
 			}
 		}
 		value_end_index = divider_index + value_end_index
-		
+
 		key = substr(remaining, 1, divider_index - 1)
 		value = substr(remaining, divider_index + 1, value_end_index)
-		
+
 		#replace double delimiters with single one in the final output
 		value = gsub(paste(div,div,sep=''), div, value)
-		
+
 		#    cat("key: ", key, "\n")
 		#    cat("value: ", value, "\n")
 		#    cat("-----------------------\n")
-		
+
 		pairs = c(pairs, value)
 		names(pairs)[length(pairs)] = key
-		
+
 		i = i + value_end_index + 1
 	}
-	
+
 	return(pairs)
 }
 
@@ -544,17 +544,17 @@ fcs_text_parse = function(str,emptyValue) {
 #	browser()
 	if (size %in% c(1, 2, 4, 8))
 	{
-      
+
         if(splitInt&&dattype == "integer"){
           if(size == 4){
             #read uint32 as two uint16
             splitted <- readBin(con=con, what=dattype
                                 ,n = as.integer(count * 2) #coerce count again to ensure it is within the int limit
                                 , size = size / 2, signed=FALSE, endian=endian)
-                            
+
             uint2double(splitted, endian == "big")
-            
-            
+
+
           }
           else
             stop("'splitInt = TRUE' is only valid for uint32!")
@@ -573,19 +573,19 @@ fcs_text_parse = function(str,emptyValue) {
 		newBits<-unlist(lapply(1:count,function(i){
 #							browser()
 											start<-(i-1)*oldBitWidth+1
-                                            #padding zeros 
+                                            #padding zeros
 											c(oldBits[start:(start+oldBitWidth-1)],raw(newBitWidth-oldBitWidth)
                                                 )
 											}
 								)
-						)		
+						)
 		#convert raw byte to corresponding type by readBin
         #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
 		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
-		
-		
+
+
 	}
-	
+
 }
 
 
@@ -599,21 +599,21 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     endian <- switch(readFCSgetPar(x, "$BYTEORD"),
                      "4,3,2,1" = "big",
                      "2,1" = "big",
-                     "1,2" = "little",     
+                     "1,2" = "little",
                      "1,2,3,4" = "little",
                      stop(paste("Don't know how to deal with $BYTEORD",
                                 readFCSgetPar(x, "$BYTEORD"))))
-    
+
     dattype <- switch(readFCSgetPar(x, "$DATATYPE"),
                       "I" = "integer",
                       "F" = "numeric",
                       stop(paste("Don't know how to deal with $DATATYPE",
                                  readFCSgetPar(x, "$DATATYPE"))))
-    
+
     if (readFCSgetPar(x, "$MODE") != "L")
         stop(paste("Don't know how to deal with $MODE",
                    readFCSgetPar(x, "$MODE")))
-    
+
     nrpar    <- as.integer(readFCSgetPar(x, "$PAR"))
     nrowTotal <- as.integer(readFCSgetPar(x, "$TOT"))
 
@@ -624,48 +624,48 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     } else {
         range_str <- readFCSgetPar(x, paste("$P", 1:nrpar, "R", sep=""))
     }
-    
+
     bitwidth_vec <- as.integer(readFCSgetPar(x, paste("$P", 1:nrpar, "B", sep="")))
     bitwidth <- unique(bitwidth_vec)
     multiSize <- length(bitwidth) > 1
-    
+
     if(dattype=="numeric"&&multiSize)
       stop("Sorry, Numeric data type expects the same bitwidth for all parameters!")
-    
-    
+
+
     if(dattype=="integer"){
       suppressWarnings(range <- as.integer(range_str))
-      
+
       #when any channel has range > 2147483647 (i.e. 2^31-1)
       if(any(is.na(range)))
         range <- as.numeric(range_str)
-        
+
       if(any(is.na(range)))#throws if still fails
         stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
-      else if(any(range>2^32)){ 
-        #check if larger than C's uint32 limit ,which should be 2^32-1 
+      else if(any(range>2^32)){
+        #check if larger than C's uint32 limit ,which should be 2^32-1
         #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
         #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
         stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
       }
-      
+
       if(multiSize){
         splitInt <- FALSE
       }else
       {
         splitInt <- bitwidth == 32
       }
-      
-    } 
+
+    }
     else{
       splitInt <- FALSE
       range <- as.numeric(range_str)
       if(any(is.na(range)))
         stop("$PnR", range_str[is.na(range)][1], "is larger than R's numeric limit:", .Machine$double.xmax)
     }
-    
-    
-    
+
+
+
     if(!multiSize){
       if(bitwidth==10){
         if(!gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp")
@@ -676,23 +676,23 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
           warning("Beckma Coulter CPX data.\nCorrected for invalid bitwidth 10.",
                   call.=FALSE)
         bitwidth <- 16
-      }  
+      }
     }
     # multiSize <- T
-    
+
     if(multiSize){
       size <- bitwidth_vec/8
       signed <- FALSE #dummy. not used in mutliSize logic.
     }else{
       size <- bitwidth/8
-      
+
       # since signed = FALSE is not supported by readBin when size > 2
       # we set it to TRUE automatically then to avoid warning flooded by readBin
-      # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits 
+      # It shouldn't cause data clipping since we haven't found any use case where datatype is unsigned integer with size > 16bits
       signed <- !(size%in%c(1,2))
     }
-      
-    
+
+
     nwhichLines <- length(which.lines)
     ##Read all reports
     if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
@@ -703,26 +703,26 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 "). All the events have been read. \n")
         }
       seek(con, offsets["datastart"])
-        
+
       nBytes <- as.integer(offsets["dataend"]-offsets["datastart"]+1)
-      
+
 	    if(multiSize){
 #	      if(splitInt&&dattype=="integer")
 #	        stop("Mutliple bitwidths with big integer are not supported!")
 	      bytes <- readBin(con=con, what="raw",n = nBytes, size = 1)
-#	      browser()
+	      # browser()
 	      if(dattype == "numeric" && length(unique(size)) > 1)
 	        stop("we don't support different bitwdiths for numeric data type!")
 	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
-	      
-	      
+
+
 	    }else{
 	      dat <- .readFCSdataRaw(con, dattype
 	                             , count= nBytes/size
 	                             , size= size
 	                             , signed=signed, endian=endian, splitInt = splitInt)
 	    }
-    
+
 
     }else {
       if(multiSize)
@@ -741,9 +741,9 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             endP   <-  startP + nrpar * size
             seek(con, startP)
 			temp <- .readFCSdataRaw(con, dattype, count= as.integer(endP - startP+1)/size,
-					size=size, signed=signed, endian=endian, splitInt = splitInt) 
- 
-            dat <- c(dat, temp)                 
+					size=size, signed=signed, endian=endian, splitInt = splitInt)
+
+            dat <- c(dat, temp)
         }
     }
     ## stopifnot(length(dat)%%nrpar==0)
@@ -757,14 +757,18 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
                 summary(con)$description, "'/nData may be truncated!")
     }
 
-    
+
     ## apply bitmask for integer data
     if(dattype=="integer"){
         if(length(unique(range))==1)
         {
-            usedBits <- ceiling(log2(range[1]))
-            if(usedBits<bitwidth)
+
+            if(range[1]>0){
+              usedBits <- ceiling(log2(range[1]))
+              if(usedBits<bitwidth)
                 dat <- dat %% (2^usedBits)
+            }
+
             dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
         }
         else
@@ -772,9 +776,12 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
             for(i in 1:ncol(dat))
             {
-                usedBits <- ceiling(log2(range[i]))
-                if(usedBits<bitwidth_vec[i])
-                    dat[,i] <- dat[,i] %% (2^usedBits)
+
+                if(range[i] > 0){
+                  usedBits <- ceiling(log2(range[i]))
+                  if(usedBits<bitwidth_vec[i])
+                      dat[,i] <- dat[,i] %% (2^usedBits)
+                }
             }
         }
     }
@@ -782,7 +789,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     {
         dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
     }
-        
+
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
     cn <- if(alter.names)  structure(make.names(cn),names=names(cn)) else cn
     dimnames(dat) <- list(NULL, cn)
@@ -791,19 +798,19 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     {
         if(truncate_max_range){
           for(i in seq_len(ncol(dat)))
-            dat[dat[,i]>range[i],i] <- range[i]  
+            dat[dat[,i]>range[i],i] <- range[i]
         }
-        
+
         if(!is.null(min.limit))
             dat[dat<min.limit] <- min.limit
     }
 
     ## Transform or scale if necessary
-    # J.Spidlen, Nov 13, 2013: added the flowCore_fcsPnGtransform keyword, which is 
+    # J.Spidlen, Nov 13, 2013: added the flowCore_fcsPnGtransform keyword, which is
     # set to "linearize-with-PnG-scaling" when transformation="linearize-with-PnG-scaling"
     # in read.FCS(). This does linearization for log-stored parameters and also division by
     # gain ($PnG value) for linearly stored parameters. This is how the channel-to-scale
-    # transformation should be done according to the FCS specification (and according to 
+    # transformation should be done according to the FCS specification (and according to
     # Gating-ML 2.0), but lots of software tools are ignoring the $PnG division. I added it
     # so that it is only done when specifically asked for so that read.FCS remains backwards
     # compatible with previous versions.
@@ -855,7 +862,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
        }
     }
     if(scale){
-        d = 10^decades	
+        d = 10^decades
         for(i in 1:nrpar)
             if(ampli[i,1] > 0){
                dat[,i] <- d*((dat[,i]-1)/(range[i]-1))
@@ -866,7 +873,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             }
     }
     attr(dat, "ranges") <- range
-    return(dat) 
+    return(dat)
 }
 
 
@@ -889,7 +896,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
       .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
     ## A frame of phenoData information
     phenoFrame <- NULL
-    
+
     ## deal with the case that the phenoData is provided, either as
     ## character vector or as AnnotatedDataFrame.
     if(!missing(phenoData)) {
@@ -920,7 +927,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                        "of a text file containing the phenotypic information")
           }
     }
-    
+
     ## go on and find the files
     if(!is.null(phenoFrame)) {
         if(!is.null(files))
@@ -948,10 +955,10 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                 stop("'files' must be a character vector.")
             file.names <- basename(files) ## strip path from names
             if(path != ".")
-                files <- file.path(path, files)    
+                files <- file.path(path, files)
         }
     }
-    
+
     flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       column.pattern=column.pattern, invert.pattern = invert.pattern,
@@ -1035,12 +1042,12 @@ write.AnnotatedDataFrame <- function(frame, file)
     writeLines(paste(rep("#", ncol(frame)), varLabels(frame),
                      rep(": ", ncol(frame)),
                      varMetadata(frame)$labelDescription, sep=""), con)
-    write.table(pData(frame), con, quote=FALSE, sep="\t")  
+    write.table(pData(frame), con, quote=FALSE, sep="\t")
 }
 
 
 cleanup <- function() if(file.exists(".flowCoreNcdf"))
-    
+
      .Deprecated("'ncdf' is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
     unlink(".flowCoreNcdf", recursive=TRUE)
 
@@ -1081,7 +1088,7 @@ collapseDesc <- function(x, delimiter = "\\")
     d <- description(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
 #	browser()
-	
+
 	d <- lapply(d, function(y){
 				if(length(y)==0)
 					return(" ")
@@ -1089,12 +1096,12 @@ collapseDesc <- function(x, delimiter = "\\")
 				{
 					#make sure spillover matrix doesn't get converted to vector
 					if(is.matrix(y))
-						return (y)   
+						return (y)
 					else{
-					  
+
 					  y <- sub("^$"," ",y)
 					  double_delimiter <- paste0(delimiter, delimiter)
-                      
+
 #                      browser()
                       #replace the existing double delimiter with a temp string
                       # to skip escapping operation
@@ -1104,16 +1111,16 @@ collapseDesc <- function(x, delimiter = "\\")
                       #escape single delimiter character by doubling it
 					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
                       #restore the original double delimiter
-                      
+
                       return(gsub(tempString, double_delimiter, y, fixed = TRUE, useBytes = TRUE))
 					}
-						
+
 				}
-					 
-						
+
+
 			})
     d <- d[order(names(d))]
-	
+
 	spillName <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(d))
     if(length(spillName) >0){
 		mat <-  d[[spillName]]
@@ -1125,7 +1132,7 @@ collapseDesc <- function(x, delimiter = "\\")
     paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
                                  delimiter, collapse="", sep=""), to="latin1",
                       sub=" "), sep="")
-   
+
 }
 
 
@@ -1150,7 +1157,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
     if(!is.character(filename) || length(filename)!=1)
         stop("Argument 'filename' has to be a character of length 1.")
     if(!is(x, "flowFrame"))
-        stop("Argument 'x' has to be a 'flowFrame'.") 
+        stop("Argument 'x' has to be a 'flowFrame'.")
     ## Set the mandatory keywords first
     begTxt <- 58
     types <- data.frame(symbol=c("I", "F", "D"),
@@ -1194,7 +1201,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
     #so that the correct range info can be picked up by read.FCS. It should have been updated in flowWorkspace:::.transformRange
     rng <- range(x)
     for(i in 1:ncol(x))
-    { 
+    {
       description(x)[[sprintf("flowCore_$P%sRmin", i)]] <- rng[1,i]
       description(x)[[sprintf("flowCore_$P%sRmax", i)]] <- rng[2,i]
     }
@@ -1215,7 +1222,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
     description(x) <- list("$BEGINDATA"=endTxt+1,
                            "$ENDDATA"=endTxt+ld)
     ctxt <- collapseDesc(x, delimiter = delimiter)
-	
+
     offsets <- c(begTxt, endTxt, endTxt+1, endTxt+ld, 0,0)
     ## Write out to file
     con <- file(filename, open="wb")
@@ -1240,7 +1247,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
     checkClass(x, "flowSet")
-  
+
     ## Some sanity  checking up front
     if(missing(filename))
     {
