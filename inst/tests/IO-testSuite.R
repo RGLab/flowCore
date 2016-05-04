@@ -1,6 +1,14 @@
 context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
+
+test_that("test uint_64 + diverse bitwidths + missing $NEXTDATA: '*' ", {
+      
+      expect_warning(fr <- read.FCS(file.path(dataPath, "uint_64.lxb")))
+      
+    })
+
+
 # 'FILENAME' keyword may change when file path is changed 
 # so we hard code it to make the comparsion consistent in case the file is moved
 test_that("test special delimiter character: '*' ", {
