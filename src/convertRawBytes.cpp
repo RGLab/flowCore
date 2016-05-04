@@ -90,6 +90,9 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
         case sizeof(unsigned)://4 bytes
           output.at(ind) = (double)convertRaw_impl<unsigned>(bytes, thisSize, isBigEndian, thisStart, thisEnd);
           break;
+        case sizeof(unsigned long)://8 bytes
+          output.at(ind) = (double)convertRaw_impl<unsigned long>(bytes, thisSize, isBigEndian, thisStart, thisEnd);
+          break;
         default:
           Rcpp::stop("Unsupported bitwidths when performing channel-wise reading:" + std::to_string(thisSize));
         }
