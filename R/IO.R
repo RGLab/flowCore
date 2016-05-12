@@ -193,10 +193,18 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
 
     npar <- length(cn)
     id <- paste("$P",1:npar,sep="")
-    rid <- paste("flowCore_", id,"Rmax",sep="")
-    original <- is.na(txt[rid[1]])
-    range <- origRange <- if(!original) as.numeric(txt[rid]) + 1 else
-    as.numeric(txt[paste(id,"R",sep="")])
+
+    range <- sapply(id, function(this_id){
+      rid <- paste("flowCore_", this_id,"Rmax",sep="")
+      original <- is.na(txt[rid])
+      if(!original)
+        as.numeric(txt[rid]) + 1
+      else
+        as.numeric(txt[paste(this_id,"R",sep="")])
+    })
+
+
+    origRange <- range
     range <- rbind(realMin,range-1)
 
     ## make sure the ranges are transformed along with the data
