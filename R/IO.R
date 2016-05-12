@@ -266,7 +266,12 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
     txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
     
     addOff <- 0
-    nd <- as.numeric(txt[["$NEXTDATA"]])
+    
+    if("$NEXTDATA" %in% names(txt)){
+      nd <- as.numeric(txt[["$NEXTDATA"]])  
+    }else
+      nd <- 0
+    
     while(nd != 0)
     {
         addOff <- addOff + nd
@@ -702,10 +707,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
       nBytes <- as.integer(offsets["dataend"]-offsets["datastart"]+1)
       
 	    if(multiSize){
-	      if(splitInt&&dattype=="integer")
-	        stop("Mutliple bitwidths with big integer are not supported!")
+#	      if(splitInt&&dattype=="integer")
+#	        stop("Mutliple bitwidths with big integer are not supported!")
 	      bytes <- readBin(con=con, what="raw",n = nBytes, size = 1)
-	      
+#	      browser()
 	      if(dattype == "numeric" && length(unique(size)) > 1)
 	        stop("we don't support different bitwdiths for numeric data type!")
 	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
