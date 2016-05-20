@@ -162,20 +162,20 @@ read.FCS <- function(filename,
 	}
 
 
-
     ## the spillover matrix
-    spID <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(description))
-    if(length(spID)>0){
-        sp <- description[[spID]]
-        splt <- strsplit(sp, ",")[[1]]
-        nrCols <- as.numeric(splt[1])
-        cnames <- splt[2:(nrCols+1)]
-        vals <- as.numeric(splt[(nrCols+2):length(splt)])
-        spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
-        if(alter.names)
-          cnames <- make.names(cnames)
-        colnames(spmat) <- cnames
-        description[[spID]] <- spmat
+    for(sn in .spillover_pattern){
+      sp <- description[[sn]]
+      if(!is.null(sp)){
+          splt <- strsplit(sp, ",")[[1]]
+          nrCols <- as.numeric(splt[1])
+          cnames <- splt[2:(nrCols+1)]
+          vals <- as.numeric(splt[(nrCols+2):length(splt)])
+          spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+          if(alter.names)
+            cnames <- make.names(cnames)
+          colnames(spmat) <- cnames
+          description[[sn]] <- spmat
+      }
     }
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
@@ -1129,13 +1129,16 @@ collapseDesc <- function(x, delimiter = "\\")
 			})
     d <- d[order(names(d))]
 
-	spillName <- intersect(c("SPILL", "spillover", "$SPILLOVER"), names(d))
-    if(length(spillName) >0){
-		mat <-  d[[spillName]]
-		rNum <- as.character(nrow(mat))
-		clNames <- paste(colnames(mat),sep=",")
-		vec <- paste(c(t(mat)),sep=",",collapse=",")
+  for(spillName in .spillover_pattern)
+  {
+     mat <-  d[[spillName]]
+     if(!is.null(mat))
+     {
+  		rNum <- as.character(nrow(mat))
+  		clNames <- paste(colnames(mat),sep=",")
+  		vec <- paste(c(t(mat)),sep=",",collapse=",")
 	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
+     }
 	}
     paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
                                  delimiter, collapse="", sep=""), to="latin1",

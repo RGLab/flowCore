@@ -629,7 +629,7 @@ setMethod("spillover",
           signature=signature(x="flowFrame"),
           definition=function(x)
       {
-          present <- keyword(x, c("spillover", "SPILL"))
+          present <- keyword(x, .spillover_pattern)
           if(all(sapply(present, is.null)))
               stop("No spillover matrix stored in that flowFrame")
           else present

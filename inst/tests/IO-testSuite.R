@@ -2,6 +2,21 @@ context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 
+
+test_that("FCS with both SPILL and $SPILLOVER present", {
+
+  fr <- read.FCS(file.path(dataPath, "/example-spill-spillover.fcs"))
+  expect_equal(keyword(fr)[["SPILL"]], keyword(fr)[["$SPILLOVER"]])
+  tmp <- spillover(fr)
+  expect_equal(tmp[["SPILL"]], tmp[["$SPILLOVER"]])
+  tmp <- tempfile()
+  expect_warning(write.FCS(fr, filename = tmp))
+  fr <- read.FCS(tmp)  
+  expect_equal(keyword(fr)[["SPILL"]], keyword(fr)[["$SPILLOVER"]])
+  
+})
+
+
 test_that("test uint_64 + diverse bitwidths + missing $NEXTDATA: '*' ", {
       
       expect_warning(fr <- read.FCS(file.path(dataPath, "uint_64.lxb")))
