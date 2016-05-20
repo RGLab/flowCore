@@ -1,3 +1,5 @@
+.spillover_pattern <- c("SPILL", "spillover", "$SPILLOVER")
+
 #' fussy match of marker/channel names
 #' @param pd pData of parameters of flowFrame
 #' @param name \code{character} the string to match
