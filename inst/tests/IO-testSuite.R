@@ -2,7 +2,13 @@ context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 
+test_that("mixed endian", {
+  fr <- read.FCS(file.path(dataPath, "mixedEndian.fcs"))
+  expect_is(fr, "flowFrame")
+  expect_equal(summary(fr), expectRes[["read.FCS"]][["mixedEndian"]])
+  
 
+})
 test_that("FCS with both SPILL and $SPILLOVER present", {
 
   fr <- read.FCS(file.path(dataPath, "/example-spill-spillover.fcs"))

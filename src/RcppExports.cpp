@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // biexponential_transform
-std::vector<double> biexponential_transform(std::vector<double> input, double A, double B, double C, double D, double F, double W, double Tol, int MaxIt);
-RcppExport SEXP flowCore_biexponential_transform(SEXP inputSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP DSEXP, SEXP FSEXP, SEXP WSEXP, SEXP TolSEXP, SEXP MaxItSEXP) {
+std::vector<double> biexponential_transform(std::vector<double> input, double A, double B, double C, double D, double F, double W, double tol, int maxIt);
+RcppExport SEXP flowCore_biexponential_transform(SEXP inputSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP DSEXP, SEXP FSEXP, SEXP WSEXP, SEXP tolSEXP, SEXP maxItSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -19,9 +19,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type D(DSEXP);
     Rcpp::traits::input_parameter< double >::type F(FSEXP);
     Rcpp::traits::input_parameter< double >::type W(WSEXP);
-    Rcpp::traits::input_parameter< double >::type Tol(TolSEXP);
-    Rcpp::traits::input_parameter< int >::type MaxIt(MaxItSEXP);
-    __result = Rcpp::wrap(biexponential_transform(input, A, B, C, D, F, W, Tol, MaxIt));
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxIt(maxItSEXP);
+    __result = Rcpp::wrap(biexponential_transform(input, A, B, C, D, F, W, tol, maxIt));
     return __result;
 END_RCPP
 }
@@ -106,6 +106,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type A(ASEXP);
     Rcpp::traits::input_parameter< bool >::type isInverse(isInverseSEXP);
     __result = Rcpp::wrap(logicle_transform(input, T, W, M, A, isInverse));
+    return __result;
+END_RCPP
+}
+// sortBytes
+BYTES sortBytes(BYTES bytes, std::vector<unsigned short> byte_order);
+RcppExport SEXP flowCore_sortBytes(SEXP bytesSEXP, SEXP byte_orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< BYTES >::type bytes(bytesSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned short> >::type byte_order(byte_orderSEXP);
+    __result = Rcpp::wrap(sortBytes(bytes, byte_order));
     return __result;
 END_RCPP
 }
