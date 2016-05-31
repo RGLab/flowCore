@@ -547,18 +547,51 @@ fcs_text_parse = function(str,emptyValue) {
 	return(pairs)
 }
 
+# deprecated by cpp version
+sortBytes1 <- function(bytes, byte_order){
+  nBytes <- length(byte_order)
+  nTotal <- length(bytes)
+  nElement <- nTotal / nBytes
+  #relative byte order for the entire vector
+  byte_orders <- rep(byte_order + 1 , nElement) 
+  #absolute byte order for the entire vector
+  byte_orders <- byte_orders + rep((seq_len(nElement)-1) * 4, each = nBytes)
+  #re-order 
+  ind <- order(byte_orders)
+  bytes[ind]  
+}
+
 ##read odd bitwidth by reading raw and and operating on raw vector
-.readFCSdataRaw<-function(con,dattype,count,size,signed,endian, splitInt = FALSE){
+.readFCSdataRaw<-function(con,dattype,count,size,signed,endian, splitInt = FALSE, byte_order){
 #	browser()
+  
+  nBytes<-count*size
+  
 	if (size %in% c(1, 2, 4, 8))
 	{
 
         if(splitInt&&dattype == "integer"){
           if(size == 4){
+            #reorder bytes for mixed endian
+            if(endian == "mixed"){
+              byte_order <- as.integer(strsplit(byte_order, ",")[[1]]) - 1
+              if(length(byte_order) != size)
+                stop("Byte order is not consistent with bidwidths!")
+              
+              bytes <- readBin(con=con, what="raw",n = nBytes,size=1)          
+              newBytes <- sortBytes(bytes, byte_order)#sort the bytes 
+              
+              con <- newBytes
+              endian <- "little"
+              
+            }
+            
             #read uint32 as two uint16
             splitted <- readBin(con=con, what=dattype
                                 ,n = as.integer(count * 2) #coerce count again to ensure it is within the int limit
-                                , size = size / 2, signed=FALSE, endian=endian)
+                                , size = size / 2, signed=FALSE, endian=endian)  
+          
+            
 
             uint2double(splitted, endian == "big")
 
@@ -567,11 +600,10 @@ fcs_text_parse = function(str,emptyValue) {
           else
             stop("'splitInt = TRUE' is only valid for uint32!")
         }else
-		  readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
+		      readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
 	}else
 	{
 		#read raw byte stream first
-		nBytes<-count*size
 		oldBytes <- readBin(con=con, what="raw",n = nBytes,size=1)
 		#convert to bit vector
 		oldBits<-rawToBits(oldBytes)
@@ -604,14 +636,15 @@ fcs_text_parse = function(str,emptyValue) {
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, which.lines,
                         scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE) {
-    endian <- switch(readFCSgetPar(x, "$BYTEORD"),
+    
+    byte_order <- readFCSgetPar(x, "$BYTEORD")  
+    endian <- switch(byte_order,
                      "4,3,2,1" = "big",
                      "2,1" = "big",
                      "1,2" = "little",
                      "1,2,3,4" = "little",
-                     stop(paste("Don't know how to deal with $BYTEORD",
-                                readFCSgetPar(x, "$BYTEORD"))))
-
+                     "mixed")
+    
     dattype <- switch(readFCSgetPar(x, "$DATATYPE"),
                       "I" = "integer",
                       "F" = "numeric",
@@ -717,6 +750,9 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	    if(multiSize){
 #	      if(splitInt&&dattype=="integer")
 #	        stop("Mutliple bitwidths with big integer are not supported!")
+	      if(endian == "mixed")
+	        stop("Cant't handle diverse bitwidths while endian is mixed: ", byte_order)
+	      
 	      bytes <- readBin(con=con, what="raw",n = nBytes, size = 1)
 	      # browser()
 	      if(dattype == "numeric" && length(unique(size)) > 1)
@@ -728,7 +764,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	      dat <- .readFCSdataRaw(con, dattype
 	                             , count= nBytes/size
 	                             , size= size
-	                             , signed=signed, endian=endian, splitInt = splitInt)
+	                             , signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
 	    }
 
 
@@ -749,7 +785,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
             endP   <-  startP + nrpar * size
             seek(con, startP)
 			temp <- .readFCSdataRaw(con, dattype, count= as.integer(endP - startP+1)/size,
-					size=size, signed=signed, endian=endian, splitInt = splitInt)
+					size=size, signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
 
             dat <- c(dat, temp)
         }
