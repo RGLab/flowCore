@@ -460,9 +460,8 @@ setMethod("compensate",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
           e <- exprs(x)
-		  ## pdh: this formula is now corrected
-#          e[, cols] <- t(solve(spillover)%*%t(e[,cols]))
-		  e[, cols] <- t(solve(t(spillover))%*%t(e[,cols]))
+		  
+          e[, cols] <- e[, cols] %*% solve(spillover)
           exprs(x) = e
           x
       })
