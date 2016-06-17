@@ -1,6 +1,7 @@
 % NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
 % likely to be overwritten.
 %
+%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Basic Functions for Flow Cytometry Data}
 %\VignetteDepends{flowCore, flowViz}
 %\VignetteKeywords{}
@@ -29,13 +30,21 @@
 \newcommand{\Rpackage}[1]{{\textsf{#1}}}
 \newcommand{\Rclass}[1]{{\textit{#1}}}
 
-
+\setkeys{Gin}{width=0.5\textwidth}
+\setkeys{Gin}{height=0.5\textwidth}
 
 \title{flowCore: data structures package for flow cytometry data}
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE, warning = FALSE
+)
+@
+
 \maketitle
 
 \begin{abstract}
@@ -86,7 +95,7 @@ high throughput flow cytometry.\\
 software, standard
 \end{abstract}
 
-<<loadPackage, echo=false,results=hide>>=
+<<loadPackage, echo=FALSE,results='hide'>>=
 library(flowCore)
 @
 
@@ -208,7 +217,7 @@ or ``scale'' our data. To see how this works,
 first we will examine an FCS file
 without any transformation at all:
 
-<<ReadFiles, echo=true, results=verbatim>>=
+<<ReadFiles, echo=TRUE, results='markup'>>=
 file.name <- system.file("extdata","0877408774.B08", package="flowCore")
 x <- read.FCS(file.name, transformation=FALSE)
 summary(x)
@@ -221,14 +230,14 @@ reveals that some of the parameters (3 and 4) have been
 stored in the format of the form $a\times{10^{x/R}}$ where
 $a$ is given by the first element of the string.
 
-<<SearchKeywords, echo=true,results=verbatim>>=
+<<SearchKeywords, echo=TRUE,results='markup'>>=
 keyword(x,c("$P1E", "$P2E", "$P3E", "$P4E"))
 @
 
 The default ``linearize'' transformation option will convert these to,
 effectively, have a ``\$P<n>E'' of ``0,0'':
 
-<<PrintSummary, echo=true, results=verbatim>>=
+<<PrintSummary, echo=TRUE, results='markup'>>=
 summary(read.FCS(file.name))
 @
 
@@ -243,7 +252,7 @@ well as ensure that output values are contained in $[0,1]$,
 which is the proposed method of data storage for the
 ACS1.0/FCS4.0 specification:
 
-<<PrintSummary2, echo=true,results=verbatim>>=
+<<PrintSummary2, echo=TRUE,results='markup'>>=
 summary(read.FCS(file.name,transformation="scale")) 
 @
 
@@ -252,7 +261,7 @@ parameter, which will convert the parameter names into more
 ``R friendly'' equivalents, usually by replacing ``-'' with
 ``.'':
 
-<<ReadFiles2, echo=true,results=verbatim>>=
+<<ReadFiles2, echo=TRUE,results='markup'>>=
 read.FCS(file.name,alter.names=TRUE) 
 @
 
@@ -262,7 +271,7 @@ regular expression and only parameters that match the regular
 expression will be included in the frame. For example, to include on
 the Height parameters:
 
-<<RedFiles3, echo=true, results=verbatim>>= 
+<<RedFiles3, echo=TRUE, results='markup'>>=
 x <- read.FCS(file.name, column.pattern="-H") 
 x 
 @
@@ -272,7 +281,7 @@ x
 
 Finally, only a sample of lines can be read in case you need a quick
 overview of a large series of files.
-<<RedFiles4, echo=true, results=verbatim>>= 
+<<RedFiles4, echo=TRUE, results='markup'>>=
 lines <- sample(100:500, 50)
 y <- read.FCS(file.name, which.lines = lines) 
 y 
@@ -288,13 +297,13 @@ Bioconductor. Here, we will only introduce the \Rfunction{autoplot} function.
 See vignettes of \Rpackage{ggcyto} for more examples of how to visualize flow data.
 
 To create a bivariate density plot:
-<<Plot2, fig=true, echo=true>>=
+<<Plot2, echo=TRUE, results='hide'>>=
 library(ggcyto)
 autoplot(x, "FL1-H", "FL2-H")
 @
 
 To get a univariate densityplot:
-<<plot3, fig=true, echo=true>>=
+<<plot3, echo=TRUE, results='hide'>>=
 autoplot(x, "FL1-H")
 @
 
@@ -316,9 +325,9 @@ usual coercion mechanisms. For example, if we have a directory
 containing FCS files we can read in a list of those files and create a
 \Rclass{flowSet} out of them:
 
-<<Frames1, echo=true, results=verbatim>>=
+<<Frames1, echo=TRUE, results='markup'>>=
 frames <- lapply(dir(system.file("extdata", "compdata", "data",
-                                 package="flowCore"), full.names=TRUE), 
+                           package="flowCore"), full.names=TRUE), 
                  read.FCS)
 as(frames, "flowSet")
 @
@@ -329,7 +338,7 @@ constructed is much more meaningful. One such approach is to employ
 the \Rfunction{keyword} method for \Rclass{flowFrame} objects to
 extract the ``SAMPLE ID'' keyword from each frame:
 
-<<Frames2, echo=true,results=verbatim>>=
+<<Frames2, echo=TRUE,results='markup'>>=
 names(frames) <- sapply(frames, keyword, "SAMPLE ID")
 fs <- as(frames, "flowSet")
 fs
@@ -347,7 +356,7 @@ new descriptive columns. For example, we might want to track the
 original filename of the frames from above in the phenotypic data for
 easier access:
 
-<<metaData, echo=true, results=verbatim>>=
+<<metaData, echo=TRUE, results='markup'>>=
 phenoData(fs)$Filename <- fsApply(fs,keyword, "$FIL")
 pData(phenoData(fs))
 @
@@ -368,7 +377,7 @@ argument that allows only a subset of files contained within the
 working directory to be selected. For example, to read a
 \Rclass{flowSet} of the files read in by \Robject{frame} above:
 
-<<ReadFlowSet, echo=true,results=verbatim>>=
+<<ReadFlowSet, echo=TRUE,results='markup'>>=
 read.flowSet(path = system.file("extdata", "compdata", "data", 
              package="flowCore"))
 @
@@ -397,7 +406,7 @@ processing:
 To recreate the \Rclass{flowSet} that we created by hand from the last
 section we can use \Rfunction{read.flowSet}s advanced functionality:
 
-<<ReadFowSet2, echo=true,results=verbatim>>=
+<<ReadFowSet2, echo=TRUE,results='markup'>>=
 fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
                    package="flowCore"), name.keyword="SAMPLE ID",
                    phenoData=list(name="SAMPLE ID", Filename="$FIL"))
@@ -436,13 +445,13 @@ the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction
   \Rfunction{fsApply} call. For example, if we wanted the median value
   of each parameter of each \Rclass{flowFrame} we might write:
 
-<<fsApply1, echo=true, results=verbatim>>=
+<<fsApply1, echo=TRUE, results='markup'>>=
 fsApply(fs, each_col, median)
 @
 %
 which is equivalent to the less readable
 
-<<fsApply2, echo=true,results=verbatim>>=
+<<fsApply2, echo=TRUE,results='markup'>>=
 fsApply(fs,function(x) apply(x, 2, median), use.exprs=TRUE)
 @
 %
@@ -465,16 +474,23 @@ FCS file. For example, if we wished to plot our first
 \Rclass{flowFrame}'s first two fluorescence parameters on the log
 scale we might write:
 
-<<Transfo1, fig=true, echo=true>>=
-autoplot(transform(fs[[1]], `FL1-H`=log(`FL1-H`), `FL2-H`=log(`FL2-H`)), "FL1-H","FL2-H")
+<<Transfo1, echo=TRUE, results='hide'>>=
+autoplot(transform(fs[[1]]
+                   , `FL1-H`=log(`FL1-H`)
+                   , `FL2-H`=log(`FL2-H`)
+                   )
+         , "FL1-H","FL2-H")
 @
 
 Like the usual \Rfunction{transform} function, we can also create new
 parameters based on the old parameters, without destroying the old
 
-<<Transfo2, fig=true, prefix=FALSE>>=
-autoplot(transform(fs[[1]], log.FL1.H=log(`FL1-H`), 
-               log.FL2.H=log(`FL2-H`)), "log.FL1.H", "log.FL2.H")
+<<Transfo2, results='hide'>>=
+autoplot(transform(fs[[1]]
+                   , log.FL1.H=log(`FL1-H`)
+                   , log.FL2.H=log(`FL2-H`)
+                   )
+         , "log.FL1.H", "log.FL2.H")
 @
 
 
@@ -507,19 +523,19 @@ x & x \geq a \\
 To use a standard transform, first we create a transform function via
 the constructors supplied by \Rpackage{flowCore}:
 
-<<Transfo3, echo=true>>=
+<<Transfo3, echo=TRUE>>=
 aTrans <- truncateTransform("truncate at 1", a=1)
 aTrans
 @
 which we can then use on the parameter of interest in the usual way
-<<Transfo4, echo=true,results=verbatim>>=
+<<Transfo4, echo=TRUE,results='markup'>>=
 transform(fs,`FL1-H`=aTrans(`FL1-H`))
 @
 
 However this form of transform call is not intended to used in the programmatic
 context because locally defined transform function (e.g. 'aTrans')
 may not be always visible to the non-standard evaluation environment. .e.g
-<<Transfo4.1, echo=true,results=verbatim>>=
+<<Transfo4.1, echo=TRUE,results='markup'>>=
 f1 <- function(fs,...){
   transform(fs, ...)[,'FL1-H']
 }
@@ -537,7 +553,7 @@ exploratary.
 we highly recommend the usage of \Robject{transformList} instead for the more
 robust and reproducible code.
 
-<<Transfo4.2, echo=true,results=verbatim>>=
+<<Transfo4.2, echo=TRUE,results='markup'>>=
 myTrans <- transformList('FL1-H', aTrans)
 transform(fs, myTrans)
 @
@@ -577,7 +593,7 @@ interactive flow cytometry software:
 These gates are all described in more or less the same manner (see man
 pages for more details):
 
-<<rectGate, echo=true, results=verbatim>>=
+<<rectGate, echo=TRUE, results='markup'>>=
 rectGate <- rectangleGate(filterId="Fluorescence Region", 
                           "FL1-H"=c(0, 12), "FL2-H"=c(0, 12))
 @
@@ -604,7 +620,7 @@ and proportion of events considered to be contained within the gate or
 filter. This is done using the \Rfunction{filter} method. The first
 step is to apply our filter to some data
 
-<<echo=true,results=verbatim>>=
+<<echo=TRUE,results='markup'>>=
 result = filter(fs[[1]],rectGate)
 result
 @
@@ -615,7 +631,7 @@ operations. To obtain count and proportion statistics, we take the
 summary of this \Rclass{filterResult}, which returns a list of summary
 values:
 
-<<Summary3, echo=true, results=verbatim>>=
+<<Summary3, echo=TRUE, results='markup'>>=
 summary(result)
 summary(result)$n
 summary(result)$true
@@ -625,7 +641,7 @@ summary(result)$p
 A filter which contains multiple populations, such as the
 \Rclass{kmeansFilter}, can return a list of summary lists:
 
-<<SummarFilter, echo=true, results=verbatim>>=
+<<SummarFilter, echo=TRUE, results='markup'>>=
 summary(filter(fs[[1]], kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
                                      filterId="myKMeans")))
 @
@@ -633,7 +649,7 @@ summary(filter(fs[[1]], kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
 A filter may also be applied to an entire \Rclass{flowSet}, in which
 case it returns a list of \Rclass{filterResult} objects:
 
-<<echo=true,results=verbatim>>=
+<<echo=TRUE,results='markup'>>=
 filter(fs,rectGate)
 @
 
@@ -649,7 +665,7 @@ large more-or-less ellipse shaped population. If we wished to deal
 only with that population, we might use \Rfunction{Subset} along with
 a \Rclass{norm2Filter} object as follows:
 
-<<Norm2Filter, echo=true, results=verbatim>>=
+<<Norm2Filter, echo=TRUE, results='markup'>>=
 morphGate <- norm2Filter("FSC-H", "SSC-H", filterId="MorphologyGate", 
                          scale=2)
 smaller <- Subset(fs, morphGate)
@@ -662,14 +678,14 @@ fewer events. Now imagine we wanted to use a \Rclass{kmeansFilter} as
 before to split our first fluorescence parameter into three
 populations. To do this we employ the \Rfunction{split} function:
 
-<<Split, echo=true, results=verbatim>>=
+<<Split, echo=TRUE, results='markup'>>=
 split(smaller[[1]], kmeansFilter("FSC-H"=c("Low","Medium","High"),
                                  filterId="myKMeans"))
 @
 
 or for an entire \Rclass{flowSet}
 
-<<Split2, echo=true, results=verbatim>>=
+<<Split2, echo=TRUE, results='markup'>>=
 split(smaller, kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
                             filterId="myKMeans"))
 @
@@ -681,7 +697,7 @@ combine gates and filters we use the standard R Boolean operators: \&,
 | and ! to construct an intersection, union and complement
 respectively:
 
-<<CombineFilter, echo=true, results=verbatim>>=
+<<CombineFilter, echo=TRUE, results='markup'>>=
 
 rectGate & morphGate
 rectGate | morphGate
@@ -695,7 +711,7 @@ performs a subsetting operation on the input \Rclass{flowFrame} using
 the right-hand filter and then applies the left-hand filter. For
 example,
 
-<<Summary5, echo=true, results=verbatim>>=
+<<Summary5, echo=TRUE, results='markup'>>=
 summary(filter(smaller[[1]],rectGate %&% morphGate))
 @
 
@@ -713,7 +729,7 @@ can be applied to both filters and \Rclass{flowFrame} or
 first construct a transform list using a simplified version of the
 \Rfunction{transform} function:
 
-<<Transfo5, echo=true,results=verbatim>>=
+<<Transfo5, echo=TRUE,results='markup'>>=
 tFilter <- transform("FL1-H"=log,"FL2-H"=log)
 tFilter
 @
@@ -726,7 +742,7 @@ function also does not take a specific \Rclass{flowFrame} or
 \Rclass{flowSet} allowing us to use this with any appropriate data. We
 can then construct a filter with respect to the transform as follows:
 
-<<TectGate3, echo=true, results=verbatim>>=
+<<TectGate3, echo=TRUE, results='markup'>>=
 rect2 <- rectangleGate(filterId="Another Rect", "FL1-H"=c(1,2), 
 "FL2-H"=c(2,3)) %on% tFilter
 rect2
@@ -737,7 +753,7 @@ Additionally, we can use this construct directly on a
 \Rclass{flowFrame} or \Rclass{flowSet} by moving the transform to the
 left-hand side and placing the data on the right-hand side:
 
-<<Plot6, fig=true,echo=true>>=
+<<Plot6,echo=TRUE, results='hide'>>=
 autoplot(tFilter %on% smaller[[1]], "FL1-H","FL2-H")
 @
 
@@ -796,12 +812,14 @@ comp
 gs <- compensate(gs, comp)
 @
 Here is the effect of compensation:
-<<plotComp, fig=true,echo=true>>=
+<<plotComp,echo=TRUE, results='hide'>>=
 fs_comp <- getData(gs)
 transList <- estimateLogicle(fs[[1]], c("V545-A","V450-A"))
 library(gridExtra)
-p1 <- autoplot(transform(fs[[1]], transList), 'V545-A', 'V450-A') + ggtitle("Before")
-p2 <- autoplot(transform(fs_comp[[1]], transList), 'V545-A', 'V450-A') + ggtitle("After")
+p1 <- autoplot(transform(fs[[1]], transList)
+               , 'V545-A', 'V450-A') + ggtitle("Before")
+p2 <- autoplot(transform(fs_comp[[1]], transList)
+               , 'V545-A', 'V450-A') + ggtitle("After")
 grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
 @
 
@@ -822,9 +840,11 @@ biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144
 tf <- transformerList(parameters(comp), biexpTrans)
 gs <- transform(gs, tf)
 @
-<<plotTrans, fig=true,echo=true>>=
+<<plotTrans,echo=TRUE, results='hide'>>=
 p1 <- autoplot(fs_comp[[1]], "B710-A") + ggtitle("raw")
-p2 <- autoplot(flowData(gs)[[1]], "B710-A") + ggtitle("trans") + ggcyto_par_set(limits = "instrument")
+p2 <- autoplot(flowData(gs)[[1]], "B710-A") + 
+          ggtitle("trans") + 
+          ggcyto_par_set(limits = "instrument")
 grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
 @ 
 
@@ -847,12 +867,12 @@ After the gates are added, the actual gating process is done by explictly callin
 Note that the numeric value it returns is the internal ID for the new population just added, which can be normally ignored since the gating path instead of numeric id is recommended way to refer to population nodes later.
 
 To view the gate we just added,
-<<plotGate, fig=true,echo=true>>=
+<<plotGate,echo=TRUE, results='hide'>>=
 autoplot(gs, "NonDebris")
 @
 
 Since They are '1d` gates, we can also dispaly it in `densityplot`
-<<plotGate-density, fig=true,echo=true>>=
+<<plotGate-density,echo=TRUE, results='hide'>>=
 ggcyto(gs, aes(x = `FSC-A`)) + geom_density() + geom_gate("NonDebris")
 @
 
@@ -898,7 +918,7 @@ To plot the underlying tree
 <<plotgs, eval=FALSE>>=
 plot(gs)
 @ 
-<<plotwfdo, fig=true, echo=FALSE, results=hide>>=
+<<plotwfdo, echo=FALSE, results='hide'>>=
 if(suppressWarnings(require(Rgraphviz))){
     plot(gs)
 }else{
@@ -908,7 +928,7 @@ if(suppressWarnings(require(Rgraphviz))){
 @ 
 
 To plot all gates for one sample
-<<plotGateAll2, fig=true,echo=true>>=
+<<plotGateAll, results='hide'>>=
 autoplot(gs[[1]])
 @
 
@@ -942,7 +962,8 @@ For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate 
 <<openCyto-nonDebris>>=
 library(openCyto)
 thisData <- getData(gs)
-nonDebris_gate <- fsApply(thisData, function(fr)
+nonDebris_gate <- fsApply(thisData
+                          , function(fr)
                             openCyto:::.mindensity(fr, channels = "FSC-A"))
 add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
@@ -951,7 +972,8 @@ recompute(gs)
 \Rfunction{singeltGate} can be used for estimating 'singlets` 
 <<openCyto-singletGate>>=
 thisData <- getData(gs, "nonDebris") #get parent data
-singlet_gate <- fsApply(thisData, function(fr)
+singlet_gate <- fsApply(thisData
+                        , function(fr)
                           openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
 add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
@@ -960,7 +982,8 @@ recompute(gs)
 and then use \Rfunction{mindensity} again for "CD3" gate
 <<openCyto-CD3>>=
 thisData <- getData(gs, "singlets") #get parent data
-CD3_gate <- fsApply(thisData, function(fr)
+CD3_gate <- fsApply(thisData
+                    , function(fr)
                         openCyto:::.mindensity(fr, channels ="V450-A"))
 add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
@@ -969,8 +992,9 @@ recompute(gs)
 and then use more adanced version of 'quadGate': \Rfunction{quadGate.seq} for gating "CD4" and "CD8" sequentially:
 <<openCyto-Tsub>>=
 thisData <- getData(gs, "CD3") #get parent data
-Tsub_gate <- fsApply(thisData, function(fr)
-      openCyto::quadGate.seq(fr
+Tsub_gate <- fsApply(thisData
+                     , function(fr)
+                        openCyto::quadGate.seq(fr
                              , channels = c("B710-A", "R780-A")
                              , gFunc = 'mindensity'
                             )
@@ -980,7 +1004,7 @@ recompute(gs)
 @
 
 and then plot the gates
-<<plotALL-openCyto, fig=true,echo=true>>=
+<<plotALL-openCyto, results='hide'>>=
 autoplot(gs[[1]])
 @
 

@@ -26,7 +26,12 @@ Suggests:
     flowViz,
     flowStats,
     testthat,
-    flowWorkspace,flowWorkspaceData,openCyto
+    flowWorkspace,
+    flowWorkspaceData,
+    openCyto,
+    knitr,
+    ggcyto,
+    gridExtra
 Collate:
     AllGenerics.R
     AllClasses.R
@@ -68,5 +73,6 @@ Collate:
 License: Artistic-2.0
 biocViews: Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.60.0-1)
+VignetteBuilder: knitr
 SystemRequirements: GNU make
 RoxygenNote: 5.0.1
