@@ -25,11 +25,19 @@ isFCSfile <- function(files)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
 {
+  
     stopifnot(is.character(files), length(files)>=1, files!="")
     filenames <- files
     if(path != ".")
         files = file.path(path, files)
-    res <- lapply(files, header, emptyValue = emptyValue)
+    res <- lapply(files, function(file){
+      
+                              thisRes <- try(header(file, emptyValue = emptyValue), silent = TRUE)
+                              if(class(thisRes) == "try-error"){
+                                stop(thisRes, file)
+                              }else
+                                thisRes
+                  })
     if (!is.null(keyword))
         res <- lapply(res, function(x) x[keyword])
     names(res) <- filenames
