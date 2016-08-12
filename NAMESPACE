@@ -366,3 +366,5 @@ export("action",
        estimateLogicle)
        
 export(getChannelMarker)
+export(estimateLogicle)
+S3method(estimateLogicle,flowFrame)
