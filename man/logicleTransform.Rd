@@ -34,7 +34,7 @@ logicleTransform(transformationId="defaultLogicleTransform", w = 0.5, t = 262144
    into the transformed display viewing area. Default value is zero corresponding 
    to a Standard logicle function.}
   \item{x}{ Input flow frame for which the logicle transformations are to be estimated.}
-  \item{channels}{ Flouresence channels for which the logicle transformation is to 
+  \item{channels}{ channels or markers for which the logicle transformation is to 
       be estimated.}
   \item{...}{other arguments:
 

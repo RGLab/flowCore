@@ -1473,19 +1473,27 @@ inverseLogicleTransform <- function(transformationId, trans) {
     logicleTransform( transformationId = transId, w=w, t = t, m = m, a = a)
 }
 
-estimateLogicle <- function(x, channels,...){
+estimateLogicle <- function(x, channels, ...)UseMethod("estimateLogicle")
+estimateLogicle.flowFrame <- function(x, channels, ...){
+  trans <- .estimateLogicle(x, channels, ...)
+  channels <- names(trans)
+  transformList(channels, trans)
+}
+.estimateLogicle <- function(x, channels,...){
             if(!is(x,"flowFrame"))
                 stop("x has to be an object of class \"flowFrame\"")
             if(missing(channels))
                 stop("Please specify the channels to be logicle transformed");
-            indx <- channels %in% colnames(x)
-            if(!all(indx))
-                stop(paste("Channels", channels[!indx] , "were not found in x ",
-                            sep = " "))
-            trans <- lapply(channels, function(p) {
+#            indx <- channels %in% colnames(x)
+#            if(!all(indx))
+#                stop(paste("Channels", channels[!indx] , "were not found in x ",
+#                            sep = " "))
+            channels <- sapply(channels, function(channel)getChannelMarker(x, channel)[["name"]], USE.NAMES = FALSE)
+            
+            sapply(channels, function(p) {
                         .lgclTrans(x, p, ...)               
                     })
-            transformList( channels, trans)   
+              
         }
 
 ## Truncation transformation constructor

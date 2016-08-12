@@ -832,12 +832,17 @@ It shows the only node 'root' which corresponds to the raw 'flow data' just adde
 
 \subsection{transform the data}
 Transformation can be either done on 'flowSet' before constructing 'GatingSet' or a
-\Rclass{transformList} can be directly added to a \Rclass{GatingSet}:
+\Rclass{transformerList} can be directly added to a \Rclass{GatingSet}:
 
 <<addTrans>>=
 biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144
                           , pos=4.5,neg=0, widthBasis=-10)
-tf <- transformerList(parameters(comp), biexpTrans)
+chnls <- parameters(comp)
+tf <- transformerList(chnls, biexpTrans)
+
+#or use estimateLogicle directly on GatingHierarchy object to generate transformerList automatically
+#tf <- estimateLogicle(gs[[1]], chnls)
+
 gs <- transform(gs, tf)
 @
 <<plotTrans,echo=TRUE, results='hide'>>=
