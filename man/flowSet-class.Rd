@@ -33,6 +33,7 @@
 \alias{varMetadata,flowSet-method}
 \alias{varMetadata<-,flowSet,ANY-method}
 \alias{compensate,flowSet,matrix-method}
+\alias{compensate,flowSet,data.frame-method}
 \alias{transform,flowSet-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}

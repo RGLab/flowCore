@@ -246,6 +246,11 @@ summary(samp)
 comp <- compensation(comp.mat)
 compensate(samp, comp)
 
+## demo the sample-specific compensation
+## create a list of comps (each element could be a different compensation tailored for the specific sample)
+comps <- sapply(sampleNames(samp), function(sn)comp, simplify = FALSE)
+# the names of comps must be matched to sample names of the flowset
+compensate(samp, comps)
 }
 
 \keyword{methods}  
