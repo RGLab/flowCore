@@ -334,7 +334,27 @@ setMethod("compensate",
 		definition=function(x, spillover)
 			fsApply(x, compensate, spillover))
 
-
+setMethod("compensate",
+          signature=signature(x="flowSet",
+              spillover="data.frame"),
+          definition=function(x, spillover)
+            selectMethod("compensate"
+                    , signature=signature(x="flowSet",spillover="ANY"))(x, spillover)
+      )
+setMethod("compensate",
+    signature=signature(x="flowSet",
+        spillover="list"),
+    definition=function(x, spillover){
+      samples <- sampleNames(x)
+      if(!setequal(names(spillover), samples))
+        stop("names of the compensation list must match the sample names of 'flowSet'!")
+      
+      res <- structure(lapply(samples, function(sn)compensate(x[[sn]], spillover[[sn]])),names=sampleNames(x))
+      res <- as(res,"flowSet")
+      phenoData(res) = phenoData(x)[sampleNames(x),]
+      res
+    })
+      
 
 ## ==========================================================================
 ## Transformation methods

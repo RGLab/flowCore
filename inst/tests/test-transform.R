@@ -2,7 +2,7 @@ comp.fs1 <- read.flowSet(path = system.file("extdata","compdata","data",package=
                          #                        ,phenoData=list("Tube"=tube.id)
                               )
 fr <- comp.fs1[[1]]
-test_that("transform", {
+test_that("compensate & transform", {
       
       comp.mat <- as.matrix(read.table(system.file("extdata","compdata","compmatrix",package="flowCore"),header=TRUE,skip=2,check.names=FALSE))
       
@@ -11,13 +11,38 @@ test_that("transform", {
       
       
       
-    # Compensate
+    # Compensate with single comp
       row.names(comp.mat) <- colnames(comp.mat)
       
-      comp.fs1 <- compensate(comp.fs1,comp.mat)
+      comp.fs2 <- compensate(comp.fs1,comp.mat)
       
-      expect_equal(fsApply(comp.fs1, colMeans, use.exprs = TRUE)
+      expect_equal(fsApply(comp.fs2, colMeans, use.exprs = TRUE)
                   , expectRes[["trans.comp"]])
+              
+    # list
+      comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
+      comp.fs3 <- compensate(comp.fs1,comp)
+      expect_equal(fsApply(comp.fs3, colMeans, use.exprs = TRUE)
+          , expectRes[["trans.comp"]])
+      
+      # unmatched names
+      names(comp)[1] <- "dd"
+      expect_error(compensate(comp.fs1,comp), regexp = "must match")
+      
+      #unmatched length
+      comp <- comp[1:3]
+      expect_error(compensate(comp.fs1,comp), regexp = "must match")
+      
+      #modify comp[5]
+      comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
+      comp[[5]][2] <- 0.001
+      comp.fs4 <- compensate(comp.fs1,comp)
+      expect_failure(expect_equal(fsApply(comp.fs4, colMeans, use.exprs = TRUE)
+                  , expectRes[["trans.comp"]]), regexp = "8.399298e-06")
+      
+      comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
+      
+      comp.fs <- comp.fs3
       
       # Do some transformations
       truncTrans <- truncateTransform("truncate",a=1)
@@ -31,14 +56,14 @@ test_that("transform", {
       
       #the new lazy evaluation is still not working perfectly within test R session
       transList <- transformList("FL1-H", linearTrans)
-      thisRes <- fsApply(transform(comp.fs1, transList), each_col,range)
+      thisRes <- fsApply(transform(comp.fs, transList), each_col,range)
       names(dimnames(thisRes)[[2]]) <- NULL
       expect_equal(thisRes, expectRes[["trans.linear"]])
       
       
       #Truncate all columns
       transList <- transformList(c("FL1-H", "FL2-H", "FL3-H", "FL4-H"), truncTrans)
-      thisRes <- fsApply(transform(comp.fs1, transList),each_col,range)
+      thisRes <- fsApply(transform(comp.fs, transList),each_col,range)
       names(dimnames(thisRes)[[2]]) <- NULL
       expect_equal(thisRes, expectRes[["trans.trunc"]])
       
@@ -47,21 +72,21 @@ test_that("transform", {
       normTrans <- scaleTransform("norm",a=0,b=1023)
       normGate  <- rectangleGate("SSC-H"=c(.3,Inf))
       transList <- transformList("SSC-H", normTrans)
-      expect_equal(fsApply(Subset(transform(comp.fs1,transList), normGate),each_col,range)
+      expect_equal(fsApply(Subset(transform(comp.fs,transList), normGate),each_col,range)
                   , expectRes[["trans.normTrans"]])
       
               
       # transformList
       chnls <- colnames(comp.mat)
       transList <- transformList(chnls, logicleTransform())
-      trans.fs1 <- transform(comp.fs1, transList)
+      trans.fs1 <- transform(comp.fs, transList)
       expect_equal(fsApply(trans.fs1,colMeans,use.exprs=TRUE)
                   , expectRes[["trans.transformList"]])
       
       #expect the error by giving bad channel name
       chnls <- c(chnls, "dummy")
       transList <- transformList(chnls, logicleTransform())
-      expect_error(transform(comp.fs1, transList), "dummy is not a variable in the flowFrame")
+      expect_error(transform(comp.fs, transList), "dummy is not a variable in the flowFrame")
       
       
     })
