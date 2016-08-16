@@ -346,7 +346,7 @@ setMethod("compensate",
         spillover="list"),
     definition=function(x, spillover){
       samples <- sampleNames(x)
-      if(!setequal(names(spillover), samples))
+      if(!all(samples %in% names(spillover)))
         stop("names of the compensation list must match the sample names of 'flowSet'!")
       
       res <- structure(lapply(samples, function(sn)compensate(x[[sn]], spillover[[sn]])),names=sampleNames(x))
