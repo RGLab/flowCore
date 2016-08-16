@@ -1,6 +1,4 @@
-comp.fs1 <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore")
-                         #                        ,phenoData=list("Tube"=tube.id)
-                              )
+comp.fs1 <- read.flowSet(path = system.file("extdata","compdata","data",package="flowCore"))
 fr <- comp.fs1[[1]]
 test_that("compensate & transform", {
       
@@ -16,14 +14,12 @@ test_that("compensate & transform", {
       
       comp.fs2 <- compensate(comp.fs1,comp.mat)
       
-      expect_equal(fsApply(comp.fs2, colMeans, use.exprs = TRUE)
-                  , expectRes[["trans.comp"]])
+      expect_equal(fsApply(comp.fs2, colMeans, use.exprs = TRUE), expectRes[["trans.comp"]])
               
     # list
       comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
       comp.fs3 <- compensate(comp.fs1,comp)
-      expect_equal(fsApply(comp.fs3, colMeans, use.exprs = TRUE)
-          , expectRes[["trans.comp"]])
+      expect_equal(fsApply(comp.fs3, colMeans, use.exprs = TRUE), expectRes[["trans.comp"]])
       
       # unmatched names
       names(comp)[1] <- "dd"
@@ -40,9 +36,11 @@ test_that("compensate & transform", {
       expect_failure(expect_equal(fsApply(comp.fs4, colMeans, use.exprs = TRUE)
                   , expectRes[["trans.comp"]]), regexp = "8.399298e-06")
       
+      #extra comp element
       comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
-      
-      comp.fs <- comp.fs3
+      comp[["dd"]] <- 1:10
+      comp.fs <- compensate(comp.fs1, comp)
+      expect_equal(fsApply(comp.fs, colMeans, use.exprs = TRUE), expectRes[["trans.comp"]])
       
       # Do some transformations
       truncTrans <- truncateTransform("truncate",a=1)
