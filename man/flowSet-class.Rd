@@ -17,7 +17,6 @@
 \alias{colnames<-,flowSet-method}
 \alias{identifier,flowSet-method}
 \alias{identifier<-,flowSet,ANY-method}
-\alias{compensate,flowSet,ANY-method}
 \alias{sampleNames,flowSet-method}
 \alias{sampleNames<-,flowSet,ANY-method}
 \alias{phenoData,flowSet-method}
@@ -32,7 +31,8 @@
 \alias{varLabels<-,flowSet,ANY-method}
 \alias{varMetadata,flowSet-method}
 \alias{varMetadata<-,flowSet,ANY-method}
-\alias{compensate,flowSet,matrix-method}
+\alias{compensate,flowSet,ANY-method}
+\alias{compensate,flowSet,list-method}
 \alias{compensate,flowSet,data.frame-method}
 \alias{transform,flowSet-method}
 \alias{rbind2,flowSet,missing}
