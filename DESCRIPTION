@@ -74,5 +74,5 @@ License: Artistic-2.0
 biocViews: Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.60.0-1)
 VignetteBuilder: knitr
-SystemRequirements: GNU make
+SystemRequirements: GNU make, C++11
 RoxygenNote: 5.0.1
