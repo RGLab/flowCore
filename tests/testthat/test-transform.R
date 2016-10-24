@@ -94,7 +94,7 @@ test_that("hyperlogGml2", {
   trans <- hyperlogtGml2("FL1-H")
   trans <- eval(trans)
   res <- trans(fr)
-  expect_equal(summary(res), expectRes[["hyperlogGml2"]])
+  expect_equal(summary(res), expectRes[["hyperlogGml2"]], tol = 2e-4)
 })
 
 test_that("logicle", {
@@ -102,12 +102,12 @@ test_that("logicle", {
   trans <- logicletGml2("FL1-H", A = 2)
   trans <- eval(trans)
   res <- trans(fr)
-  expect_equal(summary(res), expectRes[["logicleGml2"]])
+  expect_equal(summary(res), expectRes[["logicleGml2"]], tol = 2e-4)
   
   trans <- logicleTransform(a = 2)
   raw <- exprs(fr)[,"FL1-H"]
   res <- trans(raw)
-  expect_equal(summary(res), expectRes[["logicle"]])
+  expect_equal(summary(res), expectRes[["logicle"]], tol = 2e-4)
   
   inv <- inverseLogicleTransform("", trans)
   expect_equal(inv(res), raw)
@@ -118,5 +118,5 @@ test_that("biexponential", {
   trans <- biexponentialTransform()
   raw <- exprs(fr)[,"FL1-H"]
   res <- trans(raw)
-  expect_equal(summary(res), expectRes[["biexponential"]])
+  expect_equal(summary(res), expectRes[["biexponential"]], tol = 2e-4)
 })
