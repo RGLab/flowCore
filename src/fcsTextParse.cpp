@@ -67,7 +67,8 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 			if((i)%2 == 1)
 			{
 				if(token.empty())
-					Rcpp::stop("Empty keyword name detected!If it is due to the double delimiters in keyword value, please set emptyValue to FALSE and try again!");
+					// Rcpp::stop (temporarily switch from stop to range_error due to a bug in Rcpp 0.12.8)
+					throw std::range_error("Empty keyword name detected!If it is due to the double delimiters in keyword value, please set emptyValue to FALSE and try again!");
 				kw.first = token;//set key
 			}
 			else{
@@ -82,8 +83,12 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 		 * check if kw and value are paired
 		 */
 		 if(i%2 == 1){
-			 if(isDelimiterEnd)
-				 Rcpp::stop("uneven number of tokens: " + boost::lexical_cast<std::string>(i-1));
+			 if(isDelimiterEnd){
+			   // Rcpp::stop
+			   std::string serror = "uneven number of tokens: ";
+			   serror.append(boost::lexical_cast<std::string>(i-1));
+			   throw std::range_error(serror.c_str());
+			 }	 
 			 else
 				 Rcpp::Rcout << "the text section does not end with delimiter: " << delimiter << ". The last keyword is dropped." << std::endl;;
 		 }

@@ -40,7 +40,7 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
 {
 
   if(colSize.size()!=ncol)
-    Rcpp::stop("The length of 'colSize' vector does not match to 'ncol'!");
+    throw std::range_error("The length of 'colSize' vector does not match to 'ncol'!");
 
   unsigned nBytes = bytes.size();
   //total bytes for each row
@@ -66,7 +66,7 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
       auto thisSize = colSize.at(j);
 
       if(thisSize != 1 && thisSize != 2 && thisSize !=  4 && thisSize !=  8)
-        Rcpp::stop("Multiple different odd bitwidths are not supported!");
+        throw std::range_error("Multiple different odd bitwidths are not supported!");
 
       auto thisEnd = pos + thisSize - 1;
       auto ind = i * ncol + j;
@@ -94,7 +94,9 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
           output.at(ind) = (double)convertRaw_impl<uint64_t>(bytes, thisSize, isBigEndian, thisStart, thisEnd);
           break;
         default:
-          Rcpp::stop("Unsupported bitwidths when performing channel-wise reading:" + std::to_string(thisSize));
+          std::string serror = "Unsupported bitwidths when performing channel-wise reading:";
+          serror.append(std::to_string(thisSize));
+          throw std::range_error(serror.c_str());
         }
 
       }
@@ -109,7 +111,9 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
           output.at(ind) = (double)convertRaw_impl<double>(bytes, thisSize, isBigEndian, thisStart, thisEnd);
           break;
         default:
-          Rcpp::stop("Unsupported bitwidths when performing channel-wise reading:" + std::to_string(thisSize));
+          std::string serror ="Unsupported bitwidths when performing channel-wise reading:";
+          serror.append(std::to_string(thisSize));
+          throw std::range_error(serror.c_str());
         }
       }
 
