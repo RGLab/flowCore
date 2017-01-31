@@ -696,27 +696,31 @@ setMethod("Subset",
 ## Need to fix that in read.FCS if yes
 setMethod("range",
           signature=signature(x="flowFrame"),
-          definition=function(x, ..., na.rm)
+          definition=function(x, ..., type = c("instrument", "data"), na.rm)
       {
+            
+          type <- match.arg(type)
           pind <- 1:nrow(parameters(x))
-          channel <- unlist(list(...))
-          if(length(channel)>0){
-              if(!all(is(channel, "character")))
-                  stop("All further arguments must be characters",
-                       call.=FALSE)
-                  pind <- match(channel, parameters(x)$name, nomatch=0)
-          }
-          if(any(pind==0))
-              stop("'", paste(channel[which(pind==0)],
-                              collapse="' and '", sep=""),
-                   "' is/are no valid parameter(s) in this frame",
-                   call.=FALSE)
+          # channel <- unlist(list(...))
+          # if(length(channel)>0){
+          #     if(!all(is(channel, "character")))
+          #         stop("All further arguments must be characters",
+          #              call.=FALSE)
+          #         pind <- match(channel, parameters(x)$name, nomatch=0)
+          # }
+          # if(any(pind==0))
+          #     stop("'", paste(channel[which(pind==0)],
+          #                     collapse="' and '", sep=""),
+          #          "' is/are no valid parameter(s) in this frame",
+          #          call.=FALSE)
+          data_range <- apply(exprs(x), 2, range, na.rm=TRUE)
+          
           mir <- parameters(x)$minRange[pind]
-          if(is.null(mir))
-              mir <- apply(exprs(x[,channel]), 2, min, na.rm=TRUE)
+          if(is.null(mir)||type == "data")
+              mir <- data_range[1,]
           mar <- parameters(x)$maxRange[pind]
-          if(is.null(mar))
-              mar <- apply(exprs(x[,channel]), 2, max, na.rm=TRUE)
+          if(is.null(mar)||type == "data")
+              mar <- data_range[2,]
           ret <- rbind(min=mir, max=mar)
           colnames(ret) <- parameters(x)$name[pind]
           return(as.data.frame(ret))

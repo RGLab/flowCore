@@ -319,17 +319,21 @@
       \code{   identifier(flowFrame)}
     }
     
-    \item{range}{Get dynamic range of the \code{flowFame}. Note that
-      this is not necessarily the range of the actual data values, but
+    \item{range}{Get instrument or actual data range of the \code{flowFame}. Note that
+      instrument dynamic range is not necessarily the same as the range of the actual data values, but
       the theoretical range of values the measurement instrument was
       able to capture. The values of the dynamic range will be
-      transformed when using the transformation methods for
-      \code{flowFrames}. Additional character arguments are evaluated as
-      parameter names for which to return the dynamic range.
+      transformed when using the transformation methods for\code{flowFrames}.
+      
+      parameters:
+      
+      x: flowFrame object.
+      
+      type: Range type. either "instrument" or "data". Default is "instrument"
       
       \emph{Usage:}
 
-      \code{   range(flowFrame, ...)}
+      \code{   range(x, type = "data")}
 
     }
 
@@ -529,9 +533,9 @@ names(frame)
 identifier(frame)
 identifier(frame) <- "test"
 
-## dynamic range of a frame
-range(frame)
-range(frame, "FSC.H", "FL1.H")
+##  range of a frame
+range(frame) #instrument range
+range(frame, type = "data") #actual data range
 range(frame)$FSC.H
 
 ## iterators
