@@ -279,7 +279,8 @@ readFCSgetPar <- function(x, pnam, strict=TRUE)
 findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
 {
     offsets <- readFCSheader(con)
-    txt <- readFCStext(con, offsets,emptyValue=emptyValue, ...)
+    offsets <- matrix(offsets, nrow = 1, dimnames = list(NULL, names(offsets)))
+    txt <- readFCStext(con, offsets[1, ],emptyValue=emptyValue, ...)
 
     addOff <- 0
 
@@ -287,35 +288,43 @@ findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
       nd <- as.numeric(txt[["$NEXTDATA"]])
     }else
       nd <- 0
-
+    
+    txt.list <- list(txt)
+    i <- 1
     while(nd != 0)
     {
+        i <- i + 1
         addOff <- addOff + nd
         offsets <- rbind(offsets, readFCSheader(con, addOff))
-        txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue, ...)
-        nd <- as.numeric(txt[["$NEXTDATA"]])
+        this.txt <- readFCStext(con, offsets[nrow(offsets),],emptyValue=emptyValue, ...)
+        nd <- as.numeric(this.txt[["$NEXTDATA"]])
+        txt.list[[i]] <- this.txt
     }
 
     ## check for multiple data sets
-    if(is.matrix(offsets))
+    nDataset <- length(txt.list)
+    if(nDataset == 1)
+      dataset <- 1
+    else
     {
-      nDataset <- nrow(offsets)
+      
       if(is.null(dataset))
       {
         warning(sprintf("The file contains %d additional data segment%s.\n",
                 nDataset-1, ifelse(nDataset>2, "s", "")),
             "The default is to read the first segment only.\nPlease consider ",
             "setting the 'dataset' argument.", call.=FALSE)
-        offsets <- offsets[1,]
-      }
-      else
-      {
-        if(!is.numeric(dataset) || !dataset %in% seq_len(nDataset))
-          stop(sprintf("Argument 'dataset' must be an integer value in [1,%d].",
-                  nDataset))
-        offsets <- offsets[dataset,]
+        dataset <- 1
+        
       }
     }
+    
+    if(!is.numeric(dataset) || !dataset %in% seq_len(nDataset))
+      stop(sprintf("Argument 'dataset' must be an integer value in [1,%d].",
+              nDataset))
+    offsets <- offsets[dataset,]
+    txt <- txt.list[[dataset]]
+    
 #    browser()
     offsets <- checkOffset(offsets, txt, ...)
     return(offsets)
