@@ -1,6 +1,21 @@
 context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
+expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
+test_that("multi data segment", {
+  expect_warning(fr <- read.FCS(file.path(dataPath, "multi-datasegment.fcs")), "39 additional data")
+  expect_is(fr, "flowFrame")
+  
+  expect_equal(nrow(fr), 1244)
+  
+  fr <- read.FCS(file.path(dataPath, "multi-datasegment.fcs"), dataset = 1)
+  expect_equal(nrow(fr), 1244)
+
+  fr <- read.FCS(file.path(dataPath, "multi-datasegment.fcs"), dataset = 10)
+  expect_equal(nrow(fr), 955)
+  
+})
+
 
 test_that("mixed endian", {
   fr <- read.FCS(file.path(dataPath, "mixedEndian.fcs"))
@@ -33,11 +48,11 @@ test_that("test uint_64 + diverse bitwidths + missing $NEXTDATA: '*' ", {
 # 'FILENAME' keyword may change when file path is changed 
 # so we hard code it to make the comparsion consistent in case the file is moved
 test_that("test special delimiter character: '*' ", {
-      
-      expect_warning(fr <- read.FCS(file.path(dataPath, "multi_data_segment.LMD")), "1 additional data")
-      expect_equal(summary(fr), expectRes[["read.FCS"]][["multi_data_segment"]])
-      
-    })
+  
+  expect_warning(fr <- read.FCS(file.path(dataPath, "multi_data_segment.LMD")), "1 additional data")
+  expect_equal(summary(fr), expectRes[["read.FCS"]][["multi_data_segment"]], tolerance = 0.08)
+  
+})
 
 
 
