@@ -1311,7 +1311,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
     checkClass(x, "flowSet")
-
+    nSample <- length(x)
     ## Some sanity  checking up front
     if(missing(filename))
     {
@@ -1319,13 +1319,14 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
     }
     else
     {
+        nFilename <- length(filename)
         ferr <- paste("Argument filename has to be a character scalar or",
                       "a character vector of the same length as 'x'.")
         if(is.character(filename))
         {
-            if(length(filename)==1)
-                filename <- paste(seq_len(length(x)), filename, sep="_")
-            else if(length(filename) != length(x))
+            if(nFilename==1&&nSample>1)
+                filename <- paste(seq_len(nSample), filename, sep="_")
+            else if(nFilename != nSample)
                 stop(ferr)
         }
         else
@@ -1337,7 +1338,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
         dir.create(outdir, recursive=TRUE)
     if(!is(x, "flowSet"))
         stop("Argument 'x' has to be a 'flowSet'.")
-    for(f in seq_len(length(x)))
+    for(f in seq_len(nSample))
     {
         if(!length(grep(".", filename[f], fixed=TRUE)))
             filename[f] <- paste(filename[f], "fcs", sep=".")

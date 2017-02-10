@@ -237,7 +237,26 @@ test_that("test write.FCS", {
     
 })
 
-
+test_that("write.flowSet", {
+  
+  data(GvHD)
+  foo <- GvHD[1:2]
+  
+  
+  ## now write out into  files
+  outDir <- tempfile()
+  suppressWarnings(write.flowSet(foo, outDir))
+  expect_equal(dir(outDir), c("annotation.txt", "s5a01.fcs", "s5a02.fcs"))
+  
+  outDir <- tempfile()
+  suppressWarnings(write.flowSet(foo, outDir, filename = c("a")))
+  expect_equal(dir(outDir), c("1_a.fcs", "2_a.fcs", "annotation.txt"))
+  
+  outDir <- tempfile()
+  suppressWarnings(write.flowSet(foo, outDir, filename = c("a", "b")))
+  expect_equal(dir(outDir), c("a.fcs", "annotation.txt", "b.fcs"))
+  
+})
 test_that("test U mode", {
   expect_error(read.FCS(file.path(dataPath, "PartecPAI/A0006980.FCS"))
               , "MODE U")
