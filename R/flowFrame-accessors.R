@@ -698,6 +698,18 @@ setMethod("range",
           signature=signature(x="flowFrame"),
           definition=function(x, ..., type = c("instrument", "data"), na.rm)
       {
+          #deprecate the usage of dots
+          args <- list(...)
+          if(length(args)>0)
+          {
+            if(length(args)==1&&args[[1]]%in%c("instrument", "data"))
+            {
+              #overwrite type argument
+              type <- args[[1]]
+            }else
+              stop("range method only accept two arguments: x(a flowFrame) and type = c('instrument', 'data')")
+          }
+            
             
           type <- match.arg(type)
           param <- parameters(x)
@@ -717,6 +729,9 @@ setMethod("range",
           
           ret <- rbind(min=mir, max=mar)
           colnames(ret) <- param$name[pind]
+          
+          
+            
           return(as.data.frame(ret))
       })
 
