@@ -180,7 +180,7 @@ setMethod("%in%",
               stop("norm2 filters require exactly two parameters.")
           y <- exprs(x)[,parameters(table)]
           ## drop data that has piled up on the measurement ranges
-          r <- range(x, parameters(table))
+          r <- range(x)[, parameters(table)]
           sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
                   y[,2] > r[1,2] & y[,2] < r[2,2])
           values <- y[sel, ]
