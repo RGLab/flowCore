@@ -316,7 +316,7 @@ prepareSet <- function(x, parm, time, binSize, locM=median, varM=mad)
 {
     exp <- exprs(x)
     ## remove the margin events first
-    r <- range(x, parm)
+    r <- range(x)[, parm, drop = FALSE]
     sel <- exp[,parm]>r["min",] & exp[,parm]<r["max",]
     xx <- exp[sel, time]
     ord <- order(xx)
