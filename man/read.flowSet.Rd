@@ -69,6 +69,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
   
   \item{ignore.text.offset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
+  \item{truncate_max_range}{see \code{\link[flowCore]{read.FCS}} for details.}
+  
   \item{\dots}{Further arguments that get passed on to
     \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
   
