@@ -1244,36 +1244,41 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
                "$PAR"=ncol(x),
                "$TOT"=nrow(x),
                "FCSversion"="3")
+    1:ncol(x)
+    pd <- pData(parameters(x))
+    pid <- rownames(pd)
+    newid <- seq_len(ncol(x))
     pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
-    names(pnb) <- sprintf("$P%sB", 1:ncol(x))
+    names(pnb) <- paste0(pid, "B")
     mk <- c(mk, pnb)
 #	browser()
     ## FlowJo seems to get confused by empty values in PnS, we fix that here
-    pns <- description(x)[sprintf("$P%sS", 1:ncol(x))]
-    names(pns) <- sprintf("$P%sS", 1:ncol(x))
+    pns <- description(x)[paste0(pid, "S")]
+    names(pns) <- sprintf("$P%sS", newid)
 #    pns <- lapply(pns, function(y) if(!length(y)) " " else y)
     mk <- c(mk, pns)
     ## We need all PnE keywords and assume "0,0" if they are missing
-    pne <- description(x)[sprintf("$P%sE", 1:ncol(x))]
-    names(pne) <- sprintf("$P%sE", 1:ncol(x))
+    pne <- description(x)[paste0(pid, "E")]
+    names(pne) <- sprintf("$P%sE", newid)
     pne[sapply(pne, length)==0] <- "0,0"
     mk <- c(mk, pne)
     ## The same for PnR, "1024" if missing
-    pnr <- description(x)[sprintf("$P%sR", 1:ncol(x))]
-    names(pnr) <- sprintf("$P%sR", 1:ncol(x))
+    pnr <- description(x)[paste0(pid, "R")]
+    names(pnr) <- sprintf("$P%sR", newid)
     pnr[sapply(pnr, length)==0] <- "1024"
     mk <- c(mk, pnr)
     ##update flowCore_$PnRMax to reflect the transformed range stored in parameter slots (that was during flowWorkspace parsing)
     #so that the correct range info can be picked up by read.FCS. It should have been updated in flowWorkspace:::.transformRange
     rng <- range(x)
-    for(i in 1:ncol(x))
+    for(i in newid)
     {
-      description(x)[[sprintf("flowCore_$P%sRmin", i)]] <- rng[1,i]
-      description(x)[[sprintf("flowCore_$P%sRmax", i)]] <- rng[2,i]
+      description(x)[[paste0("flowCore_", i, "Rmin")]] <- rng[1,i]
+      description(x)[[paste0("flowCore_", i, "Rmax")]] <- rng[2,i]
     }
     ## Now update the PnN keyword
     pnn <- colnames(x)
-    names(pnn) <- sprintf("$P%sN", 1:ncol(x))
+    names(pnn) <- sprintf("$P%sN", newid)
+    
     mk <- c(mk, pnn)
     description(x) <- mk
     ## Figure out the offsets based on the size of the initial text section

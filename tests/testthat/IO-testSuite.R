@@ -190,8 +190,8 @@ test_that("test Beckman_Coulter $SPILLOVER keyword", {
     })
 
 test_that("test write.FCS", {
-      
-    fr <- read.FCS("~/rglab/workspace/flowWorkspace/wsTestSuite/Cytotrol/NHLBI/Tcell/CytoTrol_CytoTrol_1.fcs")
+    fcsfile <- "~/rglab/workspace/flowWorkspace/wsTestSuite/Cytotrol/NHLBI/Tcell/CytoTrol_CytoTrol_1.fcs"
+    fr <- read.FCS(fcsfile)
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["NHLBI"]], digest(fr))
     
@@ -207,12 +207,12 @@ test_that("test write.FCS", {
     keys.new <- description(fr1)
     keys.new[["FILENAME"]] <- "setToDummy"
     #update flowCore range in keyword
-    rng <- range(fr)
-    for(i in 1:ncol(fr))
-    { 
-      keys[[sprintf("flowCore_$P%sRmin", i)]] <- as.character(rng[1,i])
-      keys[[sprintf("flowCore_$P%sRmax", i)]] <- as.character(rng[2,i])
-    }
+    # rng <- range(fr)
+    # for(i in 1:ncol(fr))
+    # { 
+    #   keys[[sprintf("flowCore_$P%sRmin", i)]] <- as.character(rng[1,i])
+    #   keys[[sprintf("flowCore_$P%sRmax", i)]] <- as.character(rng[2,i])
+    # }
     expect_equal(keys.new[names(keys)], keys)
     expect_equivalent(exprs(fr), exprs(fr1))
     
@@ -247,6 +247,14 @@ test_that("test write.FCS", {
     expect_equal(keys.new[names(keys)], keys)
     expect_equivalent(exprs(fr), exprs(fr1))
     
+    #when colmn.pattern is used to subset channels in read.FCS
+    #make sure the id in $Pn is set properly in write.FCS
+    fr_sub <- read.FCS(fcsfile, column.pattern = '-A')
+    tmp <- tempfile()
+    suppressWarnings(write.FCS(fr_sub , filename = tmp))
+    fr1 <- read.FCS(tmp)
+    expect_equal(pData(parameters(fr_sub))[["name"]], pData(parameters(fr1))[["name"]], check.attributes = FALSE)
+    expect_equal(pData(parameters(fr_sub))[["desc"]], pData(parameters(fr1))[["desc"]], check.attributes = FALSE)
 })
 
 test_that("write.flowSet", {
