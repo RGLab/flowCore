@@ -2,6 +2,18 @@ context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
+
+test_that("DATATYPE:'D'", {
+  expect_warning(fr <- read.FCS(file.path(dataPath, "double_precision/wishbone_myleoid_monocyte.fcs")), "Missing the required")
+  expect_is(fr, "flowFrame")
+  
+  expect_warning(fr <- read.FCS(file.path(dataPath, "double_precision/wishbone_thymus_panel1_rep1.fcs")), "Missing the required")
+  
+  expect_equal(nrow(fr), 250170)
+  
+})
+
+
 test_that("multi data segment", {
   expect_warning(fr <- read.FCS(file.path(dataPath, "multi-datasegment.fcs")), "39 additional data")
   expect_is(fr, "flowFrame")

@@ -665,6 +665,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     dattype <- switch(readFCSgetPar(x, "$DATATYPE"),
                       "I" = "integer",
                       "F" = "numeric",
+                      "D" = "numeric",
                       stop(paste("Don't know how to deal with $DATATYPE",
                                  readFCSgetPar(x, "$DATATYPE"))))
 
