@@ -1208,7 +1208,7 @@ collapseDesc <- function(x, delimiter = "\\")
 ## is taken from the idnetifier of the flowFrame. 'what' controls the output
 ## data type.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
+write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "big")
 {
   warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
@@ -1220,6 +1220,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
 #            filename <- paste(filename, "fcs", sep=".")
     }
     what <- match.arg(what, c("integer", "numeric", "double"))
+    endian <- match.arg(endian, c("little","big"))
     if(!is.character(filename) || length(filename)!=1)
         stop("Argument 'filename' has to be a character of length 1.")
     if(!is(x, "flowFrame"))
@@ -1230,7 +1231,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\")
                         bitwidth=c(2,4,8), stringsAsFactors=FALSE)
     rownames(types) <- c("integer", "numeric", "double")
     orders <- c(little="1,2,3,4", big="4,3,2,1")
-    endian <- "big"
+    # endian <- "big"
     mk <- list("$BEGINANALYSIS"="0",
                "$BEGINDATA"="0",
                "$BEGINSTEXT"=0,
