@@ -3,6 +3,31 @@ library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
 
+
+# test_that("Miltenyi's Macsquantify", {
+#   expect_warning(
+#     fr <- read.FCS(file.path(dataPath, "Miltenyi/1696_12017-04-30.0001_compatible.fcs"))
+#     , "Missing the required")
+#   expect_is(fr, "flowFrame")
+#   
+#   range(fr, type = "data")
+#   range(fr)
+#   expect_warning(fr <- read.FCS(file.path(dataPath, "double_precision/wishbone_thymus_panel1_rep1.fcs")), "Missing the required")
+#   
+#   expect_equal(nrow(fr), 250170)
+#   
+# })
+
+test_that("big file", {
+  expect_error(fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs")), "integer limits")
+  expect_error(fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = c(1,1e9)), "number of collected events")
+  fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = 1:1e3)
+  expect_equal(nrow(fr), 1e3)
+  fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = (1e3+1):2e3)
+  expect_equal(nrow(fr), 1e3)
+  
+})
+
 test_that("DATATYPE:'D'", {
   expect_warning(fr <- read.FCS(file.path(dataPath, "double_precision/wishbone_myleoid_monocyte.fcs")), "Missing the required")
   expect_is(fr, "flowFrame")

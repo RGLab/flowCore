@@ -763,8 +763,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         }
       seek(con, offsets["datastart"])
 
-      nBytes <- as.integer(offsets["dataend"]-offsets["datastart"]+1)
-
+      nBytes <- offsets["dataend"]-offsets["datastart"]+1
+      if(nBytes > .Machine$integer.max)
+        stop("Total number of bytes (", nBytes, ") in data segment exceeds the R integer limits!Please read the subset of FCS by specifying 'which.lines'")
+      nBytes <- as.integer(nBytes)
 	    if(multiSize){
 #	      if(splitInt&&dattype=="integer")
 #	        stop("Mutliple bitwidths with big integer are not supported!")
