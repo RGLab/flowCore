@@ -299,11 +299,19 @@ setMethod("%in%",
                                               dimnames=list(NULL, time))),
                               bins[pmax(1, br-1)], bins[pmin(length(bins),
                                                              tr+2)])
-              tmp <- filter(x, !gates[[1]])
+              # tmp <- filter(x, !gates[[1]])
+              # if(length(gates)>1)
+              #     for(i in 2:length(gates))
+              #         tmp <- filter(x, tmp & !gates[[i]])
+              # return(as.logical(tmp@subSet) )
+              
+              ##we don't do the complementary(!) and intersectFilter(&) filter anymore 
+              ## since they creates huge memory overhead by appending the filter results recursively
+              tmp <- filter(x, gates[[1]])@subSet
               if(length(gates)>1)
-                  for(i in 2:length(gates))
-                      tmp <- filter(x, tmp & !gates[[i]])
-              return(as.logical(tmp@subSet) )
+                for(i in 2:length(gates))
+                  tmp <- tmp | filter(x, gates[[i]])@subSet
+              return(!tmp)
           }else
               return(rep(TRUE, nrow(x)))
         })
