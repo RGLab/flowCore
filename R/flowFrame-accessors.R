@@ -863,7 +863,11 @@ setMethod("cbind2",
   }
   .getLoc<-function(x){
     locs<-x[grep("LOCATIONS",names(x))]
-    locs<-locs[order(names(locs))]
+    #locs<-locs[order(names(locs))]
+	locids <- strsplit(names(locs),'_')
+	locids <- unlist(lapply(locids,function(x) x[2]))
+	locids <- as.numeric(locids)
+	locs<-locs[order(locids)]
     m<-do.call(rbind,lapply(locs,function(y){
       m<-as.matrix(do.call(rbind,strsplit(strsplit(y,";")[[1]],",")))
       mode(m)<-"numeric"
