@@ -135,7 +135,8 @@ read.FCS <- function(filename,
     if(!is.null(column.pattern)) {
         n <- colnames(mat)
         i <- grep(column.pattern, n, invert = invert.pattern)
-        mat <- mat[,i]
+
+		 mat <- mat[,i,drop=FALSE]
         params <- params[i,]
     }
 
