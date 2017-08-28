@@ -10,7 +10,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
              transformation = "linearize", which.lines=NULL,
              column.pattern = NULL, invert.pattern = FALSE, decades=0, sep="\t",
              as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
-             emptyValue=TRUE, ignore.text.offset = FALSE, \dots)
+             truncate_max_range = TRUE, emptyValue=TRUE, 
+             ignore.text.offset = FALSE, \dots)
 
 }
 
@@ -64,6 +65,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
   \item{dataset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{min.limit}{see \code{\link[flowCore]{read.FCS}} for details.}
+  
+  \item{truncate.max.range}{see \code{link[flowCore]{read.FCS}} for details.}
   
   \item{emptyValue}{see \code{\link[flowCore]{read.FCS}} for details.}
   
