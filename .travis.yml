@@ -1,0 +1,33 @@
+# Sample .travis.yml for R projects
+
+language: r
+r: bioc-devel
+dist: trusty
+
+before_install:
+  - R -e 'install.packages("devtools")'
+  - R -e 'install.packages("reshape2")'
+  - R -e 'install.packages("covr")'
+  - tlmgr install index
+
+install:
+  - R -e 'devtools::install_deps(dep = T,type="binary")'
+
+cache: packages
+  
+warnings_are_errors: false 
+sudo: required 
+
+bioc_required: true
+
+env:
+ global:
+   - CRAN: http://cran.rstudio.com
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+after_success: 
+  - Rscript -e 'library(covr); codecov()'
