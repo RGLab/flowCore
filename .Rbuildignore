@@ -2,3 +2,11 @@
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+.Rhistory
+.gitignore
+.travis.yml
+R/.Rhistory
+vignettes/.Rhistory
+.Rproj.user
+.git
+
