@@ -20,6 +20,8 @@ PKG_CPPFLAGS += -I../inst/include/
 .PHONY: all clean 
 
 all: $(SHLIB) 
+	if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
+
 
 $(SHLIB): $(USERLIB)
 

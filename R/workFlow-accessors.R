@@ -248,7 +248,7 @@ setMethod("plot",
               }
               return(result)
           }
-          if (!suppressWarnings(require(Rgraphviz)))
+          if (!suppressWarnings(requireNamespace(Rgraphviz)))
               stop("You need to have Rgraphviz installed for this feature",
                    call.=FALSE)
           tree <- get(x@tree)
