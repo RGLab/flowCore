@@ -31,4 +31,3 @@ $(USERLIB): ${bregex_objs}
 
 clean:
 	rm -f $(OBJECTS) $(SHLIB)
- 
