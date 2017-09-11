@@ -63,10 +63,12 @@ parDefault <- function(exp)
                      range="Range of Parameter",
                      minRange="Minimum Parameter Value after Transformation",
                      maxRange="Maximum Parameter Value after Transformation"))
-    pd <- data.frame(name=colnames(exp), desc=colnames(exp),
+    cols <- colnames(exp)
+    pd <- data.frame(name=cols, desc=cols,
                      range=apply(exp, 2, max, na.rm=TRUE),
                      minRange=apply(exp, 2, min, na.rm=TRUE),
-                     maxRange=apply(exp, 2, max, na.rm=TRUE))
+                     maxRange=apply(exp, 2, max, na.rm=TRUE)
+                     , row.names = paste0("$P", seq_along(cols)))
     new("AnnotatedDataFrame", pd, vm)
 }
 
