@@ -93,14 +93,10 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 		 * check if kw and value are paired
 		 */
 		 if(j%2 == 1){
-			 if(isDelimiterEnd){
-			   // Rcpp::stop
-			   std::string serror = "uneven number of tokens: ";
-			   serror.append(boost::lexical_cast<std::string>(j	));
-			   throw std::range_error(serror.c_str());
-			 }	 
-			 else
-				 Rcpp::Rcout << "the text section does not end with delimiter: " << delimiter << ". The last keyword is dropped." << std::endl;;
+			 std::string serror = "uneven number of tokens: ";
+		     serror.append(boost::lexical_cast<std::string>(j));
+		     Rcpp::Rcout << serror << std::endl;
+			 Rcpp::Rcout << "The last keyword is dropped." << std::endl;
 		 }
 
 

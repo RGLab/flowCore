@@ -27,7 +27,7 @@ test_that("fcsTextParse", {
       
       #unpaired kw
       txt <- "/k1/v1/k2/v2/k3/"
-      expect_error(fcsTextParse(txt, empty = TRUE), "uneven number")
+      expect_output(fcsTextParse(txt, empty = TRUE), "uneven number")
             
       #with double delimiters
       txt <- "/k1/v//1/k2/v2/"
