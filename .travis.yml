@@ -14,7 +14,7 @@ install:
   - R -e 'devtools::install_deps(dep = T,type="binary")'
 
 cache: packages
-  
+group: deprecated-2017Q3  
 warnings_are_errors: false 
 sudo: required 
 

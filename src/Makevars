@@ -1,33 +1,10 @@
-#  GNUMakefile
- 
-# Just a snippet to stop executing under other make(1) commands
-# that won't understand these lines
-ifneq (,)
-This makefile requires GNU Make.
-endif
-
-bregex_src=${wildcard boost_regex/*.cpp}
-bregex_objs=${bregex_src:.cpp=.o}
-
-REGEXLIB = libboost_regex.a
-USERDIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
-USERLIB = ${USERDIR}/${REGEXLIB}
-
 CXX_STD = CXX11
-PKG_LIBS = "${USERLIB}"
-PKG_CPPFLAGS += -I../inst/include/ 
 
 .PHONY: all clean 
 
 all: $(SHLIB) 
-	if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
+   if [ `uname -s` = 'Darwin' ]; then install_name_tool -change /usr/local/clang4/lib/libc++.1.dylib /usr/lib/libc++.1.dylib $(SHLIB); fi
 
-
-$(SHLIB): $(USERLIB)
-
-$(USERLIB): ${bregex_objs}
-	mkdir -p "${USERDIR}"
-	$(AR) rs "${USERLIB}" ${bregex_objs}
 
 clean:
 	rm -f $(OBJECTS) $(SHLIB)

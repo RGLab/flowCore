@@ -111,16 +111,18 @@ expect_warning(expect_error(fr <- read.FCS(file.path(dataPath, "missing_PnR_flow
 
 
 test_that("test in consistent datastart between header and TEXT", {
-      expect_error(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE)
+  expect_output(expect_error(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE)
                    , "HEADER and the TEXT")
+                , "uneven number of tokens")
      
-     expect_warning(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE, ignore.text.offset = TRUE)
+     expect_output(expect_warning(fr <- read.FCS(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE, ignore.text.offset = TRUE)
                     , "HEADER and the TEXT")
+                    , "uneven number of tokens")
      expect_equal(nrow(fr), 60661)      
      expect_equal(summary(fr), expectRes[["read.FCS"]][["Accuri-C6"]], tolerance = 0.001)
      
-     expect_warning(fs <- read.flowSet(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE, ignore.text.offset = TRUE)
-                    , "HEADER and the TEXT")
+     expect_output(expect_warning(fs <- read.flowSet(file.path(dataPath, "Accuri-C6", "Accuri - C6 - A02 Spherotech 8 Peak Beads.fcs"), emptyValue = FALSE, ignore.text.offset = TRUE)
+                    , "HEADER and the TEXT"), "uneven number of tokens")
      expect_equal(nrow(fs[[1]]), 60661)
 
    })
