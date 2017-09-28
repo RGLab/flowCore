@@ -42,7 +42,7 @@ test_that("polygonGateUsage", {
     expect_true(hasMethod("%in%",c(class(b08),class(p))))
 	x   = b08 %in% p
 	m = getMethod("%in%",c(class(b08),class(p)))(b08,p)
-	expect_equal(sum(x),3785)
+	expect_equal(sum(x),3807)#used to be 3785 before the commit regarding to github #85 for including the events fallon the edge of gate
     p2   = polygonGate(vertices[-nrow(vertices),])
    	expect_equal(sum(x),sum(b08 %in% p2))
 })
