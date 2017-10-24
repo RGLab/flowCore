@@ -335,8 +335,12 @@ setMethod(
     {
         function(df)
         {
+          if(is(df, "flowFrame")){
             parameter <- resolve(expr@parameters, df)
-            parameter <- flowFrameToMatrix(parameter)
+            parameter <- flowFrameToMatrix(parameter)  
+          }else
+            parameter <- df
+          
             # Gating-ML 2.0 flog is defined as
             # (1/M) * log_10(x/T) + 1
             res <- ((1/expr@M) * log((parameter/expr@T), base=10)) + 1
