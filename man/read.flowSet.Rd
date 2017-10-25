@@ -12,8 +12,6 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
              as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
              truncate_max_range = TRUE, emptyValue=TRUE, 
              ignore.text.offset = FALSE, \dots)
-             emptyValue=TRUE, ignore.text.offset = FALSE, \dots)
-
 }
 
 \arguments{
