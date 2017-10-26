@@ -429,7 +429,10 @@ setAs(from="ellipsoidGate", to="polygonGate", def=function(from)
       ans <- as.data.frame(t(ans))
       names(ans) <- parms
       ## create a polygonGate
-      polygonGate(.gate=ans, filterId=identifier(from))
+      g <- polygonGate(.gate=ans, filterId=identifier(from))
+      #need do this to preserve the transform info of the original gate parameters 
+      g@parameters <- from@parameters
+      g
   })
 
 
@@ -438,6 +441,9 @@ setAs(from="rectangleGate", to="polygonGate", def=function(from)
   {
       bound <- rbind(from@min, c(from@max[1], from@min[2]), from@max,
                      c(from@min[1], from@max[2]))
-      polygonGate(.gate=bound, filterId=identifier(from))
+      g <- polygonGate(.gate=bound, filterId=identifier(from))
+      #need do this to preserve the transform info of the original gate parameters 
+      g@parameters <- from@parameters
+      g
   })
 
