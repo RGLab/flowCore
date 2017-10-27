@@ -41,6 +41,14 @@
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(
+concordance=TRUE
+)
+@
+
+
+<<echo=FALSE, include=FALSE>>=
+library(knitr)
+opts_chunk$set(
 concordance=TRUE, warning = FALSE
 )
 @
@@ -1019,5 +1027,5 @@ The further automated the process, a gating pipeline can be established through 
 
 \clearpage
 \bibliographystyle{plainnat} 
-\bibliography{cytoref}
+\bibliography{../inst/doc/cytoref}
 \end{document}
