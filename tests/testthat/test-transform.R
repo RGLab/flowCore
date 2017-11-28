@@ -109,7 +109,7 @@ test_that("logicle", {
   res <- trans(raw)
   expect_equal(summary(res), expectRes[["logicle"]], tol = 2e-4)
   
-  inv <- inverseLogicleTransform("", trans)
+  inv <- inverseLogicleTransform(trans, "")
   expect_equal(inv(res), raw)
 })
 

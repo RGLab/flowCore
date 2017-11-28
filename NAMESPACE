@@ -368,3 +368,6 @@ export("action",
 export(getChannelMarker)
 export(estimateLogicle)
 S3method(estimateLogicle,flowFrame)
+export(inverseLogicleTransform)
+S3method(inverseLogicleTransform,transform)
+S3method(inverseLogicleTransform,transformList)

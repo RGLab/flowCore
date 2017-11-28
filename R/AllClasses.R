@@ -1411,31 +1411,45 @@ logicleTransform <- function(transformationId="defaultLogicleTransform",
 }
 
 ### Inverse logicle transformation constructor
-
-inverseLogicleTransform <- function(transformationId, trans) {
-
-    if(!is(trans, "transform"))
-        stop("trans has to be an object of class \"transform\"
-            created using the \"logicleTransform\" function")
-    
-    pars <- c("w", "t", "m", "a")
-    vals <- ls(environment(trans@.Data))
-    if(!all(pars %in% vals))
-        stop("\"trans\" is not a valid object produced using the
-           \"logicle\" function")
-
-    w = environment(trans@.Data)[["w"]] 
-    t = environment(trans@.Data)[["t"]] 
-    m = environment(trans@.Data)[["m"]]
-    a = environment(trans@.Data)[["a"]]
-    k <- new("transform", .Data=function(x)
-	 		x <- logicle_transform(as.double(x), as.double(t),as.double(w), as.double(m), as.double(a), TRUE)
-	    )
-    if(missing(transformationId))
-        k@transformationId <- paste( "inverse", trans@transformationId, sep ="_")
+inverseLogicleTransform <- function(trans, transformationId, ...)UseMethod("inverseLogicleTransform")
+inverseLogicleTransform.default <- function(trans, transformationId, ...) {
+  
+    stop("trans has to be an object of class \"transform\"
+            created using the \"logicleTransform\" function\n
+         or a 'transformList' created by 'estimateLogicle'\n")
+}
+inverseLogicleTransform.transform <- function(trans, transformationId, ...) {
+    k <- .inverseLogicleTransform(trans@.Data)
+   if(missing(transformationId))
+    k@transformationId <- paste( "inverse", trans@transformationId, sep ="_")
     k
 }
-
+.inverseLogicleTransform <- function(func){
+  pars <- c("w", "t", "m", "a")
+  vals <- ls(environment(func))
+  if(!all(pars %in% vals))
+    stop("\"trans\" is not a valid object produced using the
+           \"logicle\" function")
+  
+  w = environment(func)[["w"]] 
+  t = environment(func)[["t"]] 
+  m = environment(func)[["m"]]
+  a = environment(func)[["a"]]
+  k <- new("transform", .Data=function(x)
+    x <- logicle_transform(as.double(x), as.double(t),as.double(w), as.double(m), as.double(a), TRUE)
+  )
+  
+}
+inverseLogicleTransform.transformList <- function(trans, transformationId, ...) {
+  invs <- sapply(trans@transforms, function(obj){
+    .inverseLogicleTransform(obj@f)
+  })
+  channels <- names(invs)
+  if(missing(transformationId))
+    transformationId <- paste( "inverse", trans@transformationId, sep ="_")
+  
+  transformList(channels, invs, transformationId = transformationId)
+}
 #' It is mainly trying to estimate w (linearization width in asymptotic decades) value based on given m and data range
 #' @param dat flowFrame
 #' @param p channel name
