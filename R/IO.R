@@ -579,15 +579,37 @@ sortBytes1 <- function(bytes, byte_order){
   bytes[ind]  
 }
 
+# Read raw FCS data. This is a wrapper around .readFCSdataRaw that calls the
+# function with at most .Machine$integer.max bytes each time.
+.readFCSdataRawMultiple <- function(con, dattype, count, size, signed, endian,
+                                    splitInt = FALSE, byte_order) {
+  chunk_size <- floor(.Machine$integer.max / size)
+  num_chunks <- ceiling(count / chunk_size)
+
+  items <- c()
+
+  for (chunk in seq(num_chunks)) {
+    if (chunk == num_chunks) {
+      chunk_count <- count - chunk_size * floor(count / chunk_size)
+    } else {
+      chunk_count <- chunk_size
+    }
+
+    items <-
+      c(items, .readFCSdataRaw(con, dattype, chunk_count, size, signed, endian,
+        splitInt, byte_order))
+  }
+
+  items
+}
+
 ##read odd bitwidth by reading raw and and operating on raw vector
-.readFCSdataRaw<-function(con,dattype,count,size,signed,endian, splitInt = FALSE, byte_order){
-#	browser()
-  
-  nBytes<-count*size
+.readFCSdataRaw <- function(con, dattype, count, size, signed, endian,
+                            splitInt = FALSE, byte_order) {
+  nBytes <- count * size
   
 	if (size %in% c(1, 2, 4, 8))
 	{
-
         if(splitInt&&dattype == "integer"){
           if(size == 4){
             #reorder bytes for mixed endian
@@ -640,14 +662,8 @@ sortBytes1 <- function(bytes, byte_order){
 		#convert raw byte to corresponding type by readBin
         #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
 		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
-
-
 	}
-
 }
-
-
-
 
 ## ==========================================================================
 ## read FCS file data section
@@ -753,18 +769,12 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
 
 
-    ##Read all reports
     if(is.null(which.lines)){
-        if (nwhichLines >  nrowTotal){
-            cat("Warning: the number of lines specified (",nwhichLines,
-                ") is greater
-                 than the number of collected events (",nrowTotal,
-                "). All the events have been read. \n")
-        }
+      # Read the entire file.
       seek(con, offsets["datastart"])
+      nBytes <- offsets["dataend"] - offsets["datastart"] + 1
 
-      nBytes <- offsets["dataend"]-offsets["datastart"]+1
-	    if(multiSize){
+	    if (multiSize) {
         if (nBytes > .Machine$integer.max) {
           stop(
             paste0("cannot import files with more than ", .Machine$integer.max,
@@ -783,16 +793,12 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	      if(dattype == "numeric" && length(unique(size)) > 1)
 	        stop("we don't support different bitwdiths for numeric data type!")
 	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
-
-
-	    }else{
-	      dat <- .readFCSdataRaw(con, dattype
-	                             , count= nBytes/size
-	                             , size= size
-	                             , signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
+	    } else {
+	      dat <-
+          .readFCSdataRawMultiple(
+            con, dattype, count = nBytes / size, size = size, signed = signed,
+            endian=endian, splitInt = splitInt, byte_order = byte_order)
 	    }
-
-
     } else {
       # Read subset of lines, as selected by user.
       if (multiSize) {
@@ -823,14 +829,14 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
         endP   <- startP + nrpar * size
         seek(con, startP)
         temp <-
-          .readFCSdataRaw(con, dattype,
-                          count = as.integer(endP - startP + 1) / size,
-                          size = size, signed = signed, endian = endian,
-                          splitInt = splitInt, byte_order = byte_order)
+          .readFCSdataRawMultiple(
+            con, dattype, count = as.integer(endP - startP + 1) / size,
+            size = size, signed = signed, endian = endian, splitInt = splitInt,
+            byte_order = byte_order)
         dat <- c(dat, temp)
       }
     }
-    
+
     ## stopifnot(length(dat)%%nrpar==0)
     ## Do we want the function to bail out when the above condition is TRUE?
     ## Might be better to assume the data was ok up to this point and
