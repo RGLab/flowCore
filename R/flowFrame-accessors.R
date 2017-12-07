@@ -548,17 +548,28 @@ setMethod("transform",
       #setting this flag is important 
       #since it tells the FCS parser that the latest range info needs to be read from flowCore_$P
       #instead of $PnR
-      description(x) <- list(transformation="custom")
-      desc <- description(x)
-      for(p in seq_along(pData(par)$name))
-      { 
-        desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(par)[p, "maxRange"]
-        desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(par)[p, "minRange"]
-      }
+      desc <- updateTransformKeywords(x)
+      
       new("flowFrame", exprs = transformed, parameters = par,
           description = desc)
 }
 
+#' modify description to reflect the transformation
+#' Involve inserting/updating 'transformation' and flowCore_$PnRmax keywords
+#' @param fr flowFrame
+#' @return updated description slot
+updateTransformKeywords <- function(fr)
+{
+  description(fr) <- list(transformation="custom")
+  desc <- description(fr)
+  pd <- pData(parameters(fr))
+  for(p in seq_along(pd[["name"]]))
+  { 
+    desc[[sprintf("flowCore_$P%sRmax", p)]] <- pd[p, "maxRange"]
+    desc[[sprintf("flowCore_$P%sRmin", p)]] <- pd[p, "minRange"]
+  }
+  desc
+}
 ## ==========================================================================
 ## filter method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
