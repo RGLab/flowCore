@@ -753,9 +753,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
 
 
-    nwhichLines <- length(which.lines)
     ##Read all reports
-    if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
+    if(is.null(which.lines)){
         if (nwhichLines >  nrowTotal){
             cat("Warning: the number of lines specified (",nwhichLines,
                 ") is greater
@@ -765,10 +764,15 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
       seek(con, offsets["datastart"])
 
       nBytes <- offsets["dataend"]-offsets["datastart"]+1
-      if(nBytes > .Machine$integer.max)
-        stop("Total number of bytes (", nBytes, ") in data segment exceeds the R integer limits!Please read the subset of FCS by specifying 'which.lines'")
-      nBytes <- as.integer(nBytes)
 	    if(multiSize){
+        if (nBytes > .Machine$integer.max) {
+          stop(
+            paste0("cannot import files with more than ", .Machine$integer.max,
+                   " bytes in data segment when file has multiple bitwidths")
+          )
+        }
+        nBytes <- as.integer(nBytes)
+
 #	      if(splitInt&&dattype=="integer")
 #	        stop("Mutliple bitwidths with big integer are not supported!")
 	      if(endian == "mixed")
@@ -789,28 +793,44 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	    }
 
 
-    }else {
-      if(multiSize)
-        stop("'which.lines' can not be used when bitwidths are different across parameters!")
-      ##Read n lines with or without sampling
-        if(length(which.lines)==1)
-            which.lines <- sample(seq_len(nrowTotal), which.lines)
-        which.lines <- sort(which.lines)
-        outrange <- length(which(which.lines > nrowTotal))
-        if(outrange!=0)
-            stop("Some or all the line indices specified are greater that the",
-                 "number of collected events.\n")
-        dat <- c()
-        for (i in 1:length(which.lines)){
-            startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
-            endP   <-  startP + nrpar * size
-            seek(con, startP)
-			temp <- .readFCSdataRaw(con, dattype, count= as.integer(endP - startP+1)/size,
-					size=size, signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
+    } else {
+      # Read subset of lines, as selected by user.
+      if (multiSize) {
+        stop("'which.lines' cannot be used with multiple bitwidths")
+      }
 
-            dat <- c(dat, temp)
+      # Verify that which.lines is positive and within file limit.
+      if (length(which.lines) > 1) {
+        if (any(which.lines < 0)) {
+          warning("import will skip lines with negative indices")
+          which.lines <- which.lines[which.lines > 0]
         }
+        if (any(which.lines > nrowTotal)) {
+          warning("import will skip lines over number of collected events")
+          which.lines <- which.lines[which.lines < nrowTotal]
+        }
+      }
+
+      if (length(which.lines) == 1) {
+        # If a single value is given, sample N lines randomly.
+        which.lines <- sample(seq(nrowTotal), which.lines)
+      }
+
+      which.lines <- sort(which.lines)
+      dat <- c()
+      for (i in 1:length(which.lines)){
+        startP <- offsets["datastart"] + (which.lines[i] - 1) * nrpar * size
+        endP   <- startP + nrpar * size
+        seek(con, startP)
+        temp <-
+          .readFCSdataRaw(con, dattype,
+                          count = as.integer(endP - startP + 1) / size,
+                          size = size, signed = signed, endian = endian,
+                          splitInt = splitInt, byte_order = byte_order)
+        dat <- c(dat, temp)
+      }
     }
+    
     ## stopifnot(length(dat)%%nrpar==0)
     ## Do we want the function to bail out when the above condition is TRUE?
     ## Might be better to assume the data was ok up to this point and
