@@ -1154,7 +1154,16 @@ collapseDesc <- function(x, delimiter = "\\")
     d <- description(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
 #	browser()
-
+  ##skip flowCore_$PnRMax when trans is not applied 
+  trans <- d[["transformation"]]
+  if(is.null(trans))
+  {
+    for(i in 1:ncol(x))
+    {
+      d[[paste0("flowCore_$P", i, "Rmin")]] <- NULL
+      d[[paste0("flowCore_$P", i, "Rmax")]] <- NULL
+    }
+  }
 	d <- lapply(d, function(y){
 				if(length(y)==0)
 					return(" ")
@@ -1271,14 +1280,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "b
     names(pnr) <- sprintf("$P%sR", newid)
     pnr[sapply(pnr, length)==0] <- "1024"
     mk <- c(mk, pnr)
-    ##update flowCore_$PnRMax to reflect the transformed range stored in parameter slots (that was during flowWorkspace parsing)
-    #so that the correct range info can be picked up by read.FCS. It should have been updated in flowWorkspace:::.transformRange
-    rng <- range(x)
-    for(i in newid)
-    {
-      description(x)[[paste0("flowCore_", i, "Rmin")]] <- rng[1,i]
-      description(x)[[paste0("flowCore_", i, "Rmax")]] <- rng[2,i]
-    }
+    
     ## Now update the PnN keyword
     pnn <- colnames(x)
     names(pnn) <- sprintf("$P%sN", newid)
