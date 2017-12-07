@@ -113,13 +113,8 @@ setMethod("%on%",
           }
           exprs(e2) <- x
           parameters(e2) <- pars
-          description(e2) <- list(transformation="custom")
-		  desc <- description(e2)
-		  for(p in seq_along(pData(pars)$name)) { 
-			 desc[[sprintf("flowCore_$P%sRmax", p)]] <- pData(pars)[p, "maxRange"]
-             desc[[sprintf("flowCore_$P%sRmin", p)]] <- pData(pars)[p, "minRange"]
-          }
-		  description(e2) <- desc
+         
+		  description(e2) <- updateTransformKeywords(e2)
           e2
       })
 
