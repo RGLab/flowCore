@@ -607,61 +607,55 @@ sortBytes1 <- function(bytes, byte_order){
 .readFCSdataRaw <- function(con, dattype, count, size, signed, endian,
                             splitInt = FALSE, byte_order) {
   nBytes <- count * size
-  
-	if (size %in% c(1, 2, 4, 8))
-	{
-        if(splitInt&&dattype == "integer"){
-          if(size == 4){
-            #reorder bytes for mixed endian
-            if(endian == "mixed"){
-              byte_order <- as.integer(strsplit(byte_order, ",")[[1]]) - 1
-              if(length(byte_order) != size)
-                stop("Byte order is not consistent with bidwidths!")
-              
-              bytes <- readBin(con=con, what="raw",n = nBytes,size=1)          
-              newBytes <- sortBytes(bytes, byte_order)#sort the bytes 
-              
-              con <- newBytes
-              endian <- "little"
-              
-            }
-            
-            #read uint32 as two uint16
-            splitted <- readBin(con=con, what=dattype
-                                ,n = as.integer(count * 2) #coerce count again to ensure it is within the int limit
-                                , size = size / 2, signed=FALSE, endian=endian)  
+
+  if (splitInt && (size != 4 || dattype != "integer")) {
+    stop("'splitInt = TRUE' is only valid for uint32")
+  }
+
+	if (size %in% c(1, 2, 4, 8)) {
+    if (splitInt) {
+      # Reorder bytes for mixed endian.
+      if (endian == "mixed") {
+        byte_order <- as.integer(strsplit(byte_order, ",")[[1]]) - 1
+        if(length(byte_order) != size) {
+          stop("byte order not consistent with bidwidths")
+        }
+
+        bytes <- readBin(con = con, what = "raw", n = nBytes, size = 1)
+        newBytes <- sortBytes(bytes, byte_order)
+        con <- newBytes
+        endian <- "little"
+      }
           
-            
-
-            uint2double(splitted, endian == "big")
-
-
-          }
-          else
-            stop("'splitInt = TRUE' is only valid for uint32!")
-        }else
-		      readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
-	}else
-	{
-		#read raw byte stream first
-		oldBytes <- readBin(con=con, what="raw",n = nBytes,size=1)
-		#convert to bit vector
-		oldBits<-rawToBits(oldBytes)
-		#convert the data element to the non-odd  bitwidth
-		oldBitWidth<-size*8
-		newBitWidth<-2^ceiling(log(oldBitWidth,2))
-		newBits<-unlist(lapply(1:count,function(i){
-#							browser()
-											start<-(i-1)*oldBitWidth+1
-                                            #padding zeros
-											c(oldBits[start:(start+oldBitWidth-1)],raw(newBitWidth-oldBitWidth)
-                                                )
-											}
-								)
-						)
-		#convert raw byte to corresponding type by readBin
-        #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
-		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
+      # Read uint32 as two uint16. Coerce count again to make sure that it's
+      # within the integer limit.
+      splitted <- readBin(con = con, what = dattype, n = as.integer(count * 2),
+                          size = size / 2, signed = FALSE, endian = endian)
+      uint2double(splitted, endian == "big")
+    } else {
+      readBin(con = con, what = dattype, n = count, size = size,
+              signed = signed, endian=endian)
+    }
+	} else {
+		# Read raw byte stream first.
+		oldBytes <- readBin(con = con, what = "raw", n = nBytes, size = 1)
+		# Convert to bit vector.
+		oldBits <- rawToBits(oldBytes)
+		# Convert the data element to the non-odd bitwidth.
+		oldBitWidth <- size * 8
+		newBitWidth <- 2 ^ ceiling(log(oldBitWidth, 2))
+		newBits <-
+      unlist(lapply(1:count, function(i) {
+				start <- (i - 1) * oldBitWidth + 1
+        # Padding zeros.
+        c(oldBits[start:(start + oldBitWidth - 1)],
+          raw(newBitWidth-oldBitWidth))
+      }))
+		# Convert raw byte to corresponding type by readBin. packBits is
+    # least-significant bit first, so we need to make sure endian is set to
+    # "little" instead of the endian used in original FCS.
+		readBin(packBits(newBits, "raw"), what = dattype, n = count,
+            size = newBitWidth / 8, signed = signed, endian = "little")
 	}
 }
 
