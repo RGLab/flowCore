@@ -545,6 +545,9 @@ setMethod("transform",
         par$minRange <- tranges[1,]
         par$maxRange <- tranges[2,]
       }
+      #setting this flag is important 
+      #since it tells the FCS parser that the latest range info needs to be read from flowCore_$P
+      #instead of $PnR
       description(x) <- list(transformation="custom")
       desc <- description(x)
       for(p in seq_along(pData(par)$name))

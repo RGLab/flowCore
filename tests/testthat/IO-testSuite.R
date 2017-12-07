@@ -245,6 +245,7 @@ test_that("test Beckman_Coulter $SPILLOVER keyword", {
 test_that("test write.FCS", {
     fcsfile <- "~/rglab/workspace/flowWorkspace/wsTestSuite/Cytotrol/NHLBI/Tcell/CytoTrol_CytoTrol_1.fcs"
     fr <- read.FCS(fcsfile)
+    expect_equal(keyword(fr)[["transformation"]], "applied")
     keyword(fr)[["FILENAME"]] <- "setToDummy"
     expect_equal(expectRes[["read.FCS"]][["NHLBI"]], digest(fr))
     
@@ -259,15 +260,46 @@ test_that("test write.FCS", {
     keys[c("$BEGINDATA", "$ENDDATA")] <- NULL
     keys.new <- description(fr1)
     keys.new[["FILENAME"]] <- "setToDummy"
-    #update flowCore range in keyword
-    # rng <- range(fr)
-    # for(i in 1:ncol(fr))
-    # { 
-    #   keys[[sprintf("flowCore_$P%sRmin", i)]] <- as.character(rng[1,i])
-    #   keys[[sprintf("flowCore_$P%sRmax", i)]] <- as.character(rng[2,i])
-    # }
     expect_equal(keys.new[names(keys)], keys)
     expect_equivalent(exprs(fr), exprs(fr1))
+    
+    #disable default linearize trans
+    fr_notrans <- read.FCS(fcsfile, transformation = FALSE)
+    expect_null(keyword(fr_notrans)[["transformation"]])
+    #flowCore_$PnR and transformation keywords should be absent now
+    #and there are should be no other difference in keywords between the two read
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr_notrans)))]
+    expect_equal(length(missing.keys), 25)
+    expect_true(all(grepl("(flowCore_\\$P)|(transformation)", missing.keys)))
+    #any the resulted write will produce no trans related keyword r
+    suppressWarnings(write.FCS(fr_notrans,tmp))
+    fr1 <- read.FCS(tmp, transformation = FALSE)
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr1)))]
+    expect_equal(length(missing.keys), 25)
+    expect_true(all(grepl("(flowCore_\\$P)|(transformation)", missing.keys)))
+    # when default linearize is enabled
+    fr1 <- read.FCS(tmp)
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr1)))]
+    expect_equal(length(missing.keys), 0)
+    
+    #transform fr
+    fr.trans <- transform(fr_notrans, estimateLogicle(fr_notrans, markernames(fr_notrans)))
+    expect_equal(keyword(fr.trans)[["transformation"]], "custom")
+    #new keywords flowCore_$P* has been inserted
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr.trans)))]
+    expect_equal(length(missing.keys), 0)
+    suppressWarnings(write.FCS(fr.trans,tmp))
+    #these keywords remains even disable trans when read  it back
+    fr1 <- read.FCS(tmp, transformation = FALSE)
+    expect_equal(keyword(fr1)[["transformation"]], "custom")
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr1)))]
+    expect_equal(length(missing.keys), 0)
+    #and transformation flag has no effect on read when it is already custom
+    fr1 <- read.FCS(tmp)
+    expect_equal(keyword(fr1)[["transformation"]], "custom")
+    missing.keys <- names(keys)[which(!names(keys) %in% names(description(fr1)))]
+    expect_equal(length(missing.keys), 0)
+    
     
     # test delimiter(\) escaping 
     description(fr)[["$DATE"]] <- "05\\JUN\\2012"
