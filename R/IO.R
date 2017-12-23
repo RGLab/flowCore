@@ -579,75 +579,85 @@ sortBytes1 <- function(bytes, byte_order){
   bytes[ind]  
 }
 
-##read odd bitwidth by reading raw and and operating on raw vector
-.readFCSdataRaw<-function(con,dattype,count,size,signed,endian, splitInt = FALSE, byte_order){
-#	browser()
-  
-  nBytes<-count*size
-  
-	if (size %in% c(1, 2, 4, 8))
-	{
+# Read raw FCS data. This is a wrapper around .readFCSdataRaw that calls the
+# function with at most .Machine$integer.max bytes each time.
+.readFCSdataRawMultiple <- function(con, dattype, count, size, signed, endian,
+                                    splitInt = FALSE, byte_order) {
+  chunk_size <- floor(.Machine$integer.max / size)
+  num_chunks <- ceiling(count / chunk_size)
 
-        if(splitInt&&dattype == "integer"){
-          if(size == 4){
-            #reorder bytes for mixed endian
-            if(endian == "mixed"){
-              byte_order <- as.integer(strsplit(byte_order, ",")[[1]]) - 1
-              if(length(byte_order) != size)
-                stop("Byte order is not consistent with bidwidths!")
-              
-              bytes <- readBin(con=con, what="raw",n = nBytes,size=1)          
-              newBytes <- sortBytes(bytes, byte_order)#sort the bytes 
-              
-              con <- newBytes
-              endian <- "little"
-              
-            }
-            
-            #read uint32 as two uint16
-            splitted <- readBin(con=con, what=dattype
-                                ,n = as.integer(count * 2) #coerce count again to ensure it is within the int limit
-                                , size = size / 2, signed=FALSE, endian=endian)  
-          
-            
+  items <- c()
 
-            uint2double(splitted, endian == "big")
+  for (chunk in seq(num_chunks)) {
+    if (chunk == num_chunks) {
+      chunk_count <- count - chunk_size * floor(count / chunk_size)
+    } else {
+      chunk_count <- chunk_size
+    }
 
+    items <-
+      c(items, .readFCSdataRaw(con, dattype, chunk_count, size, signed, endian,
+        splitInt, byte_order))
+  }
 
-          }
-          else
-            stop("'splitInt = TRUE' is only valid for uint32!")
-        }else
-		      readBin(con=con, what=dattype,n = count,size=size, signed=signed, endian=endian)
-	}else
-	{
-		#read raw byte stream first
-		oldBytes <- readBin(con=con, what="raw",n = nBytes,size=1)
-		#convert to bit vector
-		oldBits<-rawToBits(oldBytes)
-		#convert the data element to the non-odd  bitwidth
-		oldBitWidth<-size*8
-		newBitWidth<-2^ceiling(log(oldBitWidth,2))
-		newBits<-unlist(lapply(1:count,function(i){
-#							browser()
-											start<-(i-1)*oldBitWidth+1
-                                            #padding zeros
-											c(oldBits[start:(start+oldBitWidth-1)],raw(newBitWidth-oldBitWidth)
-                                                )
-											}
-								)
-						)
-		#convert raw byte to corresponding type by readBin
-        #packBits is least-significant bit first, so we need to make sure endian is set to "little" instead of the endian used in original FCS
-		readBin(packBits(newBits,"raw"),what=dattype,n=count,size=newBitWidth/8, signed=signed, endian = "little")
-
-
-	}
-
+  items
 }
 
+##read odd bitwidth by reading raw and and operating on raw vector
+.readFCSdataRaw <- function(con, dattype, count, size, signed, endian,
+                            splitInt = FALSE, byte_order) {
+  nBytes <- count * size
 
+  if (splitInt && (size != 4 || dattype != "integer")) {
+    stop("'splitInt = TRUE' is only valid for uint32")
+  }
 
+	if (size %in% c(1, 2, 4, 8)) {
+    if (splitInt) {
+      # Reorder bytes for mixed endian.
+      if (endian == "mixed") {
+        byte_order <- as.integer(strsplit(byte_order, ",")[[1]]) - 1
+        if(length(byte_order) != size) {
+          stop("byte order not consistent with bidwidths")
+        }
+
+        bytes <- readBin(con = con, what = "raw", n = nBytes, size = 1)
+        newBytes <- sortBytes(bytes, byte_order)
+        con <- newBytes
+        endian <- "little"
+      }
+          
+      # Read uint32 as two uint16. Coerce count again to make sure that it's
+      # within the integer limit.
+      splitted <- readBin(con = con, what = dattype, n = as.integer(count * 2),
+                          size = size / 2, signed = FALSE, endian = endian)
+      uint2double(splitted, endian == "big")
+    } else {
+      readBin(con = con, what = dattype, n = count, size = size,
+              signed = signed, endian=endian)
+    }
+	} else {
+		# Read raw byte stream first.
+		oldBytes <- readBin(con = con, what = "raw", n = nBytes, size = 1)
+		# Convert to bit vector.
+		oldBits <- rawToBits(oldBytes)
+		# Convert the data element to the non-odd bitwidth.
+		oldBitWidth <- size * 8
+		newBitWidth <- 2 ^ ceiling(log(oldBitWidth, 2))
+		newBits <-
+      unlist(lapply(1:count, function(i) {
+				start <- (i - 1) * oldBitWidth + 1
+        # Padding zeros.
+        c(oldBits[start:(start + oldBitWidth - 1)],
+          raw(newBitWidth-oldBitWidth))
+      }))
+		# Convert raw byte to corresponding type by readBin. packBits is
+    # least-significant bit first, so we need to make sure endian is set to
+    # "little" instead of the endian used in original FCS.
+		readBin(packBits(newBits, "raw"), what = dattype, n = count,
+            size = newBitWidth / 8, signed = signed, endian = "little")
+	}
+}
 
 ## ==========================================================================
 ## read FCS file data section
@@ -753,22 +763,20 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
 
 
-    nwhichLines <- length(which.lines)
-    ##Read all reports
-    if(is.null(which.lines) || (nwhichLines >  nrowTotal)){
-        if (nwhichLines >  nrowTotal){
-            cat("Warning: the number of lines specified (",nwhichLines,
-                ") is greater
-                 than the number of collected events (",nrowTotal,
-                "). All the events have been read. \n")
-        }
+    if(is.null(which.lines)){
+      # Read the entire file.
       seek(con, offsets["datastart"])
+      nBytes <- offsets["dataend"] - offsets["datastart"] + 1
 
-      nBytes <- offsets["dataend"]-offsets["datastart"]+1
-      if(nBytes > .Machine$integer.max)
-        stop("Total number of bytes (", nBytes, ") in data segment exceeds the R integer limits!Please read the subset of FCS by specifying 'which.lines'")
-      nBytes <- as.integer(nBytes)
-	    if(multiSize){
+	    if (multiSize) {
+        if (nBytes > .Machine$integer.max) {
+          stop(
+            paste0("cannot import files with more than ", .Machine$integer.max,
+                   " bytes in data segment when file has multiple bitwidths")
+          )
+        }
+        nBytes <- as.integer(nBytes)
+
 #	      if(splitInt&&dattype=="integer")
 #	        stop("Mutliple bitwidths with big integer are not supported!")
 	      if(endian == "mixed")
@@ -779,38 +787,50 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	      if(dattype == "numeric" && length(unique(size)) > 1)
 	        stop("we don't support different bitwdiths for numeric data type!")
 	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
-
-
-	    }else{
-	      dat <- .readFCSdataRaw(con, dattype
-	                             , count= nBytes/size
-	                             , size= size
-	                             , signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
+	    } else {
+	      dat <-
+          .readFCSdataRawMultiple(
+            con, dattype, count = nBytes / size, size = size, signed = signed,
+            endian=endian, splitInt = splitInt, byte_order = byte_order)
 	    }
+    } else {
+      # Read subset of lines, as selected by user.
+      if (multiSize) {
+        stop("'which.lines' cannot be used with multiple bitwidths")
+      }
 
-
-    }else {
-      if(multiSize)
-        stop("'which.lines' can not be used when bitwidths are different across parameters!")
-      ##Read n lines with or without sampling
-        if(length(which.lines)==1)
-            which.lines <- sample(seq_len(nrowTotal), which.lines)
-        which.lines <- sort(which.lines)
-        outrange <- length(which(which.lines > nrowTotal))
-        if(outrange!=0)
-            stop("Some or all the line indices specified are greater that the",
-                 "number of collected events.\n")
-        dat <- c()
-        for (i in 1:length(which.lines)){
-            startP <- offsets["datastart"] + (which.lines[i]-1) * nrpar * size
-            endP   <-  startP + nrpar * size
-            seek(con, startP)
-			temp <- .readFCSdataRaw(con, dattype, count= as.integer(endP - startP+1)/size,
-					size=size, signed=signed, endian=endian, splitInt = splitInt, byte_order = byte_order)
-
-            dat <- c(dat, temp)
+      # Verify that which.lines is positive and within file limit.
+      if (length(which.lines) > 1) {
+        if (any(which.lines < 0)) {
+          warning("import will skip lines with negative indices")
+          which.lines <- which.lines[which.lines > 0]
         }
+        if (any(which.lines > nrowTotal)) {
+          warning("import will skip lines over number of collected events")
+          which.lines <- which.lines[which.lines < nrowTotal]
+        }
+      }
+
+      if (length(which.lines) == 1) {
+        # If a single value is given, sample N lines randomly.
+        which.lines <- sample(seq(nrowTotal), which.lines)
+      }
+
+      which.lines <- sort(which.lines)
+      dat <- c()
+      for (i in 1:length(which.lines)){
+        startP <- offsets["datastart"] + (which.lines[i] - 1) * nrpar * size
+        endP   <- startP + nrpar * size
+        seek(con, startP)
+        temp <-
+          .readFCSdataRawMultiple(
+            con, dattype, count = as.integer(endP - startP + 1) / size,
+            size = size, signed = signed, endian = endian, splitInt = splitInt,
+            byte_order = byte_order)
+        dat <- c(dat, temp)
+      }
     }
+
     ## stopifnot(length(dat)%%nrpar==0)
     ## Do we want the function to bail out when the above condition is TRUE?
     ## Might be better to assume the data was ok up to this point and

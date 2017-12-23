@@ -622,7 +622,7 @@ setMethod("spillover",
             
             if (is.null(unstained)) {
               stop("Sorry, we don't yet support unstained cells blended ",
-                   "with stained cells", call. = FALSE)
+                   "with stained cells", " please specify the name or index of unstained sample", call. = FALSE)
             } else {
               ## We often only want spillover for a subset of the columns
               allcols <- colnames(x)
@@ -639,7 +639,7 @@ setMethod("spillover",
               if (!is.numeric(unstained)) {
                 unstained <- match(unstained, sampleNames(x))
                 if (is.na(unstained)) {
-                  stop("Baseline not in this set.", call. = FALSE)
+                  stop("Baseline(unstained sample) not found in this set.", call. = FALSE)
                 }
               }
 
@@ -667,7 +667,7 @@ setMethod("spillover",
                   x <- Subset(x, n2f)
                 }
               }
-
+              
               # Here, we match the stain channels with the compensation controls
               # if the user has specified it. Otherwise, we must "guess" below
               # based on the largest statistic for the compensation control
@@ -727,7 +727,10 @@ setMethod("spillover",
                 names(x_gated) <- sampleNames(x)[channel_order]
                 x <- rbind2(flowSet(x_gated), x[unstained])
               }
-
+              if(length(x) - 1 != length(cols))
+              {
+                stop("the number of single stained samples provided in this set doesn't match to the number of stained channels!")
+              }
               if (method == "mode") {
                 inten <- fsApply(x, function(flow_frame) {
                   modes <- sapply(cols, function(stain) {

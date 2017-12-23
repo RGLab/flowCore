@@ -20,8 +20,13 @@ expectRes.new <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectRes.ne
 # })
 # expectRes.new <- list()
 test_that("big file", {
-  expect_error(fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs")), "integer limits")
-  expect_error(fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = c(1,1e9)), "number of collected events")
+  #too slow to run
+  # fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), column.pattern = "FSC*")
+                 
+  fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs")
+                              , which.lines = c(1,1e9)
+                              , column.pattern = "FSC*")
+  expect_equal(nrow(fr), 1)
   fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = 1:1e3)
   expect_equal(nrow(fr), 1e3)
   fr <- read.FCS(file.path(dataPath, "gigantic_file.fcs"), which.lines = (1e3+1):2e3)
