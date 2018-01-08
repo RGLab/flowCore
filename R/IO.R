@@ -177,13 +177,16 @@ read.FCS <- function(filename,
       if(!is.null(sp)){
           splt <- strsplit(sp, ",")[[1]]
           nrCols <- as.numeric(splt[1])
-          cnames <- splt[2:(nrCols+1)]
-          vals <- as.numeric(splt[(nrCols+2):length(splt)])
-          spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
-          if(alter.names)
-            cnames <- make.names(cnames)
-          colnames(spmat) <- cnames
-          description[[sn]] <- spmat
+          if(nrCols > 0)
+          {
+            cnames <- splt[2:(nrCols+1)]
+            vals <- as.numeric(splt[(nrCols+2):length(splt)])
+            spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+            if(alter.names)
+              cnames <- make.names(cnames)
+            colnames(spmat) <- cnames
+            description[[sn]] <- spmat  
+          }
       }
     }
     tmp <- new("flowFrame", exprs=mat, description= description,
