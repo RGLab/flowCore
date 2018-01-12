@@ -1245,7 +1245,7 @@ collapseDesc <- function(x, delimiter = "\\")
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "big")
 {
-  warning("'write.FCS' is not fully tested and should be considered as experimental.")
+  # warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
     if(missing(filename))
     {
@@ -1307,8 +1307,15 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "b
     ## Now update the PnN keyword
     pnn <- colnames(x)
     names(pnn) <- sprintf("$P%sN", newid)
-    
     mk <- c(mk, pnn)
+    
+    ## Now update the PnS keyword
+    pns <- pd[["desc"]]
+    newid.pns <- newid[!is.na(pns)]
+    pns <- pns[!is.na(pns)]
+    names(pns) <- sprintf("$P%sS", newid.pns)
+    mk <- c(mk, pns)
+    
     description(x) <- mk
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
