@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // biexponential_transform
 std::vector<double> biexponential_transform(std::vector<double> input, double A, double B, double C, double D, double F, double W, double tol, int maxIt);
-RcppExport SEXP flowCore_biexponential_transform(SEXP inputSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP DSEXP, SEXP FSEXP, SEXP WSEXP, SEXP tolSEXP, SEXP maxItSEXP) {
+RcppExport SEXP _flowCore_biexponential_transform(SEXP inputSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP DSEXP, SEXP FSEXP, SEXP WSEXP, SEXP tolSEXP, SEXP maxItSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,7 +27,7 @@ END_RCPP
 }
 // convertRawBytes
 std::vector<double> convertRawBytes(BYTES bytes, bool isInt, std::vector<unsigned short> colSize, unsigned short ncol, bool isBigEndian);
-RcppExport SEXP flowCore_convertRawBytes(SEXP bytesSEXP, SEXP isIntSEXP, SEXP colSizeSEXP, SEXP ncolSEXP, SEXP isBigEndianSEXP) {
+RcppExport SEXP _flowCore_convertRawBytes(SEXP bytesSEXP, SEXP isIntSEXP, SEXP colSizeSEXP, SEXP ncolSEXP, SEXP isBigEndianSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // fcsTextParse
 myPairs fcsTextParse(std::string txt, bool emptyValue);
-RcppExport SEXP flowCore_fcsTextParse(SEXP txtSEXP, SEXP emptyValueSEXP) {
+RcppExport SEXP _flowCore_fcsTextParse(SEXP txtSEXP, SEXP emptyValueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +54,7 @@ END_RCPP
 }
 // hyperlog_transform
 std::vector<double> hyperlog_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse);
-RcppExport SEXP flowCore_hyperlog_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
+RcppExport SEXP _flowCore_hyperlog_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,7 +70,7 @@ END_RCPP
 }
 // inPolygon
 std::vector<bool> inPolygon(NumericMatrix data, NumericMatrix vertices);
-RcppExport SEXP flowCore_inPolygon(SEXP dataSEXP, SEXP verticesSEXP) {
+RcppExport SEXP _flowCore_inPolygon(SEXP dataSEXP, SEXP verticesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -82,7 +82,7 @@ END_RCPP
 }
 // inPolytope
 std::vector<bool> inPolytope(NumericMatrix data, NumericMatrix A, NumericVector b);
-RcppExport SEXP flowCore_inPolytope(SEXP dataSEXP, SEXP ASEXP, SEXP bSEXP) {
+RcppExport SEXP _flowCore_inPolytope(SEXP dataSEXP, SEXP ASEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,7 +95,7 @@ END_RCPP
 }
 // logicle_transform
 std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse);
-RcppExport SEXP flowCore_logicle_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
+RcppExport SEXP _flowCore_logicle_transform(SEXP inputSEXP, SEXP TSEXP, SEXP WSEXP, SEXP MSEXP, SEXP ASEXP, SEXP isInverseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -111,7 +111,7 @@ END_RCPP
 }
 // sortBytes
 BYTES sortBytes(BYTES bytes, std::vector<unsigned short> byte_order);
-RcppExport SEXP flowCore_sortBytes(SEXP bytesSEXP, SEXP byte_orderSEXP) {
+RcppExport SEXP _flowCore_sortBytes(SEXP bytesSEXP, SEXP byte_orderSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -123,7 +123,7 @@ END_RCPP
 }
 // uint2double
 std::vector<double> uint2double(std::vector<unsigned> input, bool isBigEndian);
-RcppExport SEXP flowCore_uint2double(SEXP inputSEXP, SEXP isBigEndianSEXP) {
+RcppExport SEXP _flowCore_uint2double(SEXP inputSEXP, SEXP isBigEndianSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -135,15 +135,15 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"flowCore_biexponential_transform", (DL_FUNC) &flowCore_biexponential_transform, 9},
-    {"flowCore_convertRawBytes", (DL_FUNC) &flowCore_convertRawBytes, 5},
-    {"flowCore_fcsTextParse", (DL_FUNC) &flowCore_fcsTextParse, 2},
-    {"flowCore_hyperlog_transform", (DL_FUNC) &flowCore_hyperlog_transform, 6},
-    {"flowCore_inPolygon", (DL_FUNC) &flowCore_inPolygon, 2},
-    {"flowCore_inPolytope", (DL_FUNC) &flowCore_inPolytope, 3},
-    {"flowCore_logicle_transform", (DL_FUNC) &flowCore_logicle_transform, 6},
-    {"flowCore_sortBytes", (DL_FUNC) &flowCore_sortBytes, 2},
-    {"flowCore_uint2double", (DL_FUNC) &flowCore_uint2double, 2},
+    {"_flowCore_biexponential_transform", (DL_FUNC) &_flowCore_biexponential_transform, 9},
+    {"_flowCore_convertRawBytes", (DL_FUNC) &_flowCore_convertRawBytes, 5},
+    {"_flowCore_fcsTextParse", (DL_FUNC) &_flowCore_fcsTextParse, 2},
+    {"_flowCore_hyperlog_transform", (DL_FUNC) &_flowCore_hyperlog_transform, 6},
+    {"_flowCore_inPolygon", (DL_FUNC) &_flowCore_inPolygon, 2},
+    {"_flowCore_inPolytope", (DL_FUNC) &_flowCore_inPolytope, 3},
+    {"_flowCore_logicle_transform", (DL_FUNC) &_flowCore_logicle_transform, 6},
+    {"_flowCore_sortBytes", (DL_FUNC) &_flowCore_sortBytes, 2},
+    {"_flowCore_uint2double", (DL_FUNC) &_flowCore_uint2double, 2},
     {NULL, NULL, 0}
 };
 

@@ -2,38 +2,38 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 biexponential_transform <- function(input, A, B, C, D, F, W, tol, maxIt) {
-    .Call(flowCore_biexponential_transform, input, A, B, C, D, F, W, tol, maxIt)
+    .Call(`_flowCore_biexponential_transform`, input, A, B, C, D, F, W, tol, maxIt)
 }
 
 convertRawBytes <- function(bytes, isInt, colSize, ncol, isBigEndian) {
-    .Call(flowCore_convertRawBytes, bytes, isInt, colSize, ncol, isBigEndian)
+    .Call(`_flowCore_convertRawBytes`, bytes, isInt, colSize, ncol, isBigEndian)
 }
 
 fcsTextParse <- function(txt, emptyValue) {
-    .Call(flowCore_fcsTextParse, txt, emptyValue)
+    .Call(`_flowCore_fcsTextParse`, txt, emptyValue)
 }
 
 hyperlog_transform <- function(input, T, W, M, A, isInverse) {
-    .Call(flowCore_hyperlog_transform, input, T, W, M, A, isInverse)
+    .Call(`_flowCore_hyperlog_transform`, input, T, W, M, A, isInverse)
 }
 
 inPolygon <- function(data, vertices) {
-    .Call(flowCore_inPolygon, data, vertices)
+    .Call(`_flowCore_inPolygon`, data, vertices)
 }
 
 inPolytope <- function(data, A, b) {
-    .Call(flowCore_inPolytope, data, A, b)
+    .Call(`_flowCore_inPolytope`, data, A, b)
 }
 
 logicle_transform <- function(input, T, W, M, A, isInverse) {
-    .Call(flowCore_logicle_transform, input, T, W, M, A, isInverse)
+    .Call(`_flowCore_logicle_transform`, input, T, W, M, A, isInverse)
 }
 
 sortBytes <- function(bytes, byte_order) {
-    .Call(flowCore_sortBytes, bytes, byte_order)
+    .Call(`_flowCore_sortBytes`, bytes, byte_order)
 }
 
 uint2double <- function(input, isBigEndian) {
-    .Call(flowCore_uint2double, input, isBigEndian)
+    .Call(`_flowCore_uint2double`, input, isBigEndian)
 }
 
