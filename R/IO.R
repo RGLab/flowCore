@@ -937,7 +937,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              # dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
              # to
              # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
-             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
+             # M.Jiang, Jan 28, 2018. Based on the standard, formula should be  xs = 10^(f1 * xc /(r)) * f2.
+             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])*ampli[i,2]
              range[i] <- 10^ampli[i,1]
           }
           else if (fcsPnGtransform && PnGPar[i] != 1) {
