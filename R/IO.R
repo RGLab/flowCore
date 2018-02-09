@@ -142,8 +142,10 @@ read.FCS <- function(filename,
 
     ## check for validity
     if(is.null(which.lines)){
-        if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
-            stop(paste("file", filename, "seems to be corrupted."))
+      total_number_of_events <- as.integer(readFCSgetPar(txt, "$TOT"));
+        if(total_number_of_events != nrow(mat))
+            stop("file", filename, "seems to be corrupted. \n The actual number of cells in data section ("
+                 , nrow(mat), ") is not consistent with keyword '$TOT' (", total_number_of_events , ")")
     }
 
 	## set transformed flag and fix the PnE and the Datatype keywords
