@@ -142,8 +142,10 @@ read.FCS <- function(filename,
 
     ## check for validity
     if(is.null(which.lines)){
-        if(as.integer(readFCSgetPar(txt, "$TOT"))!=nrow(mat))
-            stop(paste("file", filename, "seems to be corrupted."))
+      total_number_of_events <- as.integer(readFCSgetPar(txt, "$TOT"));
+        if(total_number_of_events != nrow(mat))
+            stop("file", filename, "seems to be corrupted. \n The actual number of cells in data section ("
+                 , nrow(mat), ") is not consistent with keyword '$TOT' (", total_number_of_events , ")")
     }
 
 	## set transformed flag and fix the PnE and the Datatype keywords
@@ -937,7 +939,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              # dat[,i] <- 10^((dat[,i]/(range[i]-1))*ampli[i,1])
              # to
              # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
-             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
+             # M.Jiang, Jan 28, 2018. Based on the standard, formula should be  xs = 10^(f1 * xc /(r)) * f2.
+             dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])*ampli[i,2]
              range[i] <- 10^ampli[i,1]
           }
           else if (fcsPnGtransform && PnGPar[i] != 1) {
