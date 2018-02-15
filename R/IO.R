@@ -238,7 +238,12 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
                                         as.numeric(unlist(strsplit(x,",")))))
         for (i in 1:npar)
             if(ampli[i,1] > 0 && dattype == "integer")
-                range[,i] <- 10^(range[,i]/(origRange[i]-1)*ampli[i,1])**ampli[i,2]
+            {
+              if(ampli[i,2] == 0)
+                ampli[i,2] = 1 #correct f2 value for legacy FCS
+              range[,i] <- 10^(range[,i]/(origRange[i]-1)*ampli[i,1])*ampli[i,2]
+            }
+                
     }
     else if(scale)
         range[2,] <- rep(10^decades, npar)
@@ -946,6 +951,8 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
              # to
              # dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])
              # M.Jiang, Jan 28, 2018. Based on the standard, formula should be  xs = 10^(f1 * xc /(r)) * f2.
+             if(ampli[i,2] == 0)
+               ampli[i,2] = 1 #correct f2 value for legacy FCS
              dat[,i] <- 10^((dat[,i]/range[i])*ampli[i,1])*ampli[i,2]
              range[i] <- 10^ampli[i,1]*ampli[i,2]
           }
