@@ -23,7 +23,7 @@ std::vector<double> hyperlog_transform(std::vector<double> input, double T, doub
 
 	    try{
 	    	Hyperlog lg = Hyperlog(T, W, M, A);
-				for (int i = 0; i < nLen; i++) {
+				for (unsigned i = 0; i < nLen; i++) {
 					if(isInverse)
 						input.at(i) = lg.inverse(input.at(i));
 					else

@@ -12,12 +12,12 @@ BYTES sortBytes(BYTES bytes, std::vector<unsigned short> byte_order)
 
   
   unsigned elementSize = byte_order.size();
-  auto nTotalBytes = bytes.size();
+  unsigned nTotalBytes = bytes.size();
   //how many element to return
-  auto nElement = nTotalBytes / elementSize ;
+  unsigned nElement = nTotalBytes / elementSize ;
   BYTES output(nTotalBytes);
-  for(auto ind = 0; ind < nElement; ind++){
-    for(auto i = 0; i < elementSize; i++){
+  for(unsigned ind = 0; ind < nElement; ind++){
+    for(unsigned i = 0; i < elementSize; i++){
       auto j = byte_order.at(i);
       
       auto pos_old = ind * elementSize + i;
