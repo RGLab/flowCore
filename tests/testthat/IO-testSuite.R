@@ -70,7 +70,7 @@ test_that("FCS with both SPILL and $SPILLOVER present", {
   tmp <- spillover(fr)
   expect_equal(tmp[["SPILL"]], tmp[["$SPILLOVER"]])
   tmp <- tempfile()
-  expect_warning(write.FCS(fr, filename = tmp))
+  write.FCS(fr, filename = tmp)
   fr <- read.FCS(tmp)  
   expect_equal(keyword(fr)[["SPILL"]], keyword(fr)[["$SPILLOVER"]])
   
@@ -154,7 +154,7 @@ test_that("test odd-bitwidth FCS", {
       fr <- read.FCS(file.path(dataPath, "oddbitwith", filename))
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["11ColorSmall"]], digest(fr))
+      expect_equal(expectRes[["read.FCS"]][["11ColorSmall"]], summary(fr))
       
       #too slow to test
 #      fr <- read.FCS(file.path(dataPath, "oddbitwith/11ColorForOthers.fcs"))
@@ -184,7 +184,7 @@ test_that("test other FCS", {
     fr <- read.FCS(file.path(dataPath, filename))
     #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
     keyword(fr)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["Blank"]], digest(fr))
+    expect_equal(expectRes[["read.FCS"]][["Blank"]], summary(fr))
     
     filename <- "Bendall et al Cell Sample A_basal.fcs"
     expect_output(fr <- read.FCS(file.path(dataPath, filename))
@@ -202,7 +202,7 @@ test_that("test delimiter issue", {
       fr <- read.FCS(file.path(dataPath, filename), emptyValue = F)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["GFP2Kfold"]], digest(fr))
+      expect_equal(expectRes[["read.FCS"]][["GFP2Kfold"]], summary(fr))
       
       filename <- "RAINBOW_OK.fcs"
       fr <- read.FCS(file.path(dataPath, filename))
