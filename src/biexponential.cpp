@@ -38,7 +38,7 @@ std::vector<double> biexponential_transform(std::vector<double> input,double A,d
 
 	struct biexponential_info params;
 	
-	int    i;
+	unsigned    i;
     int fail=0;
 	double step;
 	params.a = A;

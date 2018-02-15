@@ -58,9 +58,9 @@ std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsign
   auto pos = 0;
   // Rcpp::Rcout << "event=" << nrow << " ncol=" << ncol << std::endl;
 
-  for(auto i = 0; i < nrow; i++){
+  for(unsigned i = 0; i < nrow; i++){
 
-    for(auto j = 0; j < ncol; j++){
+    for(unsigned j = 0; j < ncol; j++){
       //convert each element
       auto thisStart = pos;
       auto thisSize = colSize.at(j);

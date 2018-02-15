@@ -14,7 +14,7 @@ std::vector<double> logicle_transform(std::vector<double> input, double T, doubl
 
     try{
 			Logicle lg = Logicle(T, W, M, A);
-			for (int i = 0; i < nLen; i++) {
+			for (unsigned i = 0; i < nLen; i++) {
 				if(isInverse)
 					input.at(i) = lg.inverse(input.at(i)/M);
 				else
