@@ -134,15 +134,16 @@ setClass("flowSet",
                  return(paste("These objects are not in the data environment:",
                               name.list))
              }
+             
              ##Ensure that all frames match our colnames
              if(!all(sapply(sampleNames(object), function(i) {
                  x <- get(i, env=object@frames)
-                 if(all(object@colnames %in% colnames(x))){
+                 
+                 if(all(object@colnames == colnames(x))){
                      TRUE
                  }else{ 
-                     return(paste(i, "failing colnames check: ",
-                                  paste(object@colnames, sep=","),
-                                  "vs", paste(colnames(x), sep=",")))
+                     message(i, " doesn't have the identical colnames as the other samples!")
+                   FALSE
                  }
              }))){
                  return(paste("Some items identified in the data environment",
