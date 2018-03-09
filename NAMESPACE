@@ -23,7 +23,7 @@ importMethodsFrom(graph, addEdge, addNode, adj, edgeData, "edgeData<-",
 
 importFrom(Biobase, listLen, read.AnnotatedDataFrame)
 
-importFrom(BiocGenerics, colnames, eval, get, mget, nrow, ncol)
+importFrom(BiocGenerics, colnames, eval, get, mget, nrow, ncol, sort)
 
 importFrom(stats4, plot, summary)
 
@@ -333,7 +333,6 @@ export("action",
        "sampleFilter",
        "scaleTransform",
        "sinht",
-       "sort",
        "spillover",
        "split",
        "splitscale",
