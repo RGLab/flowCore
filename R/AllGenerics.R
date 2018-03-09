@@ -20,14 +20,6 @@ setGeneric("%&%",function(e1,e2) standardGeneric("%&%"))
 setGeneric("%on%",function(e1,e2) standardGeneric("%on%"))
 
 
-
-## ===========================================================================
-## Generic for sorting (default in base)
-## ---------------------------------------------------------------------------
-setGeneric("sort",function(x,decreasing=FALSE,...) standardGeneric("sort"))
-
-
-
 ## ===========================================================================
 ## Generic for printing details of an object
 ## ---------------------------------------------------------------------------
