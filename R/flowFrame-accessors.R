@@ -395,13 +395,20 @@ setReplaceMethod("markernames",
                      misMatch <- is.na(ind)
                      if(any(misMatch))
                        stop("channel names not found in flow data: ", paste0(chnls[misMatch], collapse = ","))
-		     oldclass = class(pData(parameters(object))[,"desc"])
-		     class(pData(parameters(object))[,"desc"]) = "character"
-		     pData(parameters(object))[ind, "desc"] <- as.vector(value)
-		     if(oldclass=="factor"){
-			pData(parameters(object))[,"desc"] = factor(pData(parameters(object))[,"desc"])
-		     }
+                     #convert factor to character  to avoid incorrect updating
+                     old_desc <- pData(parameters(object))[,"desc"]
+                     if(is(old_desc, "factor"))
+                     {
+                       pData(parameters(object))[,"desc"] <- as.vector(old_desc)  
+                     }
                      
+                     pData(parameters(object))[ind, "desc"] <- as.vector(value)
+                     
+                     #restore to factor
+                     if(is(old_desc, "factor")){
+                       pData(parameters(object))[,"desc"] = factor(pData(parameters(object))[,"desc"])
+                     }
+
                      object
                    }
                    
