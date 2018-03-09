@@ -1304,11 +1304,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "b
     names(pnb) <- paste0(pid, "B")
     mk <- c(mk, pnb)
 #	browser()
-    ## FlowJo seems to get confused by empty values in PnS, we fix that here
-    pns <- description(x)[paste0(pid, "S")]
-    names(pns) <- sprintf("$P%sS", newid)
-#    pns <- lapply(pns, function(y) if(!length(y)) " " else y)
-    mk <- c(mk, pns)
+    
     ## We need all PnE keywords and assume "0,0" if they are missing
     pne <- description(x)[paste0(pid, "E")]
     names(pne) <- sprintf("$P%sE", newid)
@@ -1326,7 +1322,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "b
     mk <- c(mk, pnn)
     
     ## Now update the PnS keyword
-    pns <- pd[["desc"]]
+    pns <- as.vector(pd[["desc"]])
     newid.pns <- newid[!is.na(pns)]
     pns <- pns[!is.na(pns)]
     names(pns) <- sprintf("$P%sS", newid.pns)
