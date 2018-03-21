@@ -173,12 +173,14 @@ setReplaceMethod("exprs",
 setMethod("description",
           signature=signature(object="flowFrame"),
           function(object, hideInternal=FALSE){
-              if(!hideInternal)
-                  object@description
-              else{
-                  sel <- grep("^\\$", names(object@description))
-                  object@description[-sel]
-              }})
+              
+              kw <- keyword(object)
+              if(hideInternal){
+                  sel <- grep("^\\$", names(kw))
+                  kw <- kw[-sel]
+              }
+              kw
+            })
 
 ## replace description entries
 descError <- "Replacement value must be a named list."
@@ -242,17 +244,17 @@ setMethod("keyword",
           {           
                        
                        desc <- object@description
-                       if(!compact)
-                         desc
-                       else
-                       {
-                         kn <- names(desc)
-                         pattern <- '(\\$)|(LASER)|(^P[1-9]{1,2})|(^FJ_)|(FCS)|FSC ASF|(CYTOMETER)|COMPENSATION|WINDOW|THRESHOLD|(CST )|SPILL|EXPORT |CREATOR|AUTOBS'
-                         kn <- kn[!grepl(pattern, kn)]  
-                         keyword(object, kn)
-                       } 
+                       if(compact)
+                         desc <- kwfilter(desc)
+                       desc
                        
           })
+kwfilter <- function(desc){
+  kn <- names(desc)
+  pattern <- '(\\$)|(LASER)|(^P[1-9]{1,2})|(^FJ_)|(FCS)|FSC ASF|(CYTOMETER)|COMPENSATION|WINDOW|THRESHOLD|(CST )|SPILL|EXPORT |CREATOR|AUTOBS'
+  kn <- kn[!grepl(pattern, kn)]  
+  desc[kn]
+}      
 
 ## replace keywords
 kwdError <- "Replacement value must be a named character vector or list."
@@ -371,9 +373,9 @@ setGeneric("markernames",function(object,...) standardGeneric("markernames"))
 setMethod("markernames",
     signature=signature(object="flowFrame"),
     definition=function(object){
-      
-      markers <- as.vector(object@parameters$desc)
-      ind <- grepl("time|fsc|ssc", object@parameters$name, ignore.case = TRUE)
+      param <- parameters(object)
+      markers <- as.vector(param[["desc"]])
+      ind <- grepl("time|fsc|ssc", param[["name"]], ignore.case = TRUE)
       markers <- markers[!ind]
       markers[!is.na(markers)]
     })
@@ -395,6 +397,7 @@ setReplaceMethod("markernames",
                      misMatch <- is.na(ind)
                      if(any(misMatch))
                        stop("channel names not found in flow data: ", paste0(chnls[misMatch], collapse = ","))
+                     
                      #convert factor to character  to avoid incorrect updating
                      old_desc <- pData(parameters(object))[,"desc"]
                      if(is(old_desc, "factor"))
@@ -408,7 +411,7 @@ setReplaceMethod("markernames",
                      if(is(old_desc, "factor")){
                        pData(parameters(object))[,"desc"] = factor(pData(parameters(object))[,"desc"])
                      }
-
+                     
                      object
                    }
                    
@@ -422,7 +425,7 @@ setReplaceMethod("markernames",
 setMethod("colnames",
           signature=signature(x="flowFrame"),
           definition=function(x, do.NULL="missing", prefix="missing")
-          as.vector(x@parameters$name)
+          as.vector(parameters(x)[["name"]])
           )
 
 setReplaceMethod("colnames",
@@ -593,6 +596,7 @@ setMethod("filter",
                               filter="filter"),
           definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
       {
+            
           temp <- resolveTransforms(x, filter)
           x <- temp[["data"]]
           filter <- temp[["filter"]]

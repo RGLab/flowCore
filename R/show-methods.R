@@ -15,10 +15,10 @@ setMethod("show",
           signature=signature(object="flowFrame"),
           definition=function(object)
       {
-          dm <- dim(exprs(object))
-          cat(paste("flowFrame object '", identifier(object),
-                    "'\nwith ", dm[1], " cells and ",
-                    dm[2], " observables:\n", sep=""))
+          
+          cat(paste(class(object), " object '", identifier(object),
+                    "'\nwith ", nrow(object), " cells and ",
+                    ncol(object), " observables:\n", sep=""))
           show(pData(parameters(object)))
           cat(paste(length(description(object)), " keywords are stored in the ",
                     "'description' slot\n", sep = ""))
