@@ -68,6 +68,7 @@ read.FCS <- function(filename,
                      truncate_max_range = TRUE,
                      dataset=NULL,
                      emptyValue=TRUE
+		                , channel_alias = NULL
                     , ...)
 {
   if(ncdf)
@@ -110,7 +111,7 @@ read.FCS <- function(filename,
        txt[["transformation"]] %in% c("applied", "custom"))
        transformation <- FALSE
     mat <- readFCSdata(con, offsets, txt, transformation, which.lines,
-                       scale, alter.names, decades, min.limit, truncate_max_range)
+                       scale, alter.names, decades, min.limit, truncate_max_range, channel_alias)
     matRanges <- attr(mat,"ranges")
 
 
@@ -675,12 +676,37 @@ sortBytes1 <- function(bytes, byte_order){
 	}
 }
 
+check_channel_alias <- function(channel_alias){
+  if(is.null(channel_alias))
+    return (new.env(parent = emptyenv()))
+	else if(is(channel_alias, "data.frame"))
+	{
+	 if(!setequal(c("alias", "channels"), colnames(channel_alias)))
+		stop("channel_alias must contain 'alias' and 'channels' columns")
+ 	 env <- new.env(parent = emptyenv())
+	 apply(channel_alias, 1, function(row){
+    		channels <- strsplit(split = ",", row["channels"])[[1]]
+    		for(c in channels)
+    		{
+    		  c <- trimws(c)
+    		 if(is.null(env[[c]]))
+    		   env[[c]] <- trimws(row["alias"]	)
+    		 else
+    		  stop("multiple entries found in channel_alias for: ", c)
+    		}
+			})
+	return (env)
+	}else if(is(channel_alias, "environment"))
+		return (channel_alias)
+	else
+	 stop("channel_alias must be either an environment or a data.frame")
+}
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, which.lines,
-                        scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE) {
-    
+                        scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE, channel_alias = NULL) {
+    channel_alias <- check_channel_alias(channel_alias)    
     byte_order <- readFCSgetPar(x, "$BYTEORD")  
     endian <- switch(byte_order,
                      "4,3,2,1" = "big",
@@ -892,6 +918,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
 
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
+    cn <- unlist(lapply(cn, function(col){
+      alias <- channel_alias[[col]]
+      ifelse(is.null(alias), col, alias)
+      }))
     cn <- if(alter.names)  structure(make.names(cn),names=names(cn)) else cn
     dimnames(dat) <- list(NULL, cn)
     ## truncate data at max range
@@ -994,8 +1024,12 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          transformation="linearize", which.lines=NULL,
                          column.pattern=NULL, invert.pattern = FALSE, decades=0,
                          sep="\t", as.is=TRUE, name, ncdf=FALSE, dataset=NULL,
-                         min.limit=NULL, truncate_max_range = TRUE, emptyValue=TRUE, ignore.text.offset = FALSE, ...)
+                         min.limit=NULL, truncate_max_range = TRUE, emptyValue=TRUE
+                         , ignore.text.offset = FALSE
+                         , channel_alias = NULL
+                         , ...)
 {
+   channel_alias <- check_channel_alias(channel_alias)
     if(ncdf)
       .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
     ## A frame of phenoData information
@@ -1069,7 +1103,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                       decades=decades,min.limit=min.limit,emptyValue=emptyValue
                       , ignore.text.offset = ignore.text.offset
                       , dataset=dataset
-                      , truncate_max_range = truncate_max_range)
+                      , truncate_max_range = truncate_max_range
+                      , channel_alias = channel_alias)
     ## Allows us to specify a particular keyword to use as our sampleNames
     ## rather than requiring the GUID or the filename be used. This is handy
     ## when something like SAMPLE ID is a more reasonable choice.

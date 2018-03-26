@@ -12,7 +12,7 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
-            decades=0, ncdf = FALSE, min.limit=NULL, truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, ...)
+            decades=0, ncdf = FALSE, min.limit=NULL, truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, channel_alias = NULL, ...)
 
 }
 
@@ -87,7 +87,10 @@
 		 IF TRUE, The double delimiters are parsed as a pair of start and end single delimiter for an empty value.
 		 Otherwise, double delimiters are parsed one part of string as the keyword value.
 		default is TRUE.}
-		 
+		
+	\item{channel_alias}{a data.frame used to provide the alias of the channels to standardize and solve the discrepancy across FCS files.It is expected to contain 'alias' and 'channels' column. Each row/entry specifies the common alias name
+	                     for a collection of channels (comma separated). See examples for details.}	
+		
 	\item{...}{ignore.text.offset: whether to ignore the keyword values in TEXT segment when they don't agree with the HEADER.
 								   Default is FALSE, which throws the error when such discrepancy is found.
 								   User can turn it on to ignore TEXT segment when he is sure of the accuracy of HEADER so that the file still can be read. 
@@ -149,6 +152,11 @@ exprs(subset)
 subset <- read.FCS(fcsFile, which.lines=100, transformation="linearize")
 nrow(subset)
 
+#manually supply the alias vs channel options mapping as a data.frame
+map <- data.frame(alias = c("FITC", "V450")
+                  , channels = c("FITC, GFP, Alexa 488", "BV421, V450, ef450")
+                  )
+fs <- read.flowSet(files, channel_alias = map)
 }
 
 \keyword{IO}

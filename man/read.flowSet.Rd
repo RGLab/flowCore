@@ -11,7 +11,7 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
              column.pattern = NULL, invert.pattern = FALSE, decades=0, sep="\t",
              as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
              truncate_max_range = TRUE, emptyValue=TRUE, 
-             ignore.text.offset = FALSE, \dots)
+             ignore.text.offset = FALSE, channel_alias = NULL, \dots)
 }
 
 \arguments{
@@ -72,6 +72,8 @@ read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
   \item{ignore.text.offset}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{truncate_max_range}{see \code{\link[flowCore]{read.FCS}} for details.}
+  
+  \item{channel_alias}{see \code{\link[flowCore]{read.FCS}} for details.}
   
   \item{\dots}{Further arguments that get passed on to
     \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
