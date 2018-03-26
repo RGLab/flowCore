@@ -172,7 +172,7 @@ setMethod("phenoData<-",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("pData",
 		signature=signature(object="flowSet"),
-		definition=function(object) pData(object@phenoData))
+		definition=function(object) pData(phenoData(object)))
 
 setReplaceMethod("pData",
 		signature=signature(object="flowSet",
@@ -309,7 +309,8 @@ setMethod("fsApply",
 			## row.names and sampleNames had damn well better match, use this to
 			## give us access to the phenoData
 			res <- structure(lapply(sampleNames(x),function(n) {
-								y <- as(x[[n]],"flowFrame")
+								# y <- as(x[[n]],"flowFrame")
+			          y <- x[[n]]
 								FUN(if(use.exprs) exprs(y) else y,...)
 							}),names=sampleNames(x))
 			if(simplify) {

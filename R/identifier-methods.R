@@ -21,11 +21,11 @@ setMethod("identifier",
           signature=signature(object="flowFrame"),
           definition=function(object)
       {
-          oid <- object@description[["GUID"]]
+          oid <- keyword(object,"GUID")[[1]]
           if(is.null(oid) || is.na(oid))
-              oid <- as.vector(object@description[["FILENAME"]])
+              oid <- as.vector(keyword(object,"FILENAME")[[1]])
           if(is.null(oid) || is.na(oid))
-              oid <- as.vector(object@description[["$FIL"]])
+              oid <- as.vector(keyword(object,"$FIL")[[1]])
           if(is.null(oid) || is.na(oid))
               "anonymous"
           else

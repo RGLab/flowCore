@@ -207,3 +207,31 @@ test_that("write.flowSet: test2", {
   expect_equal(dir(outDir), c("a.fcs", "annotation.txt", "b.fcs"))
   
 })
+
+
+test_that("read.FCS: channel_alias", {
+  
+  data(GvHD)
+  fr1 <- GvHD[[1]]
+  fr2 <- GvHD[[2]]
+  
+  colnames(fr1)[c(3,5)] <- c("FL11-H", "FL33-H")
+  
+  ## now write out into  files
+  fcs1 <- tempfile()
+  write.FCS(fr1, fcs1)
+  fcs2 <- tempfile()
+  write.FCS(fr2, fcs2)
+  
+  expect_message(expect_error(fs <- read.flowSet(c(fcs1,fcs2))),regexp = "doesn't have the identical colnames")
+  
+  map <- data.frame(alias = c("FL1", "FL3"), channels = c("FL1-H, FL11-H", "FL3-H, FL33-H"))
+  fs <- read.flowSet(c(fcs1,fcs2), channel_alias = map)
+  expect_equal(colnames(fs)[c(3,5)], c("FL1", "FL3"))
+  
+  outDir <- tempfile()
+  suppressWarnings(write.flowSet(fs, outDir, filename = c("a", "b")))
+  fs1 <- read.flowSet(files = c("a.fcs", "b.fcs"), path = outDir)
+  expect_equal(keyword(fs1[[1]])[["$P3N"]], "FL1")
+})
+
