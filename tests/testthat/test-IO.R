@@ -10,9 +10,7 @@ rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 
 tmpdir <- tempfile()
 
-test_that("write.flowSet: test 1", {
-      suppressWarnings(write.flowSet(fs, tmpdir))
-})
+write.flowSet(fs, tmpdir)
 
 test_that("read.flowSet", {
       
