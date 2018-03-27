@@ -215,7 +215,7 @@ test_that("read.FCS: channel_alias", {
   fr1 <- GvHD[[1]]
   fr2 <- GvHD[[2]]
   
-  colnames(fr1)[c(3,5)] <- c("FL11-H", "FL33-H")
+  colnames(fr1)[c(3,5)] <- c("AL1-H", "AL3-H")
   
   ## now write out into  files
   fcs1 <- tempfile()
@@ -225,13 +225,33 @@ test_that("read.FCS: channel_alias", {
   
   expect_message(expect_error(fs <- read.flowSet(c(fcs1,fcs2))),regexp = "doesn't have the identical colnames")
   
-  map <- data.frame(alias = c("FL1", "FL3"), channels = c("FL1-H, FL11-H", "FL3-H, FL33-H"))
+  #strict matching by full name
+  map <- data.frame(alias = c("FL1", "FL3"), channels = c("AL1-H, FL1-H", "FL3-H, AL3-H"))
   fs <- read.flowSet(c(fcs1,fcs2), channel_alias = map)
   expect_equal(colnames(fs)[c(3,5)], c("FL1", "FL3"))
+  
+  #partial matching
+  map <- data.frame(alias = c("FL1", "FL3"), channels = c("AL1, FL1", "FL3, AL3"))
+  fs <- read.flowSet(c(fcs1,fcs2), channel_alias = map)
+  expect_equal(colnames(fs)[c(3,5)], c("FL1", "FL3"))
+  
+  #case insensitive matching
+  map <- data.frame(alias = c("FL1", "FL3"), channels = c("al1, FL1", "fl3, AL3"))
+  fs <- read.flowSet(c(fcs1,fcs2), channel_alias = map)
+  expect_equal(colnames(fs)[c(3,5)], c("FL1", "FL3"))
+  
+  #ambigous partial matching
+  map <- data.frame(alias = c("FL1", "FL3"), channels = c("l1, FL1", "fl3, AL3"))
+  expect_error(fs <- read.flowSet(c(fcs1,fcs2), channel_alias = map), "multiple entries")
   
   outDir <- tempfile()
   suppressWarnings(write.flowSet(fs, outDir, filename = c("a", "b")))
   fs1 <- read.flowSet(files = c("a.fcs", "b.fcs"), path = outDir)
   expect_equal(keyword(fs1[[1]])[["$P3N"]], "FL1")
+  
+  #update spillover as well
+  fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
+  fr <- read.FCS(fcsfile, channel_alias = data.frame(alias = c("FL1", "FL3"), channels = c("B710-A", "R780-A")))
+  expect_equal(colnames(spillover(fr)[[1]]), colnames(fr)[5:11])
 })
 

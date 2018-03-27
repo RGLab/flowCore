@@ -71,6 +71,7 @@ read.FCS <- function(filename,
 		                , channel_alias = NULL
                     , ...)
 {
+  channel_alias <- check_channel_alias(channel_alias)    
   if(ncdf)
     .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for disk-based data structure.")
     ## check file name
@@ -185,6 +186,7 @@ read.FCS <- function(filename,
             cnames <- splt[2:(nrCols+1)]
             vals <- as.numeric(splt[(nrCols+2):length(splt)])
             spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+            cnames <- update_channel_by_alias(cnames, channel_alias)
             if(alter.names)
               cnames <- make.names(cnames)
             colnames(spmat) <- cnames
@@ -690,7 +692,7 @@ check_channel_alias <- function(channel_alias){
     		{
     		  c <- trimws(c)
     		 if(is.null(env[[c]]))
-    		   env[[c]] <- trimws(row["alias"]	)
+    		   env[[c]] <- trimws(row[["alias"]])
     		 else
     		  stop("multiple entries found in channel_alias for: ", c)
     		}
@@ -701,12 +703,35 @@ check_channel_alias <- function(channel_alias){
 	else
 	 stop("channel_alias must be either an environment or a data.frame")
 }
+
+update_channel_by_alias <- function(orig_chnl_names, channel_alias)
+{
+  keys <- ls(channel_alias)
+  unlist(lapply(orig_chnl_names, function(col){
+    alias <- channel_alias[[col]]
+    if(is.null(alias))
+    {
+      #try partial match with case insensitive maching
+      #escape special characters by enclosing it with \Q and \E
+      
+      ind <- unlist(lapply(keys, function(key){grepl(paste0("\\Q", key, "\\E"), col, ignore.case = TRUE)}))
+      
+      if(sum(ind)>1)
+        stop(col, " is matched to the multiple entries in the channel_alias: ", paste(keys[ind], " "), "\n Try to modify channel_alias so that channel names are more specific! ")
+      else if(sum(ind) == 0)
+        return (col)
+      else
+        return (channel_alias[[keys[ind]]])
+    }else
+      return (alias)
+  }))
+}
 ## ==========================================================================
 ## read FCS file data section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readFCSdata <- function(con, offsets, x, transformation, which.lines,
                         scale, alter.names, decades, min.limit=-111, truncate_max_range = TRUE, channel_alias = NULL) {
-    channel_alias <- check_channel_alias(channel_alias)    
+    
     byte_order <- readFCSgetPar(x, "$BYTEORD")  
     endian <- switch(byte_order,
                      "4,3,2,1" = "big",
@@ -918,10 +943,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
 
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
-    cn <- unlist(lapply(cn, function(col){
-      alias <- channel_alias[[col]]
-      ifelse(is.null(alias), col, alias)
-      }))
+    cn <- update_channel_by_alias(cn, channel_alias)
     cn <- if(alter.names)  structure(make.names(cn),names=names(cn)) else cn
     dimnames(dat) <- list(NULL, cn)
     ## truncate data at max range
