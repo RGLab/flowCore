@@ -16,7 +16,14 @@ test_that("compensate & transform", {
       
       expect_equal(fsApply(comp.fs2, colMeans, use.exprs = TRUE), expectRes[["trans.comp"]])
               
-    # list
+      #extra chanls
+      comp.mat1 <- comp.mat[c(1:4,1), c(1:4,1)]
+      colnames(comp.mat1)[5] <- "dd"
+      rownames(comp.mat1)[5] <- "dd"
+      expect_error(compensate(fr, comp.mat1), "not present in the flowFrame")
+
+      
+      # list
       comp <- sapply(sampleNames(comp.fs1), function(sn)comp.mat, simplify = FALSE)
       comp.fs3 <- compensate(comp.fs1,comp)
       expect_equal(fsApply(comp.fs3, colMeans, use.exprs = TRUE), expectRes[["trans.comp"]])

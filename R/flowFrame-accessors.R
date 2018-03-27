@@ -471,7 +471,7 @@ setMethod("compensate",
           cols <- colnames(spillover)
           sel <- cols %in% colnames(x)
           if(!all(sel))
-              stop("The following parameters in the spillover matrix\n are",
+              stop(keyword(x)[["FILENAME"]], "\nThe following parameters in the spillover matrix\n are",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
           e <- exprs(x)
