@@ -10,5 +10,5 @@ test_that("raw to int", {
   rawVec <- writeBin(origVec, raw(), size = nByteSize, endian = "little")
   byte_order <- c(3,2,0,1)
 
-  all.equal(sortBytes(rawVec, byte_order), sortBytes1(rawVec, byte_order))
+  expect_equal(sortBytes(rawVec, byte_order), sortBytes1(rawVec, byte_order))
 })
