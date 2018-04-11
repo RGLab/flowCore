@@ -37,6 +37,7 @@
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 <<include=FALSE>>=
 library(knitr)
