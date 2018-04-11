@@ -707,7 +707,8 @@ check_channel_alias <- function(channel_alias){
 update_channel_by_alias <- function(orig_chnl_names, channel_alias)
 {
   keys <- ls(channel_alias)
-  unlist(lapply(orig_chnl_names, function(col){
+  
+  new_channels <- unlist(lapply(orig_chnl_names, function(col){
     alias <- channel_alias[[col]]
     if(is.null(alias))
     {
@@ -725,6 +726,20 @@ update_channel_by_alias <- function(orig_chnl_names, channel_alias)
     }else
       return (alias)
   }))
+  #validity check
+  tb <- table(new_channels)
+  is.dup <- tb > 1
+  if(any(is.dup))
+  {
+    dup <- names(tb)[is.dup]
+    dup.ind <- which(new_channels == dup)
+    dt <- data.frame(orig_channel_name = orig_chnl_names[dup.ind], new_channel_name = new_channels[dup.ind])
+    print(dt)
+    stop("channel_alias: Multiple channels from one FCS are matched to the same alias!")
+    
+  }else
+    return (new_channels)
+  
 }
 ## ==========================================================================
 ## read FCS file data section

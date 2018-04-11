@@ -400,6 +400,8 @@ setReplaceMethod("markernames",
                      
                      #convert factor to character  to avoid incorrect updating
                      old_desc <- pData(parameters(object))[,"desc"]
+                     ids <- names(old_desc)[ind]
+                     
                      if(is(old_desc, "factor"))
                      {
                        pData(parameters(object))[,"desc"] <- as.vector(old_desc)  
@@ -412,6 +414,8 @@ setReplaceMethod("markernames",
                        pData(parameters(object))[,"desc"] = factor(pData(parameters(object))[,"desc"])
                      }
                      
+                     #update keyword
+                     keyword(object)[ids] <- value
                      object
                    }
                    
@@ -436,14 +440,22 @@ setReplaceMethod("colnames",
                  if(length(value) != ncol(x))
                      stop("colnames don't match dimensions of data matrix",
                           call.=FALSE)
+                 value <- as.character(value)
+                 
                  pars <- parameters(x)
+                 ids <- rownames(pData(pars))
+                 #update exprs
                  tmp <- exprs(x)
-                 colnames(tmp) <- structure(as.character(value),
-                                            names=rownames(pData(pars)))
+                 colnames(tmp) <- structure(value, names=ids)
+                 #update param
                  pars$name <- value
-                 names(pars$name) <- rownames(pData(pars))
+                 names(pars$name) <- ids
                  x@parameters <- pars
                  exprs(x) <- tmp
+                 #update keywords
+                 
+                 keys <- paste0(ids, "N")
+                 keyword(x)[keys] <- value
                  return(x)
              })
 
@@ -471,7 +483,7 @@ setMethod("compensate",
           cols <- colnames(spillover)
           sel <- cols %in% colnames(x)
           if(!all(sel))
-              stop("The following parameters in the spillover matrix\n are",
+              stop(keyword(x)[["FILENAME"]], "\nThe following parameters in the spillover matrix\n are",
                    " not present in the flowFrame:\n",
                    paste(cols[!sel], collapse=", "), call.=FALSE)
           e <- exprs(x)

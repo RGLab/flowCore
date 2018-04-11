@@ -26,10 +26,12 @@ test_that("markernames<-", {
   #update markers for flowFrame
   markernames(fr) <- markers
   expect_equivalent(markernames(fr)[c(1,3)], markers)
+  expect_equivalent(unlist(keyword(fr)[c("$P3S", "$P5S")]), markers)
   
   #update markers for flowSet
   markernames(fs) <-  markers
   expect_equivalent(markernames(fs)[c(1,3)], markers)
+  expect_equivalent(unlist(keyword(fr)[c("$P3S", "$P5S")]), markers)
   
   #incorrect channel name
   names(markers)[1] <- "FL1"

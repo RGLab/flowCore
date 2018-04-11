@@ -46,6 +46,14 @@ concordance=TRUE
 @
 
 
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
+
+
 <<echo=FALSE, include=FALSE>>=
 library(knitr)
 opts_chunk$set(
