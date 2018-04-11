@@ -153,10 +153,11 @@ subset <- read.FCS(fcsFile, which.lines=100, transformation="linearize")
 nrow(subset)
 
 #manually supply the alias vs channel options mapping as a data.frame
-map <- data.frame(alias = c("FITC", "V450")
-                  , channels = c("FITC, GFP, Alexa 488", "BV421, V450, ef450")
-                  )
-fs <- read.flowSet(files, channel_alias = map)
+map <- data.frame(alias = c("A", "B")
+                  , channels = c("FL2", "FL4")
+)
+fr <- read.FCS(fcsFile, channel_alias = map)
+fr
 }
 
 \keyword{IO}
