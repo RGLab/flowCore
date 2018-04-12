@@ -88,10 +88,24 @@ test_that("compensate & transform", {
       expect_equal(fsApply(trans.fs1,colMeans,use.exprs=TRUE)
                   , expectRes[["trans.transformList"]])
       
+      #list of transformList
+      trans.list <- sapply(sampleNames(comp.fs), function(sn)transList)
+      trans.fs1 <- transform(comp.fs, trans.list)
+      expect_equal(fsApply(trans.fs1,colMeans,use.exprs=TRUE)
+                   , expectRes[["trans.transformList"]])
+      
+      trans.list[[1]] <- logicleTransform()
+      expect_error(trans.fs1 <- transform(comp.fs, trans.list), "a valid 'transformList'")
+      
+      trans.list[[1]] <- trans.list[[2]]
+      names(trans.list)[1] <- "d"
+      expect_error(trans.fs1 <- transform(comp.fs, trans.list), "consistent with flow data")
+      
       #expect the error by giving bad channel name
       chnls <- c(chnls, "dummy")
       transList <- transformList(chnls, logicleTransform())
       expect_error(transform(comp.fs, transList), "dummy is not a variable in the flowFrame")
+     
       
       
     })

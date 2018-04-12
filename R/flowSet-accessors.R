@@ -362,9 +362,23 @@ setMethod("compensate",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 setMethod("transform",
 		signature=signature(`_data`="flowSet"),
-		definition=function(`_data`,...)
+		definition=function(`_data`, translist, ...)
 		{
-			fsApply(`_data`,transform,...)
+		  if(missing(translist))
+		    fsApply(`_data`,transform, ...)
+		  else if(is(translist, "transformList"))
+			  fsApply(`_data`,transform, translist = translist, ...)
+		  else if(is(translist, "list")){
+		    sns <- sampleNames(`_data`)
+		    if(!setequal(sns, names(translist)))
+		      stop("names of 'translist' must be consistent with flow data!")
+		    fs <- copyFlowSet(`_data`)
+		    for(sn in sns)
+		      fs[[sn]] <- transform(fs[[sn]], translist[[sn]])
+		    fs
+		  }else
+		    stop("expect the second argument as a 'transformList' object or a list of 'transformList' objects!")
+		  
 		})
 
 setMethod("transform",
