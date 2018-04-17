@@ -144,7 +144,7 @@ test_that("test write.FCS", {
   
   # test delimiter(\) escaping 
   description(fr)[["$DATE"]] <- "05\\JUN\\2012"
-  suppressWarnings(write.FCS(fr,tmp))
+  suppressWarnings(write.FCS(fr,tmp, delimiter = "\\"))
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
@@ -154,7 +154,7 @@ test_that("test write.FCS", {
   expect_equivalent(exprs(fr), exprs(fr1))
   
   # write it again to see if the existing double delimiter is handled properly
-  suppressWarnings(write.FCS(fr1,tmp))
+  suppressWarnings(write.FCS(fr1,tmp, delimiter = "\\"))
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"

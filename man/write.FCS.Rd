@@ -5,7 +5,7 @@
 \description{Write FCS file from a flowFrame}
 
 \usage{
-   write.FCS(x, filename, what="numeric", delimiter = "\\\\", endian="big")
+   write.FCS(x, filename, what="numeric", delimiter = "|", endian="big")
 }
 
 \arguments{
@@ -20,7 +20,7 @@
     precision if the data has been transformed. We recommend using the
     default data type unless disc space is an issue. }
     
-  \item{delimiter}{a single character to separate the FCS keyword/value pairs. Default is back-slash: "\\"}
+  \item{delimiter}{a single character to separate the FCS keyword/value pairs. Default is : "|"}
   
   \item{endian}{a character, either "little" or "big" (default), specifying the most significant or least significant byte is stored first in a 32 bit word.}
 }

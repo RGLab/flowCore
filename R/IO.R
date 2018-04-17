@@ -1331,7 +1331,7 @@ collapseDesc <- function(x, delimiter = "\\")
 ## is taken from the idnetifier of the flowFrame. 'what' controls the output
 ## data type.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-write.FCS <- function(x, filename, what="numeric", delimiter = "\\", endian = "big")
+write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "big")
 {
   # warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
