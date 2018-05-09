@@ -15,14 +15,18 @@
 subsetKeywords <- function(x, j)
 {
     kw <- description(x)
-    sel <- grep("^\\$P[0-9]*[A-Z]$", names(kw))
+    par.id <- as.integer(gsub("^\\$P", "", rownames(pData(parameters(x)))))
+    
     if(is.logical(j))
         j <- which(j)
     if(is.character(j))
         j <- match(j, colnames(x))
-    pars <- as.integer(sapply(gsub("^\\$P", "", names(kw[sel])), function(y)
-                              substr(y,1,nchar(y)-1)))
-    sel <- sel[!pars %in% j]
+    
+    to.del <- par.id[-j]
+    pat <- paste(to.del, collapse = "|")
+    pat <- paste0("^\\$P(", pat , ")[A-Z]$")
+    sel <- grep(pat, names(kw))
+    
     if(length(sel))
         x@description <- kw[-sel]
     return(x)

@@ -37,3 +37,9 @@ test_that("range", {
   expect_error(range(fr, "FSC-H", type = "data"), "only accept two")
   
 })
+
+test_that("subsetKeywords", {
+  
+expect_equal(length(description(fr[,c(1:6,8)])), length(description(fr[,-7])))
+  
+})
