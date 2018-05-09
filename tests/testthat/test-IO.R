@@ -184,6 +184,16 @@ test_that("test write.FCS", {
   
   
 })
+test_that("write.FCS -- subsetted flowframe", {
+  tmpfile <- tempfile()
+  f1 = GvHD[[2]][,c(1:6,8)]
+  write.FCS(f1, tmpfile)
+  f2 <- read.FCS(tmpfile)
+  expect_equal(nrow(f2),  3405)
+  expect_equal(ncol(f2),  7)
+  expect_equal(colnames(f2),  colnames(f1))
+  expect_equal(markernames(f2),  markernames(f1))
+})
 
 test_that("write.flowSet: test2", {
   
