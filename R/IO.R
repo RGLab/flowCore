@@ -1368,22 +1368,23 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
                "$PAR"=ncol(x),
                "$TOT"=nrow(x),
                "FCSversion"="3")
-    1:ncol(x)
+    npar <- ncol(x)
     pd <- pData(parameters(x))
     pid <- rownames(pd)
-    newid <- seq_len(ncol(x))
+    newid <- seq_len(npar)
     pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
-    names(pnb) <- paste0(pid, "B")
+    names(pnb) <- paste0("$P", newid, "B")
     mk <- c(mk, pnb)
 #	browser()
-    
+    orig.kw <- description(x)
     ## We need all PnE keywords and assume "0,0" if they are missing
-    pne <- description(x)[paste0(pid, "E")]
+    pne <- orig.kw[paste0(pid, "E")]
     names(pne) <- sprintf("$P%sE", newid)
     pne[sapply(pne, length)==0] <- "0,0"
     mk <- c(mk, pne)
+    
     ## The same for PnR, "1024" if missing
-    pnr <- description(x)[paste0(pid, "R")]
+    pnr <- orig.kw[paste0(pid, "R")]
     names(pnr) <- sprintf("$P%sR", newid)
     pnr[sapply(pnr, length)==0] <- "1024"
     mk <- c(mk, pnr)
@@ -1400,7 +1401,11 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     names(pns) <- sprintf("$P%sS", newid.pns)
     mk <- c(mk, pns)
     
-    description(x) <- mk
+    #clear the old $PnX before assigning the new ones since the old ones may not be dropped if fr was subsetted previously
+    x@description <- orig.kw[!grepl("^\\$P[0-9]+[BERNS]$", names(orig.kw))]
+    x@description <- c(mk, x@description)
+    description(x) <- list(`$PAR` = npar)
+    # description(x) <- mk #can't use this replacement method since it only does updation to the existing keywords
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
     ctxt <- collapseDesc(x, delimiter = delimiter)
