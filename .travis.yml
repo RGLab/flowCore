@@ -8,6 +8,7 @@ before_install:
   - R -e 'install.packages("devtools")'
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
+  - R -e 'install.packages("openCyto")'
   - tlmgr install index
 
 install:
