@@ -133,6 +133,10 @@ setGeneric("compensate",
             function(x, spillover, ...)
             standardGeneric("compensate"))
 
+## ================================
+## Generic for new spillover method
+## --------------------------------
+setGeneric("spillover_ng", function(x,...) standardGeneric("spillover_ng"))
 
 ## ===========================================================================
 ## Generics for apply-like methods
