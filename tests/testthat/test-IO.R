@@ -193,6 +193,22 @@ test_that("write.FCS -- subsetted flowframe", {
   expect_equal(ncol(f2),  7)
   expect_equal(colnames(f2),  colnames(f1))
   expect_equal(markernames(f2),  markernames(f1))
+  
+#add test since GvHD's range slot is not consistent with PnR thus can't be tested for range()
+  fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
+  f1 = read.FCS(fcsfile)
+  f1 <- f1[,c(1:6,8)]
+
+  write.FCS(f1, tmpfile)
+  f2 <- read.FCS(tmpfile)
+  expect_equal(nrow(f2),  nrow(f1))
+  expect_equal(ncol(f2),  7)
+  expect_equal(colnames(f2),  colnames(f1))
+  expect_equal(markernames(f2),  markernames(f1))
+  rng <- range(f1)
+  rng[2,] <- rng[2,] + 1
+  expect_equal(range(f2),  rng)
+  
 })
 
 test_that("write.flowSet: test2", {
