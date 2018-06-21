@@ -1,7 +1,7 @@
 //#include <iostream>
 #include "logicle.h"
 #include <Rcpp.h>
-
+using namespace std;
 /**
  * Logicle tranform/inverse transform wrapper function, makes use of the Logicle
  *  class provided Wayne Moore for the underlying calculation of the transformation.
@@ -23,7 +23,7 @@ std::vector<double> logicle_transform(std::vector<double> input, double T, doubl
     	}
     catch(const char * str){
       std::string tmp= "Logicle Exception: ";
-   	
+      tmp += "T = " + to_string(T) + ", W = " + to_string(W) + ", M = " + to_string(M) + ", A = " + to_string(A) + "\n";
     	Rcpp::stop(tmp.append(str));
     }
 

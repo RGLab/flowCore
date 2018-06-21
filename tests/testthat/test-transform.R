@@ -132,6 +132,10 @@ test_that("logicle", {
   
   inv <- inverseLogicleTransform(trans, "")
   expect_equal(inv(res), raw)
+  
+  #invalid params
+  trans <- logicleTransform(a = 2, w = 2)
+  expect_error(res <- trans(raw), "W = 2")
 })
 
 test_that("biexponential", {
