@@ -1,8 +1,9 @@
 # Sample .travis.yml for R projects
 
 language: r
-r: bioc-devel
-dist: trusty
+r: 
+    - devel
+cache: packages
 
 before_install:
   - R -e 'install.packages("devtools")'
@@ -14,8 +15,7 @@ before_install:
 install:
   - R -e 'devtools::install_deps(dep = T,type="binary")'
 
-cache: packages
-group: deprecated-2017Q3  
+group: stable
 warnings_are_errors: false 
 sudo: required 
 
@@ -29,6 +29,9 @@ notifications:
   email:
     on_success: change
     on_failure: change
+
+r_github_packages:
+  - r-lib/covr
 
 after_success: 
   - Rscript -e 'library(covr); codecov()'
