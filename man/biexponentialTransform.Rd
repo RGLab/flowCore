@@ -9,7 +9,9 @@
 	selected to correspond to the hyperbolic sine.
 }
 \usage{
-biexponentialTransform(transformationId="defaultBiexponentialTransform", a = 0.5, b = 1, c = 0.5, d = 1, f = 0, w = 0, tol = .Machine$double.eps^0.25, maxit = as.integer(5000))
+biexponentialTransform(transformationId="defaultBiexponentialTransform", 
+			a = 0.5, b = 1, c = 0.5, d = 1, f = 0, w = 0, 
+			tol = .Machine$double.eps^0.25, maxit = as.integer(5000))
 }
 
 \arguments{

@@ -4,7 +4,10 @@ import(methods)
 import(Rcpp)
 importFrom(matrixStats, colMins)
 importClassesFrom(Biobase, AnnotatedDataFrame)
-
+importFrom("grDevices", "devAskNewPage")
+  importFrom("graphics", "abline")
+  importFrom("stats", "density", "na.omit")
+  importFrom("utils", "read.csv")
 #importClassesFrom(methods,array,integer, mts,ObjectsWithPackage,ordered,signature,
                   # ANY, call,character, data.frame, environment, expression,
                   # factor, formula, "function", list, logical, matrix, missing,
@@ -35,7 +38,7 @@ importFrom(graphics, hist, text, smoothScatter)
 #importFrom(methods, as, callNextMethod, getSlots, is, new, selectMethod, signature, slot, "slot<-")
 
 importFrom(rrcov, CovMcd)
-
+importFrom(MASS, cov.rob)
 importFrom(stats, kmeans, mad, median, qnorm, quantile, runif, sd,
            uniroot, var)
 
@@ -147,6 +150,7 @@ exportMethods("action",
               "colnames<-",
               "compensate",
               "Data",
+				  "decompensate",
               "description",
               "description<-",
               "dim",
@@ -368,6 +372,7 @@ export("action",
        
 export(getChannelMarker)
 export(estimateLogicle)
+S3method(as.data.frame,manyFilterResult)
 S3method(estimateLogicle,flowFrame)
 export(inverseLogicleTransform)
 S3method(inverseLogicleTransform,transform)

@@ -181,17 +181,23 @@ setMethod("split",
 ## Split on a factor, or on a vector that is easily coerced into a factor.
 ## This is just for completeness.
 setMethod("split",
-          signature=signature(x="flowFrame",
-                              f="factor"),
-          definition=function(x, f, drop=FALSE, prefix=NULL,
-                             flowSet=FALSE, ...)
+			 signature = signature(x = "flowFrame",
+			 							 f = "factor"),
+			 definition = function(x,
+			 							 f,
+			 							 drop = FALSE,
+			 							 prefix = NULL,
+			 							 flowSet = FALSE,
+			 							 ...
+			 )
       {      
-          if(drop)
+          if (drop)
               f <- factor(f)
           nn  <- levels(f)
-          out <- structure(lapply(nn,function(i) x[f==i,]),
-                           names=if(is.null(prefix)) nn else
-                           paste(prefix, i, sep=""))
+          out <- structure(lapply(nn,
+          								function(i) x[f == i,]),
+                           names = if(is.null(prefix)) nn else
+                           paste(prefix, nn, sep = ""))
           if(flowSet) {
               print(data.frame(name=nn, split=seq_along(nn), row.names=nn))
               flowSet(out,phenoData=new("AnnotatedDataFrame",

@@ -583,9 +583,9 @@ setMethod("rbind2",
 			if(any(lx %in% ly))
 				stop("These flowSets contain overlapping samples.")
 			for(i in lx)
-				assign(i, x[[i]], env=env)
+				assign(i, x[[i]], envir = env)
 			for(i in ly)
-				assign(i, y[[i]], env=env)
+				assign(i, y[[i]], envir = env)
 			pd1 <- phenoData(x)
 			pd2 <- phenoData(y)
 			if(!all(varLabels(pd1) == varLabels(pd2)))
@@ -722,7 +722,7 @@ setMethod("spillover",
                   channel_name <- cols[which(channel_order == channel_i)]
 
                   # Applies flowStats:::rangeGate to select positive population
-                  gate_filter <- rangeGate(flow_frame, stain = channel_name,
+                  gate_filter <- flowStats::rangeGate(flow_frame, stain = channel_name,
                                            inBetween = TRUE, borderQuant = 0,
                                            absolute = FALSE, peakNr = 2, ...)
                   if (plot) {
@@ -877,7 +877,7 @@ setMethod("spillover_ng",
 			 				channel_name <- cols[which(channel_order == channel_i)]
 			 				
 			 				# Applies flowStats:::rangeGate to select positive population
-			 				gate_filter <- rangeGate(flow_frame, stain = channel_name,
+			 				gate_filter <- flowStats::rangeGate(flow_frame, stain = channel_name,
 			 												 inBetween = TRUE, borderQuant = 0,
 			 												 absolute = FALSE, peakNr = 2, ...)
 			 				if (plot) {

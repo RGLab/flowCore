@@ -12,7 +12,9 @@
 
    read.FCS(filename, transformation="linearize", which.lines=NULL,
             alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
-            decades=0, ncdf = FALSE, min.limit=NULL, truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, channel_alias = NULL, ...)
+            decades=0, ncdf = FALSE, min.limit=NULL, 
+            truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, 
+            channel_alias = NULL, ...)
 
 }
 

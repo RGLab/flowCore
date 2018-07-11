@@ -191,10 +191,10 @@ setMethod("%in%",
                             tmp <- if(nrow(values)>table@n)
                                 CovMcd(values[sample(nrow(values),
                                                      table@n),])
-                            else CovMcd(values)
+                            else rrcov::CovMcd(values)
                             list(center=tmp@center, cov=tmp@cov)
                         },
-                        cov.rob={cov.rob(values)},
+                        cov.rob={MASS::cov.rob(values)},
                         stop("How did you get here?")
                         )
           W <- t(y)-cov$center

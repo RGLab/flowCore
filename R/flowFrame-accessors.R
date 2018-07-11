@@ -463,7 +463,67 @@ setReplaceMethod("colnames",
                  return(x)
              })
 
+## =====
+## decompensate method
+## =====
 
+#' decompensate a flowFrame
+#'
+#' @param x flowFrame. 
+#' @param spillover matrix. 
+#'
+#' @return a decompensated flowFrame
+#' @method decompensate flowFrame,matrix
+#' @aliases  decompensate
+#' @aliases  decompensate flowFrame,data.frame
+#' @rdname decompensate
+#' @export
+#'
+#' @examples
+#' library(flowCore)
+#' f = list.files(system.file("extdata",
+#'    "compdata",
+#'    "data",
+#'    package="flowCore"),
+#'  full.name=TRUE)[1]
+#' f = read.FCS(f)
+#' spill = read.csv(list.files(system.file("extdata",
+#'        "compdata",
+#'         package="flowCore"), 
+#'    full.name=TRUE)[1],sep="\t",skip=2)
+#' colnames(spill) = gsub("\\.","-",colnames(spill))
+#' f.comp = compensate(f,spill)
+#' f.decomp = decompensate(f.comp,as.matrix(spill))
+#' sum(abs(f@exprs-f.decomp@exprs))
+#' all.equal(decompensate(f.comp,spill)@exprs,decompensate(f.comp,as.matrix(spill))@exprs)
+#' all.equal(f@exprs,decompensate(f.comp,spill)@exprs)
+setMethod("decompensate",
+			 signature = signature(x="flowFrame", spillover="matrix"),
+			 function(x, spillover) 
+			 {
+			 	cols <- colnames(spillover)
+			 	sel <- cols %in% colnames(x)
+			 	if(!all(sel)) {
+			 		stop(keyword(x)[["FILENAME"]], 
+			 			  "\\nThe following parameters in the spillover matrix are not present in the flowFrame:\\n",
+			 			  paste(cols[!sel], collapse=", "), call.=FALSE)
+			 	}
+			 	e <- exprs(x)
+			 	e[, cols] <- e[, cols] %*% spillover
+			 	exprs(x) = e
+			 	x
+			 }
+)
+
+#' @rdname decompensate
+setMethod("decompensate",
+			 signature = signature(x="flowFrame", spillover="data.frame"),
+			 function(x, spillover) 
+			 {
+			 	spillover = as.matrix(spillover)
+			 	decompensate(x = x, spillover = spillover)
+			 }
+)
 
 ## ===========================================================================
 ## compensate method
@@ -543,6 +603,7 @@ setMethod("transform",
 
 #' take formal of transform(fs, `FSC-H`=asinhTrans(`FSC-H`))
 #' which do the lazy evaluation
+#' @noRd
 .transform <- function(`_data`, ...){
       e <- substitute(list(...))
       x <- `_data`
