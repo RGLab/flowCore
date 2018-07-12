@@ -981,37 +981,43 @@ Now for the larger data set, it would be either inaccurate to apply the same har
 
 For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate for each sample.
 <<openCyto-nonDebris>>=
-library(openCyto)
+if(require(openCyto)){
 thisData <- getData(gs)
 nonDebris_gate <- fsApply(thisData
                           , function(fr)
                             openCyto:::.mindensity(fr, channels = "FSC-A"))
 add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
+}
 @
 
 \Rfunction{singeltGate} can be used for estimating 'singlets` 
 <<openCyto-singletGate>>=
+if(require(openCyot)){
 thisData <- getData(gs, "nonDebris") #get parent data
 singlet_gate <- fsApply(thisData
                         , function(fr)
                           openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
 add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
+}
 @
 
 and then use \Rfunction{mindensity} again for "CD3" gate
 <<openCyto-CD3>>=
+if(require(openCyto)){
 thisData <- getData(gs, "singlets") #get parent data
 CD3_gate <- fsApply(thisData
                     , function(fr)
                         openCyto:::.mindensity(fr, channels ="V450-A"))
 add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
+}
 @
 
 and then use more adanced version of 'quadGate': \Rfunction{quadGate.seq} for gating "CD4" and "CD8" sequentially:
 <<openCyto-Tsub>>=
+if(require(openCyto)){
 thisData <- getData(gs, "CD3") #get parent data
 Tsub_gate <- fsApply(thisData
                      , function(fr)
@@ -1022,6 +1028,7 @@ Tsub_gate <- fsApply(thisData
                   )
 add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
 recompute(gs)
+}
 @
 
 and then plot the gates
