@@ -993,7 +993,7 @@ recompute(gs)
 
 \Rfunction{singeltGate} can be used for estimating 'singlets` 
 <<openCyto-singletGate>>=
-if(require(openCyot)){
+if(require(openCyto)){
 thisData <- getData(gs, "nonDebris") #get parent data
 singlet_gate <- fsApply(thisData
                         , function(fr)
