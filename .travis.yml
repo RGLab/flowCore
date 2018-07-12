@@ -10,12 +10,12 @@ before_install:
   - R -e 'devtools::install_github("RGLab/ggcyto", ref = "trunk")'
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
+  - R -e 'devtools::install_github("RGLab/flowClust", ref = "master")'
   - R -e 'install.packages("openCyto")'
   - tlmgr install index
 
 install:
   - R -e 'devtools::install_deps(dep = T,type="binary")'
-  - R -e 'devtools::install_github("RGLab/flowClust", ref = "master")'
 
 group: stable
 warnings_are_errors: false 
