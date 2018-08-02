@@ -211,6 +211,32 @@ test_that("write.FCS -- subsetted flowframe", {
   
 })
 
+test_that("write.FCS -- subsetted (by row) flowframe", {
+  tmp <- GvHD[[1]]
+  #subset by rows
+  exprs(tmp) <- exprs(tmp)[sample(1:nrow(exprs(tmp)), 1000), ]
+  expect_equal(keyword(tmp)[["$TOT"]], "3420")
+  
+  #write to fcs
+  tmpfile <- tempfile()
+  suppressWarnings(write.FCS(tmp,tmpfile))
+  tmp <- read.FCS(tmpfile)
+  expect_equal(keyword(tmp)[["$TOT"]], "1000")
+  
+  #read the text segment without parsing
+  con <- file(tmpfile, open="rb")
+  offsets <- readFCSheader(con)
+  seek(con, offsets["textstart"])
+  txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
+  txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
+  #validity check on the keyword 
+  #(make sure it is not duplicated since it may pass flowCore parser but fail the third-party software like flowJo)
+  expect_equal(length(grep("\\$TOT", strsplit(txt, split = "\\|")[[1]])), 1)
+  close(con)
+  
+  
+})
+
 test_that("write.flowSet: test2", {
   
   data(GvHD)

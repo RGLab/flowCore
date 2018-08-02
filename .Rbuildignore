@@ -9,4 +9,7 @@ R/.Rhistory
 vignettes/.Rhistory
 .Rproj.user
 .git
-
+vignettes/*.bbl
+vignettes/*.blg
+examples
+paper

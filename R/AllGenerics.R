@@ -126,12 +126,15 @@ setGeneric("summarizeFilter", function(result,filter)
 
 
 ## ===========================================================================
-## Generics for spillover and compensate
+## Generics for spillover and compensate and decompensate
 ## ---------------------------------------------------------------------------
 setGeneric("spillover", function(x,...) standardGeneric("spillover"))
 setGeneric("compensate", 
             function(x, spillover, ...)
             standardGeneric("compensate"))
+setGeneric("decompensate",
+			  function(x, spillover, ...)
+			  	standardGeneric("decompensate"))
 
 ## ================================
 ## Generic for new spillover method

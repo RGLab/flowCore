@@ -184,7 +184,8 @@ fcActionReference(ID=paste("actionRef", guid(), sep="_"), env=new.env(parent=emp
 
 fcViewReference(ID=paste("viewRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 
-fcFilterResultReference(ID=paste("fresRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
+fcFilterResultReference(ID=paste("fresRef", guid(), sep="_"),
+    env=new.env(parent=emptyenv()))
 
 fcFilterReference(ID=paste("filterRef", guid(), sep="_"), env=new.env(parent=emptyenv()))
 

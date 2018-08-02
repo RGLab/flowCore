@@ -18,8 +18,10 @@ names with the filenames of the compensation controls. By default, we must
 row).
 }
 \usage{
-\S4method{spillover}{flowSet}(x, unstained = NULL, patt = NULL, fsc = "FSC-A", 
-        ssc = "SSC-A", method = "median", stain_match = c("intensity", "ordered", "regexpr"),
+\S4method{spillover}{flowSet}(x, 
+         unstained = NULL, patt = NULL, fsc = "FSC-A", 
+        ssc = "SSC-A", method = "median", 
+        stain_match = c("intensity", "ordered", "regexpr"),
         useNormFilt=FALSE, pregate = FALSE, plot = FALSE, \dots)
 }
 

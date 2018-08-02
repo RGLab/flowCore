@@ -1,11 +1,11 @@
 .spillover_pattern <- c("SPILL", "spillover", "$SPILLOVER")
 
-#' fussy match of marker/channel names
+#' fuzzy match of marker/channel names
 #' @param pd pData of parameters of flowFrame
 #' @param name \code{character} the string to match
 #' @param fix whether to do regexpr match
 #' @param parital whether to do the complete word match or parital match
-
+#' @noRd
 .flowParamMatch <- function(pd, name, fix = FALSE, partial = FALSE) {
   
   # try to compelete word match by following with a space or the end of string
