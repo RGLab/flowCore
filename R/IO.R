@@ -1401,11 +1401,11 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     names(pns) <- sprintf("$P%sS", newid.pns)
     mk <- c(mk, pns)
     
-    #clear the old $PnX before assigning the new ones since the old ones may not be dropped if fr was subsetted previously
+    #must clear the old $PnX before assigning the new ones since the old ones may not be dropped if fr was subsetted previously
+    # because description<- only update or insert but does not delete the old
     x@description <- orig.kw[!grepl("^\\$P[0-9]+[BERNS]$", names(orig.kw))]
-    x@description <- c(mk, x@description)
-    description(x) <- list(`$PAR` = npar)
-    # description(x) <- mk #can't use this replacement method since it only does updation to the existing keywords
+    description(x) <- mk
+    
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
     ctxt <- collapseDesc(x, delimiter = delimiter)
