@@ -14,7 +14,9 @@
   \url{http://onlinelibrary.wiley.com/doi/10.1002/cyto.a.22037/suppinfo}
 }
 \usage{
-FCSTransTransform(transformationId = "defaultFCSTransTransform", channelrange = 2^18, channeldecade = 4.5, range = 4096, cutoff = -111, w = NULL, rescale = TRUE)
+FCSTransTransform(transformationId = "defaultFCSTransTransform", 
+			channelrange = 2^18, channeldecade = 4.5, 
+			range = 4096, cutoff = -111, w = NULL, rescale = TRUE)
 }
 
 \arguments{

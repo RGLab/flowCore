@@ -35,8 +35,8 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 		//search for the first unused odd char as replacememnt for double delimiter
 		//FCS 3.1 states only 0-126 ASCII are legal delimiter, but we can't assume the file always follows the standard
 		//also the TEXT main contain some special characters , thus we want to make sure the replacement char is not used anywhere in FCS TEXT
-		char oddChar = 127;
-		for(; oddChar < 256; oddChar++)
+		unsigned char oddChar = 127;
+		for(; oddChar < (unsigned char)256 ; oddChar++)
 		{
 
 			if(oddChar==delimiter||txt.find(oddChar)!=std::string::npos)
@@ -44,7 +44,7 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 			else
 				break;
 		}
-		if(oddChar==256)
+		if(oddChar == (unsigned char) 256)
 			Rcpp::stop("Can't find the unused odd character from ASCII(127-255) in FSC TEXT section!");
 
 		std::string soddChar;

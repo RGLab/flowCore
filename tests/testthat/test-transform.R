@@ -138,6 +138,29 @@ test_that("logicle", {
   expect_error(res <- trans(raw), "W = 2")
 })
 
+test_that("decompensate",{
+	f = list.files(system.file("extdata",
+										"compdata",
+										"data",
+										package = "flowCore"),
+						full.names = TRUE)[1]
+	f = read.FCS(f)
+	spill = read.csv(list.files(
+		system.file("extdata",
+						"compdata",
+						package = "flowCore"),
+		full.names = TRUE
+	)[1],
+	sep = "\t",
+	skip = 2)
+	colnames(spill) = gsub("\\.", "-", colnames(spill))
+	f.comp = compensate(f, spill)
+	f.decomp = decompensate(f.comp, as.matrix(spill))
+	expect_lt(sum(abs(f@exprs - f.decomp@exprs)),1e-10)
+	expect_true(all.equal(decompensate(f.comp, spill)@exprs,
+				 decompensate(f.comp, as.matrix(spill))@exprs))
+	expect_true(all.equal(f@exprs, decompensate(f.comp, spill)@exprs))
+})
 test_that("biexponential", {
 
   trans <- biexponentialTransform()

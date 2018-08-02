@@ -243,7 +243,7 @@ setMethod("summary",
           definition=function(object, ID, reference=NULL, verbose=FALSE)
       {
           if(missing(ID))
-              ID <- views(wf)[-1]
+              ID <- views(object)[-1]
           checkClass(ID, "character")
           if(!is.null(reference))
               checkClass(reference, "character", 1)

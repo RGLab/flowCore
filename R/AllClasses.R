@@ -1458,6 +1458,8 @@ inverseLogicleTransform.transformList <- function(trans, transformationId, ...) 
 #' @param t top of the scale of data value
 #' @param a additional negative range to be included in display in decades
 #' @param q quantile of negative data value (used to adjust w calculation)
+#' @param type character either "instrument" or "data". The data range.
+#' @noRd
 .lgclTrans  <- function(dat, p, t , m, a = 0, q = 0.05, type = "instrument") {
     type <- match.arg(type, c("instrument", "data"))
     transId <- paste(p,"logicleTransform", sep = "_")
