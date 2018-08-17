@@ -36,8 +36,8 @@ test_that("polygonGateUsage", {
 	
     vertices <- matrix(c(300,400,600,400,300, 300, 50, 70, 200, 180,150,50), ncol=2)
     colnames(vertices) <- c("FSC-H", "SSC-H")
-	p   = polygonGate(vertices)
-	expect_is(p,"polygonGate")
+	  p   = polygonGate(vertices)
+	  expect_is(p,"polygonGate")
 	
     expect_true(hasMethod("%in%",c(class(b08),class(p))))
 	x   = b08 %in% p
@@ -45,5 +45,68 @@ test_that("polygonGateUsage", {
 	expect_equal(sum(x),3807)#used to be 3785 before the commit regarding to github #85 for including the events fallon the edge of gate
     p2   = polygonGate(vertices[-nrow(vertices),])
    	expect_equal(sum(x),sum(b08 %in% p2))
+   	
+   	#create edge cases
+   	vertices <- matrix(c(300,300
+   	                     ,600,300
+   	                     ,800, 100
+   	                     , 100, 100
+   	                     ), byrow = TRUE,ncol=2)
+   	colnames(vertices) <- c("FSC-H", "SSC-H")
+   	p   = polygonGate(vertices)
+
+   	#simulate data by adding them to the polygon edges   	
+   	fr <- flowFrame(vertices)
+   	x   = fr %in% p
+   	expect_equal(sum(x),4)
+   	
+   	#mv one in and one out
+   	fr@exprs[1,] <- fr@exprs[1,] + 100
+   	fr@exprs[2,] <- fr@exprs[2,] - 100
+   	x   = fr %in% p
+   	expect_equal(sum(x), 3)
+   	
+   	
+   	#more along the edges
+   	fr@exprs[1,2] <- fr@exprs[1,2] - 100
+   	fr@exprs[2,2] <- fr@exprs[2,2] + 100
+   	x   = fr %in% p
+   	expect_equal(sum(x), 4)
+   	
+   	
+
+   	#add two more
+   	pts <- fr@exprs[1,]
+   	pts[2] <- pts[2] - 20
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	pts[2] <- pts[2] - 20
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	x   = fr %in% p
+   	expect_equal(sum(x), 6)
+   	
+   	#another gate
+   	vertices <- matrix(c(300,300
+   	                     ,600,300
+   	                     ,800, 200
+   	                     ,650,100
+   	                     ,310, 100
+   	                     , 100, 200
+   	), byrow = TRUE,ncol=2)
+   	colnames(vertices) <- c("FSC-H", "SSC-H")
+   	p   = polygonGate(vertices)
+   	fr <- flowFrame(vertices)
+   	pts <- fr@exprs[1,]
+   	pts[2] <- pts[2] - 20
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	pts <- fr@exprs[2,]
+   	pts[2] <- pts[2] - 20
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	x   = fr %in% p
+   	expect_equal(sum(x),8)
+   	
+   	# plot(rbind(p@boundaries, fr@exprs), type = "n")
+   	# polygon(p@boundaries)
+   	# points(fr@exprs, col = "red")
+   	# title(sum(x))
 })
 #polytopeGate will be deprecated because even gatingML2 no longer supports it
