@@ -56,7 +56,7 @@ void inPolygon_c(double *data, int nrd,
       /*if horizontal ray is in range of vertex find the x coordinate where
 	ray and vertex intersect*/
       if(data[i+nrd] >= min(p1y, p2y) && data[i+nrd] <= max(p1y, p2y) &&
-         data[i] <= max(p1x, p2x))
+         data[i] <= max(p1x, p2x) && p2y != p1y)
       {
   	      xinters = (data[i+nrd]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x;
   	      /*if intersection x coordinate == point x coordinate it lies on the

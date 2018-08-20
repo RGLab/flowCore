@@ -236,7 +236,14 @@ test_that("write.FCS -- subsetted (by row) flowframe", {
   
   
 })
-
+test_that("write.FCS -- handle umlaut characters", {
+  tmp <- GvHD[[1]]
+  keyword(tmp)[["FILENAME"]] <- "ü_umlaut"
+  tmpfile <- tempfile()
+  write.FCS(tmp, tmpfile)  
+  tmp1 <- read.FCS(tmpfile)
+  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
+})
 test_that("write.flowSet: test2", {
   
   data(GvHD)

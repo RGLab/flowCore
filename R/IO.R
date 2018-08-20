@@ -179,18 +179,15 @@ read.FCS <- function(filename,
     for(sn in .spillover_pattern){
       sp <- description[[sn]]
       if(!is.null(sp)){
-          splt <- strsplit(sp, ",")[[1]]
-          nrCols <- as.numeric(splt[1])
-          if(nrCols > 0)
+          sp <- txt2spillmatrix(sp)
+          if(is.matrix(sp))
           {
-            cnames <- splt[2:(nrCols+1)]
-            vals <- as.numeric(splt[(nrCols+2):length(splt)])
-            spmat <- matrix(vals, ncol=nrCols, byrow=TRUE)
+            cnames <- colnames(sp)
             cnames <- update_channel_by_alias(cnames, channel_alias)
             if(alter.names)
               cnames <- make.names(cnames)
-            colnames(spmat) <- cnames
-            description[[sn]] <- spmat  
+            colnames(sp) <- cnames
+            description[[sn]] <- sp  
           }
       }
     }
@@ -201,7 +198,18 @@ read.FCS <- function(filename,
     return(tmp)
 }
 
-
+txt2spillmatrix <- function(txt){
+  splt <- strsplit(txt, ",")[[1]]
+  nrCols <- as.numeric(splt[1])
+  if(nrCols > 0)
+  {
+    cnames <- splt[2:(nrCols+1)]
+    vals <- as.numeric(splt[(nrCols+2):length(splt)])
+    matrix(vals, ncol=nrCols, byrow=TRUE, dimnames = list(NULL, cnames))
+  }else
+    txt
+  
+}
 ## ==========================================================================
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1409,8 +1417,12 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(exprs(x)) * types[what, "bitwidth"]
     ctxt <- collapseDesc(x, delimiter = delimiter)
-    endTxt <- nchar(ctxt) + begTxt -1
-    endDat <- ld + endTxt
+    
+    # these two are estimated value and just to get the reserved length of characters for storing the
+    # final values that will be updated in the subsequent lines
+    endTxt <- nchar(ctxt, "bytes") + begTxt -1 #must use type = "bytes" as txt could contain special character(e.g. German umlauts) that results in multi-byte write by writeChar
+    endDat <- ld + endTxt 
+    
     endTxt <- endTxt +(nchar(endTxt+1)-1) + (nchar(endDat)-1)
     ## Now we update the header with the new offsets and recalculate
 #	browser()
