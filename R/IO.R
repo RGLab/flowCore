@@ -1420,7 +1420,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     
     # these two are estimated value and just to get the reserved length of characters for storing the
     # final values that will be updated in the subsequent lines
-    endTxt <- nchar(ctxt) + begTxt -1
+    endTxt <- nchar(ctxt, "bytes") + begTxt -1 #must use type = "bytes" as txt could contain special character(e.g. German umlauts) that results in multi-byte write by writeChar
     endDat <- ld + endTxt 
     
     endTxt <- endTxt +(nchar(endTxt+1)-1) + (nchar(endDat)-1)
