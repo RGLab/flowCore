@@ -2,17 +2,17 @@
 ## The splitting operation in the context of 'flowFrames' and 'flowSets' is
 ## the logical extension of subsetting. While the latter only returns
 ## the events contained within a gate, the former splits the data into
-## the groups of events cotained within and those not contained within a
+## the groups of events contained within and those not contained within a
 ## particular gate. This concept is extremely useful in applications where
 ## gates describe the distinction between positivity and negativity for a
-## particual marker.
+## particular marker.
 ## Splitting has a special meaning for gates that result in 
 ## 'multipleFilterResults', in which case simple subsetting doesn't make
 ## much sense (there are multiple populations that are defined by the gate
 ## and it is not clear which of those should be used for the subsetting
 ## operation). Accordingly, splitting of multipleFilterResults creates
 ## multiple subsets. The argument 'population' can be used to limit the
-## ouput to only one or some of the resulting subsets. It takes as values
+## output to only one or some of the resulting subsets. It takes as values
 ## a character vector of names of the populations of interest. See the
 ## documentation of the different filter classes on how population names
 ## can be defined and the respective default values. For splitting of
@@ -49,7 +49,7 @@ setMethod("split",
           definition=function(x, f, drop=FALSE, ...)
           split(x, filter(x, f), drop=drop, ...))
 
-## Evalute the filterSet first and split on the filterResult
+## Evaluate the filterSet first and split on the filterResult
 ## FIXME: Is that really what we want? And what is the final output of
 ## a filterSet filtering operation anyways? Just the leaves???
 setMethod("split",
