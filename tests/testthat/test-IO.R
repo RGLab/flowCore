@@ -236,6 +236,35 @@ test_that("write.FCS -- subsetted (by row) flowframe", {
   
   
 })
+
+test_that("write.FCS -- update channel and marker", {
+  
+  inputFcs <- GvHD[[1]]
+  colnames(inputFcs)
+  markernames(inputFcs)
+  
+  kwParName <- "$P3N"
+  kwParLabel <- "$P3S"
+  parName <- "FL1-H" 
+  newName <- "newname"
+  newLabel <- "newLabel"
+  
+  #update channel
+  colnames(inputFcs)[which(colnames(inputFcs) == parName)] <- newName
+  #update stain/marker
+  names(newLabel) <- newName
+  markernames(inputFcs) <- newLabel
+  #see updated data
+  colnames(inputFcs)
+  markernames(inputFcs)
+  #write fcs
+  tmpfile <- tempfile()
+  write.FCS(inputFcs, tmpfile)  
+  tmp1 <- read.FCS(tmpfile)
+  expect_equal(colnames(inputFcs), colnames(tmp1))
+  expect_equal(markernames(inputFcs), markernames(tmp1))
+})
+
 test_that("write.FCS -- handle umlaut characters", {
   tmp <- GvHD[[1]]
   keyword(tmp)[["FILENAME"]] <- "ü_umlaut"
