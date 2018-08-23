@@ -5,7 +5,32 @@
 
 
 
-
+fr_append_cols <- function(fr, cols){
+  checkClass(cols, "matrix")
+  ncol <- ncol(cols)
+  cn <- colnames(cols)
+  if(length(cn) != ncol)
+    stop("All columns in 'cols' must have colnames!")
+  #add to pdata
+  pd <- pData(parameters(fr))
+  ncol_old <- ncol(fr)
+  new_pid <- max(as.integer(gsub("\\$P", "", rownames(pd)))) + 1
+  new_pid <- seq(new_pid, length.out = ncol)
+  new_pid <- paste0("$P", new_pid)
+  
+  new_pd <- do.call(rbind, lapply(cn, function(i){
+      vec <- cols[,i]
+      rg <- range(vec)
+      data.frame(name = i, desc = NA, range = diff(rg) + 1, minRange = rg[1], maxRange = rg[2])
+    }))
+  rownames(new_pd) <- new_pid
+  pd <- rbind(pd, new_pd)  
+  #add to exprs
+  fr@exprs <- cbind(exprs(fr), cols)
+  pData(parameters(fr)) <- pd
+  
+  fr
+}
 
 ## ==========================================================================
 ## subsetting methods

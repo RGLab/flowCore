@@ -1,6 +1,6 @@
 context("flowSet/flowFrame IO...")
 # expectRes <- readRDS("tests/testthat/expectResults.rds")
-data(GvHD)
+
 fs <- GvHD[1:2]
 expectPD <- pData(fs)
 expectPD[["Patient"]] <- as.integer(as.vector(expectPD[["Patient"]]))
@@ -263,6 +263,21 @@ test_that("write.FCS -- update channel and marker", {
   tmp1 <- read.FCS(tmpfile)
   expect_equal(colnames(inputFcs), colnames(tmp1))
   expect_equal(markernames(inputFcs), markernames(tmp1))
+})
+
+test_that("write.FCS -- add new cols", {
+  tmp <- GvHD[[1]]
+  
+  kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
+  fres <- filter(tmp, kf)
+  cols <- as.integer(fres@subSet)
+  cols <- matrix(cols, dimnames = list(NULL, "km"))
+  tmp <- fr_append_cols(tmp, cols)
+  
+  tmpfile <- tempfile()
+  write.FCS(tmp, tmpfile)  
+  tmp1 <- read.FCS(tmpfile)
+  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
 })
 
 test_that("write.FCS -- handle umlaut characters", {

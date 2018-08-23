@@ -368,7 +368,8 @@ export("action",
        "%in%",
        "%subset%",
        "%on%",
-       estimateLogicle)
+       estimateLogicle,
+       fr_append_cols)
        
 export(getChannelMarker)
 export(estimateLogicle)
