@@ -34,6 +34,7 @@
 
 
 \examples{
+  data(GvHD)
   tmp <- GvHD[[1]]
   
   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
