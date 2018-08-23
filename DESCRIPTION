@@ -1,11 +1,17 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.47.5
-Author: B. Ellis, P. Haaland, F. Hahne, N. Le Meur, N. Gopalakrishnan, J.
-    Spidlen, M. Jiang, G. Finak
+Version: 1.47.6
+Authors@R: personList(person("B","Ellis", role = "aut"),
+							 person("Perry", "Haaland", role = "aut"),
+							 person("Florian", "Hahne", role = "aut"),
+							 person("Nathan", "Le Meur", role = "aut"),
+							 person("Nishant", "Gopalakrishnan", role = "aut"),
+							 person("Josef", "Spidlen", role = "aut"),
+							 person("Mike", "Jiang", role = c("aut","cre"), email = "wjiang2@fhcrc.org"),
+							 person("Greg", "Finak", role = "aut"),
+							 person("Samuel","Granjeaud", role = "ctb"))
 Description: Provides S4 data structures and basic functions to deal with flow
     cytometry data.
-Maintainer: M.Jiang <wjiang2@fhcrc.org>
 Depends:
     R (>= 3.0.2)
 Imports:

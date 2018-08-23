@@ -181,7 +181,7 @@
 
 
   The default return value for any of the \code{split} methods is a
-  list, but the optional logical argument \code{filterSet} can be used
+  list, but the optional logical argument \code{flowSet} can be used
   to return a \code{\linkS4class{flowSet}} instead. This only applies
   when splitting \code{\linkS4class{flowFrame}}s, splitting of
   \code{\linkS4class{flowSet}}s always results in lists of
