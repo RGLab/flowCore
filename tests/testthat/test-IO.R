@@ -265,6 +265,18 @@ test_that("write.FCS -- update channel and marker", {
   expect_equal(markernames(inputFcs), markernames(tmp1))
 })
 
+test_that("write.FCS -- data from the flowFrame constructor without $PnR keys", {
+  set.seed(1)
+  mat <- matrix(rnorm(1000),ncol=4)
+  colnames(mat) <- LETTERS[1:4]
+  fr1 <- flowFrame(mat)
+  keyword(fr1)
+  tmp <- tempfile()
+  write.FCS(fr1, tmp)
+  fr2 <- read.FCS(tmp)
+  expect_equal(as.numeric(keyword(fr2)[["$P1R"]]), 2.4977, tolerance = 3e-4)
+})
+
 test_that("write.FCS -- add new cols", {
   tmp <- GvHD[[1]]
   
