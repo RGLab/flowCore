@@ -1391,10 +1391,13 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     pne[sapply(pne, length)==0] <- "0,0"
     mk <- c(mk, pne)
     
-    ## The same for PnR, "1024" if missing
+    mat <- exprs(x)
+    ## The same for PnR, 
     pnr <- orig.kw[paste0(pid, "R")]
     names(pnr) <- sprintf("$P%sR", newid)
-    pnr[sapply(pnr, length)==0] <- "1024"
+    empty_range_ind <- sapply(pnr, length)==0
+    empty_range_chnl <- as.character(pd[pid[empty_range_ind],"name"])
+    pnr[empty_range_ind] <- colMaxs(mat[, empty_range_chnl, drop = FALSE])
     mk <- c(mk, pnr)
     
     ## Now update the PnN keyword
@@ -1415,7 +1418,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     description(x) <- mk
     
     ## Figure out the offsets based on the size of the initial text section
-    ld <-  length(exprs(x)) * types[what, "bitwidth"]
+    ld <-  length(mat) * types[what, "bitwidth"]
     ctxt <- collapseDesc(x, delimiter = delimiter)
     
     # these two are estimated value and just to get the reserved length of characters for storing the
@@ -1437,7 +1440,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     on.exit(close(con))
     writeFCSheader(con, offsets)
     writeChar(ctxt, con, eos=NULL)
-    writeBin(as(t(exprs(x)), what), con, size=types[what, "bitwidth"],
+    writeBin(as(t(mat), what), con, size=types[what, "bitwidth"],
              endian=endian)
 	writeChar("00000000", con, eos=NULL)
     filename

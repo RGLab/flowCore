@@ -1,6 +1,7 @@
 context("flowFrame methods...")
 data("GvHD")
 fr <- GvHD[[1]]
+
 test_that("range", {
   rng1 <- data.frame("FSC-H" = c(0,1023)
                      ,"SSC-H" = c(0,1023)
