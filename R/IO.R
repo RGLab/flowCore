@@ -201,7 +201,7 @@ read.FCS <- function(filename,
 txt2spillmatrix <- function(txt){
   splt <- strsplit(txt, ",")[[1]]
   nrCols <- as.numeric(splt[1])
-  if(nrCols > 0)
+  if(!is.na(nrCols)&&nrCols > 0)
   {
     cnames <- splt[2:(nrCols+1)]
     vals <- as.numeric(splt[(nrCols+2):length(splt)])
