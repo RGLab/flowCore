@@ -173,6 +173,17 @@ test_that("test write.FCS", {
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))
   
+  #test quadrual-delimiter string
+  description(fr)[["$DATE"]] <- "05||JUN||2012"
+  suppressWarnings(write.FCS(fr,tmp, delimiter = "|"))
+  fr1 <- read.FCS(tmp, emptyValue = F)
+  keys.new <- description(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05||JUN||2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys)
+  expect_equivalent(exprs(fr), exprs(fr1))
+  
   #when colmn.pattern is used to subset channels in read.FCS
   #make sure the id in $Pn is set properly in write.FCS
   fr_sub <- read.FCS(fcsfile, column.pattern = '-A')

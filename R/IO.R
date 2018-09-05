@@ -1296,17 +1296,9 @@ collapseDesc <- function(x, delimiter = "\\")
 					  y <- sub("^$"," ",y)
 					  double_delimiter <- paste0(delimiter, delimiter)
 
-#                      browser()
-                      #replace the existing double delimiter with a temp string
-                      # to skip escapping operation
-                      tempString <- guid()
-                      # useBytes = TRUE to avoid  errors/warnings about invalid inputs (e.g. "CELLQuest\xaa")
-                      y <- gsub(double_delimiter, tempString, y, fixed = TRUE, useBytes = TRUE)
-                      #escape single delimiter character by doubling it
-					  y <- gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
-                      #restore the original double delimiter
-
-                      return(gsub(tempString, double_delimiter, y, fixed = TRUE, useBytes = TRUE))
+                      #now  we escape every single delimiter character occurances(include multi-delimiter string) by doubling it
+					  gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
+          
 					}
 
 				}
