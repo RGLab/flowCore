@@ -148,7 +148,7 @@ test_that("test write.FCS", {
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
-  expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))
@@ -158,7 +158,7 @@ test_that("test write.FCS", {
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
-  expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))
