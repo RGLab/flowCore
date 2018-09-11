@@ -11,6 +11,19 @@ rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 tmpdir <- tempfile()
 
 write.flowSet(fs, tmpdir)
+test_that("write.FCS--write correct $BEGINDATA",{
+      
+        mat <- matrix(1:30,ncol = 3, dimnames = list(NULL, letters[1:3]))
+        fr <- flowFrame(mat)
+        #add a dummy keyword to fill the TEXT segment so that itself actual offset is subject to change 
+        #once the computed $ENDSTEXT (i.e. '995') replaces the original the placeholder (i.e. '0')
+        keyword(fr)[["test"]] <- paste(rep(0,655), collapse = "")
+        tmp <- tempfile()
+        write.FCS(fr, tmp)
+        fr2 <- read.FCS(tmp)
+        expect_equivalent(exprs(fr), exprs(fr2))
+        
+      })
 
 test_that("read.flowSet", {
       
@@ -148,7 +161,7 @@ test_that("test write.FCS", {
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
-  expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))
@@ -158,7 +171,7 @@ test_that("test write.FCS", {
   fr1 <- read.FCS(tmp, emptyValue = F)
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
-  expect_equal(keys.new[["$DATE"]], "05\\\\JUN\\\\2012")
+  expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))
@@ -169,6 +182,17 @@ test_that("test write.FCS", {
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
   expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
+  keys.new[["$DATE"]] <- keys[["$DATE"]]
+  expect_equal(keys.new[names(keys)], keys)
+  expect_equivalent(exprs(fr), exprs(fr1))
+  
+  #test quadrual-delimiter string
+  description(fr)[["$DATE"]] <- "05||JUN||2012"
+  suppressWarnings(write.FCS(fr,tmp, delimiter = "|"))
+  fr1 <- read.FCS(tmp, emptyValue = F)
+  keys.new <- description(fr1)
+  keys.new[["FILENAME"]] <- "setToDummy"
+  expect_equal(keys.new[["$DATE"]], "05||JUN||2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
   expect_equal(keys.new[names(keys)], keys)
   expect_equivalent(exprs(fr), exprs(fr1))

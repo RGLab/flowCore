@@ -203,6 +203,7 @@ test_that("test delimiter issue", {
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["GFP2Kfold"]], summary(fr))
+      expect_match(keyword(fr)[["GTI$WORKLIST"]], "C:/Document")
       
       filename <- "RAINBOW_OK.fcs"
       fr <- read.FCS(file.path(dataPath, filename))
