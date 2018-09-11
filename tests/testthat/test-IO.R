@@ -11,6 +11,19 @@ rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 tmpdir <- tempfile()
 
 write.flowSet(fs, tmpdir)
+test_that("write.FCS--write correct $BEGINDATA",{
+      
+        mat <- matrix(1:30,ncol = 3, dimnames = list(NULL, letters[1:3]))
+        fr <- flowFrame(mat)
+        #add a dummy keyword to fill the TEXT segment so that itself actual offset is subject to change 
+        #once the computed $ENDSTEXT (i.e. '995') replaces the original the placeholder (i.e. '0')
+        keyword(fr)[["test"]] <- paste(rep(0,655), collapse = "")
+        tmp <- tempfile()
+        write.FCS(fr, tmp)
+        fr2 <- read.FCS(tmp)
+        expect_equivalent(exprs(fr), exprs(fr2))
+        
+      })
 
 test_that("read.flowSet", {
       
