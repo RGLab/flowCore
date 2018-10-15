@@ -44,7 +44,496 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
 ## information about the FCS measurement parameters (i.e. channels) available.
 ## Exprs is a matrix (values are stored in internal memory) 
 ## ---------------------------------------------------------------------------
-
+#' 'flowFrame': a class for storing observed quantitative properties for a
+#' population of cells from a FACS run
+#' 
+#' This class represents the data contained in a \acronym{FCS} file or similar
+#' data structure. There are three parts of the data: \enumerate{
+#' \item a numeric matrix of the raw measurement values with \kbd{rows=events}
+#' and \kbd{columns=parameters}
+#' \item annotation for the parameters (e.g., the measurement channels, stains,
+#' dynamic range)
+#' \item additional annotation provided through keywords in the \acronym{FCS}
+#' file
+#' }
+#' 
+#' 
+#' 
+#' Objects of class \code{flowFrame} can be used to hold arbitrary data of cell
+#' populations, acquired in flow-cytometry.
+#' 
+#' \acronym{FCS} is the Data File Standard for Flow Cytometry, the current
+#' version is FCS 3.0. See the vignette of this package for additional
+#' information on using the object system for handling of flow-cytometry data.
+#' 
+#' @name flowFrame-class
+#' @aliases flowFrame-class flowFrame [,flowFrame,ANY-method
+#' [,flowFrame,filter-method [,flowFrame,filterResult-method $.flowFrame exprs
+#' exprs<- exprs,flowFrame-method exprs<-,flowFrame,matrix-method
+#' exprs<-,flowFrame,ANY-method initialize,flowFrame-method
+#' head,flowFrame-method tail,flowFrame-method description
+#' description,flowFrame-method description<-,flowFrame,list-method
+#' description<-,flowFrame,ANY-method show,flowFrame-method
+#' plot,flowFrame,ANY-method plot,flowFrame-method summary,flowFrame-method
+#' ncol,flowFrame-method nrow,flowFrame-method dim dim,flowFrame-method
+#' featureNames featureNames,flowFrame-method colnames,flowFrame-method
+#' colnames<- colnames<-,flowFrame-method names names,flowFrame-method range
+#' range,flowFrame-method cbind2,flowFrame,matrix-method
+#' cbind2,flowFrame,numeric-method transform,flowFrame-method
+#' compensate,flowFrame,matrix-method compensate,flowFrame,data.frame-method
+#' compensate,flowFrame,compensation-method ==,flowFrame,filterResult-method
+#' ==,flowFrame,flowFrame-method <,flowFrame,ANY-method <=,flowFrame,ANY-method
+#' >,flowFrame,ANY-method >=,flowFrame,ANY-method spillover,flowFrame-method
+#' @docType class
+#' 
+#' @slot exprs {Object of class \code{matrix} containing the
+#' measured intensities. Rows correspond to cells, columns to the
+#' different measurement channels. The \code{colnames} attribute of
+#' the matrix is supposed to hold the names or identifiers for the
+#' channels. The \code{rownames} attribute would usually not be set.
+#' }
+#' @slot parameters {An
+#' \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+#' containing information about each column of the
+#' \code{flowFrame}. This will generally be filled in by
+#' \code{read.FCS} or similar functions using data from the
+#' \acronym{FCS} keywords describing the parameters.}
+#' @slot description {A list containing the meta data included
+#' in the FCS file.}
+#' 
+#' @section Creating Objects: 
+#' Objects can be created using\cr \code{
+#' new("flowFrame",}\cr \code{ exprs = ...., Object of class matrix}\cr \code{
+#' parameters = ...., Object of class AnnotatedDataFrame}\cr \code{ description
+#' = ...., Object of class list}\cr \code{ )}\cr
+#' 
+#' or the constructor \code{flowFrame}, with mandatory arguments \code{exprs}
+#' and optional arguments \code{parameters} and \code{description}.
+#' 
+#' \code{flowFrame(exprs, parameters, description=list())}
+#' 
+#' To create a \code{flowFrame} directly from an \acronym{FCS} file, use
+#' function \code{\link[flowCore]{read.FCS}}. This is the recommended and
+#' safest way of object creation, since \code{read.FCS} will perform basic data
+#' quality checks upon import. Unless you know exactly what you are doing,
+#' creating objects using \code{new} or the constructor is discouraged. 
+#' 
+#' @section Methods:
+#'   There are separate documentation pages for most of the methods
+#'   listed here which should be consulted for more details.
+#'   \describe{
+#'   \item{[}{Subsetting. Returns an object of class \code{flowFrame}.
+#'     The subsetting is applied to the \code{exprs} slot, while the
+#'     \code{description} slot is unchanged. The syntax for subsetting is
+#'     similar to that of \code{\link[=data.frame]{data.frames}}. In
+#'     addition to the usual index vectors (integer and logical by
+#'                                          position, character by parameter names), \code{flowFrames} can be
+#'     subset via \code{\link{filterResult}} and
+#'     \code{\linkS4class{filter}} objects.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   flowFrame[i,j]}
+#'     
+#'     \code{   flowFrame[filter,]}
+#'     
+#'     \code{   flowFrame[filterResult,]}
+#'     
+#'     Note that the value of argument \code{drop} is ignored when
+#'     subsetting \code{flowFrames}.
+#'     
+#'   }
+#'   \item{$}{Subsetting by channel name. This is similar to subsetting
+#'     of columns of \code{\link[=data.frame]{data.frames}}, i.e.,
+#'     \code{frame$FSC.H} is equivalent to \code{frame[, "FSC.H"]}. Note
+#'     that column names may have to be quoted if they are no valid R
+#'     symbols (e.g. \code{frame$"FSC-H"}).
+#'     
+#'   }
+#'   \item{exprs, exprs<-}{Extract or replace the raw data
+#'     intensities. The replacement value must be a numeric matrix with
+#'     colnames matching the parameter definitions. Implicit subsetting
+#'     is allowed (i.e. less columns in the replacement value compared to
+#'                 the original \code{flowFrame}, but all have to be defined there).
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   exprs(flowFrame)}
+#'     
+#'     \code{   exprs(flowFrame) <- value}
+#'     
+#'   }
+#'   \item{head, tail}{Show first/last elements of the raw data matrix
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   head(flowFrame)}
+#'     
+#'     \code{   tail(flowFrame)}
+#'     
+#'   }
+#'   \item{description, description<-}{Extract or replace the whole list
+#'     of annotation keywords. Usually one would only be interested in a
+#'     subset of keywords, in which case the \code{keyword} method is
+#'     more appropriate. The optional \code{hideInternal} parameter can
+#'     be used to exclude internal FCS parameters starting
+#'     with\code{\\$}.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   description(flowFrame)}
+#'     
+#'     \code{   description(flowFrame) <- value}
+#'     
+#'   }
+#'   \item{keyword, keyword<-}{Extract ore replace one or more entries
+#'     from the \code{description} slot by keyword. Methods are defined
+#'     for character vectors (select a keyword by name), functions
+#'     (select a keyword by evaluating a function on their content) and
+#'     for lists (a combination of the above). See \code{\link{keyword}}
+#'     for details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   keyword(flowFrame)}
+#'     
+#'     \code{   keyword(flowFrame, character)}
+#'     
+#'     \code{   keyword(flowFrame, list)}
+#'     
+#'     \code{   keyword(flowFrame) <- list(value) }
+#'     
+#'   }
+#'   \item{parameters, parameters<-}{Extract parameters and return an
+#'     object of class
+#'     \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}},
+#'     or replace such an object. To access the actual parameter
+#'     annotation, use \code{pData(parameters(frame))}. Replacement is
+#'     only valid with
+#'     \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrames}}
+#'     containing all varLabels \code{name}, \code{desc}, \code{range},
+#'     \code{minRange} and \code{maxRange}, and matching entries in the
+#'     \code{name} column to the colnames of the \code{exprs} matrix. See
+#'     \code{\link{parameters}} for more details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   parameters(flowFrame)}
+#'     
+#'     \code{   parameters(flowFrame) <- value}
+#'     
+#'   }
+#'   \item{show}{
+#'     
+#'     Display details about the \code{flowFrame} object.
+#'     
+#'   }
+#'   \item{summary}{Return descriptive statistical summary (min, max,
+#'                                                          mean and quantile) for each channel
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   summary(flowFrame)}
+#'     
+#'   }
+#'   \item{plot}{Basic plots for \code{flowFrame} objects. If the object
+#'     has only a single parameter this produces a
+#'     \code{\link[graphics:hist]{histogram}}. For exactly two parameters
+#'     we plot a bivariate density map (see
+#'                                      \code{\link[graphics]{smoothScatter}}
+#'                                      and for more than two parameters we produce a simple
+#'                                      \code{\link[lattice]{splom}} plot. To select specific parameters
+#'                                      from a \code{flowFrame} for plotting, either subset the object or
+#'                                      specify the parameters as a character vector in the second
+#'                                      argument to \code{plot}. The smooth parameters lets you toggle
+#'                                      between density-type
+#'                                      \code{\link[graphics]{smoothScatter}}
+#'                                      plots and regular scatterplots.  For far more sophisticated
+#'                                      plotting of flow cytometry data, see the
+#'                                      \code{\link[flowViz:flowViz-package]{flowViz}} package.
+#'                                      
+#'                                      \emph{Usage:}
+#'                                      
+#'                                      \code{   plot(flowFrame, ...)}
+#'                                      
+#'                                      \code{   plot(flowFrame, character, ...)}
+#'                                      
+#'                                      \code{   plot(flowFrame, smooth=FALSE, ...)}
+#'                                      
+#'   }
+#'   \item{ncol, nrow, dim}{Extract the dimensions of the data matrix.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   ncol(flowFrame)}
+#'     
+#'     \code{   nrow(flowFrame)}
+#'     
+#'     \code{   dim(flowFrame)}
+#'     
+#'   }
+#'   \item{featureNames, colnames, colnames<-}{. \code{colnames} and
+#'     \code{featureNames} are synonyms, they extract parameter names (i.e., the
+#'                                                                     colnames of the data matrix) .
+#'     For \code{colnames} there is
+#'     also a replacement method. This will update the \code{name} column
+#'     in the \code{parameters} slot as well.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   featureNames(flowFrame)}
+#'     
+#'     \code{   colnames(flowFrame)}
+#'     
+#'     \code{   colnames(flowFrame) <- value}
+#'     
+#'   }
+#'   \item{names}{Extract pretty formated names of the parameters
+#'     including parameter descriptions.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   names(flowFrame)}
+#'     
+#'   }
+#'   \item{identifier}{Extract GUID of a \code{flowFrame}. Returns the
+#'     file name if no GUID is available. See \code{\link{identifier}}
+#'     for details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   identifier(flowFrame)}
+#'   }
+#'   \item{range}{Get instrument or actual data range of the \code{flowFame}. Note that
+#'     instrument dynamic range is not necessarily the same as the range of the actual data values, but
+#'     the theoretical range of values the measurement instrument was
+#'     able to capture. The values of the dynamic range will be
+#'     transformed when using the transformation methods for\code{flowFrames}.
+#'     
+#'     parameters:
+#'       
+#'       x: flowFrame object.
+#'     
+#'     type: Range type. either "instrument" or "data". Default is "instrument"
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   range(x, type = "data")}
+#'     
+#'   }
+#'   \item{each_row, each_col}{Apply functions over rows or columns of
+#'     the data matrix. These are convenience methods. See
+#'     \code{\link{each_col}} for details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   each_row(flowFrame, function, ...)}
+#'     
+#'     \code{   each_col(flowFrame, function, ...)}
+#'   }
+#'   \item{transform}{Apply a transformation function on a
+#'     \code{flowFrame} object. This uses R's
+#'     \code{\link[base]{transform}} function by treating the
+#'     \code{flowFrame} like a regular \code{data.frame}. \code{flowCore}
+#'     provides an additional inline mechanism for transformations (see
+#'     \code{\link{\%on\%}}) which is strictly more limited
+#'     than the out-of-line transformation described here.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   transform(flowFrame, translist, ...)}
+#'     
+#'   }
+#'   \item{filter}{Apply a \code{\linkS4class{filter}} object on a
+#'     \code{flowFrame} object. This returns an object of class
+#'     \code{\link{filterResult}}, which could then be used for
+#'     subsetting of the data or to calculate summary statistics. See
+#'     \code{\link{filter}} for details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   filter(flowFrame, filter)}
+#'     
+#'     }
+#'   \item{split}{Split \code{flowFrame} object according to a
+#'     \code{\link{filter}}, a \code{\link{filterResult}} or a
+#'     \code{factor}. For most types of filters, an optional
+#'     \code{flowSet=TRUE} parameter will create a
+#'     \code{\linkS4class{flowSet}} rather than a simple list. See
+#'     \code{\link{split}} for details.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   split(flowFrame, filter, flowSet=FALSE, ...)}
+#'     
+#'     \code{   split(flowFrame, filterResult, flowSet=FALSE, ...)}
+#'     
+#'     \code{   split(flowFrame, factor, flowSet=FALSE, ...)}
+#'     
+#'     }
+#'   \item{Subset}{Subset a \code{flowFrame} according to a \code{filter}
+#'     or a logical vector. The same can be done using the standard
+#'     subsetting operator with a \code{filter}, \code{filterResult}, or
+#'     a logical vector as first argument.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   Subset(flowFrame, filter)}
+#'     
+#'     \code{   Subset(flowFrame, logical)}
+#'     
+#'     }
+#'   \item{cbind2}{Expand a \code{flowFrame} by the data in a
+#'     \code{numeric matrix} of the same length. The \code{matrix} must
+#'     have column names different from those of the
+#'     \code{flowFrame}. The additional method for \code{numerics} only
+#'     raises a useful error message.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   cbind2(flowFrame, matrix)}
+#'     
+#'     \code{   cbind2(flowFrame, numeric)}
+#'      
+#'     }
+#'   \item{compensate}{Apply a compensation matrix (or a
+#'     \code{\linkS4class{compensation}} object) on a \code{flowFrame}
+#'     object. This returns a compensated \code{flowFrame}.
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   compensate(flowFrame, matrix)}
+#'     \code{   compensate(flowFrame, data.frame)}
+#'     
+#'     }
+#'   \item{spillover}{Extract spillover matrix from description slot if
+#'     present. It is equivalent to 
+#'     \code{keyword(x, c("spillover", "SPILL"))}
+#'     Thus will simply return a list of keywords value for "spillover" and "SPILL".
+#'     
+#'     \emph{Usage:}
+#'     
+#'     \code{   spillover(flowFrame)}
+#'     
+#'     }
+#'   \item{==}{Test equality between two \code{flowFrames}}
+#'   \item{<, >, <=, >=}{These operators basically treat the
+#'     \code{flowFrame} as a numeric matrix.}
+#'   \item{\code{initialize(flowFrame)}:}{Object instantiation, used
+#'     by \code{new}; not to be called directly by the user.}
+#' }
+#' 
+#' @author
+#' 
+#' F. Hahne, B. Ellis, P. Haaland and N. Le Meur
+#' @seealso
+#' 
+#' \code{\linkS4class{flowSet}}, \code{\link{read.FCS}}
+#' @keywords classes
+#' @examples
+#' 
+#' ## load example data
+#' data(GvHD)
+#' frame <- GvHD[[1]]
+#' 
+#' ## subsetting
+#' frame[1:4,]
+#' frame[,3]
+#' frame[,"FSC-H"]
+#' frame$"SSC-H"
+#' 
+#' ## accessing and replacing raw values
+#' head(exprs(frame))
+#' exprs(frame) <- exprs(frame)[1:3000,]
+#' frame
+#' exprs(frame) <- exprs(frame)[,1:6]
+#' frame
+#' 
+#' ## access FCS keywords
+#' head(description(frame))
+#' keyword(frame, c("FILENAME", "$FIL"))
+#' 
+#' ## parameter annotation
+#' parameters(frame)
+#' pData(parameters(frame))
+#' 
+#' ## summarize frame data
+#' summary(frame)
+#' 
+#' ## plotting
+#' plot(frame)
+#' if(require(flowViz)){
+#' plot(frame)
+#' plot(frame, c("FSC-H", "SSC-H"))
+#' plot(frame[,1])
+#' plot(frame, c("FSC-H", "SSC-H"), smooth=FALSE)
+#' }
+#' 
+#' ## frame dimensions
+#' ncol(frame)
+#' nrow(frame)
+#' dim(frame)
+#' 
+#' ## accessing and replacing parameter names
+#' featureNames(frame)
+#' all(featureNames(frame) == colnames(frame))
+#' colnames(frame) <- make.names(colnames(frame))
+#' colnames(frame)
+#' parameters(frame)$name
+#' names(frame)
+#' 
+#' ## accessing a GUID
+#' identifier(frame)
+#' identifier(frame) <- "test"
+#' 
+#' ##  range of a frame
+#' range(frame) #instrument range
+#' range(frame, type = "data") #actual data range
+#' range(frame)$FSC.H
+#' 
+#' ## iterators
+#' head(each_row(frame, mean))
+#' head(each_col(frame, mean))
+#' 
+#' ## transformation
+#' opar <- par(mfcol=c(1:2))
+#' if(require(flowViz))
+#' plot(frame, c("FL1.H", "FL2.H"))
+#' frame <- transform(frame, transformList(c("FL1.H", "FL2.H"), log))
+#' if(require(flowViz))
+#' plot(frame, c("FL1.H", "FL2.H"))
+#' par(opar)
+#' range(frame)
+#' 
+#' ## filtering of flowFrames
+#' rectGate <- rectangleGate(filterId="nonDebris","FSC.H"=c(200,Inf))
+#' fres <- filter(frame, rectGate)
+#' summary(fres)
+#' 
+#' ## splitting of flowFrames
+#' split(frame, rectGate)
+#' split(frame, rectGate, flowSet=TRUE)
+#' split(frame, fres)
+#' f <- cut(exprs(frame$FSC.H), 3)
+#' split(frame, f)
+#' 
+#' ## subsetting according to filters and filter results
+#' Subset(frame, rectGate)
+#' Subset(frame, fres)
+#' Subset(frame, as.logical(exprs(frame$FSC.H) < 300))
+#' frame[rectGate,]
+#' frame[fres,]
+#' 
+#' ## accessing the spillover matrix
+#' try(spillover(frame))
+#' 
+#' ## check equality
+#' frame2 <- frame
+#' frame == frame2
+#' exprs(frame2) <- exprs(frame)*2
+#' frame == frame2
+#' 
+#' 
 setClass("flowFrame",                
          representation=representation(exprs="matrix",
          parameters="AnnotatedDataFrame",
@@ -115,6 +604,443 @@ flowFrame <- function(exprs, parameters, description=list())
 ## By storing it in the environment we don't have to add an additional
 ## slot and defunct old serialized flowSet objects.
 ## ---------------------------------------------------------------------------
+#' 'flowSet': a class for storing flow cytometry raw data from quantitative
+#' cell-based assays
+#' 
+#' This class is a container for a set of \code{\linkS4class{flowFrame}}
+#' objects
+#' 
+#' 
+#' @name flowSet-class
+#' @aliases flowSet-class flowSet [,flowSet-method [,flowSet,ANY-method
+#' $,flowSet-method [[,flowSet-method [[,flowSet,ANY-method [[<-,flowSet-method
+#' [[<-,flowSet,ANY,ANY,flowFrame-method [[<-,flowFrame-method
+#' fsApply,flowSet-method show,flowSet-method length,flowSet-method
+#' colnames,flowSet-method colnames<-,flowSet-method identifier,flowSet-method
+#' identifier<-,flowSet,ANY-method sampleNames,flowSet-method
+#' sampleNames<-,flowSet,ANY-method phenoData,flowSet-method
+#' phenoData<-,flowSet,ANY-method phenoData<-,flowSet,phenoData-method
+#' pData,flowSet-method pData<-,flowSet,data.frame-method
+#' plot,flowSet,ANY-method plot,flowSet-method varLabels,flowSet-method
+#' varLabels<-,flowSet-method varLabels<-,flowSet,ANY-method
+#' varMetadata,flowSet-method varMetadata<-,flowSet,ANY-method
+#' compensate,flowSet,ANY-method compensate,flowSet,list-method
+#' compensate,flowSet,data.frame-method transform,flowSet-method
+#' rbind2,flowSet,missing rbind2,flowSet,flowSet-method
+#' rbind2,flowSet,flowSet,missing-method rbind2,flowSet,flowFrame-method
+#' rbind2,flowFrame,flowSet-method rbind2,flowSet,missing-method
+#' summary,flowSet-method
+#' @docType class
+#' 
+#' @slot frames An \code{\link[base:environment]{environment}}
+#' containing one or more \code{\linkS4class{flowFrame}} objects.
+#' @slot phenoData An
+#' \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+#' containing the phenotypic data for the whole data set. Each row
+#' corresponds to one of the \code{\linkS4class{flowFrame}}s in the
+#' \code{frames} slot.  The \code{sampleNames} of \code{phenoData}
+#' (see below) must match the names of the
+#' \code{\linkS4class{flowFrame}} in the \code{frames} environment.
+#' @slot colnames A \code{character} object with the (common)
+#' column names of all the data matrices in the
+#' \code{\linkS4class{flowFrame}}s.
+#' 
+#' @section Creating Objects:
+#' 
+#' Objects can be created using\cr \code{ new('flowSet',}\cr \code{ frames =
+#' ...., # environment with flowFrames}\cr \code{ phenoData = .... # object of
+#' class AnnotatedDataFrame}\cr \code{ colnames = ....  # object of class
+#' character}\cr \code{ )}\cr
+#' 
+#' or via the constructor \code{flowSet}, which takes arbitrary numbers of
+#' flowFrames, either as a list or directly as arguments, along with an
+#' optional \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+#' for the \code{phenoData} slot and a \code{character} scalar for the
+#' \code{name} by which the object can be referenced.
+#' 
+#' \code{flowSet(..., phenoData)}
+#' 
+#' Alternatively, \code{flowSets} can be coerced from \code{list} and
+#' \code{environment} objects.
+#' 
+#' \code{as(list("A"=frameA,"B"=frameB),"flowSet")}
+#' 
+#' The safest and easiest way to create \code{flowSet}s directly from
+#' \acronym{FCS} files is via the \code{\link{read.flowSet}} function, and
+#' there are alternative ways to specify the files to read. See the separate
+#' documentation for details.
+#' 
+#' @section Methods:
+#'   \describe{
+#' 
+#' \item{[, [[}{Subsetting. \code{x[i]} where \code{i} is a scalar,
+#'   returns a \code{flowSet} object, and \code{x[[i]]} a
+#'   \code{\linkS4class{flowFrame}} object. In this respect the
+#'   semantics are similar to the behavior of the subsetting operators
+#'   for lists. \code{x[i, j]} returns a \code{flowSet} for which the
+#'   parameters of each \code{\linkS4class{flowFrame}} have been subset
+#'   according to \code{j}, \code{x[[i,j]]} returns the subset of a
+#'   single \code{\linkS4class{flowFrame}} for all parameters in
+#'   \code{j}. Similar to data frames, valid values for \code{i} and
+#'   \code{j} are logicals, integers and characters.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   flowSet[i]}
+#'   
+#'   \code{   flowSet[i,j]}
+#'   
+#'   \code{   flowSet[[i]]}
+#'   
+#' }
+#' 
+#' \item{$}{Subsetting by frame name. This will return a single
+#'   \code{\linkS4class{flowFrame}} object. Note that names may have to
+#'   be quoted if they are no valid R symbols
+#'   (e.g. \code{flowSet$"sample 1"}}
+#' 
+#' \item{colnames, colnames<-}{Extract or replace the \code{colnames}
+#'   slot.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   colnames(flowSet)}
+#'   
+#'   \code{   colnames(flowSet) <- value}
+#'   
+#' }
+#' 
+#' \item{identifier, identifier<-}{Extract or replace the \code{name}
+#'   item from the environment.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   identifier(flowSet)}
+#'   
+#'   \code{   identifier(flowSet) <- value}
+#'   
+#' }
+#' 
+#' 
+#' \item{phenoData, phenoData<-}{Extract or replace the
+#'   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+#'   from the \code{phenoData} slot.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   phenoData(flowSet)}
+#'   
+#'   \code{   phenoData(flowSet) <- value}
+#'   
+#' }
+#' 
+#' \item{pData, pData<-}{Extract or replace the data frame (or columns
+#'                                                          thereof) containing actual phenotypic information from the
+#'   \code{phenoData} slot.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   pData(flowSet)}
+#'   
+#'   \code{   pData(flowSet)$someColumn <- value}
+#'   
+#' }
+#' 
+#' \item{varLabels, varLabels<-}{ Extract and set varLabels in the
+#'   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+#'   of the \code{phenoData} slot.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   varLabels(flowSet)}
+#'   
+#'   \code{   varLabels(flowSet) <- value}
+#'   
+#' }
+#' 
+#' \item{sampleNames}{Extract and replace sample names from the
+#'   \code{phenoData} object. Sample names correspond to frame
+#'   identifiers, and replacing them will also replace the \code{GUID}
+#'   slot for each frame. Note that \code{sampleName} need to be
+#'   unique.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   sampleNames(flowSet)}
+#'   
+#'   \code{   sampleNames(flowSet) <- value}
+#'   
+#' }
+#' 
+#' \item{keyword}{Extract or replace keywords specified in a character
+#'   vector or a list from the \code{description} slot of each
+#'   frame. See \code{\link{keyword}} for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   keyword(flowSet, list(keywords))}
+#'   
+#'   \code{   keyword(flowSet, keywords)}
+#'   
+#'   \code{   keyword(flowSet) <- list(foo="bar") }
+#'   
+#' }
+#' 
+#' \item{length}{number of \code{\linkS4class{flowFrame}} objects in
+#'   the set.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   length(flowSet)}
+#'   
+#' }
+#' 
+#' \item{show}{display object summary.}
+#' 
+#' \item{summary}{Return descriptive statistical summary (min, max,
+#'                                                        mean and quantile) for each channel of each
+#'   \code{\linkS4class{flowFrame}}
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   summary(flowSet)}
+#'   
+#' }
+#' 
+#' 
+#' \item{fsApply}{Apply a function on all frames in a \code{flowSet}
+#'   object. Similar to \code{\link{sapply}}, but with additional
+#'   parameters. See separate documentation for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   fsApply(flowSet, function, ...)}
+#'   
+#'   \code{   fsApply(flowSet, function, use.exprs=TRUE, ...)}
+#'   
+#' }
+#' 
+#' \item{compensate}{Apply a compensation matrix on all frames in a
+#'   \code{flowSet} object. See separate documentation for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   compensate(flowSet, matrix)}
+#'   
+#' }
+#' 
+#' \item{transform}{Apply a transformation function on all frames of a
+#'   \code{flowSet} object. See separate documentation for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   transform(flowSet, ...)}
+#'   
+#' }
+#' 
+#' \item{filter}{Apply a filter object on a \code{flowSet}
+#'   object. There are methods for \code{\linkS4class{filter}}s,
+#'   \code{\link{filterSet}}s and lists of filters. The latter has to
+#'   be a named list, where names of the list items are matching
+#'   sampleNames of the \code{flowSet}. See \code{\linkS4class{filter}}
+#'   for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   filter(flowSet, filter)}
+#'   
+#'   \code{   filter(flowSet, list(filters))}
+#'   
+#' }
+#' 
+#' \item{split}{Split all \code{flowSet} objects according to a
+#'   \code{\link{filter}}, \code{\link{filterResult}} or a list of such
+#'   objects, where the length of the list has to be the same as the
+#'   length of the \code{flowSet}. This returns a list of
+#'   \code{\linkS4class{flowFrame}}s or an object of class
+#'   \code{flowSet} if the \code{flowSet} argument is set to
+#'   \code{TRUE}. Alternatively, a \code{flowSet} can be split into
+#'   separate subsets according to a factor (or any vector that can be
+#'                                           coerced into factors), similar to the behaviour of
+#'   \code{\link[base]{split}} for lists. This will return a list of
+#'   \code{flowSet}s. See \code{\link{split}} for details.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   split(flowSet, filter)}
+#'   
+#'   \code{   split(flowSet, filterResult)}
+#'   
+#'   \code{   split(flowSet, list(filters))}
+#'   
+#'   \code{   split(flowSet, factor)}
+#'   
+#' }
+#' 
+#' \item{Subset}{Returns a \code{flowSet} of
+#'   \code{\linkS4class{flowFrame}}s that have been subset according
+#'   to a \code{\linkS4class{filter}} or
+#'   \code{\linkS4class{filterResult}}, or according to a list of such
+#'   items of equal length as the \code{flowSet}.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   Subset(flowSet, filter)}
+#'   
+#'   \code{   Subset(flowSet, filterResult)}
+#'   
+#'   \code{   Subset(flowSet, list(filters))}
+#'   
+#' }
+#' 
+#' 
+#' \item{rbind2}{Combine two \code{flowSet} objects, or one
+#'   \code{flowSet} and one \code{\linkS4class{flowFrame}} object.
+#'   
+#'   \emph{Usage:}
+#'   
+#'   \code{   rbind2(flowSet, flowSet)}
+#'   
+#'   \code{   rbind2(flowSet, flowFrame)}
+#'   
+#' }
+#' 
+#' \item{spillover}{Compute spillover matrix from a compensation
+#'   set. See separate documentation for details.
+#' }
+#' }
+#' 
+#' @section Important note on storage and performance:
+#' The bulk of the data in a \code{flowSet} object is stored in an
+#' \code{\link[base:environment]{environment}}, and is therefore not
+#' automatically copied when the \code{flowSet} object is copied. If
+#' \code{x} is an object of class \code{flowSet}, then the code
+#' \preformatted{y <- x} will create an object \code{y} that contains
+#' copies of the \code{phenoData} and administrative data in \code{x},
+#' but refers to the \emph{same} environment with the actual fluorescence
+#' data. See below for how to create proper copies.
+#' 
+#' The reason for this is performance. The pass-by-value semantics of
+#' function calls in \code{R} can result in numerous copies of the same
+#' data object being made in the course of a series of nested function
+#' calls. If the data object is large, this can result in considerable
+#' cost of memory and performance. \code{flowSet} objects are intended to
+#' contain experimental data in the order of hundreds of Megabytes, which
+#' can effectively be treated as read-only: typical tasks are the
+#' extraction of subsets and the calculation of summary statistics.  This
+#' is afforded by the design of the \code{flowSet} class: an object of
+#' that class contains a \code{phenoData} slot, some administrative
+#' information, and a \emph{reference} to an environment with the
+#' fluorescence data; when it is copied, only the reference is copied,
+#' but not the potentially large set of fluorescence data themselves.
+#' 
+#' However, note that subsetting operations, such as \code{y <- x[i]} do
+#' create proper copies, including a copy of the appropriate part of the
+#' fluorescence data, as it should be expected. Thus, to make a proper
+#' copy of a \code{flowSet} \code{x}, use \code{y <- x[seq(along=x)]}
+#' 
+#' @author
+#' 
+#' F. Hahne, B. Ellis, P. Haaland and N. Le Meur
+#' @seealso
+#' 
+#' \code{\linkS4class{flowFrame}}, \code{\link{read.flowSet}}
+#' @keywords classes
+#' @examples
+#' 
+#' 
+#' ## load example data and object creation
+#' data(GvHD)
+#' 
+#' ## subsetting to flowSet
+#' set <- GvHD[1:4]
+#' GvHD[1:4,1:2]
+#' sel <- sampleNames(GvHD)[1:2]
+#' GvHD[sel, "FSC-H"]
+#' GvHD[sampleNames(GvHD) == sel[1], colnames(GvHD[1]) == "SSC-H"]
+#' 
+#' ## subsetting to flowFrame
+#' GvHD[[1]]
+#' GvHD[[1, 1:3]]
+#' GvHD[[1, "FSC-H"]]
+#' GvHD[[1, colnames(GvHD[1]) == "SSC-H"]]
+#' GvHD$s5a02
+#' 
+#' ## constructor
+#' flowSet(GvHD[[1]], GvHD[[2]])
+#' pd <- phenoData(GvHD)[1:2,]
+#' flowSet(s5a01=GvHD[[1]], s5a02=GvHD[[2]],phenoData=pd)
+#' 
+#' ## colnames
+#' colnames(set)
+#' colnames(set) <- make.names(colnames(set))
+#' 
+#' ## object name
+#' identifier(set)
+#' identifier(set) <- "test"
+#' 
+#' ## phenoData
+#' pd <- phenoData(set)
+#' pd
+#' pd$test <- "test"
+#' phenoData(set) <- pd
+#' pData(set)
+#' varLabels(set)
+#' varLabels(set)[6] <- "Foo"
+#' varLabels(set)
+#' 
+#' ## sampleNames
+#' sampleNames(set)
+#' sampleNames(set) <- LETTERS[1:length(set)]
+#' sampleNames(set)
+#' 
+#' ## keywords
+#' keyword(set, list("transformation"))
+#' 
+#' ## length
+#' length(set)
+#' 
+#' ## compensation
+#' samp <- read.flowSet(path=system.file("extdata","compdata","data",
+#' package="flowCore"))
+#' cfile <- system.file("extdata","compdata","compmatrix", package="flowCore")
+#' comp.mat <- read.table(cfile, header=TRUE, skip=2, check.names = FALSE)
+#' comp.mat
+#' summary(samp[[1]])
+#' samp <- compensate(samp, as.matrix(comp.mat))
+#' summary(samp[[1]])
+#' 
+#' ## transformation
+#' opar <- par(mfcol=c(1:2))
+#' plot(set[[1]], c("FL1.H", "FL2.H"))
+#' set <- transform(set, transformList(c("FL1.H", "FL2.H"), log))
+#' plot(set[[1]], c("FL1.H", "FL2.H"))
+#' par(opar)
+#' 
+#' ## filtering of flowSets
+#' rectGate <- rectangleGate(filterId="nonDebris", FSC.H=c(200,Inf))
+#' fres <- filter(set, rectGate)
+#' class(fres)
+#' summary(fres[[1]])
+#' rectGate2 <- rectangleGate(filterId="nonDebris2", SSC.H=c(300,Inf))
+#' fres2 <- filter(set, list(A=rectGate, B=rectGate2, C=rectGate, D=rectGate2))
+#' 
+#' ## Splitting frames of a flowSet
+#' split(set, rectGate)
+#' split(set[1:2], rectGate, populatiuon="nonDebris2+")
+#' split(set, c(1,1,2,2))
+#' 
+#' ## subsetting according to filters and filter results
+#' Subset(set, rectGate)
+#' Subset(set, filter(set, rectGate))
+#' Subset(set, list(A=rectGate, B=rectGate2, C=rectGate, D=rectGate2))
+#' 
+#' ## combining flowSets
+#' rbind2(set[1:2], set[3:4])
+#' rbind2(set[1:3], set[[4]])
+#' rbind2(set[[4]], set[1:2])
+#' 
+#' 
 setClass("flowSet",                   
          representation=representation(frames="environment",
          phenoData="AnnotatedDataFrame",
@@ -175,6 +1101,50 @@ flowSet <- function(..., phenoData, name)
 ## ---------------------------------------------------------------------------
 ## Parameterize transforms so that we can describe them.
 ## ---------------------------------------------------------------------------
+#' 'transform': a class for transforming flow-cytometry data by applying scale
+#' factors.
+#' 
+#' Transform objects are simply functions that have been extended to allow for
+#' specialized dispatch. All of the ``...Transform'' constructors return
+#' functions of this type for use in one of the transformation modalities.
+#' 
+#' 
+#' @name transform-class
+#' @aliases transform transform,missing-method transform-class
+#' summary,transform-method show,transform-method
+#' @docType class
+#' 
+#' @slot .Data Object of class \code{"function"}
+#' @slot transformationId A name for the transformation
+#' object
+#' 
+#' @section Methods:
+#' \describe{
+#' \item{\code{summary}}{Return the parameters}
+#' }
+#' 
+#' @author N LeMeur
+#' @seealso \code{\link[flowCore]{linearTransform}},
+#' \code{\link[flowCore]{lnTransform}},
+#' \code{\link[flowCore]{logicleTransform}},
+#' \code{\link[flowCore]{biexponentialTransform}},
+#' \code{\link[flowCore]{arcsinhTransform}},
+#' \code{\link[flowCore]{quadraticTransform}},
+#' \code{\link[flowCore]{logTransform}}
+#' @keywords classes
+#' @examples
+#' 
+#' 
+#' cosTransform <- function(transformId, a=1, b=1){
+#'   t = new("transform", .Data = function(x) cos(a*x+b))
+#'   t@transformationId = transformId
+#'   t
+#' }
+#' 
+#' cosT <- cosTransform(transformId="CosT",a=2,b=1)
+#' 
+#' summary(cosT)
+#' 
 setClass("transform",
          representation=representation(transformationId="character",
                                        .Data="function"),
@@ -205,6 +1175,101 @@ setClass("nullParameter",
 ## filters only). More specific filters all inherit from either of these two
 ## classes.
 ## ---------------------------------------------------------------------------
+#' A class for representing filtering operations to be applied to flow data.
+#' 
+#' The \code{filter} class is the virtual base class for all filter/gating
+#' objects in \code{flowCore}. In general you will want to subclass or create a
+#' more specific filter.
+#' 
+#' 
+#' @name filter-class
+#' @aliases filter-class filtergate,filter-class rectangleGate,filter-class
+#' polygonGate,filter-class ellipsoidGate,filter-class norm2Filter,filter-class
+#' decisionTreeGate,filter-class booleanGate,filter-class filter,filter-method
+#' |,filter,filter-method !,filter-method |,filter,list-method
+#' |,list,filter-method
+#' @docType class
+#' 
+#' @slot filterId A character vector that identifies this \code{filter}. 
+#' This is typically user specified but can be automatically deduced by 
+#' certain filter operations, particularly boolean and
+#' set operations.
+#' 
+#' @section Objects from the Class:
+#' 
+#' All \code{\link[flowCore:filter-class]{filter}} objects in \code{flowCore}
+#' should be instantiated through their constructors. These are functions
+#' that share the same name with the respective \code{filter}
+#' classes. E.g.,
+#' \code{\link[flowCore:rectangleGate]{rectangleGate()}} is the 
+#' constructor function for rectangular gates, and
+#' \code{\link[flowCore:kmeansFilter]{kmeansFilter()}} creates
+#' objects of class \code{\link{kmeansFilter}}. Usually these
+#' constructors can deal with various different inputs, allowing to
+#' utilize the same function in different programmatic or interactive
+#' settings. For all \code{filters} that operate on specific flow
+#' parameters (i.e., those inheriting from 
+#'             \code{\link[flowCore:parameterFilter-class]{parameterFilter}}), the parameters
+#' need to be passed to the constructor, either as names or colnames of
+#' additional input arguments or explicitly as separate arguments.  See
+#' the documentation of the respective \code{filter} classes for
+#' details. If parameters are explicitly defined as separate arguments,
+#' they may be of class \code{character}, in which case they will be
+#' evaluated literally as colnames in a \code{\link{flowFrame}}, or of
+#' class \code{\link[flowCore:transform-class]{transform}}, in which case the
+#' filtering is performed on a temporarily transformed copy of the input
+#' data. See \code{\link[flowCore:parameterFilter-class]{here}} for details.
+#' 
+#' @section Methods:
+#' \describe{
+#' \item{\code{\%in\%}}{Used in the usual way this returns a vector of
+#'   values that identify which events were accepted by the filter. A
+#'   single filter may encode several populations so this can return
+#'   either a \code{logical} vector, a \code{factor} vector or a
+#'   \code{numeric} vector of probabilities that the event is accepted
+#'   by the filter. Minimally, you must implement this method when
+#'   creating a new type of filter}
+#' 
+#' \item{\code{&}, \code{|}, \code{!}}{Two filters can be composed
+#'   using the usual boolean operations returning a \code{filter} class
+#'   of a type appropriate for handling the operation. These methods
+#'   attempt to guess an appropriate \code{filterId} for the new
+#'   \code{filter}}
+#' 
+#' \item{\code{\%subset\%}, \code{\%&\%}}{Defines a filter as being a
+#'   subset of another filter. For deterministic filters the results
+#'   will typically be equivalent to using an \code{\&} operation to
+#'   compose the two filters, though summary methods will use subset
+#'   semantics when calculating proportions. Additionally, when the
+#'   filter is data driven, such as
+#'   \code{\link[flowCore:norm2Filter-class]{norm2Filter}}, the subset
+#'   semantics are 
+#'   applied to the data used to fit the filter possibly resulting in
+#'   quite different, and usually more desirable, results.}
+#' 
+#' \item{\code{\%on\%}}{Used in conjunction with a
+#'   \code{\link[flowCore:transformList-class]{transformList}} to create a
+#'   \code{transformFilter}. This filter is similar to the subset
+#'   filter in that the filtering operation takes place on transformed
+#'   values rather than the original values.}
+#' 
+#' \item{\code{filter}}{A more formal version of \code{\%in\%}, this
+#'   method returns a
+#'   \code{\link[flowCore:filterResult-class]{filterResult}} object
+#'   that can be used in subsequent filter operations as well as providing
+#'   more metadata about the results of the filtering operation}
+#' 
+#' \item{\code{summarizeFilter}}{When implementing a new filter this
+#'   method is used to update the \code{filterDetails} slot of a
+#'   \code{filterResult}. It is optional and typically only needs to be
+#'   implemented for data-driven filters.}
+#' 
+#' }
+#' 
+#' @author B. Ellis, P.D. Haaland and N. LeMeur
+#' @seealso \code{\link[flowCore:transform-class]{transform}},
+#' \code{\link[flowCore:filter-methods]{filter}}
+#' @keywords classes
 setClass("filter", 
          representation=representation("VIRTUAL",
          filterId="character"),
@@ -225,13 +1290,65 @@ setClass("parameterFilter",
          )
 
 #########################################################################
-#filters is a list filters for the same flowFrame
+#filters is a list of filters for the same flowFrame
 #thus is different from filerList which is for a flowSet
 #---------------------------------------------------------------------
 #which are supposed to be gated on the same parent population.
 #It is mainly for plotting multiple gates per flowFramein flowViz::xyplot.
 #These gates should have the same parameters(channels)
 ###########################################################################
+#' Class "filters" and "filtersList"
+#' 
+#' The \code{filters} class is the container for a list of
+#' \code{\link[flowCore:filter-methods]{filter}} objects.\cr\cr
+#' The \code{filtersList}
+#' class is the container for a list of \code{filters} objects. 
+#' 
+#' The \code{filters} class mainly
+#' exists for displaying multiple filters/gates on one single panel(flowFrame)
+#' of \code{\link[flowViz:xyplot]{xyplot}}. Note that it is different from
+#' \code{\link[flowCore:filterList]{filterList}} class which is to be applied to
+#' a flowSet. In other words, \code{filter} objects of a \code{fliterList} are
+#' to be applied to different flowFrames. However,all of \code{filter} objects
+#' of a \code{filters} object are for one single flowFrame, more specifically for one
+#' pair of projections(parameters).So these filters should share the common
+#' parameters.\cr\cr
+#' And \code{filtersList} is a list of \code{filters} objects, which are to be
+#' applied to a flowSet.
+#' 
+#' 
+#' @name filters-class
+#' @aliases filters-class filters filtersList-class filtersList
+#' show,filters-method show,filtersList-method
+#' @docType class
+#' 
+#' @usage 
+#' \code{filters(x)}\cr
+#' \code{filtersList(x)}
+#' 
+#' @param   x A list of \code{filter} or \code{filters} objects.
+#' 
+#' @return  A \code{filters} or \code{filtersList} object from the constructor 
+#' 
+#' @slot .Data Object of class
+#' \code{"list"}. The class directly extends \code{list}, and this slot holds
+#' the list data.
+#' 
+#' @section Extends:
+#' Class \code{"\linkS4class{list}"}
+#' 
+#' @section Objects from the Class:
+#' Objects are created from regular lists using the constructors 
+#' \code{filters} and \code{filtersList}:
+#' 
+#' \code{filters(x)}
+#' 
+#' \code{filtersList(x)}
+#' 
+#' @author Mike Jiang
+#' @seealso \code{\link[flowCore:filter-class]{filter}},
+#' \code{\link[flowCore:filterList-class]{filterList}}
+#' @keywords classes
 setClass("filters",
 		 contains="list"
 		 )
@@ -336,6 +1453,165 @@ setClass("filtersList",
 ## A class describing a 2D rectangular region in the parameter space. Slots
 ## min and max hold the boundaries in the two dimensions.
 ## ---------------------------------------------------------------------------
+#' Class "rectangleGate"
+#' 
+#' 
+#' Class and constructor for n-dimensional rectangular
+#' \code{\linkS4class{filter}} objects.
+#' 
+#' 
+#' This class describes a rectangular region in n dimensions, which is a
+#' Cartesian product of \code{n} orthogonal intervals in these dimensions.
+#' \code{n=1} corresponds to a range gate, \code{n=2} to a rectangle gate,
+#' \code{n=3} corresponds to a box region and \code{n>3} to a hyper-rectangular
+#' regions. Intervals may be open on one side, in which case the value for the
+#' boundary is supposed to be \code{Inf} or \code{-Inf}, respectively.
+#' \code{rectangleGates} are inclusive, that means that events on the
+#' boundaries are considered to be in the gate.
+#' 
+#' The constructor is designed to be useful in both direct and programmatic
+#' usage. To use it programmatically, you may either construct a named list or
+#' you may construct a matrix with \code{n} columns and \code{2} rows.  The
+#' first row corresponds to the minimal value for each parameter while the
+#' second row corresponds to the maximal value for each parameter.  The names
+#' of the parameters are taken from the column names or from the list names,
+#' respectively. Alternatively, the boundaries of the \code{rectangleGate} can
+#' be given as additional named arguments, where each of these arguments should
+#' be a numeric vector of length \code{2}; the function tries to collapse these
+#' boundary values into a matrix.
+#' 
+#' Note that boundaries of \code{rectangleGates} where \code{min > max} are
+#' syntactically valid, however when evaluated they will always be empty.
+#' 
+#' \code{rectangleGate} objects can also be multiplied using the \code{*}
+#' operator, provided that both gates have orthogonal axes. This results in
+#' higher-dimensional \code{rectangleGates}. The inverse operation of
+#' subsetting by parameter name(s) is also available.
+#' 
+#' Evaluating a \code{rectangleGate} generates an object of class
+#' \code{\linkS4class{logicalFilterResult}}. Accordingly, \code{rectangleGates}
+#' can be used to subset and to split flow cytometry data sets.
+#' 
+#' @name rectangleGate-class
+#' @aliases rectangleGate-class rectangleGate summary,rectangleGate-method
+#' show,rectangleGate-method [,rectangleGate,character-method
+#' [,rectangleGate,ANY-method *,rectangleGate,rectangleGate-method
+#' @docType class
+#' 
+#' 
+#' @usage rectangleGate(\dots, .gate, filterId="defaultRectangleGate")
+#' 
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' gate. The object can later be identified by this name.
+#' @param .gate A definition of the gate. This can be either a list, or a
+#' matrix, as described below.
+#' @param \dots You can also directly provide the boundaries of a
+#' \code{rectangleGate} as additional named arguments, as described below.
+#' @return
+#' 
+#' Returns a \code{\link{rectangleGate}} object for use in filtering
+#' \code{\link{flowFrame}}s or other flow cytometry objects.
+#' @note
+#' 
+#' See the documentation in the \code{\link[flowViz:flowViz-package]{flowViz}}
+#' package for details on plotting of \code{rectangleGates}.
+#' @section Extends:
+#' 
+#' Class \code{"\linkS4class{parameterFilter}"}, directly.
+#' 
+#' Class \code{"\linkS4class{concreteFilter}"}, by class
+#' \code{parameterFilter}, distance 2.
+#' 
+#' Class \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
+#' distance 3.
+#' 
+#' @slot min,max Objects of class \code{"numeric"}. The
+#' minimum and maximum values of the n-dimensional rectangular
+#' region.
+#' 
+#' @slot parameters Object of class \code{"character"},
+#' indicating the parameters for which the \code{rectangleGate} is
+#' defined.
+#' 
+#' @slot filterId Object of class \code{"character"},
+#' referencing the filter.
+#' 
+#' @section Objects from the Class:
+#' 
+#' Objects can be created by calls of the form \code{new("rectangleGate",
+#' ...)}, by using the constructor \code{rectangleGate} or by combining
+#' existing \code{rectangleGates} using the \code{*} method.  Using the
+#' constructor is the recommended way of object instantiation.
+#' 
+#' @section Methods:
+#' \describe{
+#'    \item{\%in\%}{\code{signature(x = "flowFrame", table =
+#'      "rectangleGate")}: The workhorse used to evaluate the filter on
+#'      data. This is usually not called directly by the user, but
+#'      internally by calls to the \code{\link{filter}} methods. }
+#'    
+#'    \item{show}{\code{signature(object = "rectangleGate")}: Print
+#'      information about the filter. }
+#'    
+#'    \item{*}{\code{signature(e1 = "rectangleGate", e2 =
+#'      "rectangleGate")}: combining two \code{rectangleGates} into one
+#'      higher dimensional representation. }
+#'    
+#'    \item{[}{\code{signature(x = "rectangleGate", i = "character")}:
+#'      Subsetting of a \code{rectangleGate} by parameter name(s). This
+#'      is essentially the inverse to \code{*}. }
+#' }
+#' 
+#' @author F.Hahne, B. Ellis N. Le Meur
+#' @seealso
+#' 
+#' \code{\link{flowFrame}}, \code{\link{polygonGate}},
+#' \code{\link{ellipsoidGate}}, \code{\link{polytopeGate}},
+#' \code{\link{filter}} for evaluation of \code{rectangleGates} and
+#' \code{\link{split}} and \code{\link{Subset}}for splitting and subsetting of
+#' flow cytometry data sets based on that.
+#' @keywords methods classes
+#' @examples
+#' 
+#' 
+#' ## Loading example data
+#' dat <- read.FCS(system.file("extdata","0877408774.B08",
+#' package="flowCore"))
+#' 
+#' #Create directly. Most likely from a command line
+#' rectangleGate(filterId="myRectGate", "FSC-H"=c(200, 600), "SSC-H"=c(0, 400))
+#' 
+#' #To facilitate programmatic construction we also have the following
+#' rg <- rectangleGate(filterId="myRectGate", list("FSC-H"=c(200, 600),
+#' "SSC-H"=c(0, 400)))
+#' mat <- matrix(c(200, 600, 0, 400), ncol=2, dimnames=list(c("min", "max"),
+#' c("FSC-H", "SSC-H")))
+#' rg <- rectangleGate(filterId="myRectGate", .gate=mat)
+#' 
+#' ## Filtering using rectangleGates
+#' fres <- filter(dat, rg)
+#' fres
+#' summary(fres)
+#' 
+#' ## The result of rectangle filtering is a logical subset
+#' Subset(dat, fres)
+#' 
+#' ## We can also split, in which case we get those events in and those
+#' ## not in the gate as separate populations
+#' split(dat, fres)
+#' 
+#' ## Multiply rectangle gates
+#' rg1 <- rectangleGate(filterId="FSC-", "FSC-H"=c(-Inf, 50))
+#' rg2 <- rectangleGate(filterId="SSC+", "SSC-H"=c(50, Inf))
+#' rg1 * rg2
+#' 
+#' ## Subset rectangle gates
+#' rg["FSC-H"]
+#' 
+#' ##2d rectangleGate can be coerced to polygonGate
+#' as(rg, "polygonGate")
+#' 
+#' 
 setClass("rectangleGate",
          representation=representation(min="numeric",
          max="numeric"),
@@ -472,6 +1748,121 @@ rectangleGate <- function(..., .gate, filterId="defaultRectangleGate")
 ## four quadrants. Slot boundary holds a vector of length two indicating
 ## the quadrant boundaries in each of the two dimensions.
 ## ---------------------------------------------------------------------------
+#' Class "quadGate"
+#' 
+#' 
+#' Class and constructors for quadrant-type \code{\link{filter}} objects.
+#' 
+#' 
+#' \code{quadGates} are defined by two parameters, which specify a separation
+#' of a two-dimensional parameter space into four quadrants. The
+#' \code{quadGate} function is designed to be useful in both direct and
+#' programmatic usage.
+#' 
+#' For the interactive use, these parameters can be given as additional named
+#' function arguments, where the names correspond to valid parameter names in a
+#' \code{\link{flowFrame}} or \code{\link{flowSet}}. For a more programmatic
+#' approach, a named list or numeric vector of the gate boundaries can be
+#' passed on to the function as argument \code{.gate}.
+#' 
+#' Evaluating a \code{quadGate} results in four sub-populations, and hence in
+#' an object of class \code{\link{multipleFilterResult}}. Accordingly,
+#' \code{quadGates} can be used to split flow cytometry data sets.
+#' 
+#' @name quadGate-class
+#' @aliases quadGate-class quadGate show,quadGate-method
+#' @docType class
+#' 
+#' @usage quadGate(\dots, .gate, filterId="defaultQuadGate")
+#' 
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' \code{\link{filter}}. The object can later be identified by this name.
+#' @param .gate A definition of the gate for programmatic access. This can be
+#' either a named list or a named numeric vector, as described below.
+#' @param \dots The parameters of \code{quadGates} can also be directly
+#' described using named function arguments, as described below.
+#' @return
+#' 
+#' Returns a \code{quadGate} object for use in filtering
+#' \code{\link{flowFrame}}s or other flow cytometry objects.
+#' @note
+#' 
+#' See the documentation in the \code{\link[flowViz:flowViz-package]{flowViz}}
+#' package for plotting of \code{quadGates}.
+#' @section Extends:
+#' 
+#' Class \code{"\linkS4class{parameterFilter}"}, directly.
+#' 
+#' Class \code{"\linkS4class{concreteFilter}"}, by class
+#' \code{parameterFilter}, distance 2.
+#' 
+#' Class \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
+#' distance 3.
+#' 
+#' @slot boundary Object of class \code{"numeric"}, length
+#' 2. The boundaries of the quadrant regions.
+#' @slot parameters Object of class \code{"character"},
+#' describing the parameter used to filter the \code{flowFrame}.
+#' @slot filterId Object of class \code{"character"},
+#' referencing the gate.
+#' 
+#' @section Objects from the Class:
+#' Objects can be created by calls of the form \code{new("quadGate",
+#' ...)} or using the constructor \code{quadGate}. The latter is the
+#' recommended way.
+#' 
+#' @section Methods:
+#' \describe{
+#'   
+#'   \item{\%in\%}{\code{signature(x = "flowFrame", table =
+#'                                   "quadGate")}: The workhorse used to evaluate the gate on
+#'     data. This is usually not called directly by the user, but
+#'     internally by calls to the \code{\link{filter}} methods. }
+#'   
+#'   \item{show}{\code{signature(object = "quadGate")}: Print
+#'     information about the gate. }
+#'   
+#' }
+#' 
+#' @author F.Hahne, B. Ellis N. Le Meur
+#' @seealso
+#' 
+#' \code{\link{flowFrame}}, \code{\link{flowSet}}, \code{\link{filter}} for
+#' evaluation of \code{quadGates} and \code{\link{split}} for splitting of flow
+#' cytometry data sets based on that.
+#' @keywords classes methods
+#' @examples
+#' 
+#' 
+#' ## Loading example data
+#' dat <- read.FCS(system.file("extdata","0877408774.B08",
+#' package="flowCore"))
+#' 
+#' ## Create directly. Most likely from a command line
+#' quadGate(filterId="myQuadGate1", "FSC-H"=100, "SSC-H"=400)
+#' 
+#' ## To facilitate programmatic construction we also have the following
+#' quadGate(filterId="myQuadGate2", list("FSC-H"=100, "SSC-H"=400))
+#' ## FIXME: Do we want this?
+#' ##quadGate(filterId="myQuadGate3", .gate=c("FSC-H"=100, "SSC-H"=400))
+#' 
+#' ## Filtering using quadGates
+#' qg <- quadGate(filterId="quad", "FSC-H"=600, "SSC-H"=400)
+#' fres <- filter(dat, qg)
+#' fres
+#' summary(fres)
+#' names(fres)
+#' 
+#' ## The result of quadGate filtering are multiple sub-populations
+#' ## and we can split our data set accordingly
+#' split(dat, fres)
+#' 
+#' ## We can limit the splitting to one or several sub-populations
+#' split(dat, fres, population="FSC-H-SSC-H-")
+#' split(dat, fres, population=list(keep=c("FSC-H-SSC-H-",
+#' "FSC-H-SSC-H+")))
+#' 
+#' 
 setClass("quadGate",
          representation=representation(boundary="numeric"),        
          contains="parameterFilter",
@@ -509,6 +1900,112 @@ quadGate <- function(..., .gate, filterId="defaultQuadGate")
 ## A class describing a 2D polygonal region in the parameter space. Slot
 ## boundary holds the vertices of the polygon in a 2 colum matrix.
 ## ---------------------------------------------------------------------------
+#' Class "polygonGate"
+#' 
+#' 
+#' Class and constructor for 2-dimensional polygonal \code{\link{filter}}
+#' objects.
+#' 
+#' 
+#' Polygons are specified by the coordinates of their vertices in two
+#' dimensions. The constructor is designed to be useful in both direct and
+#' programmatic usage. It takes either a list or a named matrix with \code{2}
+#' columns and at least \code{3} rows containing these coordinates.
+#' Alternatively, vertices can be given as named arguments, in which case the
+#' function tries to convert the values into a matrix.
+#' 
+#' @name polygonGate-class
+#' @aliases polygonGate-class polygonGate show,polygonGate-method
+#' @docType class
+#' 
+#' @usage polygonGate(\dots, .gate, boundaries, filterId="defaultPolygonGate")
+#' 
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' gate.
+#' @param .gate,boundaries A definition of the gate. This can be either a list
+#' or a named matrix as described below. Note the argument boundaries is
+#' deprecated and will go away in the next release.
+#' @param \dots You can also directly describe a gate without wrapping it in a
+#' list or matrix, as described below.
+#' @return
+#' 
+#' Returns a \code{\link{polygonGate}} object for use in filtering
+#' \code{\link{flowFrame}}s or other flow cytometry objects.
+#' @note
+#' 
+#' See the documentation in the \code{\link[flowViz:flowViz-package]{flowViz}}
+#' package for plotting of \code{polygonGates}.
+#' @section Extends:
+#' 
+#' Class \code{"\linkS4class{parameterFilter}"}, directly.
+#' 
+#' Class \code{"\linkS4class{concreteFilter}"}, by class
+#' \code{parameterFilter}, distance 2.
+#' 
+#' Class \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
+#' distance 3.
+#' 
+#' @slot boundaries Object of class \code{"matrix"}. The
+#' vertices of the polygon in two dimensions. There need to be at
+#' least 3 vertices specified for a valid polygon.
+#' @slot parameters Object of class \code{"character"},
+#' describing the parameter used to filter the \code{flowFrame}.
+#' @slot filterId Object of class \code{"character"},
+#' referencing the filter.
+#' 
+#' @section Objects from the Class:
+#' Objects can be created by calls of the form \code{new("polygonGate",
+#' ...)} or by using the constructor \code{polygonGate}. Using the
+#' constructor is the recommended way.
+#' 
+#' @section Methods:
+#' \describe{
+#'   
+#'   \item{\%in\%}{\code{signature(x = "flowFrame", table =
+#'                                   "polygonGate")}: The workhorse used to evaluate the filter on
+#'     data. This is usually not called directly by the user, but
+#'     internally by calls to the \code{\link{filter}} methods. }
+#'   
+#'   \item{show}{\code{signature(object = "polygonGate")}: Print
+#'     information about the filter. }
+#'   
+#' }
+#' 
+#' @author F.Hahne, B. Ellis N. Le Meur
+#' @seealso
+#' 
+#' \code{\link{flowFrame}}, \code{\link{rectangleGate}},
+#' \code{\link{ellipsoidGate}}, \code{\link{polytopeGate}},
+#' \code{\link{filter}} for evaluation of \code{rectangleGates} and
+#' \code{\link{split}} and \code{\link{Subset}}for splitting and subsetting of
+#' flow cytometry data sets based on that.
+#' @keywords methods
+#' @examples
+#' 
+#' 
+#' ## Loading example data
+#' dat <- read.FCS(system.file("extdata","0877408774.B08",
+#' package="flowCore"))
+#' 
+#' ## Defining the gate
+#' sqrcut <- matrix(c(300,300,600,600,50,300,300,50),ncol=2,nrow=4)
+#' colnames(sqrcut) <- c("FSC-H","SSC-H")
+#' pg <- polygonGate(filterId="nonDebris", boundaries= sqrcut)
+#' pg
+#' 
+#' ## Filtering using polygonGates
+#' fres <- filter(dat, pg)
+#' fres
+#' summary(fres)
+#' 
+#' ## The result of polygon filtering is a logical subset
+#' Subset(dat, fres)
+#' 
+#' ## We can also split, in which case we get those events in and those
+#' ## not in the gate as separate populations
+#' split(dat, fres)
+#' 
+#' 
 setClass("polygonGate",
          representation(boundaries="matrix"),
          contains="parameterFilter",
@@ -560,6 +2057,60 @@ polygonGate <- function(..., .gate, boundaries, filterId="defaultPolygonGate")
 ## holds the coefficients of the linear equations for m halfspaces in n
 ## dimensions and b is a vector of m intercepts.
 ## ---------------------------------------------------------------------------
+#' Define filter boundaries
+#' 
+#' 
+#' Convenience methods to facilitate the construction of \code{\link{filter}}
+#' objects
+#' 
+#' 
+#' These functions are designed to be useful in both direct and programmatic
+#' usage.
+#' 
+#' For rectangle gate in n dimensions, if n=1 the gate correspond to a range
+#' gate. If n=2, the gate is a rectangle gate. To use this function
+#' programmatically, you may either construct a list or you may construct a
+#' matrix with \code{n} columns and \code{2} rows.  The first row corresponds
+#' to the minimal value for each parameter while the second row corresponds to
+#' the maximal value for each parameter.  The names of the parameters are taken
+#' from the column names as in the third example.
+#' 
+#' Rectangle gate objects can also be multiplied together using the \code{*}
+#' operator, provided that both gate have orthogonal axes.
+#' 
+#' For polygon gate, the boundaries are specified as vertices in 2 dimensions,
+#' for polytope gate objects as vertices in n dimensions. 
+#' 
+#' Polytope gate objects will represent the convex polytope determined
+#' by the vertices and parameter b which together specify the polytope as 
+#' an intersection of half-spaces represented as a system of linear inequalities,
+#' \eqn{Ax\le b}
+#' 
+#' For quadrant gates, the boundaries are specified as a named list or vector
+#' of length two.
+#' 
+#' 
+#' @name polytopeGate-class
+#' @aliases polytopeGate-class polytopeGate show,polytopeGate-method
+#' @docType class
+#' 
+#' @usage polytopeGate(\dots, .gate, b, filterId="defaultPolytopeGate")
+#' 
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' gate.
+#' @param .gate A definition of the gate. This can be either a list, vector or
+#' matrix, described below.
+#' @param b Need documentation
+#' @param \dots You can also directly describe a gate without wrapping it in a
+#' list or matrix, as described below.
+#' @return
+#' 
+#' Returns a \code{\link{rectangleGate}} or \code{\link{polygonGate}} object
+#' for use in filtering \code{\link{flowFrame}}s or other flow cytometry
+#' objects.
+#' @author F.Hahne, B. Ellis N. Le Meur
+#' @seealso \code{\link{flowFrame}}, \code{\link{filter}}
+#' @keywords methods
 setClass("polytopeGate",
          representation(a="matrix",b="numeric"),
          contains="parameterFilter",
@@ -595,6 +2146,123 @@ polytopeGate <- function(..., .gate, b, filterId="defaultPolytopeGate")
 ## the ellipse, slot distance holds a scaling factor, i.e., the Mahalanobis
 ## distance.
 ## ---------------------------------------------------------------------------
+#' Class "ellipsoidGate"
+#' 
+#' 
+#' Class and constructor for n-dimensional ellipsoidal \code{\link{filter}}
+#' objects.
+#' 
+#' 
+#' A convenience method to facilitate the construction of a ellipsoid
+#' \code{\link{filter}} objects. Ellipsoid gates in n dimensions (n >= 2) are
+#' specified by a a covarinace matrix and a vector of mean values giving the
+#' center of the ellipse.
+#' 
+#' This function is designed to be useful in both direct and programmatic
+#' usage. In the first case, simply describe the covariance matrix through
+#' named arguments. To use this function programmatically, you may pass a
+#' covarince matrix and a mean vector directly, in which case the parameter
+#' names are the colnames of the matrix.
+#' 
+#' @name ellipsoidGate-class
+#' @aliases ellipsoidGate-class ellipsoidGate show,ellipsoidGate-method
+#' @docType class
+#' @usage
+#' ellipsoidGate(\dots, .gate, mean, distance=1, filterId="defaultEllipsoidGate")
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' gate.
+#' @param .gate A definition of the gate via a covariance matrix.
+#' @param mean Numeric vector of equal length as dimensions in \code{.gate}.
+#' @param distance Numeric scalar giving the Mahalanobis distance defining the
+#' size of the ellipse. This mostly exists for compliance reasons to the
+#' gatingML standard as \code{mean} and \code{gate} should already uniquely
+#' define the ellipse. Essentially, \code{distance} is merely a factor that
+#' gets applied to the values in the covariance matrix.
+#' @param \dots You can also directly describe the covariance matrix through
+#' named arguments, as described below.
+#' @return
+#' Returns a \code{\link{ellipsoidGate}} object for use in filtering
+#' \code{\link{flowFrame}}s or other flow cytometry objects.
+#' 
+#' @section Extends:
+#' Class \code{"\linkS4class{parameterFilter}"}, directly.
+#' 
+#' Class \code{"\linkS4class{concreteFilter}"}, by class
+#' \code{parameterFilter}, distance 2.
+#' 
+#' Class \code{"\linkS4class{filter}"}, by class \code{parameterFilter},
+#' distance 3.
+#' 
+#' @slot mean Objects of class \code{"numeric"}. Vector giving
+#' the location of the center of the ellipse in n dimensions.
+#' @slot cov Objects of class \code{"matrix"}. The covariance
+#' matrix defining the shape of the ellipse.
+#' @slot distance Objects of class \code{"numeric"}. The
+#' Mahalanobis distance defining the size of the ellipse.
+#' @slot parameters Object of class \code{"character"},
+#' describing the parameter used to filter the \code{flowFrame}.
+#' @slot filterId Object of class \code{"character"},
+#' referencing the filter.
+#' 
+#' @section Objects from the Class:
+#' Objects can be created by calls of the form \code{new("ellipsoidGate",
+#' ...)} or by using the constructor \code{ellipsoidGate}.  Using the
+#' constructor is the recommended way.
+#' 
+#' @section Methods:
+#' \describe{
+#'     \item{\%in\%}{\code{signature(x = "flowFrame", table =
+#'                                     "ellipsoidGate")}: The workhorse used to evaluate the filter on
+#'       data. This is usually not called directly by the user, but
+#'       internally by calls to the \code{\link{filter}} methods. }
+#' 
+#'     \item{show}{\code{signature(object = "ellipsoidGate")}: Print
+#'      information about the filter. }
+#' }
+#' @note
+#' See the documentation in the \code{\link[flowViz:flowViz-package]{flowViz}}
+#' package for plotting of \code{ellipsoidGates}.
+#' 
+#' @author F.Hahne, B. Ellis, N. LeMeur
+#' @seealso
+#' 
+#' \code{\link{flowFrame}}, \code{\link{polygonGate}},
+#' \code{\link{rectangleGate}}, \code{\link{polytopeGate}},
+#' \code{\link{filter}} for evaluation of \code{rectangleGates} and
+#' \code{\link{split}} and \code{\link{Subset}}for splitting and subsetting of
+#' flow cytometry data sets based on that.
+#' @keywords methods
+#' @examples
+#' 
+#' 
+#' ## Loading example data
+#' dat <- read.FCS(system.file("extdata","0877408774.B08",
+#' package="flowCore"))
+#' 
+#' ## Defining the gate
+#' cov <- matrix(c(6879, 3612, 3612, 5215), ncol=2,
+#' dimnames=list(c("FSC-H", "SSC-H"), c("FSC-H", "SSC-H")))
+#' mean <- c("FSC-H"=430, "SSC-H"=175)
+#' eg <- ellipsoidGate(filterId= "myEllipsoidGate", .gate=cov, mean=mean)
+#' 
+#' ## Filtering using ellipsoidGates
+#' fres <- filter(dat, eg)
+#' fres
+#' summary(fres)
+#' 
+#' ## The result of ellipsoid filtering is a logical subset
+#' Subset(dat, fres)
+#' 
+#' ## We can also split, in which case we get those events in and those
+#' ## not in the gate as separate populations
+#' split(dat, fres)
+#' 
+#' ##ellipsoidGate can be converted to polygonGate by interpolation
+#' pg <- as(eg, "polygonGate")
+#' pg
+#' 
+#' 
+#' 
 setClass("ellipsoidGate",
          representation(mean="numeric",
                         cov="matrix",
