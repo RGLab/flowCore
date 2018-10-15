@@ -12,6 +12,7 @@
 ## ==========================================================================
 ## Accessor to name slot, a human-readable identifier of the object.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="actionItem"),
           definition=function(x) x@name)
@@ -22,6 +23,7 @@ setMethod("names",
 ## The identifiers of the flowFrames (i.e., the sampleNames of the flowSet)
 ## for which the filterResults have been computed.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="filterResultList"),
           definition=function(x) x@frameId)
@@ -31,6 +33,7 @@ setMethod("names",
 ## ==========================================================================
 ## The identifiers of the individual filters in the flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="filterSet"),
           definition=function(x) ls(envir=x@env))
@@ -42,6 +45,7 @@ setMethod("names",
 ## multipleFilterResult, for a logicalFilterResult the name of the input
 ## filter.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="filterSummary"),
           definition=function(x) x@name)
@@ -52,6 +56,7 @@ setMethod("names",
 ## This return a pretified version of the parameter names, including the
 ## parameter description if present
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="flowFrame"),
           definition=function(x)
@@ -75,6 +80,7 @@ setMethod("names",
 ## logicalFilterResults we always have one population in the filter
 ## and the complement.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="logicalFilterResult"),
           definition=function(x) paste(x@filterId, c("+", "-"), sep=""))
@@ -85,6 +91,7 @@ setMethod("names",
 ## The names of the individual sub-populations (i.e., the colnames of the
 ## subSet matrix.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("names",
           signature=signature(x="manyFilterResult"),
           definition=function(x) c("rest", colnames(x@subSet)))
@@ -95,6 +102,7 @@ setMethod("names",
 ## The names of the individual sub-populations (i.e., the levels of the
 ## subSet factor). The replacement method simply changes the factor levels.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("names",
           signature=signature(x="multipleFilterResult"),
           definition=function(x) levels(x@subSet))
@@ -116,6 +124,7 @@ setReplaceMethod("names",
 ## ==========================================================================
 ## Accessor to name slot, a human-readable identifier of the view.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("names",
           signature=signature(x="view"),
           definition=function(x) x@name)
@@ -146,6 +155,7 @@ id2Alias <- function(id, workflow)
     as.vector(sapply(id, fun))
 }
 
+#' @export
 setMethod("names",
           signature=signature(x="workFlow"),
           definition=function(x)
@@ -162,6 +172,7 @@ setMethod("names",
 ## ==========================================================================
 ## The names of only the views in the workFlow object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("views",
           signature=signature(x="workFlow"),
           definition=function(x)
@@ -172,6 +183,7 @@ setMethod("views",
 ## ==========================================================================
 ## The names of only the actionItems in the workFlow object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("actions",
           signature=signature(x="workFlow"),
           definition=function(x)

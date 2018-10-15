@@ -34,6 +34,7 @@ rmAlias <- function(value, workflow)
 
 ## For all views, we need to traverse all downstream actionItems and remove
 ## them. We also remove the associated data.
+#' @export
 setMethod("Rm",
           signature=signature(symbol="view",
                               envir="workFlow",
@@ -64,6 +65,7 @@ setMethod("Rm",
       })
 
 ## For gateViews we also have to remove the filterResult
+#' @export
 setMethod("Rm",
           signature=signature(symbol="gateView",
                               envir="workFlow",
@@ -79,6 +81,7 @@ setMethod("Rm",
       })
 
 ## For transformViews we just need to remove the view itself
+#' @export
 setMethod("Rm",
           signature=signature(symbol="transformView",
                               envir="workFlow",
@@ -93,6 +96,7 @@ setMethod("Rm",
 
 
 ## For compensateViews we just need to remove the view itself
+#' @export
 setMethod("Rm",
           signature=signature(symbol="compensateView",
                               envir="workFlow",
@@ -107,6 +111,7 @@ setMethod("Rm",
 
 
 ## For normalizeViews we just need to remove the view itself
+#' @export
 setMethod("Rm",
           signature=signature(symbol="normalizeView",
                               envir="workFlow",
@@ -120,6 +125,7 @@ setMethod("Rm",
       })
 
 ## For subsettingViews we just need to remove the view itself
+#' @export
 setMethod("Rm",
           signature=signature(symbol="subsettingView",
                               envir="workFlow",
@@ -141,6 +147,7 @@ setMethod("Rm",
 ## and also remove all dependent objects to free their memory.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## For all actionItems we need to remove the associated views.
+#' @export
 setMethod("Rm",
           signature=signature(symbol="actionItem",
                               envir="workFlow",
@@ -160,6 +167,7 @@ setMethod("Rm",
       })
 
 ## For gateActionItems we need to remove the gate and the filterResult
+#' @export
 setMethod("Rm",
           signature=signature(symbol="gateActionItem",
                               envir="workFlow",
@@ -175,6 +183,7 @@ setMethod("Rm",
       })
 
 ## For transformActionItems we need to remove the transformation object
+#' @export
 setMethod("Rm",
           signature=signature(symbol="transformActionItem",
                               envir="workFlow",
@@ -190,6 +199,7 @@ setMethod("Rm",
       })
 
 ## For compensateActionItems we need to remove the compensation object
+#' @export
 setMethod("Rm",
           signature=signature(symbol="compensateActionItem",
                               envir="workFlow",
@@ -205,6 +215,7 @@ setMethod("Rm",
       })
 
 ## For normalizeActionItems we need to remove the normalization object
+#' @export
 setMethod("Rm",
           signature=signature(symbol="normalizeActionItem",
                               envir="workFlow",
@@ -221,6 +232,7 @@ setMethod("Rm",
 
 
 ## For subsettingActionItems we need to remove the subsetting object
+#' @export
 setMethod("Rm",
           signature=signature(symbol="subsettingActionItem",
                               envir="workFlow",
@@ -242,6 +254,7 @@ setMethod("Rm",
 ## reference object itself (if possible)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## Just the object and the reference
+#' @export
 setMethod("Rm",
           signature=signature(symbol="fcReference",
                               envir="missing",
@@ -265,6 +278,7 @@ setMethod("Rm",
 ## other objects can be removed without further side effects, but we
 ## strongly discourage from doing so since the consequences might be
 ## catastrophic...
+#' @export
 setMethod("Rm",
           signature=signature(symbol="fcReference",
                               envir="workFlow",
@@ -294,6 +308,7 @@ setMethod("Rm",
 ## are more sophisticated Rm methods for views and actionItems that traverse
 ## the tree and also remove all dependent objects. Those will get called
 ## automatically.
+#' @export
 setMethod("Rm",
           signature=signature(symbol="character",
                               envir="workFlow",
@@ -339,6 +354,7 @@ rmLastJournalEntry <- function(wf)
 }
 
 
+#' @export
 undo <- function(wf, n=1)
 {
     checkClass(wf, "workFlow")

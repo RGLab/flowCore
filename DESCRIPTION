@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.47.9
+Version: 1.47.10
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
@@ -78,9 +78,12 @@ Collate:
     median-logicle-transform.R
     utils.R
     RcppExports.R
+    flowCore.R
+    GvHD.R
 License: Artistic-2.0
 biocViews: Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.65.0.1)
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+Encoding: UTF-8

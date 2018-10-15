@@ -26,6 +26,7 @@ flowDefaultADF <- function(exprs) {
     new("AnnotatedDataFrame", pd, vm)
 }
 
+#' @export
 setMethod("initialize",
           signature=signature(.Object="flowFrame"),
           definition=function(.Object, exprs, parameters,
@@ -50,6 +51,7 @@ setMethod("initialize",
 ## the new 'parameter' slot. We archive this by populating the parameters
 ## slot using the assignment method which can deal with different inputs
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("initialize",
           signature=signature(.Object="parameterFilter"),
           definition=function(.Object, parameters, ...)
@@ -66,6 +68,7 @@ setMethod("initialize",
 ## one) and also the function in the .Data slot.
 ## ---------------------------------------------------------------------------
 ## Parameters for all single parameter transformations
+#' @export
 setMethod("initialize",
           signature=signature(.Object="singleParameterTransform"),
           definition=function(.Object, parameters, ...)
@@ -76,6 +79,7 @@ setMethod("initialize",
 
 ## this is a multi parameter transform, we need to set up the parameters
 ## explicitely
+#' @export
 setMethod("initialize",
           signature=signature(.Object="dg1polynomial"),
           definition=function(.Object, parameters, ...)
@@ -95,6 +99,7 @@ setMethod("initialize",
 
 ## this is a multi parameter transform, we need to set up the parameters
 ## explicitely
+#' @export
 setMethod("initialize",
           signature=signature(.Object="ratio"),
           definition=function(.Object, ...)

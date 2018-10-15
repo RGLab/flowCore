@@ -12,6 +12,7 @@
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## to filterResultList
+#' @export
 setMethod("[",
           signature=signature(x="filterResultList"),
           definition=function(x, i, j, ..., drop=FALSE)
@@ -45,6 +46,7 @@ setMethod("[",
 
 
 ## to filterResult
+#' @export
 setMethod("[[",
           signature=signature("filterResultList"),
           definition=function(x, i, j, ...)
@@ -63,6 +65,7 @@ setMethod("[[",
 
 
 ## Return a more machine-readable output in form of a data.frame
+#' @export
 setMethod("toTable",
           signature=signature(x="filterSummaryList"),
           definition=function(x, ...) {

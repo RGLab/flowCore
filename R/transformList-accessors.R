@@ -11,6 +11,7 @@
 ## ==========================================================================
 ## colnames method: This gives us the parameter names we want to transform
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("colnames",
           signature=signature(x="transformList"),
           definition=function(x, do.NULL=TRUE, prefix="col")
@@ -23,6 +24,7 @@ setMethod("colnames",
 ## ==========================================================================
 ## Concatenate two transformLists (or one list and a transformList)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("c",
           signature=signature(x="transformList"),
           definition=function(x, ..., recursive=FALSE)

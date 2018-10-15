@@ -8,6 +8,7 @@
 ## Accessor to parentView slot. This returns the view object after
 ## resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("parent",
           signature=signature(object="actionItem"),
           definition=function(object) get(object@parentView))
@@ -18,6 +19,7 @@ setMethod("parent",
 ## Accessor to gate slot. This returns the filter object after resolving
 ## the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("gate",
           signature=signature(object="gateActionItem"),
           definition=function(object) get(object@gate))
@@ -27,6 +29,7 @@ setMethod("gate",
 ## ==========================================================================
 ## Get the alias table from an actionItem
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("alias",
           signature=signature(object="actionItem"),
           definition=function(object) get(object@alias))

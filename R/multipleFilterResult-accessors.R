@@ -7,6 +7,7 @@
 ## Subsetting to the individual populations. We create a new
 ## logicalFilterResult
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("[[",
           signature=signature(x="multipleFilterResult"),
           definition=function(x, i, j, drop=FALSE)
@@ -30,6 +31,7 @@ setMethod("[[",
 ## ==========================================================================
 ## Subsetting to the a (smaller) multipleFilterResult 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("[",
           signature=signature(x="multipleFilterResult"),
           definition=function(x, i, j, ..., drop=FALSE)

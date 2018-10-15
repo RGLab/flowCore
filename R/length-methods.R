@@ -11,6 +11,7 @@
 ## ==========================================================================
 ## Number of populations (i.e., k) defined by a kmeansFilter
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("length",
           signature=signature(x="kmeansFilter"),
           definition=function(x) length(x@populations))
@@ -20,6 +21,7 @@ setMethod("length",
 ## ==========================================================================
 ## Essentially the number of populations (in a multipleFilterResult)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("length",
           signature=signature(x="filterSummary"),
           definition=function(x) length(x@name))
@@ -29,6 +31,7 @@ setMethod("length",
 ## ==========================================================================
 ## The number of frames in a flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("length",
           signature=signature(x="flowSet"),
           definition=function(x) length(sampleNames(x)))
@@ -39,6 +42,7 @@ setMethod("length",
 ## For logicalFilterResults we only have a single population, hence the
 ## length is always 1
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("length",
           signature=signature(x="logicalFilterResult"),
           definition=function(x) 1)
@@ -49,6 +53,7 @@ setMethod("length",
 ## For manyFilterResults, length corresponds to the number of
 ## sub-populations defined by the various component filters
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("length",
           signature=signature(x="manyFilterResult"),
           definition=function(x) ncol(x@subSet))
@@ -58,6 +63,7 @@ setMethod("length",
 ## ==========================================================================
 ## For multipleFilterResults, the number of sub-populations
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("length",
           signature=signature(x="multipleFilterResult"),
           definition=function(x) nlevels(x@subSet))

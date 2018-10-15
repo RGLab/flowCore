@@ -11,6 +11,7 @@
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ## to flowSet
+#' @export
 setMethod("[",
 		signature=signature(x="flowSet"),
 		definition=function(x, i, j, ..., drop=FALSE)
@@ -54,6 +55,7 @@ setMethod("[",
 		})
 
 ## to flowFrame
+#' @export
 setMethod("[[",
 		signature=signature(x="flowSet"),
 		definition=function(x, i, j, ...)
@@ -67,6 +69,7 @@ setMethod("[[",
 		})
 
 ## to flowFrame
+#' @export
 setMethod("$",
           signature=signature(x="flowSet"),
           definition=function(x, name) x[[name]])
@@ -94,11 +97,14 @@ setReplaceMethod("[[",
 ## ==========================================================================
 ## accessor and replace methods for slot colnames
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @noRd
+#' @export
 setMethod("colnames",
 		signature=signature(x="flowSet"),
 		definition=function(x, do.NULL="missing", prefix="missing")
 			x@colnames)
 
+#' @export
 setReplaceMethod("colnames",
 		signature=signature(x="flowSet",
 				value="ANY"),
@@ -138,10 +144,12 @@ setReplaceMethod("markernames",
 ## ==========================================================================
 ## Allow for the extraction and replacement of phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("phenoData",
 		signature=signature(object="flowSet"),
 		definition=function(object) object@phenoData)
 
+#' @export
 setMethod("phenoData<-",
 		signature=signature(object="flowSet",
 				value="ANY"),
@@ -170,10 +178,12 @@ setMethod("phenoData<-",
 ## ==========================================================================
 ## directly access the pData data frame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("pData",
 		signature=signature(object="flowSet"),
 		definition=function(object) pData(phenoData(object)))
 
+#' @export
 setReplaceMethod("pData",
 		signature=signature(object="flowSet",
 				value="data.frame"),
@@ -188,10 +198,12 @@ setReplaceMethod("pData",
 ## ==========================================================================
 ## set and extract the varLabels of the phenoData
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("varLabels",
 		signature=signature(object="flowSet"),
 		function(object) varLabels(phenoData(object)))
 
+#' @export
 setReplaceMethod("varLabels",
 		signature=signature(object="flowSet",
 				value="ANY"),
@@ -203,10 +215,12 @@ setReplaceMethod("varLabels",
 			object
 		})
 
+#' @export
 setMethod("varMetadata",
 		signature=signature(object="flowSet"),
 		definition=function(object) varMetadata(phenoData(object)))
 
+#' @export
 setReplaceMethod("varMetadata",
 		signature=signature(object="flowSet",
 				value="ANY"),
@@ -223,12 +237,14 @@ setReplaceMethod("varMetadata",
 ## ==========================================================================
 ## sampleNames method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("sampleNames",
 		signature=signature(object="flowSet"),
 		definition=function(object) 
 			sampleNames(phenoData(object)))
 
 ## Note that the replacement method also replaces the GUID for each flowFrame
+#' @export
 setReplaceMethod("sampleNames",
 		signature=signature(object="flowSet"),
 		definition=function(object, value)
@@ -259,6 +275,7 @@ setReplaceMethod("sampleNames",
 ## ==========================================================================
 ## keyword method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("keyword",
 		signature=signature(object="flowSet",
 				keyword="list"),
@@ -272,6 +289,7 @@ setMethod("keyword",
 			return(keys)
 		})
 
+#' @export
 setMethod("keyword",
 		signature=signature(object="flowSet",
 				keyword="ANY"),
@@ -296,6 +314,50 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 ## ==========================================================================
 ## apply method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#' Apply a Function over values in a flowSet
+#' 
+#' \code{fsApply}, like many of the \code{apply}-style functions in R, acts as an
+#' iterator for \code{flowSet} objects, allowing the application of a function
+#' to either the \code{flowFrame} or the data matrix itself. The output can then
+#' be reconstructed as either a \code{flowSet}, a list, or a matrix depending on
+#' options and the type of objects returned.
+#' 
+#' @name fsApply
+#' @aliases fsApply fsApply,flowSet,ANY
+#' 
+#' @usage 
+#' fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE)
+#' 
+#' @param x \code{\link[flowCore:flowSet-class]{flowSet}} to be used
+#' @param FUN the function to be applied to each element of \code{x}
+#' @param simplify logical (default: TRUE); if all true and all objects are
+#' \code{flowFrame} objects, a \code{flowSet} object will be constructed. If
+#' all of the values are of the same type there will be an attempt to construct
+#' a vector or matrix of the appropriate type (e.g. all numeric results will
+#' return a matrix).
+#' @param use.exprs logical (default: FALSE); should the \code{FUN} be applied
+#' on the \code{\link[flowCore:flowFrame-class]{flowFrame}} object or the
+#' expression values.
+#' @param \dots optional arguments to \code{FUN}.
+#' 
+#' @author B. Ellis
+#' @seealso \code{\link{apply}}, \code{\link{sapply}}
+#' @keywords iteration
+#' @examples
+#' 
+#' fcs.loc <- system.file("extdata",package="flowCore")
+#' file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
+#' samp <- read.flowSet(file.location[1:3]) 
+#' 
+#' #Get summary information about each sample.
+#' fsApply(samp,summary)
+#' 
+#' #Obtain the median of each parameter in each frame.
+#' fsApply(samp,each_col,median)
+#' 
+#' 
+#' @export
 setMethod("fsApply",
 		signature=signature(x="flowSet",
 				FUN="ANY"),
@@ -329,12 +391,14 @@ setMethod("fsApply",
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("compensate",
 		signature=signature(x="flowSet",
 				spillover="ANY"),
 		definition=function(x, spillover)
 			fsApply(x, compensate, spillover))
 
+#' @export
 setMethod("compensate",
           signature=signature(x="flowSet",
               spillover="data.frame"),
@@ -342,6 +406,7 @@ setMethod("compensate",
             selectMethod("compensate"
                     , signature=signature(x="flowSet",spillover="ANY"))(x, spillover)
       )
+#' @export
 setMethod("compensate",
     signature=signature(x="flowSet",
         spillover="list"),
@@ -360,6 +425,7 @@ setMethod("compensate",
 ## ==========================================================================
 ## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("transform",
 		signature=signature(`_data`="flowSet"),
 		definition=function(`_data`, translist, ...)
@@ -381,6 +447,7 @@ setMethod("transform",
 		  
 		})
 
+#' @export
 setMethod("transform",
 		signature=signature(`_data`="missing"),
 		definition=function(...)
@@ -409,6 +476,8 @@ setMethod("transform",
 ## a filterResultList
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## for filters
+#' @noRd
+#' @export
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filter"),
@@ -425,6 +494,8 @@ setMethod("filter",
 ## for filterSets
 ## FIXME: Need to check that everything still works after introduction
 ## of filterResultLists
+#' @noRd
+#' @export
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filterSet"),
@@ -435,7 +506,8 @@ setMethod("filter",
 							filterId=identifier(filter)))
 		})
 
-
+#' @noRd
+#' @export
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="list"),
@@ -448,6 +520,8 @@ setMethod("filter",
 ## to sampleNames in the set. Filters in the filter list that can't be
 ## matched are ignored, for those that are missing, an "empty" dummy
 ## filterResult is produced
+#' @noRd
+#' @export
 setMethod("filter",
 		signature=signature(x="flowSet",
 				filter="filterList"),
@@ -497,6 +571,7 @@ setMethod("filter",
 ## Subset methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## by filter or filter result
+#' @export
 setMethod("Subset",
 		signature=signature(x="flowSet",
 				subset="ANY"),
@@ -510,6 +585,7 @@ setMethod("Subset",
 			y
 		})
 
+#' @export
 setMethod("Subset",
 		signature=signature(x="flowSet",
 				subset="filterResultList"),
@@ -528,6 +604,7 @@ setMethod("Subset",
 		})
 
 
+#' @export
 setMethod("Subset",
 		signature=signature(x="flowSet",
 				subset="list"),
@@ -567,11 +644,13 @@ setMethod("Subset",
 ## ==========================================================================
 ## rbind method for flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("rbind2",
 		signature=signature(x="flowSet",
 				y="missing"),
 		definition=function(x, y) x)
 
+#' @export
 setMethod("rbind2",
 		signature=signature(x="flowSet",
 				y="flowSet"),
@@ -597,6 +676,7 @@ setMethod("rbind2",
 			return(fs)
 		})
 
+#' @export
 setMethod("rbind2",
 		signature=signature(x="flowSet",
 				y="flowFrame"),
@@ -612,6 +692,7 @@ setMethod("rbind2",
 			rbind2(x, tmp)
 		})
 
+#' @export
 setMethod("rbind2",
 		signature=signature(x="flowFrame",
 				y="flowSet"),
@@ -625,6 +706,65 @@ setMethod("rbind2",
 ## ===========================================================================
 ## spillover method
 ## ---------------------------------------------------------------------------
+#' Compute a spillover matrix from a flowSet
+#' 
+#' Spillover information for a particular experiment is often obtained by
+#' running several tubes of beads or cells stained with a single color that can
+#' then be used to determine a spillover matrix for use with
+#' \code{\link{compensate}}.\cr\cr
+#' When matching stain channels in \code{x} with the compensation controls, we
+#' provide a few options. If \code{ordered}, we assume the ordering of the
+#' channels in the flowSet object is the same as the ordering of the
+#' compensation-control samples. IF \code{regexpr}, we use a regular expression
+#' to match the channel names with the filenames of the compensation controls.
+#' By default, we must "guess" based on the largest statistic for the
+#' compensation control (i.e., the row).
+#' 
+#' 
+#' The algorithm used is fairly simple. First, using the scatter parameters, we
+#' restrict ourselves to the most closely clustered population to reduce the
+#' amount of debris. The selected statistic is then calculated on all
+#' appropriate parameters and the unstained values swept out of the matrix.
+#' Every sample is then normalized to [0,1] with respect to the maximum value
+#' of the sample, giving the spillover in terms of a proportion of the primary
+#' channel intensity.
+#' @name spillover-flowSet
+#' @aliases spillover spillover,flowSet-method
+#' 
+#' @usage 
+#' \S4method{spillover}{flowSet}(x, unstained = NULL, patt = NULL, fsc = "FSC-A", 
+#'                               ssc = "SSC-A", method = "median", 
+#'                               stain_match = c("intensity", "ordered", "regexpr"),
+#'                               useNormFilt=FALSE, pregate = FALSE, plot = FALSE, \dots)
+#' 
+#' @param x A flowSet of compensation beads or cells
+#' @param unstained The name of index of the unstained negative control
+#' @param patt An optional regular expression defining which parameters should
+#' be considered.
+#' @param fsc The name or index of the forward scatter parameter
+#' @param ssc The name or index of the side scatter parameter
+#' @param method The statistic to use for calculation. Traditionally, this has
+#' been the median so it is the default. The mean is sometimes more stable.
+#' @param stain_match Determines how the stain channels are matched with the
+#' compensation controls. See details.
+#' @param useNormFilt Logical Indicating whether to apply a
+#' \code{\link{norm2Filter}} first before computing the spillover
+#' @param pregate logical. Should we pregate each channel before computing the
+#' spillover matrix? By default, no.
+#' @param plot logical. Plots the kernel density for each channel when
+#' pregating. Displays the gate used. If \code{pregate} is set to \code{FALSE},
+#' this argument is ignored.
+#' @param \dots Additional arguments passed to
+#' \code{\link[flowStats]{rangeGate}}.
+#' 
+#' @return A matrix for each of the parameters
+#' @author B. Ellis
+#' @seealso \code{\link{compensate}}
+#' @references C. B. Bagwell \& E. G. Adams (1993). Fluorescence spectral
+#' overlap compensation for any number of flow cytometry parameters. in: Annals
+#' of the New York Academy of Sciences, 677:167-184.
+#' @keywords methods
+#' @export
 setMethod("spillover",
           signature = signature(x = "flowSet"),
           definition = function(x, unstained = NULL, patt = NULL, fsc = "FSC-A",
@@ -783,6 +923,56 @@ setMethod("spillover",
 ## =========================================================================
 ## spillover_ng method: Simplified spillover API. Uses a matching file.
 ## -------------------------------------------------------------------------
+#' Compute a spillover matrix from a flowSet, simplified API
+#' 
+#' Spillover information for a particular experiment is often obtained by
+#' running several tubes of beads or cells stained with a single color that can
+#' then be used to determine a spillover matrix for use with
+#' \code{\link{compensate}}.\cr\cr
+#' Matching stain channels to compensation controls is done via a matching csv
+#' file with columns 'filename' and 'channel'. The 'channel' entries should
+#' exactly match the channel names in the FCS file. The 'filename' should be
+#' the FCS file name of each compensation control as well as one unstained
+#' control with the channel 'unstained'.\cr\cr
+#' Pregating is always done on the channels using this API, and the mode of the
+#' channel is used to compute the spillover matrix. FSC and SSC channels can be
+#' provided to allow a pregating on (approximately) a population in the FSC and
+#' SSC dimensions.
+#' 
+#' 
+#' The algorithm used is fairly simple. First, using the scatter parameters, we
+#' restrict ourselves to the most closely clustered population to reduce the
+#' amount of debris. The selected statistic is then calculated on all
+#' appropriate parameters and the unstained values swept out of the matrix.
+#' Every sample is then normalized to [0,1] with respect to the maximum value
+#' of the sample, giving the spillover in terms of a proportion of the primary
+#' channel intensity.
+#' 
+#' @name spillover_ng-flowSet
+#' @aliases spillover_ng spillover_ng,flowSet-method
+#' @usage 
+#' \S4method{spillover_ng}{flowSet}(x, fsc = "FSC-A", ssc = "SSC-A",
+#'                                  plot = FALSE, matchfile = NULL, \dots)
+#' @param x A flowSet of compensation beads or cells
+#' @param fsc The name or index of the forward scatter parameter
+#' @param ssc The name or index of the side scatter parameter
+#' @param plot logical. Plots the kernel density for each channel when
+#' pregating. Displays the gate used. If \code{pregate} is set to \code{FALSE},
+#' this argument is ignored.
+#' @param matchfile Name of the csv file holding the compensation control file
+#' to channel matching infomration.
+#' @param \dots Additional arguments passed to
+#' \code{\link[flowStats]{rangeGate}}.
+#' 
+#' @return A matrix for each of the parameters
+#' @author B. Ellis
+#' @seealso \code{\link{compensate}}, \code{\link{spillover}}
+#' @references C. B. Bagwell \& E. G. Adams (1993). Fluorescence spectral
+#' overlap compensation for any number of flow cytometry parameters. in: Annals
+#' of the New York Academy of Sciences, 677:167-184.
+#' @keywords methods
+
+#' @export
 setMethod("spillover_ng",
 			 signature = signature(x = "flowSet"),
 			 definition = function(x, fsc = "FSC-A",
@@ -939,6 +1129,7 @@ setMethod("spillover_ng",
 ## ==========================================================================
 ## plot method: We actually need to attach flowViz to do the plotting
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("plot",
 		signature=signature(x="flowSet",
 				y="ANY"),
@@ -952,6 +1143,7 @@ setMethod("plot",
 ## ==========================================================================
 ## Set and replace the identifier from the environment
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("identifier",
 		signature=signature(object="flowSet"),
 		definition=function (object)
@@ -962,6 +1154,7 @@ setMethod("identifier",
 				object@frames[["_.name._"]]
 		})
 
+#' @export
 setReplaceMethod("identifier",
 		signature=signature(object="flowSet"),
 		definition=function (object, value) 
@@ -974,6 +1167,7 @@ setReplaceMethod("identifier",
 ## ==========================================================================
 ## Normalize a flowSet using a normalization object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("normalize",
 		signature=signature(data="flowSet",
 				x="normalization"),

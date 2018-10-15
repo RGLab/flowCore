@@ -8,6 +8,7 @@
 #' @param m TODO -- default value from .lgclTrans
 #' @param q quantile
 #' @return TODO
+#' @export
 estimateMedianLogicle <- function(flow_set, channels, m = 4.5, q = 0.05) {
   if (!is(flow_set, "flowSet")) {
     stop("flow_set has to be an object of class 'flowSet'")

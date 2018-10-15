@@ -11,6 +11,7 @@
 ## Subsetting to the individual populations. We create a new
 ## logicalFilterResult.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("[[",
           signature=signature(x="manyFilterResult"),
           definition=function(x,i,j,drop=FALSE)
@@ -35,6 +36,7 @@ setMethod("[[",
 ## ==========================================================================
 ## convert to a data frame
 ## ---------------------------------------------------------------------------
+#' @export
 as.data.frame.manyFilterResult <- function(x, row.names=NULL,
                                            optional=FALSE,...)
 {
