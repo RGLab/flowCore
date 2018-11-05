@@ -1590,8 +1590,7 @@ collapseDesc <- function(x, delimiter = "\\")
 
 
 ## ==========================================================================
-## Write a flowFrame to an FCS file. Unless given explicitely, the filename
-## is taken from the idnetifier of the flowFrame. 'what' controls the output
+## Write a flowFrame to an FCS file. 'what' controls the output
 ## data type.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' Write an FCS file
