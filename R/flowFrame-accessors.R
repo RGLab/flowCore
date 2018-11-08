@@ -4,7 +4,42 @@
 
 
 
-
+#' Append data columns to a flowFrame
+#' 
+#' Append data columns to a flowFrame
+#' 
+#' It is used to add extra data columns to the existing flowFrame.  It handles
+#' keywords and parameters properly to ensure the new flowFrame can be written
+#' as a valid FCS through the function \code{write.FCS} .
+#' 
+#' @name fr_append_cols
+#' @aliases fr_append_cols
+#' @usage 
+#' fr_append_cols(fr, cols)
+#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' @return
+#' 
+#' A \code{\linkS4class{flowFrame}}
+#' @author Mike Jiang
+#' @keywords IO
+#' @examples
+#' 
+#'   data(GvHD)
+#'   tmp <- GvHD[[1]]
+#'   
+#'   kf <- kmeansFilter("FSC-H"=c("Pop1","Pop2","Pop3"), filterId="myKmFilter")
+#'   fres <- filter(tmp, kf)
+#'   cols <- as.integer(fres@subSet)
+#'   cols <- matrix(cols, dimnames = list(NULL, "km"))
+#'   tmp <- fr_append_cols(tmp, cols)
+#'   
+#'   tmpfile <- tempfile()
+#'   write.FCS(tmp, tmpfile) 
+#' 
+#' 
+#' @export
 fr_append_cols <- function(fr, cols){
   checkClass(cols, "matrix")
   ncol <- ncol(cols)
@@ -59,6 +94,7 @@ subsetKeywords <- function(x, j)
 
 
 ## by indices or logical vectors
+#' @export
 setMethod("[",
           signature=signature(x="flowFrame"),
           definition=function(x, i, j, ..., drop=FALSE)
@@ -102,6 +138,7 @@ setMethod("[",
       })
 
 ## by results of a filtering operation
+#' @export
 setMethod("[",
           signature=signature(x="flowFrame",
                               i="filterResult"),
@@ -114,6 +151,7 @@ setMethod("[",
       })
 
 ## by filter (which computes filter result first and applies that)
+#' @export
 setMethod("[",
           signature=signature(x="flowFrame",
                               i="filter"),
@@ -132,6 +170,7 @@ setMethod("[",
 ## ==========================================================================
 ## the $-operator (subsetting with '$')
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 "$.flowFrame" <- function(x, val){
     if(!val %in% colnames(x))
         stop("'", val, "' is not a valid parameter in this flowFrame\n",
@@ -150,6 +189,7 @@ setMethod("[",
 ## (i.e. less columns in the replacement value compared to the original
 ## flowFrame, but all have to be defined there) 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("exprs",
           signature=signature(object="flowFrame"),
           definition=function(object){
@@ -158,6 +198,7 @@ setMethod("exprs",
 
 
 
+#' @export
 setReplaceMethod("exprs",
                  signature=signature(object="flowFrame",
                                      value="matrix"),
@@ -186,6 +227,7 @@ setReplaceMethod("exprs",
 
 
 ## throw meaningful error when trying to replace with anything other than matrix
+#' @export
 setReplaceMethod("exprs",
                  signature=signature(object="flowFrame", value="ANY"),
                  definition=function(object, value)
@@ -199,6 +241,7 @@ setReplaceMethod("exprs",
 ## ==========================================================================
 ## accessor and replace methods for slot description
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("description",
           signature=signature(object="flowFrame"),
           function(object, hideInternal=FALSE){
@@ -213,6 +256,7 @@ setMethod("description",
 
 ## replace description entries
 descError <- "Replacement value must be a named list."
+#' @export
 setReplaceMethod("description",
                  signature=signature(object="flowFrame",
                                      value="list"),
@@ -224,6 +268,7 @@ setReplaceMethod("description",
                  object@description[n] <- value
                  return(object) })
 
+#' @export
 setReplaceMethod("description",
                  signature=signature(object="flowFrame",
                                      value="ANY"),
@@ -234,7 +279,98 @@ setReplaceMethod("description",
 ## ==========================================================================
 ## accessor methods for individual items in the description slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' Methods to retrieve keywords of a flowFrame
+#' 
+#' 
+#' Accessor and replacement methods for items in the description slot (usually
+#' read in from a FCS file header). It lists the \code{keywords} and its values
+#' for a flowFrame specified by a character vector. Additional methods for
+#' \code{function} and \code{lists} exists for more programmatic access to the
+#' keywords.
+#' 
+#' The \code{keyword} methods allow access to the keywords stored in the FCS
+#' files, either for a \code{flowFrame} or for a list of frames in a
+#' \code{flowSet}. The most simple use case is to provide a character vector or
+#' a list of character strings of keyword names. A more sophisticated version
+#' is to provide a function which has to take one mandatory argument, the value
+#' of this is the \code{flowFrame}. This can be used to query arbitrary
+#' information from the \code{flowFrames} \code{description} slot or even the
+#' raw data. The function has to return a single character string. The
+#' \code{list} methods allow to combine functional and direct keyword access.
+#' The replacement method takes a named character vector or a named list as
+#' input. R's usual recycling rules apply when replacing keywords for a whole
+#' \code{flowSet}
+#' 
+#' @name keyword-methods
+#' @aliases keyword keyword-methods keyword,flowFrame,missing-method
+#' keyword,flowFrame,function-method keyword,flowFrame,character-method
+#' keyword,flowFrame,list-method keyword<- keyword<-,flowFrame,list-method
+#' keyword<-,flowSet,list-method keyword<-,flowFrame,ANY-method
+#' keyword<-,flowFrame,character-method keyword,flowSet,list-method
+#' keyword,flowSet,ANY-method
+#' @docType methods
+#' 
+#' @usage keyword(object, keyword, ...)
+#' 
+#' @param object Object of class \code{\link{flowFrame}}.
+#' @param keyword Character vector or list of potential keywords or function.
+#' If missing all keywords are returned.
+#' @param ...  compact: logical scaler to indicate whether to hide all the
+#' cytometer instrument and laser settings from keywords.
+#' 
+#' @section Methods: 
+#' \describe{ 
+#' \item{keyword(object = "flowFrame", keyword = "character")}{Return values for 
+#' all keywords from the \code{description} slot in \code{object} that match 
+#' the character vector \code{keyword}.}
+#' 
+#' \item{keyword(object = "flowFrame", keyword = "function")}{Apply the function in
+#' \code{keyword} on the \code{\link{flowFrame}} \code{object}.  The function
+#' needs to be able to cope with a single argument and it needs to return a
+#' single character string. A typical use case is for instance to paste
+#' together values from several different keywords or to compute some statistic
+#' on the \code{flowFrame} and combine it with one or several other keywords. }
+#' 
+#' \item{keyword(object = "flowFrame", keyword = "list")}{Combine characters and
+#' functions in a list to select keyword values.}
+#' 
+#' \item{keyword(object = "flowFrame", keyword = "missing")}{This is essentially an
+#' alias for \code{\link{description}} and returns all keyword-value pairs.}
+#' 
+#' \item{keyword(object = "flowSet", keyword = "list")}{This is a wrapper around
+#' \code{fsApply(object, keyword, keyword)} which essentially iterates over the
+#' frames in the \code{\link{flowSet}}. }
+#' 
+#' \item{keyword(object = "flowSet", keyword = "ANY")}{This first coerces the
+#' \code{keyword} (mostly a character vector) to a list and then calls the next
+#' applicable method.  }
+#' 
+#' }
+#' @author N LeMeur,F Hahne,B Ellis
+#' @seealso \code{\link{description}}
+#' @keywords methods
+#' @examples
+#' 
+#' samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
+#' keyword(samp)
+#' keyword(samp, compact = TRUE)
+#' 
+#' keyword(samp, "FCSversion")
+#' 
+#' keyword(samp, function(x,...) paste(keyword(x, "SAMPLE ID"), keyword(x,
+#' "GUID"), sep="_"))
+#' 
+#' keyword(samp) <- list(foo="bar")
+#' 
+#' data(GvHD)
+#' keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
+#' 
+#' keyword(GvHD) <- list(sample=sampleNames(GvHD))
+#' 
+#' 
+
 ## select keywords by name
+#' @export
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="character"),
@@ -243,6 +379,7 @@ setMethod("keyword",
           )
 
 ## select or combine keywords by function
+#' @export
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="function"),
@@ -251,6 +388,7 @@ setMethod("keyword",
           )
 
 ## select keywords by combination of name and/or function
+#' @export
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="list"),
@@ -266,6 +404,7 @@ setMethod("keyword",
       })
 
 ## this is equivalent to the description method
+#' @export
 setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="missing"),
@@ -316,6 +455,7 @@ setReplaceMethod("keyword", signature=c("flowFrame", "ANY"),
 ## ==========================================================================
 ## plot method: We actually need to attach flowViz to do the plotting
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("plot",
           signature=signature(x="flowFrame",
                               y="ANY"),
@@ -330,6 +470,7 @@ setMethod("plot",
 ## ==========================================================================
 ## nrow method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("nrow",
           signature=signature(x="flowFrame"),
           definition=function(x)
@@ -341,6 +482,7 @@ setMethod("nrow",
 ## ==========================================================================
 ## ncol method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("ncol",
           signature=signature(x="flowFrame"),
           definition=function(x)
@@ -352,6 +494,7 @@ setMethod("ncol",
 ## ==========================================================================
 ## dim method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("dim",
           signature=signature(x="flowFrame"),
           definition=function(x)
@@ -366,6 +509,7 @@ setMethod("dim",
 ## ==========================================================================
 ## accessor method for feature names
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("featureNames",
           signature=signature(object="flowFrame"),
           definition=function(object)
@@ -409,6 +553,7 @@ setMethod("markernames",
       markers[!is.na(markers)]
     })
 #' @rdname markernames
+#' @export
 setGeneric("markernames<-",function(object, value) standardGeneric("markernames<-"))
 #' @rdname markernames
 #' @param value a named list or character vector. the names corresponds to the name(channel) and actual values are the desc(marker).
@@ -455,12 +600,14 @@ setReplaceMethod("markernames",
 ## accessor and replace methods for colnames of exprs slot
 ## this will also update the annotation in the parameters slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @noRd
+#' @export
 setMethod("colnames",
           signature=signature(x="flowFrame"),
           definition=function(x, do.NULL="missing", prefix="missing")
           as.vector(parameters(x)[["name"]])
           )
-
+#' @export
 setReplaceMethod("colnames",
                  signature=signature(x="flowFrame",
                                      value="ANY"),
@@ -492,17 +639,18 @@ setReplaceMethod("colnames",
 ## decompensate method
 ## =====
 
-#' decompensate a flowFrame
+#' Decompensate a flowFrame
+#' 
+#' Reverse the application of a compensation matrix on a flowFrame
 #'
+#' @name decompensate-methods
+#' @docType methods
+#' @aliases decompensate,flowFrame,matrix-method decompensate
+#' decompensate,flowFrame,data.frame-method
 #' @param x flowFrame. 
-#' @param spillover matrix. 
+#' @param spillover matrix or data.frame. 
 #'
 #' @return a decompensated flowFrame
-#' @method decompensate flowFrame,matrix
-#' @aliases  decompensate
-#' @aliases  decompensate flowFrame,data.frame
-#' @rdname decompensate
-#' @export
 #'
 #' @examples
 #' library(flowCore)
@@ -522,6 +670,8 @@ setReplaceMethod("colnames",
 #' sum(abs(f@exprs-f.decomp@exprs))
 #' all.equal(decompensate(f.comp,spill)@exprs,decompensate(f.comp,as.matrix(spill))@exprs)
 #' all.equal(f@exprs,decompensate(f.comp,spill)@exprs)
+#'
+#' @export
 setMethod("decompensate",
 			 signature = signature(x="flowFrame", spillover="matrix"),
 			 function(x, spillover) 
@@ -539,8 +689,8 @@ setMethod("decompensate",
 			 	x
 			 }
 )
-
-#' @rdname decompensate
+#' @rdname decompensate-methods
+#' @export
 setMethod("decompensate",
 			 signature = signature(x="flowFrame", spillover="data.frame"),
 			 function(x, spillover) 
@@ -553,6 +703,17 @@ setMethod("decompensate",
 ## ===========================================================================
 ## compensate method
 ## ---------------------------------------------------------------------------
+#' Compensate a flowFrame
+#'
+#' @name compensate
+#' @aliases  compensate
+#' @param x flowFrame. 
+#' @param spillover matrix or data.frame. 
+#'
+#' @return a compensated flowFrame
+#'
+#' @export
+#' @noRd
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="data.frame"),
@@ -561,6 +722,7 @@ setMethod("compensate",
           compensate(x, as.matrix(spillover))
       })
 
+#' @export
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="matrix"),
@@ -582,6 +744,7 @@ setMethod("compensate",
           x
       })
 
+#' @export
 setMethod("compensate",
           signature=signature(x="flowFrame",
                               spillover="compensation"),
@@ -607,6 +770,7 @@ setMethod("compensate",
 # @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
 #            but this form is not intended to be used in programmatic way since use non-standard evalution could fail to find
 #            'myFunc' definition.   
+#' @export
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, translist, ...)
@@ -691,8 +855,91 @@ updateTransformKeywords <- function(fr)
 ## filter method
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+#' Filter FCS files
+#' 
+#' 
+#' These methods link filter descriptions to a particular set of flow cytometry
+#' data allowing for the lightweight calculation of summary statistics common
+#' to flow cytometry analysis.
+#' 
+#' 
+#' The \code{filter} method conceptually links a filter description,
+#' represented by a \code{\linkS4class{filter}} object, to a particular
+#' \code{\linkS4class{flowFrame}}. This is accomplished via the
+#' \code{\linkS4class{filterResult}} object, which tracks the linked frame as
+#' well as caching the results of the filtering operation itself, allowing for
+#' fast calculation of certain summary statistics such as the percentage of
+#' events accepted by the \code{filter}. This method exists chiefly to allow
+#' the calculation of these statistics without the need to first
+#' \code{\link{Subset}} a \code{\linkS4class{flowFrame}}, which can be quite
+#' large.
+#' 
+#' When applying on a \code{flowSet}, the \code{filter} argument can either be
+#' a single \code{filter} object, in which case it is recycled for all frames
+#' in the set, or a named list of \code{filter} objects. The names are supposed
+#' to match the frame identifiers (i.e., the output of \code{sampleNames(x)} of
+#' the \code{flowSet}. If some frames identifiers are missing, the particular
+#' frames are skipped during filtering. Accordingly, all \code{filters} in the
+#' filter list that can't be mapped to the \code{flowSet} are ignored. Note
+#' that all \code{filter} objects in the list must be of the same type, e.g.
+#' \code{rectangleGates}.
+#' 
+#' @name filter-methods
+#' @docType methods
+#' @aliases filter filter-method filter,flowFrame-method filter,flowFrame,filter-method
+#' filter,flowFrame,rectangleGate filter,flowFrame,polygonGate
+#' filter,flowFrame,norm2Filter filter,flowFrame,filterSet-method
+#' filter,flowSet,filter-method filter,flowSet,filterSet-method
+#' filter,flowSet,list-method filter,flowSet,filterList-method
+#' summary,filter-method show,filter-method length,filter-method
+#' formula,filter-method character,filter-method name,filter-method
+#' call,filter-method identifier<-,filter,character-method
+#' 
+#' @usage
+#' filter(x, filter, method = c("convolution", "recursive"), 
+#' sides = 2L, circular = FALSE, init = NULL)
+#' 
+#' @param x Object of class \code{\linkS4class{flowFrame}} or
+#' \code{\linkS4class{flowSet}}.
+#' @param filter An object of class \code{\linkS4class{filter}} or a named list
+#' \code{filters}.
+#' @param method,sides,circular,init These arguments are not used.
+#' @return
+#' 
+#' A \code{\linkS4class{filterResult}} object or a
+#' \code{\linkS4class{filterResultList}} object if \code{x} is a
+#' \code{\linkS4class{flowSet}}. Note that \code{\linkS4class{filterResult}}
+#' objects are themselves filters, allowing them to be used in filter
+#' expressions or \code{Subset} operations.
+#' @author F Hahne, B. Ellis, N. Le Meur
+#' @seealso \code{\link{Subset}}, \code{\linkS4class{filter}}, \code{\linkS4class{filterResult}}
+#' @keywords methods
+#' @examples
+#' 
+#' ## Filtering a flowFrame
+#' samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
+#' rectGate <- rectangleGate(filterId="nonDebris","FSC-H"=c(200,Inf))
+#' fr <- filter(samp,rectGate)
+#' class(fr)
+#' summary(fr)
+#' 
+#' ## filtering a flowSet
+#' data(GvHD)
+#' foo <- GvHD[1:3]
+#' fr2 <- filter(foo, rectGate)
+#' class(fr2)
+#' summary(fr2)
+#' 
+#' ## filtering a flowSet using different filters for each frame
+#' rg2 <- rectangleGate(filterId="nonDebris","FSC-H"=c(300,Inf))
+#' rg3 <- rectangleGate(filterId="nonDebris","FSC-H"=c(400,Inf))
+#' flist <- list(rectGate, rg2, rg3)
+#' names(flist) <- sampleNames(foo)
+#' fr3 <- filter(foo, flist)
+#' 
 
 ## apply filter
+#' @export
 setMethod("filter",
           signature=signature(x="flowFrame",
                               filter="filter"),
@@ -719,6 +966,7 @@ setMethod("filter",
 
 
 ## apply filterSet
+#' @export
 setMethod("filter",
           signature=signature(x="flowFrame",
                               filter="filterSet"),
@@ -756,6 +1004,7 @@ setMethod("filter",
 ## Flow frames can have a SPILL keyword that is often used to store the
 ## spillover matrix. Attempt to extract it.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("spillover",
           signature=signature(x="flowFrame"),
           definition=function(x)
@@ -771,6 +1020,7 @@ setMethod("spillover",
 ## ==========================================================================
 ## wrappers for apply (over exprs slot)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("each_row",
           signature=signature(x="flowFrame"),
           definition=function(x,FUN,...)
@@ -778,6 +1028,7 @@ setMethod("each_row",
           apply(exprs(x),1,FUN,...)
       })
 
+#' @export
 setMethod("each_col",
           signature=signature(x="flowFrame"),
           definition=function(x,FUN,...)
@@ -792,6 +1043,64 @@ setMethod("each_col",
 ## Why do we need the 'select' parameter? Wouldn't this be equivalent:
 ## Subset(x[,c(1,3)], subset)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+#' Subset a flowFrame or a flowSet
+#' 
+#' An equivalent of a \code{\link{subset}} function for
+#' \code{\linkS4class{flowFrame}} or a \code{\linkS4class{flowSet}} object.
+#' Alternatively, the regular subsetting operators can be used for most of the
+#' topics documented here.
+#' 
+#' 
+#' The \code{Subset} method is the recommended method for obtaining a
+#' \code{\linkS4class{flowFrame}} that only contains events consistent with a
+#' particular filter. It is functionally equivalent to
+#' \code{frame[as(filter(frame,subset),"logical"),]} when used in the
+#' \code{\linkS4class{flowFrame}} context. Used in the
+#' \code{\linkS4class{flowSet}} context, it is equivalent to using
+#' \code{\link{fsApply}} to apply the filtering operation to each
+#' \code{\linkS4class{flowFrame}}.
+#' 
+#' Additionally, using \code{Subset} on a \code{\linkS4class{flowSet}} can also
+#' take a named \code{list} as the subset. In this case, the names of the list
+#' object should correspond to the \code{sampleNames} of the flowSet, allowing
+#' a different filter to be applied to each frame. If not all of the names are
+#' used or excess names are present, a warning will be generated but the valid
+#' filters will be applied for the rare instances where this is the intended
+#' operation. Note that a \code{\link{filter}} operation will generate a list
+#' of \code{\linkS4class{filterResult}} objects that can be used directly with
+#' \code{Subset} in this manner.
+#' 
+#' @name Subset-methods
+#' @aliases Subset Subset,flowFrame,filter-method Subset,flowSet,ANY-method
+#' Subset,flowFrame-method Subset,flowFrame,logical-method
+#' Subset,flowSet,list-method Subset,flowSet,filterResultList-method
+#' Subset,flowSet,ANY
+#' 
+#' @usage Subset(x, subset, ...)
+#' 
+#' @param x The flow object, frame or set, to subset.
+#' @param subset A filter object or, in the case of \code{flowSet} subsetting,
+#' a named list of filters.
+#' @param \dots Like the original \code{\link{subset}} function, you can also
+#' select columns.
+#' 
+#' @return
+#' 
+#' Depending on the original context, either a \code{\linkS4class{flowFrame}}
+#' or a \code{\linkS4class{flowSet}}.
+#' @author B. Ellis
+#' @seealso \code{\link{split}}, \code{\link{subset}}
+#' @keywords manip
+#' @examples
+#' 
+#' sample <- read.flowSet(path=system.file("extdata", package="flowCore"),
+#' pattern="0877408774")
+#' result <- filter(sample, rectangleGate("FSC-H"=c(-Inf, 1024)))
+#' result
+#' Subset(sample,result)
+#' 
+#' 
+#' @export
 setMethod("Subset",
           signature=signature(x="flowFrame",
                               subset="filter"),
@@ -806,6 +1115,7 @@ setMethod("Subset",
         }
       })
 
+#' @export
 setMethod("Subset",
           signature=signature(x="flowFrame",
                               subset="logical"),
@@ -826,6 +1136,7 @@ setMethod("Subset",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## Do we want the range to be set in a way to allow negative values?
 ## Need to fix that in read.FCS if yes
+#' @export
 setMethod("range",
           signature=signature(x="flowFrame"),
           definition=function(x, ..., type = c("instrument", "data"), na.rm)
@@ -872,6 +1183,7 @@ setMethod("range",
 ## ==========================================================================
 ## check for equality between two flowFrames
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("==",
           signature=signature(e1="flowFrame",
                               e2="flowFrame"),
@@ -887,10 +1199,12 @@ setMethod("==",
 ## ==========================================================================
 ## show first or last values in the exprs matrix
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("head",
           signature=signature(x="flowFrame"),
           definition=function(x, ...) head(exprs(x), ...))
 
+#' @export
 setMethod("tail",
           signature=signature(x="flowFrame"),
           definition=function(x, ...) tail(exprs(x), ...))
@@ -901,21 +1215,25 @@ setMethod("tail",
 ## comparison operators, these basically treat the flowFrame as a numeric
 ## matrix
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("<",
           signature=signature(e1="flowFrame",
                               e2="ANY"),
           definition=function(e1, e2) exprs(e1) < e2)
 
+#' @export
 setMethod(">",
           signature=signature(e1="flowFrame",
                               e2="ANY"),
           definition=function(e1, e2) exprs(e1) > e2)
 
+#' @export
 setMethod("<=",
           signature=signature(e1="flowFrame",
                               e2="ANY"),
           definition=function(e1, e2) exprs(e1) <= e2)
 
+#' @export
 setMethod(">=",
           signature=signature(e1="flowFrame",
                               e2="ANY"),
@@ -926,6 +1244,7 @@ setMethod(">=",
 ## ==========================================================================
 ## add data columns to a flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("cbind2",
           signature=signature(x="flowFrame", y="matrix"),
           definition=function(x, y)
@@ -954,6 +1273,7 @@ setMethod("cbind2",
           return(x)
       })
 
+#' @export
 setMethod("cbind2",
           signature=signature(x="flowFrame", y="numeric"),
           definition=function(x, y)
@@ -1016,6 +1336,50 @@ setMethod("cbind2",
   return(mat)
 }
 
+#' Extract Index Sorted Data from an FCS File
+#' 
+#' 
+#' Retrieve a data frame of index sorted data and sort indices from an FCS
+#' file.
+#' 
+#' The input FCS file should already be compensated.  Index sorting permits
+#' association of cell-level fluorescence intensities with downstream data
+#' collection on the sorted cells. Cells are sorted into a plate with
+#' \code{X,Y} coordinates, and those coordinates are stored in the FCS file.
+#' 
+#' This function will extract the data frame of flow data and the \code{X,Y}
+#' coordinates for the cell-level data, which can be written to a text file, or
+#' concatenated with sample-level information and analyzed in R. The
+#' coordinates are names 'XLoc','YLoc', and a 'name' column is also prepended
+#' with the FCS file name.
+#' 
+#' @name getIndexSort-methods
+#' @aliases getIndexSort getIndexSort-methods getIndexSort,flowFrame-method
+#' @docType methods
+#' @usage NULL
+#' @return
+#' 
+#' Matrix of fluorescence intensities and sort indices for plate location.
+#' When no index sorting data is available, invisibly returns 0. Test for 0 to
+#' check success.
+#' @section Methods:
+#' 
+#' \describe{
+#' 
+#' \item{getIndexSort(x = "flowFrame")}{Return a matrix of fluorescence intensities and
+#' indices into the sorting plate for each cell.}
+#' 
+#' }
+#' @author G. Finak
+#' @keywords methods
+#' @examples
+#' 
+#'  samp <- read.FCS(system.file("extdata","0877408774.B08", package="flowCore"))
+#'  # This will return a message that no index sorting data is available
+#'  getIndexSort(samp)
+#' 
+#' 
+#' @export
 setMethod("getIndexSort",signature="flowFrame",definition=function(x){
   .getIndexSort(x)
 })

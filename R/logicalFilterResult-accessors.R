@@ -11,6 +11,7 @@
 ## Subset a logicalFilterResult by filterId. We treat i=1 as the population
 ## in the filter and 1=2 as the complement of that. Values >2 are not allowed
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("[[",
           signature=signature(x="logicalFilterResult"),
           definition=function(x, i, j, drop=FALSE)

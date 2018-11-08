@@ -6,6 +6,7 @@
 ## ==========================================================================
 ## Determine which 'files' are valid FCS files
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 isFCSfile <- function(files)
 {
     sapply(files, function(f){
@@ -23,6 +24,42 @@ isFCSfile <- function(files)
 ## ==========================================================================
 ## Reading FCS file header and TEXT section only
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' Read the TEXT section of a FCS file
+#' 
+#' Read (part of) the TEXT section of a Data File Standard for Flow Cytometry
+#' that contains FACS keywords.
+#' 
+#' The function \code{read.FCSheader} works with the output of the FACS machine
+#' software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data LMD).
+#' The output of the function is the TEXT section of the FCS files. The user
+#' can specify some keywords to limit the output to the information of
+#' interest.
+#' 
+#' @name read.FCSheader
+#' 
+#' @param files Character vector of filenames.
+#' @param path Directory where to look for the files.
+#' @param keyword An optional character vector that specifies the FCS keyword
+#' to read.
+#' @param emptyValue see \code{link[flowCore]{read.FCS}}
+#' 
+#' @return A list of character vectors. Each element of the list correspond to
+#' one FCS file.
+#' @author N.Le Meur
+#' @seealso \code{link[flowCore]{read.flowSet}},
+#' \code{link[flowCore]{read.FCS}}
+#' @keywords IO
+#' @examples
+#' 
+#' samp <- read.FCSheader(system.file("extdata",
+#'    "0877408774.B08", package="flowCore"))
+#' samp
+#' 
+#' samp <- read.FCSheader(system.file("extdata",
+#'    "0877408774.B08", package="flowCore"), keyword=c("$DATE", "$FIL"))
+#' samp
+#' 
+#' @export
 read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
 {
   
@@ -56,6 +93,141 @@ header <- function(files,emptyValue=TRUE){
 ## ==========================================================================
 ## main wrapper to read FCS files
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' Read an FCS file
+#' 
+#' Check validity and Read Data File Standard for Flow Cytometry
+#' 
+#' 
+#' The function \code{isFCSfile} determines whether its arguments are valid FCS
+#' files.
+#' 
+#' The function \code{read.FCS} works with the output of the FACS machine
+#' software from a number of vendors (FCS 2.0, FCS 3.0 and List Mode Data LMD).
+#' However, the FCS 3.0 standard includes some options that are not yet
+#' implemented in this function. If you need extensions, please let me know.
+#' The output of the function is an object of class \code{flowFrame}.
+#' 
+#' For specifications of FCS 3.0 see \url{http://www.isac-net.org} and the file
+#' \url{../doc/fcs3.html} in the \code{doc} directory of the package.
+#' 
+#' The \code{which.lines} arguments allow you to read a subset of the record as
+#' you might not want to read the thousands of events recorded in the FCS file.
+#' It is mainly used when there is not enough memory to read one single FCS
+#' (which probably will not happen).  It will probably take more time than
+#' reading the entire FCS (due to the multiple disk IO).
+#' @name read.FCS
+#' @aliases read.FCS cleanup isFCSfile
+#' @usage 
+#' isFCSfile(files)
+#' 
+#' read.FCS(filename, transformation="linearize", which.lines=NULL,
+#'          alter.names=FALSE, column.pattern=NULL, invert.pattern = FALSE,
+#'          decades=0, ncdf = FALSE, min.limit=NULL, 
+#'          truncate_max_range = TRUE, dataset=NULL, emptyValue=TRUE, 
+#'          channel_alias = NULL, ...)
+#'          
+#' @param files A vector of filenames
+#' @param filename Character of length 1: filename
+#' @param transformation An character string that defines the type of
+#' transformation. Valid values are \code{linearize} (default),
+#' \code{linearize-with-PnG-scaling}, or \code{scale}.  The \code{linearize}
+#' transformation applies the appropriate power transform to the data. The
+#' \code{linearize-with-PnG-scaling} transformation applies the appropriate
+#' power transform for parameters stored on log scale, and also a linear
+#' scaling transformation based on the 'gain' (FCS \$PnG keywords) for
+#' parameters stored on a linear scale. The \code{scale} transformation scales
+#' all columns to $[0,10^decades]$.  defaulting to decades=0 as in the FCS4
+#' specification.  A logical can also be used: \code{TRUE} is equal to
+#' \code{linearize} and \code{FALSE}(or \code{NULL}) corresponds to no
+#' transformation.  Also when the transformation keyword of the FCS header is
+#' set to "custom" or "applied", no transformation will be used.
+#' @param which.lines Numeric vector to specify the indices of the lines to be
+#' read. If NULL all the records are read, if of length 1, a random sample of
+#' the size indicated by \code{which.lines} is read in.
+#' @param alter.names boolean indicating whether or not we should rename the
+#' columns to valid R names using \code{\link{make.names}}. The default is
+#' FALSE.
+#' @param column.pattern An optional regular expression defining parameters we
+#' should keep when loading the file. The default is NULL.
+#' @param invert.pattern logical. By default, \code{FALSE}. If \code{TRUE},
+#' inverts the regular expression specified in \code{column.pattern}. This is
+#' useful for indicating the channel names that we do not want to read. If
+#' \code{column.pattern} is set to \code{NULL}, this argument is ignored.
+#' @param decades When scaling is activated, the number of decades to use for
+#' the output.
+#' @param ncdf Deprecated. Please use 'ncdfFlow' package for cdf based storage.
+#' @param min.limit The minimum value in the data range that is allowed. Some
+#' instruments produce extreme artifactual values. The positive data range for
+#' each parameter is completely defined by the measurement range of the
+#' instrument and all larger values are set to this threshold. The lower data
+#' boundary is not that well defined, since compensation might shift some
+#' values below the original measurement range of the instrument. This can be 
+#' set to an arbitrary number or to \code{NULL} (the default value), in which 
+#' case the original values are kept.
+#' @param truncate_max_range logical type. Default is TRUE. can be optionally
+#' turned off to avoid truncating the extreme positive value to the instrument
+#' measurement range .i.e.'$PnR'.
+#' @param dataset The FCS file specification allows for multiple data segments
+#' in a single file. Since the output of \code{read.FCS} is a single
+#' \code{flowFrame} we can't automatically read in all available sets. This
+#' parameter allows to chose one of the subsets for import. Its value is
+#' supposed to be an integer in the range of available data sets. This argument
+#' is ignored if there is only a single data segment in the FCS file.
+#' @param emptyValue boolean indicating whether or not we allow empty value for
+#' keyword values in TEXT segment.  It affects how the double delimiters are
+#' treated.  IF TRUE, The double delimiters are parsed as a pair of start and
+#' end single delimiter for an empty value.  Otherwise, double delimiters are
+#' parsed one part of string as the keyword value.  default is TRUE.
+#' @param channel_alias a data.frame used to provide the alias of the channels
+#' to standardize and solve the discrepancy across FCS files.It is expected to
+#' contain 'alias' and 'channels' column. Each row/entry specifies the common
+#' alias name for a collection of channels (comma separated). See examples for
+#' details.
+#' @param ... ignore.text.offset: whether to ignore the keyword values in TEXT
+#' segment when they don't agree with the HEADER.  Default is FALSE, which
+#' throws the error when such discrepancy is found.  User can turn it on to
+#' ignore TEXT segment when he is sure of the accuracy of HEADER so that the
+#' file still can be read.
+#' 
+#' @return
+#' 
+#' \code{isFCSfile} returns a logical vector.
+#' 
+#' \code{read.FCS} returns an object of class
+#' \code{\link[flowCore:flowFrame-class]{flowFrame}} that contains the data in
+#' the \code{exprs} slot, the parameters monitored in the \code{parameters}
+#' slot and the keywords and value saved in the header of the FCS file.
+#' 
+#' @author F. Hahne, N.Le Meur
+#' @seealso \code{\link[flowCore]{read.flowSet}}
+#' @keywords IO
+#' @examples
+#' 
+#' ## a sample file
+#' fcsFile <- system.file("extdata", "0877408774.B08", package="flowCore")
+#' 
+#' ## read file and linearize values
+#' samp <-  read.FCS(fcsFile, transformation="linearize")
+#' exprs(samp[1:3,])
+#' description(samp)[3:6]
+#' class(samp)
+#' 
+#' ## Only read in lines 2 to 5
+#' subset <- read.FCS(fcsFile, which.lines=2:5, transformation="linearize")
+#' exprs(subset)
+#' 
+#' ## Read in a random sample of 100 lines
+#' subset <- read.FCS(fcsFile, which.lines=100, transformation="linearize")
+#' nrow(subset)
+#' 
+#' #manually supply the alias vs channel options mapping as a data.frame
+#' map <- data.frame(alias = c("A", "B")
+#'                   , channels = c("FL2", "FL4")
+#' )
+#' fr <- read.FCS(fcsFile, channel_alias = map)
+#' fr
+#' 
+#' @export
 read.FCS <- function(filename,
                      transformation="linearize",
                      which.lines=NULL,
@@ -1064,6 +1236,96 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 ## the R environment (e.g. the flowFrames are actually retrieved from the
 ## network or a database.)
 ## ---------------------------------------------------------------------------
+#' Read a set of FCS files
+#' 
+#' Read one or several FCS files: Data File Standard for Flow Cytometry
+#' 
+#' There are four different ways to specify the file from which data is to be
+#' imported:
+#' 
+#' First, if the argument \code{phenoData} is present and is of class
+#' \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}, then the
+#' file names are obtained from its sample names (i.e. row names of the
+#' underlying data.frame).  Also column \code{name} will be generated based on
+#' sample names if it is not there. This column is mainly used by visualization
+#' methods in flowViz.  Alternatively, the argument \code{phenoData} can be of
+#' class \code{character}, in which case this function tries to read a
+#' \code{AnnotatedDataFrame} object from the file with that name by calling
+#' \code{\link[Biobase]{read.AnnotatedDataFrame}(file.path(path,phenoData),\dots{})}.
+#' 
+#' In some cases the file names are not a reasonable selection criterion and
+#' the user might want to import files based on some keywords within the file.
+#' One or several keyword value pairs can be given as the phenoData argument in
+#' form of a named list.
+#' 
+#' Third, if the argument \code{phenoData} is not present and the argument
+#' \code{files} is not \code{NULL}, then \code{files} is expected to be a
+#' character vector with the file names.
+#' 
+#' Fourth, if neither the argument \code{phenoData} is present nor \code{files}
+#' is not \code{NULL}, then the file names are obtained by calling
+#' \code{dir(path, pattern)}.
+#' 
+#' @name read.flowSet
+#' 
+#' @usage
+#' read.flowSet(files=NULL, path=".", pattern=NULL, phenoData,
+#'              descriptions,name.keyword, alter.names=FALSE,
+#'              transformation = "linearize", which.lines=NULL,
+#'              column.pattern = NULL, invert.pattern = FALSE, decades=0, sep="\t",
+#'              as.is=TRUE, name, ncdf=FALSE, dataset=NULL, min.limit=NULL,
+#'              truncate_max_range = TRUE, emptyValue=TRUE, 
+#'              ignore.text.offset = FALSE, channel_alias = NULL, \dots)
+#' 
+#' @param files Optional character vector with filenames.
+#' @param path Directory where to look for the files.
+#' @param pattern This argument is passed on to
+#' \code{\link[base:list.files]{dir}}, see details.
+#' @param phenoData An object of class \code{AnnotatedDataFrame},
+#' \code{character} or a list of values to be extracted from the
+#' \code{\link[flowCore:flowFrame-class]{flowFrame}} object, see details.
+#' @param descriptions Character vector to annotate the object of class
+#' \code{\link[flowCore:flowSet-class]{flowSet}}.
+#' @param name.keyword An optional character vector that specifies which FCS
+#' keyword to use as the sample names. If this is not set, the GUID of the FCS
+#' file is used for sampleNames, and if that is not present (or not unique),
+#' then the file names are used.
+#' @param alter.names see \code{\link[flowCore]{read.FCS}} for details.
+#' @param transformation see \code{\link[flowCore]{read.FCS}} for details.
+#' @param which.lines see \code{\link[flowCore]{read.FCS}} for details.
+#' @param column.pattern see \code{\link[flowCore]{read.FCS}} for details.
+#' @param invert.pattern see \code{\link[flowCore]{read.FCS}} for details.
+#' @param decades see \code{\link[flowCore]{read.FCS}} for details.
+#' @param sep Separator character that gets passed on to
+#' \code{\link[Biobase]{read.AnnotatedDataFrame}}.
+#' @param as.is Logical that gets passed on to
+#' \code{\link[Biobase]{read.AnnotatedDataFrame}}. This controls the automatic
+#' coercion of characters to factors in the \code{phenoData}slot.
+#' @param name An optional character scalar used as name of the object.
+#' @param ncdf Deprecated. Please refer to 'ncdfFlow' package for cdf based
+#' storage.
+#' @param dataset see \code{\link[flowCore]{read.FCS}} for details.
+#' @param min.limit see \code{\link[flowCore]{read.FCS}} for details.
+#' @param truncate.max.range see \code{link[flowCore]{read.FCS}} for details.
+#' @param emptyValue see \code{\link[flowCore]{read.FCS}} for details.
+#' @param ignore.text.offset see \code{\link[flowCore]{read.FCS}} for details.
+#' @param truncate_max_range see \code{\link[flowCore]{read.FCS}} for details.
+#' @param channel_alias see \code{\link[flowCore]{read.FCS}} for details.
+#' @param \dots Further arguments that get passed on to
+#' \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.
+#' 
+#' @return An object of class \code{\link[flowCore:flowSet-class]{flowSet}}.
+#' @author F. Hahne, N.Le Meur, B. Ellis
+#' @keywords IO
+#' @examples
+#' 
+#' fcs.loc <- system.file("extdata",package="flowCore")
+#' file.location <- paste(fcs.loc, dir(fcs.loc), sep="/")
+#' 
+#' samp <- read.flowSet(file.location[1:3])
+#' 
+#' 
+#' @export
 read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation="linearize", which.lines=NULL,
@@ -1231,6 +1493,7 @@ write.AnnotatedDataFrame <- function(frame, file)
 }
 
 
+#' @export
 cleanup <- function() if(file.exists(".flowCoreNcdf"))
 
      .Deprecated("'ncdf' is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
@@ -1327,10 +1590,59 @@ collapseDesc <- function(x, delimiter = "\\")
 
 
 ## ==========================================================================
-## Write a flowFrame to an FCS file. Unless given explicitely, the filename
-## is taken from the idnetifier of the flowFrame. 'what' controls the output
+## Write a flowFrame to an FCS file. 'what' controls the output
 ## data type.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' Write an FCS file
+#' 
+#' Write FCS file from a flowFrame
+#' 
+#' 
+#' The function \code{write.FCS} creates FCS 3.0 standard file from an object
+#' of class \code{flowFrame}.
+#' 
+#' For specifications of FCS 3.0 see \url{http://www.isac-net.org} and the file
+#' \url{../doc/fcs3.html} in the \code{doc} directory of the package.
+#' 
+#' @name write.FCS
+#' @aliases write.FCS
+#' 
+#' @usage 
+#' write.FCS(x, filename, what="numeric", delimiter = "|", endian="big")
+#' 
+#' @param x A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param filename A character scalar giving the output file name.
+#' @param what A character scalar defining the output data type. One in
+#' \code{integer}, \code{numeric}, \code{double}. Note that forcing the data
+#' type to \code{integer} may result in considerable loss of precision if the
+#' data has been transformed. We recommend using the default data type unless
+#' disc space is an issue.
+#' @param delimiter a single character to separate the FCS keyword/value pairs.
+#' Default is : "|"
+#' @param endian a character, either "little" or "big" (default), specifying
+#' the most significant or least significant byte is stored first in a 32 bit
+#' word.
+#' 
+#' @return
+#' 
+#' A character vector of the file name.
+#' @author F. Hahne
+#' @seealso \code{link[flowCore]{write.flowSet}}
+#' @keywords IO
+#' @examples
+#' 
+#' ## a sample file
+#' inFile <- system.file("extdata", "0877408774.B08", package="flowCore")
+#' foo <- read.FCS(inFile, transform=FALSE)
+#' outFile <- file.path(tempdir(), "foo.fcs")
+#' 
+#' ## now write out into a file
+#' write.FCS(foo, outFile)
+#' bar <- read.FCS(outFile, transform=FALSE)
+#' all(exprs(foo) == exprs(bar))
+#' 
+#' 
+#' @export
 write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "big")
 {
   # warning("'write.FCS' is not fully tested and should be considered as experimental.")
@@ -1459,6 +1771,63 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
 ## value of a character scalar. By default, the files will be written in a
 ## subdirectry constructed from the flowSet's identifier.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' Write an FCS file
+#' 
+#' Write FCS file for each flowFrame in a flowSet
+#' 
+#' 
+#' The function \code{write.flowSet} creates FCS 3.0 standard file for all
+#' \code{flowFrames} in an object of class \code{flowSet}. In addition, it will
+#' write the content of the \code{phenoData} slot in the ASCII file
+#' \code{"annotation.txt"}. This file can subsequently be used to reconstruct
+#' the whole \code{flowSet} using the \code{\link[flowCore]{read.flowSet}}
+#' function, e.g.:
+#' 
+#' \code{read.flowSet(path=outdir, phenoData="annotation.txt"}
+#' 
+#' The function uses \code{\link[flowCore]{write.FCS}} for the actual writing
+#' of the FCS files.
+#' 
+#' @name write.flowSet
+#' @aliases write.flowSet
+#' 
+#' @usage 
+#' write.flowSet(x, outdir=identifier(x), filename, \dots)
+#' 
+#' @param x A \code{\link[flowCore:flowSet-class]{flowSet}}.
+#' @param filename A character scalar or vector giving the output file names.
+#' By default, the function will use the identifiers of the individual
+#' \code{flowFrames} as the file name, potentially adding the \code{.fcs}
+#' suffix unless a file extension is already present. Alternatively, one can
+#' supply either a character scalar, in which case the prefix \code{i_} is
+#' appended (\code{i} being an integer in \code{seq_len(length(x))}), or a
+#' character vector of the same length as the \code{flowSet x}.
+#' @param outdir A character scalar giving the output directory. As the
+#' default, the output of \code{identifier(x)} is used.
+#' @param \dots Further arguments that are passed on to
+#' \code{\link[flowCore]{write.FCS}}.
+#' @return
+#' 
+#' A character vector of the output directory.
+#' @author F. Hahne
+#' @seealso \code{link[flowCore]{write.FCS}}
+#' @keywords IO
+#' @examples
+#' 
+#' ## sample data
+#' data(GvHD)
+#' foo <- GvHD[1:5]
+#' outDir <- file.path(tempdir(), "foo")
+#' 
+#' ## now write out into  files
+#' write.flowSet(foo, outDir)
+#' dir(outDir)
+#' 
+#' ## and read back in
+#' bar <- read.flowSet(path=outDir, phenoData="annotation.txt")
+#' 
+#' 
+#' @export
 write.flowSet <- function(x, outdir=identifier(x), filename, ...)
 {
     checkClass(x, "flowSet")

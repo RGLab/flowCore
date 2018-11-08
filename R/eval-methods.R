@@ -15,6 +15,7 @@ resolve <- function(x, df)
 ## ===========================================================================
 ## Unity transformation
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval",
           signature=signature(expr="unitytransform", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -33,6 +34,7 @@ setMethod("eval",
 ## Polynomial transformation of degree 1
 ## ---------------------------------------------------------------------------
 
+#' @export
 setMethod("eval",
 	  signature=signature(expr="dg1polynomial", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -59,6 +61,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Ratio transformation of two arguments
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="ratio", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -79,6 +82,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Quadratic transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
 	  signature=signature(expr="quadratic", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -97,6 +101,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Squareroot transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
 	  signature=signature(expr="squareroot", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -116,6 +121,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Log transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
 	  signature=signature(expr="logarithm", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -137,6 +143,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Exponential transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="exponential", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -155,6 +162,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Inverse hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="asinht", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -172,6 +180,7 @@ setMethod("eval",
 ## ================================================================================
 ## Inverse hyperbolic sin transformation parametrized according to Gating-ML 2.0 
 ## --------------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval", 
     signature = signature(expr = "asinhtGml2", envir = "missing"),
@@ -224,6 +233,7 @@ setMethod(
 ## ================================================================================
 ## Logicle transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval",
     signature = signature(expr = "logicletGml2", envir = "missing"),
@@ -263,6 +273,7 @@ setMethod(
 ## ================================================================================
 ## Hyperlog transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval",
     signature = signature(expr = "hyperlogtGml2", envir = "missing"),
@@ -294,6 +305,7 @@ setMethod(
 ## ================================================================================
 ## Linear transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval",
     signature = signature(expr = "lintGml2", envir = "missing"),
@@ -325,6 +337,7 @@ setMethod(
 ## ================================================================================
 ## Log transformation parametrized according to Gating-ML 2.0
 ## --------------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval",
     signature = signature(expr = "logtGml2", envir = "missing"),
@@ -361,6 +374,7 @@ setMethod(
 ## ===========================================================================
 ## Ratio transformation parametrized according to Gating-ML 2.0
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod(
     "eval",
     signature = signature(expr = "ratiotGml2", envir="missing"),
@@ -395,6 +409,7 @@ setMethod(
 ## ===========================================================================
 ## Hyperbolic sin transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="sinht", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -415,6 +430,7 @@ setMethod("eval",
 ## ---------------------------------------------------------------------------
 
 
+#' @export
 setMethod("eval", 
 	  signature=signature(expr="hyperlog", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -433,6 +449,7 @@ setMethod("eval",
 ## EH transformation 
 ## ---------------------------------------------------------------------------
 
+#' @export
 setMethod("eval", 
 	  signature=signature(expr="EHtrans", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -454,6 +471,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Splitscale transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="splitscale", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -488,6 +506,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Inverse Splitscale transformation 
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval", 
           signature=signature(expr="invsplitscale", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -523,6 +542,7 @@ setMethod("eval",
 ## ===========================================================================
 ## Transformation reference
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("eval",
           signature=signature(expr="transformReference", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -536,6 +556,7 @@ setMethod("eval",
 #### Reference to a predefined gate 
 ####----------------------------------------------------------------------------
 
+#' @export
 setMethod("eval",
           signature=signature(expr="filterReference", envir="missing"),
           definition=function (expr, envir = parent.frame(),
@@ -557,6 +578,7 @@ setMethod("eval",
 # to be compensated as per compensation description in FCS. This is why the
 # whole flowFrame is passed to eval, which then has the option of extracting
 # the spillover matrix from the SPILL (or some other) keyword.
+#' @export
 setMethod("eval",
           signature=signature(expr="compensatedParameter", envir="missing"),
           function(expr, envir, enclos)

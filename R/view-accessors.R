@@ -13,6 +13,7 @@
 ## Accessor to action slot. This returns the actionItem object after
 ## resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("action",
           signature=signature(object="view"),
           definition=function(object) get(object@action))
@@ -22,6 +23,7 @@ setMethod("action",
 ## Accessor to data slot. This returns the flow data object (flowFrame or
 ## flowSet) after resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("Data",
           signature=signature(object="view"),
           definition=function(object){
@@ -74,10 +76,12 @@ setMethod("Data",
 ## Accessor to parent, linked by an actionItem returns. This the view object
 ## after resolving the reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("parent",
           signature=signature(object="view"),
           definition=function(object) parent(action(object)))
 
+#' @export
 setMethod("parent",
           signature=signature(object="NULL"),
           definition=function(object) NULL)
@@ -86,6 +90,7 @@ setMethod("parent",
 ## ==========================================================================
 ## Get the alias table from a view
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("alias",
           signature=signature(object="view"),
           definition=function(object) get(object@alias))

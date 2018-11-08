@@ -14,6 +14,7 @@
 ## Resolve a reference, i.e., get the symbol 'ID' from the evaluation
 ## environment in 'workspace'.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("get",
           signature=signature(x="character", pos="workFlow",
               envir="missing"),
@@ -40,6 +41,7 @@ setMethod("get",
       })
 
 ## The same behaviour as above, but allow workflow to be the 'envir' argument
+#' @export
 setMethod("get",
           signature=signature(x="character", pos="missing",
               envir="workFlow"),
@@ -47,6 +49,7 @@ setMethod("get",
               mode="any", inherits=TRUE) get(x, envir=envir@env))
 
 ## get multiple objects
+#' @export
 setMethod("mget",
           signature=signature(x="character", envir="workFlow"),
           definition=function(x, envir, mode="any",
@@ -58,6 +61,7 @@ setMethod("mget",
 ## ==========================================================================
 ## List the content of 'env' in a workFlow object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("ls",
           signature=signature(name="workFlow",
                               pos="missing",
@@ -65,6 +69,7 @@ setMethod("ls",
           definition=function(name) ls(name@env))
 
 ## Allow for pattern search
+#' @export
 setMethod("ls",
           signature=signature(name="workFlow",
                               pos = "missing",
@@ -92,6 +97,7 @@ isUniqueName <- function(n, wf, warn=FALSE, uid)
 }
 
 ## by name
+#' @export
 setMethod("[[",
           signature=signature(x="workFlow"),
           definition=function(x, i, j, ...)
@@ -116,6 +122,7 @@ setMethod("[[",
       })
 
 ## A useful error message
+#' @export
 setMethod("[",
           signature=signature(x="workFlow"),
           definition=function(x, i, j, ..., drop=FALSE)
@@ -127,6 +134,7 @@ setMethod("[",
           })
 
 ## By name with completion (but only for views)
+#' @export
 setMethod("$",
           signature=signature(x="workFlow"),
           definition=function(x,name) x[[name]])
@@ -138,10 +146,12 @@ setMethod("$",
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uniqueAlias <- function(x, wf) length(alias(wf)[[x]])==1
 
+#' @export
 setMethod("alias",
           signature=signature(object="workFlow"),
           definition=function(object) get(object@alias))
 
+#' @export
 setMethod("alias",
           signature=signature(object="environment"),
           definition=function(object){
@@ -157,10 +167,12 @@ setMethod("alias",
 ## ==========================================================================
 ## Get the journal from a workFlow or an environment
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("journal",
           signature=signature(object="workFlow"),
           definition=function(object) get(object@journal))
 
+#' @export
 setMethod("journal",
           signature=signature(object="environment"),
           definition=function(object){
@@ -176,6 +188,7 @@ setMethod("journal",
 ## ==========================================================================
 ## Get the nodes from a workFlow tree
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("nodes",
           signature=signature(object="workFlow"),
           definition=function (object, ...)
@@ -199,10 +212,12 @@ nameIdMapping <- function(wf)
 ## ==========================================================================
 ## Get the tree from a workFlow or an environment
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("tree",
           signature=signature(object="workFlow"),
           definition=function(object) get(object@tree))
 
+#' @export
 setMethod("tree",
           signature=signature(object="environment"),
           definition=function(object){
@@ -219,6 +234,7 @@ setMethod("tree",
 ## ==========================================================================
 ## Plot the workflow tree using Rgraphviz
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("plot",
           signature=signature(x="workFlow",
                               y="missing"),

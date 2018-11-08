@@ -29,6 +29,194 @@
 ## ==========================================================================
 
 
+#' Methods to split flowFrames and flowSets according to filters
+#' 
+#' 
+#' Divide a flow cytometry data set into several subset according to the
+#' results of a filtering operation. There are also methods available to split
+#' according to a factor variable.
+#' 
+#' 
+#' The splitting operation in the context of \code{\linkS4class{flowFrame}}s
+#' and \code{\linkS4class{flowSet}}s is the logical extension of subsetting.
+#' While the latter only returns the events contained within a gate, the former
+#' splits the data into the groups of events contained within and those not
+#' contained within a particular gate. This concept is extremely useful in
+#' applications where gates describe the distinction between positivity and
+#' negativity for a particular marker.
+#' 
+#' The flow data structures in \code{flowCore} can be split into subsets on
+#' various levels:
+#' 
+#' \code{\linkS4class{flowFrame}}: row-wise splitting of the raw data. In most
+#' cases, this will be done according to the outcome of a filtering operation,
+#' either using a filter that identifiers more than one sub-population or by a
+#' logical filter, in which case the data is split into two populations: "in
+#' the filter" and "not in the filter". In addition, the data can be split
+#' according to a factor (or a numeric or character vector that can be coerced
+#' into a factor).
+#' 
+#' \code{\linkS4class{flowSet}}: can be either split into subsets of
+#' \code{\linkS4class{flowFrame}}s according to a factor or a vector that can
+#' be coerced into a factor, or each individual \code{\linkS4class{flowFrame}}
+#' into subpopulations based on the \code{\linkS4class{filter}}s or
+#' \code{\linkS4class{filterResult}}s provided as a list of equal length.
+#' 
+#' Splitting has a special meaning for filters that result in
+#' \code{\linkS4class{multipleFilterResult}}s or
+#' \code{\linkS4class{manyFilterResult}}s, in which case simple subsetting
+#' doesn't make much sense (there are multiple populations that are defined by
+#' the gate and it is not clear which of those should be used for the
+#' subsetting operation). Accordingly, splitting of multipleFilterResults
+#' creates multiple subsets. The argument \code{population} can be used to
+#' limit the output to only one or some of the resulting subsets. It takes as
+#' values a character vector of names of the populations of interest. See the
+#' documentation of the different filter classes on how population names can be
+#' defined and the respective default values. For splitting of
+#' \code{\linkS4class{logicalFilterResult}}s, the \code{population} argument
+#' can be used to set the population names since there is no reasonable default
+#' other than the name of the gate. The content of the argument \code{prefix}
+#' will be prepended to the population names and '+' or '-' are finally
+#' appended allowing for more flexible naming schemes.
+#' 
+#' The default return value for any of the \code{split} methods is a list, but
+#' the optional logical argument \code{flowSet} can be used to return a
+#' \code{\linkS4class{flowSet}} instead. This only applies when splitting
+#' \code{\linkS4class{flowFrame}}s, splitting of \code{\linkS4class{flowSet}}s
+#' always results in lists of \code{\linkS4class{flowSet}} objects.
+#' 
+#' @name split-methods
+#' @aliases split-methods split split,flowFrame,ANY-method
+#' split,flowFrame,factor-method split,flowFrame,character-method
+#' split,flowFrame,numeric-method split,flowFrame,filter-method
+#' split,flowFrame,filterSet-method split,flowFrame,logicalFilterResult-method
+#' split,flowFrame,manyFilterResult-method
+#' split,flowFrame,multipleFilterResult-method split,flowSet,ANY-method
+#' split,flowSet,character-method split,flowSet,factor-method
+#' split,flowSet,list-method split,flowSet,numeric-method
+#' split,flowSet,filter-method split,flowSet,filterResult-method
+#' @docType methods
+#' @usage NULL
+#' @section Methods:
+#' 
+#' \code{\link{flowFrame}} methods:
+#' 
+#' \describe{
+#' 
+#' \item{split(x = "flowFrame", f = "ANY", drop = "ANY")}{ Catch all input and cast an
+#' error if there is no method for \code{f} to dispatch to. }
+#' 
+#' \item{split(x = "flowFrame", f = "factor", drop = "ANY")}{ Split a
+#' \code{\link{flowFrame}} by a factor variable. Length of \code{f} should be
+#' the same as \code{nrow(x)}, otherwise it will be recycled, possibly leading
+#' to undesired outcomes. The optional argument \code{drop} works in the usual
+#' way, in that it removes empty levels from the factor before splitting.}
+#' 
+#' \item{split(x = "flowFrame", f = "character", drop = "ANY")}{ Coerce \code{f} to a
+#' factor and split on that. }
+#' 
+#' \item{split(x = "flowFrame", f = "numeric", drop = "ANY")}{ Coerce \code{f} to a
+#' factor and split on that. }
+#' 
+#' \item{split(x = "flowFrame", f = "filter", drop = "ANY")}{ First applies the
+#' \code{\linkS4class{filter}} to the \code{\linkS4class{flowFrame}} and then
+#' splits on the resulting \code{\linkS4class{filterResult}} object. }
+#' 
+#' \item{split(x = "flowFrame", f = "filterSet", drop = "ANY")}{ First applies the
+#' \code{\linkS4class{filterSet}} to the \code{\linkS4class{flowFrame}} and
+#' then splits on the resulting final \code{\linkS4class{filterResult}} object.
+#' }
+#' 
+#' \item{split(x = "flowFrame", f = "logicalFilterResult", drop = "ANY")}{ Split into
+#' the two subpopulations (in and out of the gate). The optional argument
+#' \code{population} can be used to control the names of the results. }
+#' 
+#' \item{split(x = "flowFrame", f = "manyFilterResult", drop = "ANY")}{ Split into the
+#' several subpopulations identified by the filtering operation. Instead of
+#' returning a list, the additional logical argument codeflowSet makes the
+#' method return an object of class \code{\linkS4class{flowSet}}. The optional
+#' \code{population} argument takes a character vector indicating the
+#' subpopulations to use for splitting (as identified by the population name in
+#' the \code{filterDetails} slot).}
+#' 
+#' \item{split(x = "flowFrame", f = "multipleFilterResult", drop = "ANY")}{ Split into
+#' the several subpopulations identified by the filtering operation. Instead of
+#' returning a list, the additional logical argument codeflowSet makes the
+#' method return an object of class \code{\linkS4class{flowSet}}. The optional
+#' \code{population} argument takes a character vector indicating the
+#' subpopulations to use for splitting (as identified by the population name in
+#' the \code{filterDetails} slot). Alternatively, this can be a list of
+#' characters, in which case the populations for each list item are collapsed
+#' into one \code{\linkS4class{flowFrame}}.}
+#' 
+#' }
+#' 
+#' \code{\linkS4class{flowSet}} methods:
+#' 
+#' \describe{
+#' 
+#' \item{split(x = "flowSet", f = "ANY", drop = "ANY")}{ Catch all input and cast an
+#' error if there is no method for \code{f} to dispatch to.  }
+#' 
+#' \item{split(x = "flowSet", f = "factor", drop = "ANY")}{ Split a
+#' \code{\link{flowSet}} by a factor variable. Length of \code{f} needs to be
+#' the same as \code{length(x)}. The optional argument \code{drop} works in the
+#' usual way, in that it removes empty levels from the factor before splitting.
+#' }
+#' 
+#' \item{split(x = "flowSet", f = "character", drop = "ANY")}{ Coerce \code{f} to a
+#' factor and split on that. }
+#' 
+#' \item{split(x = "flowSet", f = "numeric", drop = "ANY")}{ Coerce \code{f} to a
+#' factor and split on that. }
+#' 
+#' \item{split(x = "flowSet", f = "list", drop = "ANY")}{ Split a
+#' \code{\link{flowSet}} by a list of \code{\linkS4class{filterResult}}s (as
+#' typically returned by filtering operations on a
+#' \code{\linkS4class{flowSet}}). The length of the list has to be equal to the
+#' length of the \code{\linkS4class{flowSet}} and every list item needs to be a
+#' \code{\linkS4class{filterResult}} of equal class with the same parameters.
+#' Instead of returning a list, the additional logical argument codeflowSet
+#' makes the method return an object of class \code{\linkS4class{flowSet}}. The
+#' optional \code{population} argument takes a character vector indicating the
+#' subpopulations to use for splitting (as identified by the population name in
+#' the \code{filterDetails} slot).  Alternatively, this can be a list of
+#' characters, in which case the populations for each list item are collapsed
+#' into one \code{\linkS4class{flowFrame}}. Note that using the
+#' \code{population} argument implies common population names for
+#' all\code{\linkS4class{filterResult}}s in the list and there will be an error
+#' if this is not the case. }
+#' 
+#' }
+#' @author F Hahne, B. Ellis, N. Le Meur
+#' @keywords methods
+#' @examples
+#' 
+#' data(GvHD)
+#' qGate <- quadGate(filterId="qg", "FSC-H"=200, "SSC-H"=400)
+#' 
+#' ## split a flowFrame by a filter that creates
+#' ## a multipleFilterResult
+#' samp <- GvHD[[1]]
+#' fres <- filter(samp, qGate)
+#' split(samp, qGate)
+#' 
+#' ## return a flowSet rather than a list
+#' split(samp, fres, flowSet=TRUE)
+#' 
+#' ## only keep one population
+#' names(fres)
+#' ##split(samp, fres, population="FSC-Height+SSC-Height+")
+#' 
+#' 
+#' ## split the whole set, only keep two populations
+#' ##split(GvHD, qGate, population=c("FSC-Height+SSC-Height+",
+#' ##"FSC-Height-SSC-Height+"))
+#' 
+#' ## now split the flowSet according to a factor
+#' split(GvHD, pData(GvHD)$Patient)
+#' 
+#' @export
 
 
 
@@ -52,6 +240,7 @@ setMethod("split",
 ## Evaluate the filterSet first and split on the filterResult
 ## FIXME: Is that really what we want? And what is the final output of
 ## a filterSet filtering operation anyways? Just the leaves???
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="filterSet"),
@@ -60,6 +249,7 @@ setMethod("split",
 
 ## Split on logicalFilterResults. This will divide the data set into those
 ## events that are contained within the gate and those that are not. 
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="logicalFilterResult"),
@@ -107,6 +297,7 @@ setMethod("split",
 
 ## Split on multipleFilterResults. The argument 'population' can be used to
 ## select only certain subpopulations
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="multipleFilterResult"),
@@ -165,6 +356,7 @@ setMethod("split",
 
 
 ## Split on manyFilterResults. FIXME: Need to take a closer look at this
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="manyFilterResult"),
@@ -180,6 +372,7 @@ setMethod("split",
 
 ## Split on a factor, or on a vector that is easily coerced into a factor.
 ## This is just for completeness.
+#' @export
 setMethod("split",
 			 signature = signature(x = "flowFrame",
 			 							 f = "factor"),
@@ -209,6 +402,7 @@ setMethod("split",
           } else out
       })
 
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="numeric"),
@@ -216,6 +410,7 @@ setMethod("split",
                               flowSet=FALSE, ...)
           split(x, factor(f)))
 
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame",
                               f="character"),
@@ -225,6 +420,7 @@ setMethod("split",
 
 
 ## Everything else should stop with an error
+#' @export
 setMethod("split",
           signature=signature(x="flowFrame", f="ANY"),
           definition=function(x, f, drop=FALSE, prefix=NULL,...) 
@@ -252,6 +448,7 @@ setMethod("split",
 
 
 ## Try and split a flowSet by whatever comes your way...
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="ANY"),
@@ -272,6 +469,7 @@ setMethod("split",
 ## Split a flowSet by a single filter, by first creating a list of
 ## filterResult and then working our way through that in the next
 ## method.
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="filter"),
@@ -307,6 +505,7 @@ compatibleFilters <- function(f1, f2)
 ## of equal length, We make sure that this list makes sense.
 ## FIXME: Eventually, this function should be deprecated since we represent
 ## filterResult for a flowSet in filterResultLists now.
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="list"),
@@ -379,6 +578,7 @@ setMethod("split",
 
 ## FIXME: This should replace the above list method completely at some point
 ##  NOTE: This method now replaces the one with signature("flowSet","list") [Greg Finak <gfinak@fhcrc.org>, 04/13/2011]
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="filterResultList"),
@@ -448,6 +648,7 @@ setMethod("split",
 ## Split by frames of flowSet according to a factor, character or numeric.
 ## Those have to be of the same length as the flowSet. We can't allow for
 ## drop=TRUE, because this would create invalid sets.
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="factor"),
@@ -468,18 +669,21 @@ setMethod("split",
           return(res)
       })
 
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="numeric"),
           definition=function(x, f, drop=FALSE, ...)
           split(x, factor(f)))
 
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="character"),
           definition=function(x, f, drop=FALSE, ...)
           split(x, factor(f)))
 
+#' @export
 setMethod("split",
           signature=signature(x="flowSet",
                               f="filterResult"),

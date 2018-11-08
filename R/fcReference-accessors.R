@@ -8,6 +8,7 @@
 ## ==========================================================================
 ## Test for a NULL reference
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("isNull",
           signature=signature("fcReference"),
           definition=function(f) is(f, "fcNullReference"))
@@ -19,6 +20,7 @@ setMethod("isNull",
 ## 'env'. Resolving NULL references always returns NULL
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## for NULL references
+#' @export
 setMethod("get",
           signature=signature(x="fcNullReference", pos = "missing",
               envir = "missing"),
@@ -26,6 +28,7 @@ setMethod("get",
               mode="any", inherits=TRUE) NULL)
 
 ## for all other references
+#' @export
 setMethod("get",
           signature=signature(x="fcReference", pos = "missing",
               envir = "missing"),

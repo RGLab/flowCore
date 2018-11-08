@@ -12,6 +12,7 @@
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## We need this to subset filterSummaries of multipleFilterResults
+#' @export
 setMethod("[[",
           signature=signature(x="filterSummary",
                               i="numeric"),
@@ -24,6 +25,7 @@ setMethod("[[",
       })
 
 ## By name
+#' @export
 setMethod("[[",
           signature=signature(x="filterSummary",
                               i="character"),
@@ -39,6 +41,7 @@ setMethod("[[",
 ## This allows for a list-like accessor to the slots (and more...)
 ## Valid values are 'n', 'count', 'true', 'false', 'name', 'p' and 'q'
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("$",
           signature=signature(x="filterSummary"),
           definition=function(x, name)
@@ -53,6 +56,7 @@ setMethod("$",
 ## ==========================================================================
 ## Return a more machine-readable output in form of a data.frame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("toTable",
           signature=signature(x="filterSummary"),
           definition=function(x, ...) {

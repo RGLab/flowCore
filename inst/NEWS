@@ -58,3 +58,6 @@ read.FCS
 + supports FCS that uses big integer (i.e. uint32 > R's integer.max)
 write.FCS
 + Fixes several bugs so that this API is now more usable 
+
+CHANGES IN VERSION 1.47.10
++ All documentation converted converted to roxygen2 with some additions and reorganization

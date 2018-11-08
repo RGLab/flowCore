@@ -28,13 +28,50 @@ popNames <- function(x, table)
 }
 
 
-
+#' Filter-specific membership methods
+#' 
+#' 
+#' Membership methods must be defined for every object of type \code{filter}
+#' with respect to a \code{flowFrame} object.  The operation is considered to
+#' be general and may return a \code{logical}, \code{numeric} or \code{factor}
+#' vector that will be handled appropriately. The ability to handle logical
+#' matrices as well as vectors is also planned but not yet implemented.
+#' 
+#' 
+#' @name filter-in-methods
+#' @aliases %in%-methods %in% %in%,ANY,filterResult-method
+#' %in%,ANY,multipleFilterResult-method %in%,ANY,manyFilterResult-method
+#' %in%,ANY,filterReference-method %in%,flowFrame,rectangleGate-method
+#' %in%,flowFrame,polygonGate-method %in%,flowFrame,ellipsoidGate-method
+#' %in%,flowFrame,norm2Filter-method %in%,flowFrame,unionFilter-method
+#' %in%,flowFrame,intersectFilter-method %in%,flowFrame,complementFilter-method
+#' %in%,flowFrame,subsetFilter-method %in%,flowFrame,filterResult-method
+#' %in%,flowFrame,kmeansFilter-method %in%,flowFrame,sampleFilter-method
+#' %in%,flowFrame,transformFilter-method %in%,flowFrame,expressionFilter-method
+#' %in%,flowFrame,quadGate-method %in%,flowFrame,timeFilter-method
+#' %in%,flowFrame,boundaryFilter-method %in%,flowFrame,polytopeGate-method
+#' @docType methods
+#' 
+#' @param x a \code{\linkS4class{flowFrame}}
+#' @param table an object of type \code{\linkS4class{filter}} or \code{\linkS4class{filterResult}}
+#' or one of their derived classes, representing a gate, filter, or result to check
+#' for the membership of x
+#' 
+#' @return 
+#' Vector of type \code{logical}, \code{numeric} or \code{factor} depending on the arguments
+#' 
+#' @usage 
+#' x \%in\% table
+#' 
+#' @author F.Hahne, B. Ellis
+#' @keywords methods
 ## ==========================================================================
 ## quadGate -- this is not a logical filter so we return a vector
 ## of factors indicating a population. Factor levels are later used
 ## as population names, e.g. when splitting. The evaluation of the
 ## filter is fully vectorized and should be quite fast.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="quadGate"),
@@ -59,6 +96,7 @@ setMethod("%in%",
 ## for a given parameter. The filter evaluation uses 'cut' for efficiency
 ## reasons.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",table="rectangleGate"),
           definition=function(x, table)
@@ -94,6 +132,7 @@ setMethod("%in%",
 ## version is implemented in the C function 'inPolygon'. For polygons with
 ## only a single dimension we fall back to a method using 'cut'.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame", table="polygonGate"),
           definition=function(x,table)
@@ -123,6 +162,7 @@ setMethod("%in%",
 ##
 ##
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame", table="polytopeGate"),
           definition=function(x, table)
@@ -146,6 +186,7 @@ setMethod("%in%",
 ## ellipses principal axes, while the eigen values denote the squared length
 ## of these axes.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame", table="ellipsoidGate"),
           definition=function(x,table)
@@ -163,6 +204,7 @@ setMethod("%in%",
 ## ellipsoidGates with the addition of the scalefac argument, that controls
 ## the cutoff in the Mahalanobis distance.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature("flowFrame",
                               table="norm2Filter"),
@@ -219,6 +261,7 @@ setMethod("%in%",
 ## as population names, e.g. when splitting. The kmeans algorithm directly
 ## gives us the factors, so no need to further evaluate
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="kmeansFilter"),
@@ -245,6 +288,7 @@ setMethod("%in%",
 ## separate. If one wants to restrict the time filtering it can always
 ## be combined with rectangleGates...
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="timeFilter"),
@@ -400,6 +444,7 @@ findTimeChannel <- function(xx, strict=FALSE)
 ## ==========================================================================
 ## complementFilter -- Returns TRUE when the input filter is FALSE.
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="complementFilter"),
@@ -416,6 +461,7 @@ setMethod("%in%",
 ## ==========================================================================
 ## unionFilter -- returns TRUE if ANY of the argument filters return true.
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame", table="unionFilter"),
           function(x,table)
@@ -461,6 +507,7 @@ setMethod("%in%",
 ## ==========================================================================
 ## intersectFilter -- only returns TRUE if ALL the member filters are TRUE.
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="intersectFilter"),
@@ -503,6 +550,7 @@ setMethod("%in%",
 ## operation. This is particularly important for unsupervised filters like
 ## norm2Filter. The result is still relative to the ENTIRE flowFrame however.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="subsetFilter"),
@@ -555,6 +603,7 @@ setMethod("%in%",
 ## ==========================================================================
 ## sampleFilter -- We randomly subsample events here.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="sampleFilter"),
@@ -571,6 +620,7 @@ setMethod("%in%",
 ## ==========================================================================
 ## boundaryFilter -- We remove boundary events
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="boundaryFilter"),
@@ -598,6 +648,7 @@ setMethod("%in%",
 ## expressionFilter -- The expression has to evaluate to a logical vector
 ## or a factor
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="expressionFilter"),
@@ -629,6 +680,7 @@ flowFrame2env <- function(ff)
 ## ==========================================================================
 ## transformFilter -- We transform the data prior to gating
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="transformFilter"),
@@ -643,6 +695,7 @@ setMethod("%in%",
 ## filterReference -- We grab the filter from the filter reference and
 ## evaluate on that
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="ANY",table="filterReference"),
           definition=function(x, table)
@@ -677,6 +730,7 @@ setMethod("%in%",
 ## filterResult -- Lets us filter by filterResults, rather than filters,
 ## but only as long as we have a logicalFilterResult or randomFilterResult
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="flowFrame",
                               table="filterResult"),
@@ -688,6 +742,7 @@ setMethod("%in%",
 ## manyFilterResult -- We only know how to filter on manyFilterResults if
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="ANY",
                               table="manyFilterResult"),
@@ -700,6 +755,7 @@ setMethod("%in%",
 ## multipleFilterResult -- We only know how to filter on manyFilterResults if
 ## one and only one subpopulation is specified
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("%in%",
           signature=signature(x="ANY",
                               table="multipleFilterResult"),

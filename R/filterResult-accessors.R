@@ -17,6 +17,39 @@
 ## Simple accessor for the whole slot. Most filterResult classes except for
 ## manyFilterResults only contain a single filterDetails item, and those are
 ## returned directly.
+
+#' Obtain details about a filter operation
+#' 
+#' A filtering operation captures details about its metadata and stores it in a
+#' \code{filterDetails} slot in a \code{\linkS4class{filterResult}} object 
+#' that is accessed using the \code{filterDetails} method. Each set of metadata 
+#' is indexed by the \code{filterId} of the filter allowing for all the metadata 
+#' in a complex filtering operation to be recovered after the final filtering.
+#' 
+#' 
+#' @name filterDetails-methods
+#' @aliases filterDetails-methods filterDetails
+#' filterDetails,filterResult,missing-method
+#' filterDetails,filterResult,ANY-method filterDetails<-
+#' filterDetails<-,filterResult,character,setOperationFilter-method
+#' filterDetails<-,filterResult,character,filter-method
+#' filterDetails<-,filterResult,character,ANY-method
+#' @usage NULL
+#' @docType methods
+#' 
+#' @section Methods: 
+#' \describe{
+#' 
+#' \item{filterDetails(result = "filterResult", filterId = "missing")}{When no particular
+#' \code{filterId} is specified all the details are returned}
+#' 
+#' \item{filterDetails(result = "filterResult", filterId = "ANY")}{You can also obtain a
+#' particular subset of details} 
+#' }
+#' 
+#' @author B. Ellis, P.D. Haaland and N. LeMeur
+#' @keywords methods
+#' @export
 setMethod("filterDetails",
           signature=signature(result="filterResult",
                               filterId="missing"),
@@ -27,6 +60,7 @@ setMethod("filterDetails",
 
 ## Access only a single filter of the filterDetails list either by name
 ## or by index. This is only useful for manyFilterResults.
+#' @export
 setMethod("filterDetails",
           signature=signature(result="filterResult",
                               filterId="ANY"),
@@ -35,7 +69,8 @@ setMethod("filterDetails",
           result@filterDetails[[filterId]]
       })
 
-## Replace a single filterDetails item in the list. 
+## Replace a single filterDetails item in the list.
+#' @export
 setReplaceMethod("filterDetails",
                  signature=signature(result="filterResult",
                                      filterId="character",
@@ -50,6 +85,7 @@ setReplaceMethod("filterDetails",
 ## only a wrapper around summarizeFilter which has to be defined for each
 ## filter class separately unless the default behaviour of simply adding
 ## the filter is sufficient
+#' @export
 setReplaceMethod("filterDetails",
                  signature=signature(result="filterResult",
                                      filterId="character",
@@ -63,6 +99,7 @@ setReplaceMethod("filterDetails",
 
 ## For setOperationFilters we need to strip the information for the
 ## individual filters in the manyFilterResult from the attributes
+#' @export
 setReplaceMethod("filterDetails",
                  signature=signature(result="filterResult",
                                      filterId="character",
@@ -85,6 +122,7 @@ setReplaceMethod("filterDetails",
 ## (and warn or stop) that a particular flowFrame generated a filterResult
 ## allowing us to use it for further processing.
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("==",
           signature=signature(e1="flowFrame",
                               e2="filterResult"),
@@ -96,6 +134,7 @@ setMethod("==",
       })
 
 ## Does S4 do this for us automagically? I don't know!
+#' @export
 setMethod("==",
           signature=signature(e1="filterResult",
                               e2="flowFrame"),
@@ -108,6 +147,7 @@ setMethod("==",
 ## Subset a filterResult by filterId, this only makes real sense for
 ## multipleFilterResults, in the fallback option here we return everything...
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("[[",
           signature=signature(x="filterResult"),
           definition=function(x, i, j, drop=FALSE)

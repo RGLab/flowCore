@@ -11,6 +11,7 @@
 ## ==========================================================================
 # Compose two rectangle gates together into a higher dimensional cube.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("*",
           signature(e1="rectangleGate",
                     e2="rectangleGate"),
@@ -26,6 +27,7 @@ setMethod("*",
 ## ==========================================================================
 ## subsetting by parameter name 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("[",
           signature=signature(x="rectangleGate",
                               i="character"),
@@ -45,6 +47,7 @@ setMethod("[",
       })
 
 
+#' @export
 setMethod("[",
           signature=signature(x="rectangleGate"),
           definition=function(x, i, j, ..., drop=FALSE)

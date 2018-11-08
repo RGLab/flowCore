@@ -13,6 +13,7 @@
 ## For a flowFrame, we provide summary statistics of the raw data for each
 ## parameter.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="flowFrame"),
           definition=function(object, ...)
@@ -25,6 +26,7 @@ setMethod("summary",
 ## ==========================================================================
 ## For a flowSet, we iterate over each frame and provide summaries for those.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="flowSet"),
           definition=function(object, ...)
@@ -39,6 +41,7 @@ setMethod("summary",
 ## Summarize a gateActionItem object. Essentially, this is calling the summary
 ## method for the associated filterResult
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="gateActionItem"),
           definition=function(object){
@@ -63,6 +66,7 @@ setMethod("summary",
 ## For filters we analyse the filterResult and create a new object of class
 ## filterSummary.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="filter"),
           definition=function(object, result, ...)
@@ -84,6 +88,7 @@ setMethod("summary",
 ## For filterReferences, we first resolve the reference to a concrete filter
 ## and call the next applicable method.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="filterReference"),
           definition=function(object, ...)
@@ -96,6 +101,7 @@ setMethod("summary",
 ## for the other filterResult subclasses, and this is only the fallback
 ## option
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="filterResult"),
           definition=function(object, ...)
@@ -110,6 +116,7 @@ setMethod("summary",
 ## Summaries for logicalFilterResult objects create filterSummary objects
 ## with scalar values.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="logicalFilterResult"),
           definition=function(object, ...)
@@ -125,6 +132,7 @@ setMethod("summary",
 ## Summaries for multipleFilterResult objects create filterSummary objects
 ## with vectors
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("summary",
           signature=signature(object="multipleFilterResult"),
           definition=function(object, ...)
@@ -143,6 +151,7 @@ setMethod("summary",
 ## Summaries for manyFilterResult objects create lists of filterSummary
 ## objects.
 ## ---------------------------------------------------------------------------
+#' @export
 setMethod("summary",
           signature=signature(object="manyFilterResult"),
           definition=function(object, ...)
@@ -157,6 +166,7 @@ setMethod("summary",
 ## summary method for filterResultLists. We print all information on the
 ## screen and return an object of class filterSummaryList.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="filterResultList"),
           definition=function(object, verbose=TRUE, ...)
@@ -178,6 +188,7 @@ setMethod("summary",
 ## For subsetFilters we evaluate each component filter separately and then
 ## combine the results.
 ## --------------------------------------------------------------------------
+#' @export
 setMethod("summary",
           signature=signature(object="subsetFilter"),
           definition=function(object,result,...)
@@ -205,6 +216,7 @@ setMethod("summary",
 ## ==========================================================================
 ## We want to can get parameters back OUT of a transform
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="transform"),
           definition=function(object, ...)
@@ -221,6 +233,7 @@ setMethod("summary",
 ## method for the subset of the summary created by the actionItem of the
 ## particular view
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="gateView"),
           definition=function(object, verbose=FALSE)
@@ -238,6 +251,7 @@ setMethod("summary",
 ## The optional argument reference takes another viewID and calculates
 ## summary statistics relative to that population
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("summary",
           signature=signature(object="workFlow"),
           definition=function(object, ID, reference=NULL, verbose=FALSE)

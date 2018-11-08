@@ -126,6 +126,7 @@ setReplaceMethod("[[",
 ## ==========================================================================
 ## Subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("[[",
           signature=signature(x="filterSet",
                               i="character"),
@@ -135,6 +136,7 @@ setMethod("[[",
           })
 
 ## Retrieve the filterReferences
+#' @export
 setMethod("[",
           signature=signature(x="filterSet",
                               i="character"),
@@ -151,6 +153,7 @@ setMethod("[",
 ## ==========================================================================
 ## Performs a topological sort of the filterSet (if possible)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
 setMethod("sort",
           signature=signature(x="filterSet"),
           definition=function(x, decreasing=FALSE, dependencies=FALSE, ...)

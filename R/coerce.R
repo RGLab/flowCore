@@ -14,6 +14,55 @@
 ## R coercion techniques. We use these methods to create the appropriate
 ## filterResults from the results of the various %in% methods.
 ## --------------------------------------------------------------------------
+#' Convert an object to another class
+#' 
+#' 
+#' These functions manage the relations that allow coercing an object to a
+#' given class.
+#' 
+#' 
+#' The function supplied as the third argument is to be called to implement
+#' \code{as(x, to)} when \code{x} has class \code{from}.  Need we add that the
+#' function should return a suitable object with class \code{to}.
+#' 
+#' @name coerce
+#' 
+#' @aliases coerce coerce,filter,logical-method
+#' coerce,filterResult,logical-method coerce,subsetFilter,logical-method
+#' coerce,unionFilter,logical-method coerce,complementFilter,logical-method
+#' coerce,factor,filterResult-method coerce,matrix,filterResult-method
+#' coerce,logical,filterResult-method coerce,gateView,filterResult-method
+#' coerce,numeric,filterResult-method coerce,logicalFilterResult,logical-method
+#' coerce,randomFilterResult,logical-method coerce,environment,flowSet-method
+#' coerce,list,flowSet-method coerce,list,transformList-method
+#' coerce,intersectFilter,logical-method coerce,filter,call-method
+#' coerce,subsetFilter,call-method coerce,intersectFiler,call-method
+#' coerce,unionFilter,call-method coerce,complementFilter,call-method
+#' coerce,filterReference,concreteFilter-method
+#' coerce,filterReference,call-method coerce,formula,filter-method
+#' coerce,character,filter-method coerce,name,filter-method
+#' coerce,call,filter-method coerce,filterSet,list-method
+#' coerce,list,filterSet-method coerce,list,filterResultList-method
+#' coerce,filterResultList,list-method coerce,flowSet,list-method
+#' coerce,flowSet,flowFrame-method coerce,flowFrame,flowSet-method
+#' coerce,flowFrame,filterSet-method coerce,nullParameter,character-method
+#' coerce,parameters,character-method coerce,ratio,character-method
+#' coerce,transform,character-method coerce,unitytransform,character-method
+#' coerce,ellipsoidGate,polygonGate-method
+#' coerce,rectangleGate,polygonGate-method
+#' @param from,to The classes between which \code{def} performs coercion.  (In
+#' the case of the \code{coerce} function, these are objects from the classes,
+#' not the names of the classes, but you're not expected to call \code{coerce}
+#' directly.)
+#' @author F. Hahne, B. Ellis
+#' @keywords methods
+#' @examples
+#' 
+#'  samp1 <- read.FCS(system.file("extdata","0877408774.E07", package="flowCore"))
+#'  samp2 <- read.FCS(system.file("extdata","0877408774.B08",package="flowCore"))
+#'  samples <-list("sample1"=samp1,"sample2"=samp2)
+#'  experiment <- as(samples,"flowSet")
+#' 
 setAs(from="factor", to="filterResult", def=function(from)
       new("multipleFilterResult", filterId="", subSet=from))
 

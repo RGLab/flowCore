@@ -11,6 +11,8 @@
 ## ==========================================================================
 ## flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="flowFrame"),
           definition=function(object)
@@ -30,6 +32,8 @@ setMethod("show",
 ## ==========================================================================
 ## flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="flowSet"),
           definition=function(object)
@@ -56,6 +60,8 @@ setMethod("show",
 ## ==========================================================================
 ## Compensation object
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="compensation"),
           definition=function(object){
@@ -78,6 +84,8 @@ setMethod("show",
 ## ==========================================================================
 ## filter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filter"),
           definition=function(object)
@@ -88,6 +96,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterReference
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterReference"),
           definition=function(object)
@@ -105,6 +115,8 @@ setMethod("show",
 ## ==========================================================================
 ## complementFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="complementFilter"),
           definition=function(object)
@@ -120,6 +132,8 @@ setMethod("show",
 ## ==========================================================================
 ## subsetFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="subsetFilter"),
           definition=function(object)
@@ -135,6 +149,8 @@ setMethod("show",
 ## ==========================================================================
 ## unionFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="unionFilter"),
           definition=function(object)
@@ -153,6 +169,8 @@ setMethod("show",
 ## ==========================================================================
 ## intersectFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="intersectFilter"),
           definition=function(object)
@@ -171,6 +189,8 @@ setMethod("show",
 ## ==========================================================================
 ## transformFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="transformFilter"),
           definition=function(object)
@@ -183,6 +203,8 @@ setMethod("show",
 ## ==========================================================================
 ## transformMap
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature(object="transformMap"),
           definition=function(object)
@@ -197,6 +219,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterResult
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterResult"),
           definition=function(object)
@@ -208,6 +232,8 @@ setMethod("show",
 ## ==========================================================================
 ## manyFilterResult
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="manyFilterResult"),
           definition=function(object)
@@ -223,6 +249,8 @@ setMethod("show",
 ## ==========================================================================
 ## multipleFilterResult
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="multipleFilterResult"),
           definition=function(object)
@@ -238,6 +266,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterResultList
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterResultList"),
           definition=function(object)
@@ -255,6 +285,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterList
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterList"),
           definition=function(object)
@@ -266,6 +298,8 @@ setMethod("show",
 ## ==========================================================================
 ## filters
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
 		signature=signature(object="filters"),
 		definition=function(object)
@@ -277,6 +311,8 @@ setMethod("show",
 ## filtersList
 ## --------------------------------------------------------------------------
 
+#' @export
+
 setMethod("show",
 		signature=signature(object="filtersList"),
 		definition=function(object)
@@ -287,6 +323,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterSet
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterSet"),
           definition=function(object)
@@ -303,6 +341,8 @@ setMethod("show",
 ## ==========================================================================
 ## filterSummary
 ## --------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="filterSummary"),
           definition=function(object)
@@ -316,6 +356,8 @@ setMethod("show",
       })
 
 ## A bit mor control over the output (identation)
+#' @export
+
 setMethod("print",
           signature=signature(x="filterSummary"),
           definition=function(x, indent=0, verbose=TRUE)
@@ -335,6 +377,8 @@ setMethod("print",
 ## ==========================================================================
 ## expressionFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="expressionFilter"),
           definition=function(object)
@@ -352,6 +396,8 @@ setMethod("show",
 ## ==========================================================================
 ## ellipsoidGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="ellipsoidGate"),
           definition=function(object)
@@ -371,6 +417,8 @@ setMethod("show",
 ## ==========================================================================
 ## kmeansFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="kmeansFilter"),
           definition=function(object)
@@ -394,6 +442,8 @@ setMethod("show",
 ## ==========================================================================
 ## norm2Filter
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="norm2Filter"),
           definition=function(object)
@@ -418,6 +468,8 @@ setMethod("show",
 ## ==========================================================================
 ## polygonGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="polygonGate"),
           definition=function(object)
@@ -439,6 +491,8 @@ setMethod("show",
 ## ==========================================================================
 ## quadGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="quadGate"),
           definition=function(object)
@@ -463,6 +517,8 @@ setMethod("show",
 ## ==========================================================================
 ## rectangleGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("show",
           signature=signature(object="rectangleGate"),
           definition=function(object)
@@ -490,6 +546,8 @@ setMethod("show",
 ## ==========================================================================
 ## sampleFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="sampleFilter"),
           function(object)
@@ -507,6 +565,8 @@ setMethod("show",
 ## ==========================================================================
 ## timeFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="timeFilter"),
           definition=function(object)
@@ -527,6 +587,8 @@ setMethod("show",
 ## ==========================================================================
 ## boundaryFilter
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="boundaryFilter"),
           definition=function(object)
@@ -548,6 +610,8 @@ setMethod("show",
 ## workFlow. Recursively print all views in the workflow tree adding
 ## indentation
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="workFlow"),
           definition=function(object){
@@ -584,6 +648,8 @@ setMethod("show",
 ## view. The print method allows more fine-grained control over the output,
 ## e.g., indentation
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("print",
           signature=signature(x="view"),
           definition=function(x, indent=0, parent=TRUE)
@@ -609,6 +675,8 @@ setMethod("print",
           }
       })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="view"),
           definition=function(object) print(object))
@@ -620,6 +688,8 @@ setMethod("show",
 ## compensateActionItem. The print method allows more fine-grained control
 ## over the output, e.g., indentation
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("print",
           signature=signature(x="compensateActionItem"),
           definition=function(x, indent=0, parent=TRUE){
@@ -635,6 +705,8 @@ setMethod("print",
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
               })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="compensateActionItem"),
           definition=function(object) print(object))
@@ -645,6 +717,8 @@ setMethod("show",
 ## gateActionItem. The print method allows more fine-grained control
 ## over the output, e.g., indentation
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("print",
           signature=signature(x="gateActionItem"),
           definition=function(x, indent=0, parent=TRUE){
@@ -660,6 +734,8 @@ setMethod("print",
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
               })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="gateActionItem"),
           definition=function(object) print(object))
@@ -670,6 +746,8 @@ setMethod("show",
 ## transformActionItem. The print method allows more fine-grained control
 ## over the output, e.g., indentation
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("print",
           signature=signature(x="transformActionItem"),
           definition=function(x, indent=0, parent=TRUE){
@@ -685,6 +763,8 @@ setMethod("print",
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
               })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="transformActionItem"),
           definition=function(object) print(object))
@@ -697,6 +777,8 @@ setMethod("show",
 ## normalizeActionItem. The print method allows more fine-grained control
 ## over the output, e.g., indentation
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("print",
           signature=signature(x="normalizeActionItem"),
           definition=function(x, indent=0, parent=TRUE){
@@ -712,6 +794,8 @@ setMethod("print",
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
               })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="normalizeActionItem"),
           definition=function(object) print(object))
@@ -722,6 +806,8 @@ setMethod("show",
 ## subsettingActionItem. The print method allows more fine-grained control
 ## over the output, e.g., indentation
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+
 setMethod("print",
           signature=signature(x="subsettingActionItem"),
           definition=function(x, indent=0, parent=TRUE){
@@ -737,6 +823,8 @@ setMethod("print",
                       "' (ID=",identifier(x@parentView), ")\n", sep="")
               })
 
+#' @export
+
 setMethod("show",
           signature=signature(object="subsettingActionItem"),
           definition=function(object) print(object))
@@ -745,6 +833,8 @@ setMethod("show",
 ## ==========================================================================
 ## fcNullReference
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="fcNullReference"),
           definition=function(object) cat("NULL reference\n"))
@@ -754,6 +844,8 @@ setMethod("show",
 ## ==========================================================================
 ## fcReference
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="fcReference"),
           definition=function(object)
@@ -770,6 +862,8 @@ setMethod("show",
 ## ==========================================================================
 ## transform
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="transform"),
           definition=function(object)
@@ -777,6 +871,8 @@ setMethod("show",
           cat("transform object '", identifier(object), "'\n", sep="")
       })
 
+
+#' @export
 
 setMethod("show",
           signature=signature(object="unitytransform"),
@@ -791,6 +887,8 @@ setMethod("show",
 ## ==========================================================================
 ## subsetting
 ## ---------------------------------------------------------------------------
+#' @export
+
 setMethod("show",
           signature=signature(object="subsetting"),
           definition=function(object)
