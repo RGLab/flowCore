@@ -1763,10 +1763,12 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     chunk_size <- (2^30)%/%bitwidth
     mat <- as(t(mat), what)
     n_chunks <- ceiling(length(mat)/chunk_size)
-    lapply(1:n_chunks, function(idx) 
-           writeBin(mat[(((idx-1) * chunk_size) + 1):
-                             min(idx * chunk_size, length(mat))],
-                    con, size=bitwidth, endian=endian))
+    for (idx in seq_len(n_chunks)){
+      writeBin(mat[(((idx-1) * chunk_size) + 1):
+                   min(idx * chunk_size, length(mat))],
+                   con, size=bitwidth, endian=endian)
+    }
+
     
 	  writeChar("00000000", con, eos=NULL)
     filename
