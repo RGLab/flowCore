@@ -297,3 +297,14 @@ test_that("test diverse Bitwidths", {
       keyword(fr)[["FILENAME"]] <- "setToDummy"
       expect_equal(expectRes[["read.FCS"]][["diverseBitwidths"]], digest(fr))
     })
+
+test_that("handle > 2^32-1 bytes", {
+  fr <- flowFrame(matrix(data = rnorm(3e8), nrow = 1e8, ncol =3, dimnames = list(NULL, c("A", "B", "C"))))
+  expect_gt(object.size(exprs(fr)), 2^31-1)
+  tmp <- tempfile()
+  write.FCS(fr, tmp, what = "double")
+  set.seed(1)
+  lines <- sort(sample(1:1e8, 1e3))
+  fr1 <- read.FCS(tmp, which.lines = lines)
+  expect_equivalent(exprs(fr)[lines,], exprs(fr1))
+})
