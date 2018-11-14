@@ -1756,9 +1756,19 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     on.exit(close(con))
     writeFCSheader(con, offsets)
     writeChar(ctxt, con, eos=NULL)
-    writeBin(as(t(mat), what), con, size=types[what, "bitwidth"],
-             endian=endian)
-	writeChar("00000000", con, eos=NULL)
+    
+    # Break writes of data in to 2^30 bytes, to stay under 
+    # writeBin limit of 2^31-1
+    bitwidth <- types[what, "bitwidth"]
+    chunk_size <- (2^30)%/%bitwidth
+    mat <- as(t(mat), what)
+    n_chunks <- ceiling(length(mat)/chunk_size)
+    lapply(1:n_chunks, function(idx) 
+           writeBin(mat[(((idx-1) * chunk_size) + 1):
+                             min(idx * chunk_size, length(mat))],
+                    con, size=bitwidth, endian=endian))
+    
+	  writeChar("00000000", con, eos=NULL)
     filename
 }
 

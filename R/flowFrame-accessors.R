@@ -516,6 +516,7 @@ setMethod("featureNames",
           object@parameters$name
           )
 #' @rdname markernames
+#' @export
 setGeneric("markernames",function(object,...) standardGeneric("markernames"))
 #' get or update the marker names 
 #' 
