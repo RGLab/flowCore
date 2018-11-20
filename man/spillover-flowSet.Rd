@@ -54,8 +54,10 @@ then be used to determine a spillover matrix for use with
 When matching stain channels in \code{x} with the compensation controls, we
 provide a few options. If \code{ordered}, we assume the ordering of the
 channels in the flowSet object is the same as the ordering of the
-compensation-control samples. IF \code{regexpr}, we use a regular expression
-to match the channel names with the filenames of the compensation controls.
+compensation-control samples. If \code{regexpr}, we use a regular expression
+to match the channel names with the names of the each of the compensation control
+\code{flowFrame}s (that is, \code{sampleNames(x)}, which will typically be the 
+filenames passed to \code{\link{read.FCS}}).
 By default, we must "guess" based on the largest statistic for the
 compensation control (i.e., the row).
 }

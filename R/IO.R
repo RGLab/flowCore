@@ -248,7 +248,7 @@ read.FCS <- function(filename,
     .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for disk-based data structure.")
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
-        stop("'filename' must be character skalar")
+        stop("'filename' must be character scalar")
     if(!file.exists(filename))
         stop(paste("'", filename, "' is not a valid file", sep=""))
     con <- file(filename, open="rb")

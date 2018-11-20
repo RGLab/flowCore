@@ -715,8 +715,10 @@ setMethod("rbind2",
 #' When matching stain channels in \code{x} with the compensation controls, we
 #' provide a few options. If \code{ordered}, we assume the ordering of the
 #' channels in the flowSet object is the same as the ordering of the
-#' compensation-control samples. IF \code{regexpr}, we use a regular expression
-#' to match the channel names with the filenames of the compensation controls.
+#' compensation-control samples. If \code{regexpr}, we use a regular expression
+#' to match the channel names with the names of the each of the compensation control
+#' \code{flowFrame}s (that is, \code{sampleNames(x)}, which will typically be the 
+#' filenames passed to \code{\link{read.FCS}}).
 #' By default, we must "guess" based on the largest statistic for the
 #' compensation control (i.e., the row).
 #' 
@@ -831,15 +833,17 @@ setMethod("spillover",
               # flowSet object is the same as the ordering of the
               # compensation-control samples.
               # Another option is to use a regular expression to match the
-              # channel names with the filenames of the compensation controls.
+              # channel names with the sampleNames of the flowSet.
               if (stain_match == "intensity") {
                 channel_order <- NA
               } else if (stain_match == "ordered") {
                 channel_order <- seq_along(sampleNames(x))[-unstained]
               } else if (stain_match == "regexpr") {
-                channel_order <- sapply(cols, grep, x = sampleNames(x), fixed = TRUE)
-                if (!all(sapply(channel_order, length) == 1)) {
-                  stop("Multiple stains match to a common compensation-control filename",
+                channel_order <- sapply(cols, grep, x = sampleNames(x)[-unstained], fixed = TRUE)
+                # Clip out those channels that do not match to a name
+                matched <- channel_order[sapply(channel_order, length) != 0]
+                if(anyDuplicated(matched)) {
+                  stop("Multiple stains match to a common compensation-control name",
                        call. = FALSE)
                 }
               }
@@ -893,9 +897,9 @@ setMethod("spillover",
                     with(density_stain, x[which.max(y)])
                   }, USE.NAMES = TRUE)
                   modes
-                })
+                })[,channel_order]
               } else {
-                inten <- fsApply(x, each_col, method)[, cols]
+                inten <- fsApply(x, each_col, method)[, cols][,channel_order]
               }
 
               # background correction
