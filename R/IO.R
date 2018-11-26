@@ -1876,7 +1876,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
             filename[f] <- paste(filename[f], "fcs", sep=".")
         write.FCS(x[[f]], filename=file.path(outdir, filename[f]), ...)
     }
-    sampleNames(x) <- filename
+    sampleNames(x) <- filename#force the sampleNames (thus rownames of Pdata) to be identical to the fcs filenames
     pData(x)$FCS_File <- filename
     write.AnnotatedDataFrame(phenoData(x), file=file.path(outdir, "annotation.txt"))
     outdir
