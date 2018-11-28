@@ -839,7 +839,7 @@ setMethod("spillover",
               } else if (stain_match == "ordered") {
                 channel_order <- seq_along(sampleNames(x))[-unstained]
               } else if (stain_match == "regexpr") {
-                channel_order <- sapply(cols, grep, x = sampleNames(x)[-unstained], fixed = TRUE)
+                channel_order <- sapply(cols, grep, x = sampleNames(x), fixed = TRUE)
                 # Clip out those channels that do not match to a name
                 matched <- channel_order[sapply(channel_order, length) != 0]
                 if(anyDuplicated(matched)) {
@@ -897,9 +897,9 @@ setMethod("spillover",
                     with(density_stain, x[which.max(y)])
                   }, USE.NAMES = TRUE)
                   modes
-                })[,channel_order]
+                })
               } else {
-                inten <- fsApply(x, each_col, method)[, cols][,channel_order]
+                inten <- fsApply(x, each_col, method)[, cols]
               }
 
               # background correction
@@ -918,6 +918,13 @@ setMethod("spillover",
                        "a single stain matches to several multiple controls. ",
                        call. = FALSE)
                 }
+              }else{
+                # Just bump-down the channel_order to account for
+                # the removal of the unstained row
+                channel_order <- channel_order - (channel_order > unstained)
+                # Then reverse any shuffling so the rows are in the same
+                # order as the channels for symmetry
+                inten <- inten[order(channel_order),]
               }
               rownames(inten) <- colnames(inten)
               inten
