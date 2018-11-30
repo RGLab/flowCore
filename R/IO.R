@@ -1528,9 +1528,12 @@ writeFCSheader <- function(con, offsets)
 
 
 
-## ==========================================================================
-## collapse the content of the description slot into a character vector
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' collapse and concatenate the content of the description slot into a single character string
+#' @param x flowFrame
+#' @examples 
+#' fr <- GvHD[[1]]
+#' collapseDesc(fr)
+#' @noRd 
 collapseDesc <- function(x, delimiter = "\\")
 {
     d <- description(x)
@@ -1546,6 +1549,32 @@ collapseDesc <- function(x, delimiter = "\\")
       d[[paste0("flowCore_$P", i, "Rmax")]] <- NULL
     }
   }
+  d <- collapse_desc(d)
+  d <- lapply(d, function(y){
+        double_delimiter <- paste0(delimiter, delimiter)
+        
+        #now  we escape every single delimiter character occurances(include multi-delimiter string) by doubling it
+        gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
+    
+  })
+  paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
+						  delimiter, collapse="", sep=""), to="latin1",
+				  sub=" "), sep="")
+  
+}
+
+#' Coerce the list of the keywords into a character 
+#' Also flattern spillover matrix into a string
+#' 
+#' @param d a named list of keywords
+#' @param collapse.spill whether to flattern spillover matrix to a string
+#' @return a list of strings
+#' @examples 
+#' fr <- GvHD[[1]]
+#' collapse_desc(keyword(fr))
+#' @export 
+collapse_desc <- function(d, collapse.spill = TRUE)
+{
 	d <- lapply(d, function(y){
 				if(length(y)==0)
 					return(" ")
@@ -1557,34 +1586,31 @@ collapseDesc <- function(x, delimiter = "\\")
 					else{
 
 					  y <- sub("^$"," ",y)
-					  double_delimiter <- paste0(delimiter, delimiter)
-
-                      #now  we escape every single delimiter character occurances(include multi-delimiter string) by doubling it
-					  gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
-          
 					}
 
 				}
 
-
+  
 			})
     d <- d[order(names(d))]
 
-  for(spillName in .spillover_pattern)
+  if(collapse.spill)
   {
-     mat <-  d[[spillName]]
-     if(!is.null(mat))
-     {
-  		rNum <- as.character(nrow(mat))
-  		clNames <- paste(colnames(mat),sep=",")
-  		vec <- paste(c(t(mat)),sep=",",collapse=",")
-	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
-     }
-	}
-    paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
-                                 delimiter, collapse="", sep=""), to="latin1",
-                      sub=" "), sep="")
-
+      
+    for(spillName in .spillover_pattern)
+    {
+       mat <-  d[[spillName]]
+       if(!is.null(mat))
+       {
+    		rNum <- as.character(nrow(mat))
+    		clNames <- paste(colnames(mat),sep=",")
+    		vec <- paste(c(t(mat)),sep=",",collapse=",")
+  	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
+       }
+    }
+    
+  }
+    d
 }
 
 
