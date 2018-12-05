@@ -2,6 +2,10 @@
 
 NEWS
 =====
+`spillover_ng` has been moved to the `flowStats` package to eliminate a dependency
+due needed for pregating. `spillover_match` has been added in `flowCore` to still provide the simplified
+matching functionality.
+
 We have a new spillover method `spillover_ng` that provides a simplified API. Matching
 between single stained controls and channels is provided via a csv file that maps filenames to channels.
 
