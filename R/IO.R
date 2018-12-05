@@ -1564,12 +1564,13 @@ collapseDesc <- function(x, delimiter = "\\")
 }
 
 #' Coerce the list of the keywords into a character 
-#' Also flattern spillover matrix into a string
+#' Also flatten spillover matrix into a string
 #' 
 #' @param d a named list of keywords
-#' @param collapse.spill whether to flattern spillover matrix to a string
+#' @param collapse.spill whether to flatten spillover matrix to a string
 #' @return a list of strings
-#' @examples 
+#' @examples
+#' data(GvHD)
 #' fr <- GvHD[[1]]
 #' collapse_desc(keyword(fr))
 #' @export 

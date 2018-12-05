@@ -162,10 +162,10 @@ setGeneric("decompensate",
 			  	standardGeneric("decompensate"))
 
 ## ================================
-## Generic for new spillover method
+## Generic for spillover_match
 ## --------------------------------
 #' @export
-setGeneric("spillover_ng", function(x,...) standardGeneric("spillover_ng"))
+setGeneric("spillover_match", function(x,...) standardGeneric("spillover_match"))
 
 ## ===========================================================================
 ## Generics for apply-like methods

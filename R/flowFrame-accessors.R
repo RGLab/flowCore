@@ -97,6 +97,7 @@ subsetKeywords <- function(x, j)
 #' @param par.id a vector of integer specifies the parameter ids to be perserved
 #' @return a filtered list 
 #' @examples 
+#' data(GvHD)
 #' fr <- GvHD[[1]]
 #' kw <- description(fr)
 #' kw <- filter_keywords(kw, c(1,3,5))
@@ -688,10 +689,10 @@ setReplaceMethod("colnames",
 #'    package="flowCore"),
 #'  full.name=TRUE)[1]
 #' f = read.FCS(f)
-#' spill = read.csv(list.files(system.file("extdata",
-#'        "compdata",
+#' spill = read.csv(system.file("extdata",
+#'        "compdata", "compmatrix",
 #'         package="flowCore"), 
-#'    full.name=TRUE)[1],sep="\t",skip=2)
+#'         ,sep="\t",skip=2)
 #' colnames(spill) = gsub("\\.","-",colnames(spill))
 #' f.comp = compensate(f,spill)
 #' f.decomp = decompensate(f.comp,as.matrix(spill))

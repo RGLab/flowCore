@@ -18,6 +18,7 @@ a filtered list
 filter out $PnX keywords
 }
 \examples{
+data(GvHD)
 fr <- GvHD[[1]]
 kw <- description(fr)
 kw <- filter_keywords(kw, c(1,3,5))

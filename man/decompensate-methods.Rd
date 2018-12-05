@@ -31,10 +31,10 @@ f = list.files(system.file("extdata",
    package="flowCore"),
  full.name=TRUE)[1]
 f = read.FCS(f)
-spill = read.csv(list.files(system.file("extdata",
-       "compdata",
+spill = read.csv(system.file("extdata",
+       "compdata", "compmatrix",
         package="flowCore"), 
-   full.name=TRUE)[1],sep="\\t",skip=2)
+        ,sep="\\t",skip=2)
 colnames(spill) = gsub("\\\\.","-",colnames(spill))
 f.comp = compensate(f,spill)
 f.decomp = decompensate(f.comp,as.matrix(spill))

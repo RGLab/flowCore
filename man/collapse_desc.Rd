@@ -3,23 +3,24 @@
 \name{collapse_desc}
 \alias{collapse_desc}
 \title{Coerce the list of the keywords into a character 
-Also flattern spillover matrix into a string}
+Also flatten spillover matrix into a string}
 \usage{
 collapse_desc(d, collapse.spill = TRUE)
 }
 \arguments{
 \item{d}{a named list of keywords}
 
-\item{collapse.spill}{whether to flattern spillover matrix to a string}
+\item{collapse.spill}{whether to flatten spillover matrix to a string}
 }
 \value{
 a list of strings
 }
 \description{
 Coerce the list of the keywords into a character 
-Also flattern spillover matrix into a string
+Also flatten spillover matrix into a string
 }
 \examples{
+data(GvHD)
 fr <- GvHD[[1]]
 collapse_desc(keyword(fr))
 }
