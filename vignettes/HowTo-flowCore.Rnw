@@ -7,7 +7,6 @@
 %\VignetteKeywords{}
 %\VignettePackage{flowCore}
 \documentclass[11pt]{article}
-
 \usepackage{times}
 \usepackage{hyperref}
 \usepackage[authoryear,round]{natbib}
@@ -37,21 +36,8 @@
 \author{N. Le Meur F. Hahne B. Ellis P. Haaland}
 
 \begin{document}
+%\SweaveOpts{concordance=TRUE}
 
-<<include=FALSE>>=
-library(knitr)
-opts_chunk$set(
-concordance=TRUE
-)
-@
-
-
-<<include=FALSE>>=
-library(knitr)
-opts_chunk$set(
-concordance=TRUE
-)
-@
 
 
 <<echo=FALSE, include=FALSE>>=
@@ -84,7 +70,7 @@ statistical software R in conjunction with the Bioconductor Project
 fills all of these requirements. Consequently we have developed a
 Bioconductor package that we call \Rpackage{flowCore}. The
 \Rpackage{flowCore} package is not intended to be a complete analysis
-package for FCM data, rather, we see it as providing a clear object
+package for FCM data. Rather, we see it as providing a clear object
 model and a collection of standard tools that enable R as an
 informatics research platform for flow cytometry. One of the important
 issues that we have addressed in the \Rpackage{flowCore} package is
@@ -98,7 +84,7 @@ flowCore to be a solid foundation for future development of new
 methods to attack the many interesting open research questions in FCM
 data analysis.\\
 
-\noindent \textbf{Methods} We propose a variety different data
+\noindent \textbf{Methods} We propose a variety of data
 structures. We have implemented the classes and methods in the
 Bioconductor package flowCore.  We illustrate their use with X case
 studies.\\
@@ -140,16 +126,17 @@ as well as a primary source of variation in clinical tests, and
 investigators have traditionally relied on intuition rather than
 standardized statistical inference
 \citep{Bagwell2004,Braylan2004,Parks1997,Suni2003}. In the development
-of standards in high throughput FCM, few progress has been done in
-term of Open Source software. In this article we propose R data
+of standards in high throughput FCM, little progress has been made in
+terms of Open Source software. In this article we propose R data
 structures to handle flow cytometry data through the main steps of
 preprocessing: compensation, transformation, filtering.
 
-The aim is to merge both prada and rflowcyt \citep{LeMeur2006} into
-one core package which is compliant with the data exchange standards
-that are currently developed in the community \citep{Spidlen2006}.
+The aim is to merge both \Rpackage{prada} and \Rpackage{rflowcyt} 
+\citep{LeMeur2006} into one core package which is compliant with
+the data exchange standards that are currently developed in the 
+community \citep{Spidlen2006}.
 
-Visualization as well as quality control will than be part of the
+Visualization as well as quality control will then be part of the
 utility packages that depend on the data structures defined in the
 flowCore package.
 
@@ -165,38 +152,38 @@ users.
 \subsection{The \Rclass{flowFrame} Class}
 
 The basic unit of manipulation in \Rpackage{flowCore} is the
-\Rclass{flowFrame}, which corresponds roughly with a single
+\Rclass{flowFrame}, which corresponds roughly to a single
 ``FCS'' file exported from the flow cytometer's acquisition
 software. At the moment we support FCS file versions 2.0
-through 3.0, and we expect to support FCS4/ACS1 as soon as
+through 3.1, and we expect to support FCS4/ACS1 as soon as
 the specification has been ratified.
 
 \subsubsection{Data elements}
 
-The primary elements of the \Robject{flowFrame} are the
+The primary elements of the \Rclass{flowFrame} are the
 \Robject{exprs} and \Robject{parameters} slots, which
 contain the event-level information and column metadata
 respectively. The event information, stored as a single
 matrix, is accessed and manipulated via the
 \Rfunction{exprs()} and \Rfunction{exprs<-} methods,
-allowing \Robject{flowFrame}s to be stitched together if
+allowing \Rclass{flowFrame}s to be stitched together if
 necessary (for example, if the same tube has been collected
 in two acquisition files for memory reasons).
 
 The \Robject{parameters} slot is an
 \Rclass{AnnotatedDataFrame} that contains information
-derived from an FCS file's ``\$P<n>'' keywords, which
+derived from an FCS file's ``\$Pn'' keywords, which
 describe the detector and stain information. The entire list
 is available via the \Rfunction{parameter()} method, but
 more commonly this information is accessed through the
 \Rfunction{names}, \Rfunction{featureNames} and
 \Rfunction{colnames} methods. The \Rfunction{names} function
-returns a concatenated version of \Rfunction{names} and
+returns a concatenated version of \Rfunction{colnames} and
 \Rfunction{featureNames} using a format similar to the one
 employed by most flow cytometry analysis software. The
 \Rfunction{colnames} method returns the detector names,
 often named for the fluorochrome detected, while the
-\Rfunction{featureNames} methods returns the description
+\Rfunction{featureNames} method returns the description
 field of the parameters, which will typically be an
 identifier for the antibody.
 
@@ -207,51 +194,68 @@ keywords that add more information about an experiment. In
 the case of plate-based experiments, there are also one or
 more keywords that identify the specific well on the plate.
 
-Most vendor software also include some sort of unique
-identifier for the file itself. The specialized methods
+Most vendor software also includes some sort of unique
+identifier for the file itself. The specialized method
 \Rfunction{identifier} attempts to locate an appropriate
 globally unique identifier that can be used to uniquely
 identify a frame. Failing that, this method will return the
 original file name offering some assurance that this frame
 is at least unique to a particular session.
 
-\subsubsection{Reading a \Robject{flowFrame}}
+\subsection{The \Rclass{flowSet} Class}
+
+Most experiments consist of several \Rclass{flowFrame} objects, which
+are organized using a \Rclass{flowSet} object. This class provides
+a mechanism for efficiently hosting the \Rclass{flowFrame}s with
+minimal copying. This reduces memory requirements and ensures
+that experimental metadata stay properly attached to their
+corresponding \Rclass{flowFrame}s.
+
+\section{Reading and Manipulating \Rpackage{flowCore} Data Classes}
+
+\subsection{Reading an FCS file into a \Rclass{flowFrame}}
 
 FCS files are read into the R environment via the
 \Rfunction{read.FCS} function using the standard connection
 interface---allowing for the possibility of accessing FCS
 files hosted on a remote resource as well as those that have
 been compressed or even retrieved as a blob from a database
-interface. FCS files (version 2.0 and 3.0) and LMD (List
+interface. FCS files (version 2.0, 3.0, and 3.1) and LMD (List
 Mode Data) extensions are currently supported.
 
 There are also several immediate processing options
 available in this function, the most important of which is
-the \Rfunction{transformation} parameter, which can either
-``linearize'' (the default) or ``linearize-with-PnG-scaling'' 
+the \Rfunction{transformation} parameter, which can
+``linearize'' (the default), ``linearize-with-PnG-scaling'', 
 or ``scale'' our data. To see how this works, 
 first we will examine an FCS file
 without any transformation at all:
 
 <<ReadFiles, echo=TRUE, results='markup'>>=
-file.name <- system.file("extdata","0877408774.B08", package="flowCore")
+file.name <- system.file("extdata","0877408774.B08", 
+                         package="flowCore")
 x <- read.FCS(file.name, transformation=FALSE)
 summary(x)
 @
 
 As we can see, in this case the values from each parameter
 seem to run from $0$ to $1023$ ($2^{10}-1$).  However,
-inspection of the ``exponentiation'' keyword (\$P<n>E)
-reveals that some of the parameters (3 and 4) have been
-stored in the format of the form $a\times{10^{x/R}}$ where
-$a$ is given by the first element of the string.
+inspection of the documentation of the ``exponentiation'' 
+keyword (\$PnE) reveals that some of the parameters (3 and 4) 
+have been stored in a format specifying that the channel values
+should be scaled as $y=f_2\times 10^{f_1\cdot x/R}$ where
+$x$ is the original channel value, $y$ is the scaled value,
+$f_1$ and $f_2$ are given respectively by the first and second
+element of the value of the \$PnE key and $R$ is the channel
+range given by the value of the \$PnR key. The special \$PnE value
+of ``$0,0$'' corresponds to a scale that is already linear. 
 
-<<SearchKeywords, echo=TRUE,results='markup'>>=
+<<SearchKeywords, echo=TRUE, results='markup'>>=
 keyword(x,c("$P1E", "$P2E", "$P3E", "$P4E"))
 @
 
 The default ``linearize'' transformation option will convert these to,
-effectively, have a ``\$P<n>E'' of ``0,0'':
+effectively, have a \$PnE value of ``$0,0$'':
 
 <<PrintSummary, echo=TRUE, results='markup'>>=
 summary(read.FCS(file.name))
@@ -259,8 +263,8 @@ summary(read.FCS(file.name))
 
 The ``linearize-with-PnG-scaling'' option will perform the previous
 transformation and it will also apply a ``division by gain''
-to pamameters stored on linear scale with specified gain.
-The gain is specified in the \$PnG keywords. This option has been introduced
+to parameters stored on linear scale with specified gain.
+The gain is specified in the \$PnG keyword. This option has been introduced
 as part of Gating-ML 2.0 compliance. 
 
 Finally, the ``scale'' option will both linearize values as
@@ -281,13 +285,13 @@ parameter, which will convert the parameter names into more
 read.FCS(file.name,alter.names=TRUE) 
 @
 
-When only a particular subset of parameters is desired the
+When only a particular subset of parameters is desired, the
 \Rfunction{column.pattern} parameter allows for the specification of a
 regular expression and only parameters that match the regular
 expression will be included in the frame. For example, to include on
 the Height parameters:
 
-<<RedFiles3, echo=TRUE, results='markup'>>=
+<<ReadFiles3, echo=TRUE, results='markup'>>=
 x <- read.FCS(file.name, column.pattern="-H") 
 x 
 @
@@ -297,55 +301,30 @@ x
 
 Finally, only a sample of lines can be read in case you need a quick
 overview of a large series of files.
-<<RedFiles4, echo=TRUE, results='markup'>>=
+<<ReadFiles4, echo=TRUE, results='markup'>>=
 lines <- sample(100:500, 50)
 y <- read.FCS(file.name, which.lines = lines) 
 y 
 @
 
-\subsubsection{Visualizing a \Rclass{flowFrame}}
-
-Much of the more sophisticated visualization of \Rclass{flowFrame} and
-\Rclass{flowSet} objects, including an interface to the
-\Rpackage{ggplot2} graphics system is implemented by the
-\Rpackage{ggcyto} package, also included as part of
-Bioconductor. Here, we will only introduce the \Rfunction{autoplot} function. 
-See vignettes of \Rpackage{ggcyto} for more examples of how to visualize flow data.
-
-To create a bivariate density plot:
-<<Plot2, echo=TRUE, results='hide'>>=
-library(ggcyto)
-autoplot(x, "FL1-H", "FL2-H")
-@
-
-To get a univariate densityplot:
-<<plot3, echo=TRUE, results='hide'>>=
-autoplot(x, "FL1-H")
-@
-
-\subsection{The \Rclass{flowSet} Class}
-
-Most experiments consist of several \Rclass{flowFrame} objects, which
-are organized using a \Rclass{flowSet} object. This class provides a
-mechanism for efficiently hosting the \Rclass{flowFrame} objects with
-minimal copying, reducing memory requirements, as well as ensuring
-that experimental metadata stays properly to the appropriate
-\Rclass{flowFrame} objects.
-
-\subsubsection{Creating a \Rclass{flowSet}}
+\subsection{Creating a \Rclass{flowSet}}
 
 To facilitate the creation of \Rclass{flowSet} objects from a variety
 of sources, we provide a means to coerce \Rclass{list} and
 \Rclass{environment} objects to a \Rclass{flowSet} object using the
 usual coercion mechanisms. For example, if we have a directory
-containing FCS files we can read in a list of those files and create a
+containing FCS files, we can read in a list of those files and create a
 \Rclass{flowSet} out of them:
 
 <<Frames1, echo=TRUE, results='markup'>>=
-frames <- lapply(dir(system.file("extdata", "compdata", "data",
-                           package="flowCore"), full.names=TRUE), 
-                 read.FCS)
-as(frames, "flowSet")
+fcs.dir <- system.file("extdata",
+                       "compdata",
+                       "data",
+                       package="flowCore")
+frames <- lapply(dir(fcs.dir, full.names=TRUE), read.FCS)
+fs <- as(frames, "flowSet")
+fs
+sampleNames(fs)
 @
 
 Note that the original list is unnamed and that the resulting sample
@@ -358,6 +337,7 @@ extract the ``SAMPLE ID'' keyword from each frame:
 names(frames) <- sapply(frames, keyword, "SAMPLE ID")
 fs <- as(frames, "flowSet")
 fs
+sampleNames(fs)
 @
 
 \subsubsection{Working with experimental metadata}
@@ -379,23 +359,22 @@ pData(phenoData(fs))
 
 Note that we have used the \Rclass{flowSet}-specific iterator,
 \Rfunction{fsApply}, which acts much like \Rfunction{sapply} or
-\Rfunction{lapply}. Additionally, we should also note that the
-\Rfunction{phenoData} data frame \textbf{must} have row names that
-correspond to the original names used to create the \Rclass{flowSet}.
+\Rfunction{lapply} and will be discussed shortly. 
+Additionally, we should also note that the \Rfunction{phenoData} 
+data frame \textbf{must} have row names that correspond to the 
+original names used to create the \Rclass{flowSet}.
 
-\subsubsection{Bringing it all together: \Rfunction{read.flowSet}}
-
-Much of the functionality described above has been packaged into the
-\Rfunction{read.flowSet} convenience function. In it's simplest
-incarnation, this function takes a \Rfunction{path}, that defaults to
+\subsubsection{Reading multiple FCS files with \Rfunction{read.FlowSet}}
+The process of reading multiple FCS files in to a \Rclass{flowSet} 
+is simplified by using the \Rfunction{read.flowSet} function. In its simplest
+incarnation, this function takes a \Rfunction{path}, which defaults to
 the current working directory, and an optional \Rfunction{pattern}
 argument that allows only a subset of files contained within the
 working directory to be selected. For example, to read a
-\Rclass{flowSet} of the files read in by \Robject{frame} above:
+\Rclass{flowSet} of the files read in as \Robject{frames} above:
 
 <<ReadFlowSet, echo=TRUE,results='markup'>>=
-read.flowSet(path = system.file("extdata", "compdata", "data", 
-             package="flowCore"))
+fs <- read.flowSet(path = fcs.dir)
 @
 
 \Rfunction{read.flowSet} will pass on additional arguments meant for
@@ -420,7 +399,7 @@ processing:
 \end{description}
 
 To recreate the \Rclass{flowSet} that we created by hand from the last
-section we can use \Rfunction{read.flowSet}s advanced functionality:
+section we can use \Rfunction{read.flowSet}'s advanced functionality:
 
 <<ReadFowSet2, echo=TRUE,results='markup'>>=
 fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
@@ -429,7 +408,6 @@ fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
 fs
 pData(phenoData(fs))
 @
-
 
 \subsubsection{Manipulating a \Rclass{flowSet}}
 
@@ -445,7 +423,7 @@ the usual way using the \Rfunction{[[} or \Rfunction{\$} extraction
   \Rfunction{sapply} or \Rfunction{lapply} with two extra options. The
   first argument, \Robject{simplify}, which defaults to
   \Robject{TRUE}, instructs \Rfunction{fsApply} to attempt to simplify
-  it's results much in the same way as \Rfunction{sapply}. The primary
+  its results much in the same way as \Rfunction{sapply}. The primary
   difference is that if all of the return values of the iterator are
   \Rclass{flowFrame} objects, \Rfunction{fsApply} will create a new
   \Rclass{flowSet} object to hold them. The second argument,
@@ -476,37 +454,218 @@ first case because \Rfunction{each\_col} and \Rfunction{each\_row} are
 methods and have been defined to work on \Rclass{flowFrame} objects by
 first extracting the intensity data.
 
+
+\section{Visualizing Flow Cytometry Data}
+
+Much of the more sophisticated visualization of \Rclass{flowFrame} and
+\Rclass{flowSet} objects, including an interface to the
+\Rpackage{ggplot2} graphics system is implemented by the
+\Rpackage{ggcyto} package, also included as part of
+Bioconductor. Here, we will only introduce the \Rfunction{autoplot} function
+for the purpose of demonstrating \Rpackage{flowCore} operations. 
+See the vignettes of \Rpackage{ggcyto} for more examples of how to visualize flow data.
+
+\subsection{Visualizing a single \Rclass{flowFrame}}
+
+It is frequently helpful to view the density of events in a \Rclass{flowFrame}
+across one channel or two.
+
+To create a bivariate density plot, simply provide the appropriate channels:
+<<Plot, echo=TRUE, results='hide'>>=
+library(ggcyto)
+autoplot(x, "FL1-H", "FL2-H")
+@
+
+Similarly, to get a univariate densityplot:
+<<Plot2, echo=TRUE, results='hide'>>=
+autoplot(x, "FL1-H")
+@
+
+\subsection{Visualizing a \Rclass{flowSet}}
+The syntax is basically the same for \Rclass{flowSet} objects, with the output
+now being a grid of plots corresponding to each \Rclass{flowFrame} (which may
+or may not be useful depending on context). The grid layout can be adjusted
+with additional arguments to \Rfunction{autoplot}
+
+<<Plot3, echo=TRUE, results='hide'>>=
+fs <- read.flowSet(path = system.file("extdata", 
+                                      package = "flowCore"), 
+                   pattern = "\\.")
+autoplot(fs, "FL1-H", "FL2-H")
+@
+
+\section{Compensation}
+
+Before proceeding with further analysis of the data in a \Rclass{flowFrame}
+or \Rclass{flowSet}, it is important to properly compensate the data for
+spectral overlap between fluorescence channels. 
+
+\subsection{Extracting and applying a pre-calculated spillover matrix}
+
+If the original FCS file contains a pre-calculated spillover matrix 
+as the value of the \$SPILLOVER or \$SPILL keywords, this can be 
+accessed from the \Rclass{flowFrame}'s \Robject{description} slot 
+using the \Rfunction{spillover} method:
+<<Comp, echo=TRUE, results='markup'>>=
+fcsfiles <- list.files(pattern = "CytoTrol", 
+                       system.file("extdata", 
+                                   package = "flowWorkspaceData"),
+                       full = TRUE)
+fs <- read.flowSet(fcsfiles)
+x <- fs[[1]]
+comp_list <- spillover(x)
+comp_list
+comp  <- comp_list[[1]]
+@
+
+Given a \Rclass{flowFrame}, \Rfunction{spillover} will check a few valid
+spillover matrix keywords. This will result in a list, usually only one
+of which will be valid (in this case, the first one, corresponding to
+the \$SPILL keyword).
+
+This spillover matrix can then be applied to the channels of
+the \Rclass{flowFrame} using the \Rfunction{compensate} function.
+
+<<Comp2, echo=TRUE, results='markup'>>=
+x_comp <- compensate(x, comp)
+@
+
+The \Rfunction{compensate} function can also take a \Rclass{flowSet}
+as its first argument and a list of named spillover matrices to compensate
+the corresponding \Rclass{flowFrame}s. Here the \Rcode{simplify = FALSE}
+option is necessary so that \Rfunction{fsApply} returns a list of named matrices.
+
+<<Comp3, echo=TRUE, results='markup'>>=
+comp <- fsApply(fs, function(x) spillover(x)[[1]], simplify=FALSE)
+fs_comp <- compensate(fs, comp)
+@
+
+While transformation will be discussed in the next section, it is helpful to
+visualize the effect of compensation on transformed parameters. Quick inspection
+of the compensation matrix above reveals large overlap between the 450nm and 545nm
+channels, so we would expect to see a significant difference in each of those channels
+after compensation. This is in fact the case:
+<<CompViz, echo=TRUE, results='markup'>>=
+library(gridExtra)
+transList <- estimateLogicle(x, c("V450-A","V545-A"))
+p1 <- autoplot(transform(x, transList), "V450-A", "V545-A") +
+      ggtitle("Before")
+p2 <- autoplot(transform(x_comp, transList), "V450-A", "V545-A") +
+      ggtitle("Before")
+grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
+@
+
+Often the spillover matrix is not provided in the FCS file for each analyzed sample
+and instead it is necessary to work with a set of FCS files representing the controls
+from which the spillover matrix is to be calculated, as follows. 
+
+\subsection{Computing a spillover matrix from a set of compensation controls}
+
+The spillover matrix can also be calculated using a set of FCS files
+that contain data for an unstained sample and singly-stained samples for
+each of the measurement channels. If these files are not already
+incorporated as \Rclass{flowFrame}s in a \Rclass{flowSet} object, this
+must be done first. Here we also are assigning the appropriate channel name
+for each control file before coercion of the frames to a \Rclass{flowSet}.
+
+<<Comp4, echo=TRUE, results='markup'>>=
+fcs.dir <- system.file("extdata", "compdata", "data",
+                       package="flowCore")
+frames <- lapply(dir(fcs.dir, full.names=TRUE), read.FCS)
+names(frames) <- c("UNSTAINED", "FL1-H", "FL2-H", "FL4-H", "FL3-H")
+frames <- as(frames, "flowSet")
+comp <- spillover(frames, unstained="UNSTAINED", patt = "-H",
+                  fsc = "FSC-H", ssc = "SSC-H", 
+                  stain_match = "ordered")
+comp
+@
+
+Note that when using the \Rcode{stain\_match = "ordered"} option of 
+\Rfunction{spillover}, we are specifying that the method should assume
+the singly-stained \Rclass{flowFrame}s in the \Rclass{flowSet} are 
+in the order of the channel columns. In this case this behavior is 
+incorrect as can be seen by quick inspection of the resulting matrix. 
+To override this behavior and use the names we have provided, use the
+\Rcode{stain\_match = "regexpr"} option instead. This will use regular 
+expression matching of the channel names to the \Rclass{flowFrame} names 
+to achieve the proper ordering.
+
+<<Comp5, echo=TRUE, results='markup'>>=
+sampleNames(frames)
+comp <- spillover(frames, unstained="UNSTAINED", patt = "-H",
+                  fsc = "FSC-H", ssc = "SSC-H", 
+                  stain_match = "regexpr")
+comp
+@
+
+As an alternative way to match channels to their corresponding compensation
+controls, we provide the \Rfunction{spillover\_match} method. This allows 
+for the matching of control files to specific channels via a simple csv file, 
+resulting in a \Rclass{flowSet} ready for \Rfunction{spillover}. 
+Lastly, it is acceptable to omit 
+the \Rclass{flowSet} argument \Rcode{x} to both \Rcode{spillover} and
+\Rcode{spillover\_match} if you provide the \Rcode{path} argument to point to 
+a directory containing the files to be used in the compensation \Rclass{flowSet}:
+
+<<Comp6, echo=TRUE, results='markup'>>=
+comp_match <- system.file("extdata", "compdata", "comp_match",
+                          package="flowCore")
+# The matchfile has a simple format
+writeLines(readLines(comp_match))
+control_path <- system.file("extdata", "compdata", "data",
+                            package="flowCore")
+# Using path rather than pre-constructed flowSet
+matched_fs <- spillover_match(path=control_path, 
+                              fsc = "FSC-H", ssc = "SSC-H", 
+                              matchfile = comp_match)
+comp <- spillover(matched_fs, fsc = "FSC-H", ssc = "SSC-H", 
+                  prematched = TRUE)
+@
+
+% Note for the \Rfunction{spillover\_match} function
+% to work correctly, the sample names of each of the \Rclass{flowFrame}s
+% should be their corresponding file names. Recall that this is the default
+% behavior of \Rfunction{read.flowSet}.
+
+This spillover matrix can then be used to compensate a sample
+\Rclass{flowFrame} or an entire \Rclass{flowSet}.
+
+% PICKUP FOLLOWING LEAD OF http://127.0.0.1:23643/library/flowWorkspace/doc/flowWorkspace-Introduction.html
+
 \section{Transformation}
 
 \Rpackage{flowCore} features two methods of transforming parameters
-within a \Rclass{flowFrame}: inline and out-of-line. The inline
-method, discussed in the next section has been developed primarily to
-support filtering features and is strictly more limited than the
-out-of-line transformation method, which uses R's
+within a \Rclass{flowFrame} or \Rclass{flowSet}: inline and out-of-line. 
+The inline method, discussed in the next section, has been developed 
+primarily to support filtering features and is strictly more limited 
+than the out-of-line transformation method, which uses R's
 \Rfunction{transform} function to accomplish the filtering. Like the
-normal \Rfunction{transform} function, the \Rclass{flowFrame}is
+normal \Rfunction{transform} function, the \Rclass{flowFrame} is
 considered to be a data frame with columns named for parameters of the
 FCS file. For example, if we wished to plot our first
 \Rclass{flowFrame}'s first two fluorescence parameters on the log
 scale we might write:
 
 <<Transfo1, echo=TRUE, results='hide'>>=
-autoplot(transform(fs[[1]]
-                   , `FL1-H`=log(`FL1-H`)
-                   , `FL2-H`=log(`FL2-H`)
-                   )
-         , "FL1-H","FL2-H")
+fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
+                   package="flowCore"), name.keyword="SAMPLE ID",
+                   phenoData=list(name="SAMPLE ID", Filename="$FIL"))
+autoplot(transform(fs[[1]],
+                   `FL1-H`=log(`FL1-H`),
+                   `FL2-H`=log(`FL2-H`)
+                   ),
+         "FL1-H","FL2-H")
 @
 
 Like the usual \Rfunction{transform} function, we can also create new
 parameters based on the old parameters, without destroying the old
 
 <<Transfo2, results='hide'>>=
-autoplot(transform(fs[[1]]
-                   , log.FL1.H=log(`FL1-H`)
-                   , log.FL2.H=log(`FL2-H`)
-                   )
-         , "log.FL1.H", "log.FL2.H")
+autoplot(transform(fs[[1]],
+                   log.FL1.H=log(`FL1-H`),
+                   log.FL2.H=log(`FL2-H`)
+                   ),
+         "log.FL1.H", "log.FL2.H")
 @
 
 
@@ -543,14 +702,15 @@ the constructors supplied by \Rpackage{flowCore}:
 aTrans <- truncateTransform("truncate at 1", a=1)
 aTrans
 @
-which we can then use on the parameter of interest in the usual way
+which we can then use on the parameter of interest in the usual way, in this
+case for the full \Rclass{flowSet} using the same syntax
 <<Transfo4, echo=TRUE,results='markup'>>=
 transform(fs,`FL1-H`=aTrans(`FL1-H`))
 @
 
-However this form of transform call is not intended to used in the programmatic
-context because locally defined transform function (e.g. 'aTrans')
-may not be always visible to the non-standard evaluation environment. .e.g
+However this form of transform call is not intended to be used in the programmatic
+context because a locally defined transform function (e.g. 'aTrans')
+may not always be visible to the non-standard evaluation environment. .e.g
 <<Transfo4.1, echo=TRUE,results='markup'>>=
 f1 <- function(fs,...){
   transform(fs, ...)[,'FL1-H']
@@ -565,8 +725,8 @@ res
 @
 
 So this form of usage of 'transform' method is only useful for the interactive
-exploratary.
-we highly recommend the usage of \Robject{transformList} instead for the more
+exploratory.
+we highly recommend the usage of \Robject{transformList} instead for more
 robust and reproducible code.
 
 <<Transfo4.2, echo=TRUE,results='markup'>>=
@@ -574,12 +734,11 @@ myTrans <- transformList('FL1-H', aTrans)
 transform(fs, myTrans)
 @
 
-
 \section{Gating}
 
 The most common task in the analysis of flow cytometry data is some
 form of filtering operation, also known as gating, either to obtain
-summary statistics about the number of events that meet a certain
+summary statistics about the number of events that meet certain
 criteria or to perform further analysis on a subset of the data.  Most
 filtering operations are a composition of one or more common filtering
 operations. The definition of gates in \Rpackage{flowCore} follows the
@@ -617,8 +776,8 @@ rectGate <- rectangleGate(filterId="Fluorescence Region",
 In addition, we introduce the notion of data-driven gates, or filters,
 not usually found in flow cytometry software. In these approaches, the
 necessary parameters are computed based on the properties of the
-underlying data, for instance by modelling data distribution or by
-density estimation :
+underlying data, for instance by modeling data distribution or by
+density estimation:
 
 \begin{description}
 \item[norm2Filter]{ A robust method for finding a region that most
@@ -658,7 +817,8 @@ A filter which contains multiple populations, such as the
 \Rclass{kmeansFilter}, can return a list of summary lists:
 
 <<SummarFilter, echo=TRUE, results='markup'>>=
-summary(filter(fs[[1]], kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
+summary(filter(fs[[1]], 
+               kmeansFilter("FSC-H"=c("Low", "Medium", "High"),
                                      filterId="myKMeans")))
 @
 
@@ -674,14 +834,19 @@ filter(fs,rectGate)
 To subset or split a \Rclass{flowFrame} or \Rclass{flowSet}, we use
 the \Rfunction{Subset} and \Rfunction{split} methods respectively. The
 first, \Rfunction{Subset}, behaves similarly to the standard R
-\Rfunction{subset} function, which unfortunately could not used. For
-example, recall from our initial plots of this data that the
-morphology parameters, Forward Scatter and Side Scatter contain a
-large more-or-less ellipse shaped population. If we wished to deal
+\Rfunction{subset} function, which unfortunately could not be used. For
+example, the morphology parameters, Forward Scatter and Side Scatter, contain a
+large more-or-less ellipse shaped population:
+
+<<Norm2Filter1, echo=TRUE, results='markup'>>=
+autoplot(fs[[1]], "FSC-H", "SSC-H")
+@
+
+If we wished to deal
 only with that population, we might use \Rfunction{Subset} along with
 a \Rclass{norm2Filter} object as follows:
 
-<<Norm2Filter, echo=TRUE, results='markup'>>=
+<<Norm2Filter2, echo=TRUE, results='markup'>>=
 morphGate <- norm2Filter("FSC-H", "SSC-H", filterId="MorphologyGate", 
                          scale=2)
 smaller <- Subset(fs, morphGate)
@@ -721,7 +886,7 @@ rectGate | morphGate
 
 @
 
-we also introduce the notion of the subset operation, denoted by
+We also introduce the notion of the subset operation, denoted by
 either \%subset\% or \%\&\%. This combination of two gates first
 performs a subsetting operation on the input \Rclass{flowFrame} using
 the right-hand filter and then applies the left-hand filter. For
@@ -775,11 +940,14 @@ autoplot(tFilter %on% smaller[[1]], "FL1-H","FL2-H")
 
 which has the same effect as the $\log$ transform used earlier.
 
-\section{GatingSet}
+\section{Extensions from \Rpackage{flowWorkspace}:
+\Rclass{GatingHierarchy} and \Rclass{GatingSet}}
 \Rclass{filterSets} are very limited in their use for complex
 analysis work flows. They are  result-centric and it is hard to access
-intermediate results. \Rpackage{flowWorkspace} and \Rpackage{openCyto} framework (http://opencyto.org) 
-offers much more versatile tools for such tasks though the \Rclass{GatingSet} class (the old \Rclass{workFlow} is now deprecated). The general idea is to let the software handle the organization of intermediate results, and operations and to provide a unified API
+intermediate results. \Rpackage{flowWorkspace} and the \Rpackage{openCyto} framework (http://opencyto.org) 
+offer much more versatile tools for such tasks though the \Rclass{GatingSet} class 
+(the old \Rclass{workFlow} is now deprecated). The general idea is to let the software handle 
+the organization of intermediate results and operations and to provide a unified API
 to access and summarize these operations. 
  
 
@@ -787,12 +955,13 @@ to access and summarize these operations.
 There are two classes in \Rpackage{flowWorkspace} that are used to
 abstract work flows: \Rclass{GatingSet} objects are the basic container
 holding all the necessary bits and pieces and they are the main
-structure for user interaction. It is the container storing multiple \Rclass{GatingHierarchy} objects which are associate with individual samples. 
-One can think of \Rclass{GatingSet} corresponds to \Rclass(flowSet) and 
-\Rclass{GatingHierarchy} corresponds to \Rclass(flowFrame).
+structure for user interaction. It is the container storing multiple 
+\Rclass{GatingHierarchy} objects which are associated with individual samples. 
+One can think of \Rclass{GatingSet} as corresponding to \Rclass(flowSet) and 
+\Rclass{GatingHierarchy} as corresponding to \Rclass(flowFrame).
 
-It is important to know that \Rclass{GatingSet} use 'exteranl pointer' to store
-the 'gating tree' and thus most of its accessors have a reference
+It is important to know that \Rclass{GatingSet} objects use an external pointer to store
+the gating tree and thus most of its accessors have a reference
 semantic instead of the pass-by-value semantic that is usually found
 in the R language. The main consequence on the user-level is the fact that direct
 assignments to a \Rclass{GatingSet} object are usually not necessary;
@@ -800,55 +969,47 @@ i.e., functions that operate on the \Rclass{GatingSet} have the
 potential side-effect of modifying the object.
   
 \subsection{Creating \Rclass{GatingSet} objects}
-Before creating a 'GatingSet', we need to have flow data loaded into R as a \Rclass{flowSet} or \Rclass{ncdfFlowSet}(the disk-based 'flowSet', to handle large data set that are too big for memory, see \Rpackage(ncdfFlow) package).
+Before creating a \Rclass{GatingSet}, we need to have flow data loaded into R as a 
+\Rclass{flowSet} or \Rclass{ncdfFlowSet} (the disk-based version of \Rclass{flowSet}, 
+to handle large data sets that are too big for memory; see \Rpackage{ncdfFlow} package).
 <<loadData>>=
 library(flowWorkspace)
-fcsfiles <- list.files(pattern = "CytoTrol"
-                       , system.file("extdata", package = "flowWorkspaceData")
-                       , full = TRUE)
+fcsfiles <- list.files(pattern = "CytoTrol",
+                       system.file("extdata", 
+                                   package = "flowWorkspaceData"),
+                       full = TRUE)
 fs <- read.flowSet(fcsfiles)
 
 @
-Then \Rclass{GatingSet} can be created using the constructor \Rfunction{GatingSet}. 
+Then a \Rclass{GatingSet} can be created using the constructor \Rfunction{GatingSet}. 
 
 <<createGatingSet>>=
 gs <- GatingSet(fs)
 gs
 @
 
-Normally, we want to compensate the data firstly by using a user supplied compensation matrix:
+Normally, we want to compensate the data first by using a user-supplied compensation matrix:
 <<getComp, echo=FALSE>>=
-gs_manual <- load_gs(list.files(pattern = "gs_manual"
-                                , system.file("extdata", package = "flowWorkspaceData")
-                                , full = TRUE))
+gs_manual <- load_gs(list.files(pattern = "gs_manual",
+                                system.file("extdata", package = "flowWorkspaceData"),
+                                full = TRUE))
 comp <- getCompensationMatrices(gs_manual[[1]])
 @
 <<Compensate>>=
 comp
 gs <- compensate(gs, comp)
-@
-Here is the effect of compensation:
-<<plotComp,echo=TRUE, results='hide'>>=
 fs_comp <- getData(gs)
-transList <- estimateLogicle(fs[[1]], c("V545-A","V450-A"))
-library(gridExtra)
-p1 <- autoplot(transform(fs[[1]], transList)
-               , 'V545-A', 'V450-A') + ggtitle("Before")
-p2 <- autoplot(transform(fs_comp[[1]], transList)
-               , 'V545-A', 'V450-A') + ggtitle("After")
-grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
 @
-
-
 We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{getNodes} method:
 <<nodes>>=
 getNodes(gs)
 @ 
-It shows the only node 'root' which corresponds to the raw 'flow data' just added.
+It shows the only node ``root'' which corresponds to the raw flow data just added.
 
 \subsection{transform the data}
-Transformation can be either done on 'flowSet' before constructing 'GatingSet' or a
-\Rclass{transformerList} can be directly added to a \Rclass{GatingSet}:
+Transformation can be either done on a \Rclass{flowSet} before using it 
+to construct a \Rclass{GatingSet} or a \Rclass{transformerList} can be
+directly added to a \Rclass{GatingSet}:
 
 <<addTrans>>=
 biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144
@@ -856,8 +1017,9 @@ biexpTrans <- flowJo_biexp_trans(channelRange=4096, maxValue=262144
 chnls <- parameters(comp)
 tf <- transformerList(chnls, biexpTrans)
 
-#or use estimateLogicle directly on GatingHierarchy object to generate transformerList automatically
-#tf <- estimateLogicle(gs[[1]], chnls)
+# or use estimateLogicle directly on GatingHierarchy 
+# object to generate transformerList automatically:
+# tf <- estimateLogicle(gs[[1]], chnls)
 
 gs <- transform(gs, tf)
 @
@@ -869,10 +1031,11 @@ p2 <- autoplot(flowData(gs)[[1]], "B710-A") +
 grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
 @ 
 
-Note that we did assign the return value of \Rfunction{transform} back to \Robject{gs}. This is because 'flow data' is stored as R object and thus transforming the data still follows the pass-by-value semantics.
+Note that we did assign the return value of \Rfunction{transform} back to \Robject{gs}. This is because the 
+flow data is stored as an R object and thus transforming the data still follows the pass-by-value semantics.
 
 \subsection{Add the gates}
-Some basic flowCore \Rclass{filter} can be added to a \Rclass{GatingSet}:
+Some basic flowCore \Rclass{filter}s can be added to a \Rclass{GatingSet}:
 
 <<addGate-nonDebris>>=
 rg1 <- rectangleGate("FSC-A"=c(50000, Inf), filterId="NonDebris")
@@ -881,18 +1044,21 @@ getNodes(gs)
 # gate the data
 recompute(gs)
 @
-As we see, here we don't need to assign \Rclass{GatingSet} back because all the modifications are made in place to the \Rclass{external pointer} rather than the R object itself.
-And now there is one new population node under the `root' node called 'NonDebris'.
-The node is named after the 'filterId' of the gate if not explictly supplied.
-After the gates are added, the actual gating process is done by explictly calling \Rfunction{recompute} method.
-Note that the numeric value it returns is the internal ID for the new population just added, which can be normally ignored since the gating path instead of numeric id is recommended way to refer to population nodes later.
+As we see, here we don't need to assign \Rclass{GatingSet} back because all the modifications are 
+made in place to the \Rclass{external pointer} rather than the R object itself.
+And now there is one new population node under the ``root'' node called ``NonDebris''.
+The node is named after the \Robject{filterId} of the gate if not explictly supplied.
+After the gates are added, the actual gating process is done by explictly calling the \Rfunction{recompute} method.
+Note that the numeric value it returns is the internal ID for the new population just added, 
+which can normally be ignored since the gating path is the recommended 
+way to refer to population nodes later.
 
 To view the gate we just added,
 <<plotGate,echo=TRUE, results='hide'>>=
 autoplot(gs, "NonDebris")
 @
 
-Since They are '1d` gates, we can also dispaly it in `densityplot`
+Since They are 1-D gates, we can also display them in density plots
 <<plotGate-density,echo=TRUE, results='hide'>>=
 ggcyto(gs, aes(x = `FSC-A`)) + geom_density() + geom_gate("NonDebris")
 @
@@ -922,9 +1088,10 @@ getNodes(gs)
 
 @
 
-We see two more nodes are added to 'GatingSet' and the population names are explicitly specified during the adding this time. 
+We see two more nodes are added to 'GatingSet' and the population names are 
+explicitly specified during the addition this time. 
 
-\Rclass{quadrantGate} that results in four sub-populationsis also supported.
+A \Rclass{quadrantGate}, which results in four sub-populations, is also supported.
 <<addQuadGate>>=
 qg <- quadGate("B710-A" = 2000, "R780-A" = 3000)
 add(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
@@ -932,10 +1099,11 @@ getChildren(gs[[1]], "CD3")
 # gate the data from "singlets"
 recompute(gs, "singlets")
 @ 
-Here we see four children nodes are added to 'CD3' parent node. Four quadrants are named explicitly through 'names' argument by clock-wise order (start from top-left quadrant).
-'recomputing' only needs to be done once from the first ungated node, which will automatically compute all its descendants.
+Here we see four child nodes are added to the ``CD3'' parent node. Four quadrants are named explicitly through the 
+\Robject{names} argument by clock-wise order (start from top-left quadrant).
+Recomputing only needs to be done once from the first ungated node, which will automatically compute all of its descendants.
 
-To plot the underlying tree 
+To plot the underlying tree:
 <<plotgs, eval=FALSE>>=
 plot(gs)
 @ 
@@ -948,12 +1116,12 @@ if(suppressWarnings(require(Rgraphviz))){
 }
 @ 
 
-To plot all gates for one sample
+To plot all gates for one sample:
 <<plotGateAll, results='hide'>>=
 autoplot(gs[[1]])
 @
 
-To retreive the underlying flow data for a gated \Rclass{population}
+To retreive the underlying flow data for a gated \Rclass{population}:
 <<getData>>=
 fs_nonDebris <- getData(gs, "NonDebris")
 fs_nonDebris 
@@ -961,14 +1129,14 @@ nrow(fs_nonDebris[[1]])
 nrow(fs[[1]])
 @
 
-To get all the population statistics
+To get all the population statistics:
 <<getStats2>>=
 getPopStats(gs)
 @
 
-\subsection{Removing nodes from \Rclass{GatingSet} object}
-There are dependencies between Rclass{nodes} in the hierarchical structure of the \Rclass{GatingSet} object. Thus, removing a particular node means also
-removing all of its associated child \Rclass{nodes}. 
+\subsection{Removing nodes from a \Rclass{GatingSet} object}
+There are dependencies between \Rclass{nodes} in the hierarchical structure of a \Rclass{GatingSet} object. 
+Thus, removing a particular node means also removing all of its associated child \Rclass{nodes}. 
 
 <<Rm>>=
 Rm('CD3', gs)
@@ -977,55 +1145,57 @@ Rm('NonDebris', gs)
 getNodes(gs)
 @ 
 
-Now for the larger data set, it would be either inaccurate to apply the same hard-coded gate to all samples or impractical to manually set the gate coordinates for each individual sample. \Rpackage{openCyto}(\citep{Finak2014}) provides some data-driven gating functions to automatically generate these gates. 
+Now for the larger data set, it would be either inaccurate to apply the same hard-coded 
+gate to all samples or impractical to manually set the gate coordinates for each individual sample. 
+\Rpackage{openCyto}(\citep{Finak2014}) provides some data-driven gating functions to automatically generate these gates. 
 
-For example, \Rfunction{mindensity} can be used for estimating 'nonDebris` gate for each sample.
+For example, \Rfunction{mindensity} can be used for estimating a ``nonDebris'' gate for each sample.
 <<openCyto-nonDebris>>=
 if(require(openCyto)){
 thisData <- getData(gs)
-nonDebris_gate <- fsApply(thisData
-                          , function(fr)
+nonDebris_gate <- fsApply(thisData,
+                          function(fr)
                             openCyto:::.mindensity(fr, channels = "FSC-A"))
 add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
 }
 @
 
-\Rfunction{singeltGate} can be used for estimating 'singlets` 
+\Rfunction{singletGate} can be used for estimating ``singlets" 
 <<openCyto-singletGate>>=
 if(require(openCyto)){
 thisData <- getData(gs, "nonDebris") #get parent data
-singlet_gate <- fsApply(thisData
-                        , function(fr)
+singlet_gate <- fsApply(thisData,
+                        function(fr)
                           openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
 add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
 }
 @
 
-and then use \Rfunction{mindensity} again for "CD3" gate
+and then \Rfunction{mindensity} can be used again for the "CD3" gate
 <<openCyto-CD3>>=
 if(require(openCyto)){
 thisData <- getData(gs, "singlets") #get parent data
-CD3_gate <- fsApply(thisData
-                    , function(fr)
-                        openCyto:::.mindensity(fr, channels ="V450-A"))
+CD3_gate <- fsApply(thisData,
+                    function(fr)
+                      openCyto:::.mindensity(fr, channels ="V450-A"))
 add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
 }
 @
 
-and then use more adanced version of 'quadGate': \Rfunction{quadGate.seq} for gating "CD4" and "CD8" sequentially:
+and then we can use the more adanced version of \Rfunction{quadrantGate}: 
+\Rfunction{quadGate.seq} for gating "CD4" and "CD8" sequentially:
 <<openCyto-Tsub>>=
 if(require(openCyto)){
 thisData <- getData(gs, "CD3") #get parent data
-Tsub_gate <- fsApply(thisData
-                     , function(fr)
-                        openCyto::quadGate.seq(fr
-                             , channels = c("B710-A", "R780-A")
-                             , gFunc = 'mindensity'
-                            )
-                  )
+Tsub_gate <- fsApply(thisData,
+                     function(fr)
+                      openCyto::quadGate.seq(fr,
+                            channels = c("B710-A", "R780-A"),
+                            gFunc = 'mindensity')
+                    )
 add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
 recompute(gs)
 }
@@ -1036,9 +1206,10 @@ and then plot the gates
 autoplot(gs[[1]])
 @
 
-Note that in order to get parent gated data by 'getData' we have to 'recompute' after adding each gate. And the result is very similar to the manual gates but the gating process is more data-driven and more consistent across samples.
+Note that in order to get parent gated data by \Rfunction{getData}, we have to call \Rfunction{recompute} after adding each gate. 
+The result is very similar to the manual gates but the gating process is more data-driven and more consistent across samples.
 
-The further automated the process, a gating pipeline can be established through \Rpackage{OpenCyto}(\citep{Finak2014}) that defines the hierarchical gating template in a text-based csv file. (See more details from http://openCyto.org)
+To further automate the process, a gating pipeline can be established through \Rpackage{OpenCyto}(\citep{Finak2014}) that defines the hierarchical gating template in a text-based csv file. (See more details from http://openCyto.org)
 
 \clearpage
 \bibliographystyle{plainnat} 
