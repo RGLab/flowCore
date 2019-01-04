@@ -82,7 +82,7 @@ Collate:
     flowCore.R
     GvHD.R
 License: Artistic-2.0
-biocViews: Infrastructure, FlowCytometry, CellBasedAssays
+biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.65.0.1)
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
