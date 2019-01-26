@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.49.4
+Version: 1.49.5
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
@@ -46,6 +46,7 @@ Collate:
     flowFrame-accessors.R
     flowSet-accessors.R
     Rm-methods.R
+    transform_gate-methods.R
     actionItem-accessors.R
     coerce.R
     logicalFilterResult-accessors.R

@@ -109,6 +109,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// poly_centroid
+NumericVector poly_centroid(NumericMatrix verts);
+RcppExport SEXP _flowCore_poly_centroid(SEXP vertsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type verts(vertsSEXP);
+    rcpp_result_gen = Rcpp::wrap(poly_centroid(verts));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sortBytes
 BYTES sortBytes(BYTES bytes, std::vector<unsigned short> byte_order);
 RcppExport SEXP _flowCore_sortBytes(SEXP bytesSEXP, SEXP byte_orderSEXP) {
@@ -142,6 +153,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_flowCore_inPolygon", (DL_FUNC) &_flowCore_inPolygon, 2},
     {"_flowCore_inPolytope", (DL_FUNC) &_flowCore_inPolytope, 3},
     {"_flowCore_logicle_transform", (DL_FUNC) &_flowCore_logicle_transform, 6},
+    {"_flowCore_poly_centroid", (DL_FUNC) &_flowCore_poly_centroid, 1},
     {"_flowCore_sortBytes", (DL_FUNC) &_flowCore_sortBytes, 2},
     {"_flowCore_uint2double", (DL_FUNC) &_flowCore_uint2double, 2},
     {NULL, NULL, 0}

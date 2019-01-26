@@ -29,6 +29,10 @@ logicle_transform <- function(input, T, W, M, A, isInverse) {
     .Call(`_flowCore_logicle_transform`, input, T, W, M, A, isInverse)
 }
 
+poly_centroid <- function(verts) {
+    .Call(`_flowCore_poly_centroid`, verts)
+}
+
 sortBytes <- function(bytes, byte_order) {
     .Call(`_flowCore_sortBytes`, bytes, byte_order)
 }

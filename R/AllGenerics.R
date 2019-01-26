@@ -361,3 +361,17 @@ setGeneric("getIndexSort",def=function(x){
   standardGeneric("getIndexSort")
 })
 
+## ===========================================================================
+## Generics for modifying gates
+## ---------------------------------------------------------------------------
+#' @export
+transform_gate <- function(gate, ...) UseMethod("transform_gate")
+
+#' @export
+scale_gate <- function(gate, ...) UseMethod("scale_gate")
+
+#' @export
+rotate_gate <- function(gate, ...) UseMethod("rotate_gate")
+
+#' @export
+shift_gate <- function(gate, ...) UseMethod("shift_gate")
