@@ -1,3 +1,77 @@
+#' transform_gate
+#' 
+#' Perform geometric transformations of Gate-type \code{\linkS4class{filter}} objects
+#'
+#' This method allows changes to the four filter types defined by simple geometric gates (\code{\linkS4class{quadGate}},
+#' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, and \code{\linkS4class{polygonGate}}) using
+#' equally simple geometric transformations (shifting/translation, scaling/dilation, and rotation). The method also
+#' allows for directly re-setting the slots of each Gate-type object. Note that these methods are for manually altering
+#' the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
+#' transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+#' 
+#' First, \code{transform_gate} will apply any direct alterations to the slots of the supplied Gate-type filter object.
+#' For example, if "\code{mean = c(1,3)}" is present in the argument list when \code{transform_gate} is called on a
+#' \code{ellipsoidGate} object, the first change applied will be to shift the \code{mean} slot to \code{(1,3)}. The method
+#' will carry over the dimension names from the gate, so there is no need to provide column or row names with arguments
+#' such as \code{mean} or \code{cov} for \code{ellipsoidGate} or \code{boundaries} for \code{polygonGate}.
+#' 
+#' \code{transform_gate} then passes the geometric arguments (\code{dx}, \code{dy}, \code{deg}, \code{rot_center}, \code{scale}, 
+#' and \code{center}) to the methods which perform each respective type of transformation:  
+#' \code{\link{shift_gate}}, \code{\link{scale_gate}}, or \code{\link{rotate_gate}}. The order of operations is to first
+#' scale, then rotate, then shift. The default behavior of each operation follows that of its corresponding method but for
+#' the most part these are what the user would expect. A few quick notes:
+#' \itemize{
+#' \item \code{rotate_gate} is not defined for \code{rectangleGate} or \code{quadGate} objects, due to their definition as
+#' having 1-dimensional boundaries.
+#' \item The default center for both rotation and scaling of a \code{polygonGate} is the centroid of the polygon. This
+#' results in the sort of scaling most users expect, with a uniform scale factor not distorting the shape of the original polygon.
+#' }
+#' 
+#' 
+#' @name transform_gate
+#' @usage 
+#' transform_gate(gate, scale, deg, rot_center, dx, dy, center, ...)
+#' 
+#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
+#' 
+#' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
+#' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
+#' will result in a reflection in that dimension. 
+#' 
+#' For \code{rectangleGate} and \code{quadGate} objects, this amounts to simply
+#' scaling the values of the 1-dimensional boundaries. For \code{polygonGate} objects, the values of \code{scale} will be used
+#' to determine scale factors in the direction of each of the 2 dimensions of the gate (\code{scale_gate} is not yet defined
+#' for higher-dimensional \code{polytopeGate} objects). \strong{Important: } For \code{ellipsoidGate} objects, \code{scale}
+#' determines scale factors for the major and minor axes of the ellipse, in that order.
+#' 
+#' @param deg An angle in degrees by which the gate should be rotated in the counter-clockwise direction.
+#' @param rot_center A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
+#' be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
+#' is currently only supported for \code{polygonGate} objects. It is also usually simpler to perform a rotation and a translation 
+#' individually than to manually specify the composition as a rotation around a shifted center.
+#' 
+#' @param dx Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 
+#' its first dimension. If it is a vector, it specifies both \code{dx} and \code{dy} as \code{(dx,dy)}.
+#' This provides an alternate syntax for shifting gates, as well as allowing shifts of \code{ellipsoidGate} objects
+#' in more than 2 dimensions.
+#' @param dy A numeric scalar specifying the desired shift of the gate in its second dimension.
+#' @param center A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
+#' and/or \code{dy})
+#' 
+#' @param \dots Assignments made to the slots of the particular Gate-type filter object in the form "<slot_name> = <value>"
+#' 
+#' @return A Gate-type \code{filter} object of the same type as \code{gate}, with the geometric transformations applied
+#'
+#' @examples
+#' \dontrun{
+#' # Scale the original gate non-uniformly, rotate it 15 degrees, and shift it
+#' transformed_gate <- transform_gate(original_gate, scale = c(2,3), deg = 15, dx = 500, dy = -700)
+#' 
+#' # Scale the original gate (in this case an ellipsoidGate) after moving its center to (1500, 2000)
+#' transformed_gate <- transform_gate(original_gate, scale = c(2,3), mean = c(1500, 2000))
+#' }
+#'
 #' @export
 transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
   if(!(class(gate) %in% c("rectangleGate", "quadGate", "ellipsoidGate", "polygonGate"))){
@@ -26,16 +100,150 @@ transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = 
   return(gate) 
 }
 
+#' scale_gate
+#' 
+#' Scale a Gate-type filter object in one or more dimensions
+#' 
+#' This method allows uniform or non-uniform geometric scaling of filter types defined by simple geometric gates 
+#' (\code{\linkS4class{quadGate}}, \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, and 
+#' \code{\linkS4class{polygonGate}}) Note that these methods are for manually altering
+#' the geometric definition of a gate. To easily transform the definition of a gate with an accompanyging scale 
+#' transformation applied to its underlying data, see \code{\link[ggcyto]{rescale_gate}}.
+#' 
+#' The \code{scale} argument passed to \code{scale_gate} should be either a scalar or a vector of the same length
+#' as the number of dimensions of the gate. If it is scalar, all dimensions will be multiplicatively scaled uniformly
+#' by the scalar factor provided. If it is a vector, each dimension will be scaled by its corresponding entry in the vector.
+#' 
+#' The scaling behavior of \code{scale_gate} depends on the type of gate passed to it. For \code{rectangleGate} 
+#' and \code{quadGate} objects, this amounts to simply scaling the values of the 1-dimensional boundaries. 
+#' For \code{polygonGate} objects, the values of \code{scale} will be used to determine scale factors 
+#' in the direction of each of the 2 dimensions of the gate (\code{scale_gate} is not yet defined
+#' for higher-dimensional \code{polytopeGate} objects). \strong{Important: } For \code{ellipsoidGate} objects, \code{scale}
+#' determines scale factors for the major and minor axes of the ellipse, \emph{in that order}. Scaling by a negative factor 
+#' will result in a reflection in the corresponding dimension.
+#' 
+#' @name scale_gate
+#' @usage 
+#' scale_gate(gate, scale)
+#' 
+#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
+#' 
+#' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
+#' which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
+#' will result in a reflection in that dimension. 
+#' 
+#' @return A Gate-type \code{filter} object of the same type as \code{gate}, with the scaling applied
+#' 
+#' @examples
+#' \dontrun{
+#' # Scales both dimensions by a factor of 5
+#' scaled_gate <- scale_gate(original_gate, 5)
+#' 
+#' # Shrinks the gate in the first dimension by factor of 1/2
+#' # and expands it in the other dimension by factor of 3
+#' scaled_gate <- scale_gate(original_gate, c(0.5,3))
+#' }
+#' 
 #' @export
 scale_gate.default <- function(gate, ...){
   stop("scale_gate() does not support this gate type")
 }
 
+#' rotate_gate
+#' 
+#' Rotate a Gate-type filter object through a specified angle
+#' 
+#' This method allows for geometric rotation of filter types defined by simple geometric gates 
+#' (\code{\linkS4class{ellipsoidGate}}, and \code{\linkS4class{polygonGate}}). The method is not defined 
+#' for \code{rectangleGate} or \code{quadGate} objects, due to their definition as having 1-dimensional boundaries.
+#' 
+#' The angle provided in the \code{deg} argument should be in degrees rather than radians. By default, the rotation
+#' will be performed around the center of an \code{ellipsoidGate} or the centroid of the area encompassed by
+#' a \code{polygonGate}. The \code{rot_center} argument allows for specification of a different center of rotation
+#' for \code{polygonGate} objects (it is not yet implemented for \code{ellipsoidGate} objects) but
+#' it is usually simpler to perform a rotation and a translation individually than to manually specify 
+#' the composition as a rotation around a shifted center.
+#' 
+#' @name rotate_gate
+#' @usage 
+#' rotate_gate(gate, deg, rot_center)
+#' 
+#' @param gate An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}
+#' 
+#' @param deg An angle in degrees by which the gate should be rotated in the counter-clockwise direction
+#' @param rot_center A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
+#' be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
+#' is currently only supported for \code{polygonGate} objects.
+#' 
+#' @return A Gate-type \code{filter} object of the same type as \code{gate}, with the rotation applied
+#' 
+#' @examples
+#' \dontrun{
+#' #' # Rotates the original gate 15 degrees counter-clockwise
+#' rotated_gate <- scale_gate(original_gate, deg = 15)
+#' # Rotates the original gate 270 degrees counter-clockwise
+#' rotated_gate <- scale_gate(original_gate, 270)
+#' }
+#' 
 #' @export
 rotate_gate.default <- function(gate, ...){
   stop("rotate_gate() does not support this gate type")
 }
 
+#' shift_gate
+#' 
+#' Shift a Gate-type filter object in one or more dimensions
+#' 
+#' This method allows for geometric translation of filter types defined by simple geometric gates 
+#' (\code{rectangleGate}, \code{quadGate}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}}).
+#' The method provides two approaches to specify a translation. For \code{rectangleGate} objects, this will
+#' shift the \code{min} and \code{max} bounds by the same amount in each specified dimension. For \code{quadGate}
+#' objects, this will simply shift the divinding boundary in each dimension. For \code{ellipsoidGate} objects, this
+#' will shift the center (and therefore all points of the ellipse). For \code{polgonGate} objects, this will simply
+#' shift all of the points defining the polygon.
+#' 
+#' The method allows two different approaches to shifting a gate. Through the \code{dx} and/or \code{dy} arguments,
+#' a direct shift in each dimension can be provided. Alternatively, through the \code{center} argument, the gate
+#' can be directly moved to a new location in relation to the old center of the gate. For \code{quadGate} objects, 
+#' this center is the intersection of the two dividing boundaries (so the value of the \code{boundary} slot). For
+#' \code{rectangleGate} objects, this is the center of the rectangle defined by the intersections of the centers
+#' of each interval. For \code{ellipsoidGate} objects, it is the center of the ellipsoid, given by the \code{mean}
+#' slot. For \code{polygonGate} objects, the centroid of the old polygon will be calculated and shifted to the new
+#' location provided by \code{center} and all other points on the polygon will be shifted by relation to the centroid.
+#' 
+#' @name shift_gate
+#' @usage 
+#' shift_gate(gate, dx, dy, center)
+#' 
+#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
+#' 
+#' @param dx Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 
+#' its first dimension. If it is a vector, it specifies both \code{dx} and \code{dy} as \code{(dx,dy)}.
+#' This provides an alternate syntax for shifting gates, as well as allowing shifts of \code{ellipsoidGate} objects
+#' in more than 2 dimensions.
+#' @param dy A numeric scalar specifying the desired shift of the gate in its second dimension.
+#' @param center A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
+#' and/or \code{dy})
+#' 
+#' @return A Gate-type \code{filter} object of the same type as \code{gate}, with the translation applied
+#' 
+#' @examples
+#' \dontrun{
+#' # Moves the entire gate +500 in its first dimension and 0 in its second dimension
+#' shifted_gate <- shift_gate(original_gate, dx = 500)
+#' 
+#' #Moves the entire gate +250 in its first dimension and +700 in its second dimension
+#' shifted_gate <- shift_gate(original_gate, dx = 500, dy = 700)
+#' 
+#' # Same as previous
+#' shifted_gate <- shift_gate(original_gate, c(500,700))
+#' 
+#' # Move the gate based on shifting its center to (700, 1000)
+#' shifted_gate <- shift_gate(original_gate, center = c(700, 1000))
+#' }
+#' 
 #' @export
 shift_gate.default <- function(gate, ...){
   stop("shift_gate() does not support this gate type")
@@ -43,6 +251,7 @@ shift_gate.default <- function(gate, ...){
 
 # TRANSLATION METHODS
 
+#' @noRd
 #' @export
 shift_gate.ellipsoidGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   if(!is.null(center)){
@@ -79,6 +288,7 @@ shift_gate.ellipsoidGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 shift_gate.rectangleGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   if(!is.null(center)){
@@ -124,6 +334,7 @@ shift_gate.rectangleGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 shift_gate.polygonGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   if(!is.null(center)){
@@ -167,6 +378,7 @@ shift_gate.polygonGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 shift_gate.quadGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
   if(!is.null(center)){
@@ -207,6 +419,7 @@ shift_gate.quadGate <- function(gate, dx=NULL, dy=NULL, center=NULL){
 
 # SCALING METHODS
 
+#' @noRd
 #' @export
 scale_gate.rectangleGate <- function(gate, scale = NULL){
   if(any(is.infinite(gate@min), is.infinite(gate@max))){
@@ -230,6 +443,7 @@ scale_gate.rectangleGate <- function(gate, scale = NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 scale_gate.polygonGate <- function(gate, scale = NULL){
   if(any(is.infinite(gate@boundaries))){
@@ -250,7 +464,8 @@ scale_gate.polygonGate <- function(gate, scale = NULL){
   return(gate)
 }
 
-# Note scale should go c(major axis, minor axis) because of eigen output is descending
+# Note scale should go c(major axis, minor axis) because eigen output is descending
+#' @noRd
 #' @export
 scale_gate.ellipsoidGate <- function(gate, scale = NULL){
   eigs <- eigen(gate@cov, symmetric = TRUE)
@@ -271,6 +486,7 @@ scale_gate.ellipsoidGate <- function(gate, scale = NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 scale_gate.quadGate <- function(gate, scale = NULL){
   # Factor can be scalar or vector of length 2
@@ -286,18 +502,21 @@ scale_gate.quadGate <- function(gate, scale = NULL){
 
 # ROTATION METHODS
 
+#' @noRd
 #' @export
-rotate_gate.quadGate <- function(gate,  ...){
+rotate_gate.quadGate <- function(gate, deg = NULL, rot_center = NULL){
   stop("rotate_gate is not defined for quadGate objects")
 }
 
+#' @noRd
 #' @export
-rotate_gate.rectangleGate <- function(gate, ...){
+rotate_gate.rectangleGate <- function(gate, deg = NULL, rot_center = NULL){
   stop("rotate_gate is not defined for rectangleGate objects")
 }
 
 # For ellipsoidGate, only allowing rotation about ellipse center for now
 # Also, degree angular measure (not radian)
+#' @noRd
 #' @export
 rotate_gate.ellipsoidGate <- function(gate, deg = NULL, rot_center = NULL){
   if(!is.null(rot_center)){
@@ -314,6 +533,7 @@ rotate_gate.ellipsoidGate <- function(gate, deg = NULL, rot_center = NULL){
   return(gate)
 }
 
+#' @noRd
 #' @export
 rotate_gate.polygonGate <- function(gate, deg = NULL, rot_center = NULL){
   if(!is.null(rot_center)){
