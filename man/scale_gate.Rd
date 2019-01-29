@@ -3,7 +3,7 @@
 \name{scale_gate}
 \alias{scale_gate}
 \alias{scale_gate.default}
-\title{scale_gate}
+\title{Simplified geometric scaling of gates}
 \usage{
 scale_gate(gate, scale)
 }

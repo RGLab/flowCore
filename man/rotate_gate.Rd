@@ -3,7 +3,7 @@
 \name{rotate_gate}
 \alias{rotate_gate}
 \alias{rotate_gate.default}
-\title{rotate_gate}
+\title{Simplified geometric rotation of gates}
 \usage{
 rotate_gate(gate, deg, rot_center)
 }
@@ -23,9 +23,12 @@ A Gate-type \code{filter} object of the same type as \code{gate}, with the rotat
 Rotate a Gate-type filter object through a specified angle
 }
 \details{
-This method allows for geometric rotation of filter types defined by simple geometric gates 
+This method allows for 2-dimensional geometric rotation of filter types defined by simple geometric gates 
 (\code{\linkS4class{ellipsoidGate}}, and \code{\linkS4class{polygonGate}}). The method is not defined 
 for \code{rectangleGate} or \code{quadGate} objects, due to their definition as having 1-dimensional boundaries.
+Further, keep in mind that the 2-dimensional rotation takes place in the plane where the dimensions
+of the two variables are evenly linearly scaled. Displaying a rotated ellipse in a plot where the axes are not scaled
+evenly may make it appear that the ellipse has been distorted even though this is not the case.
 
 The angle provided in the \code{deg} argument should be in degrees rather than radians. By default, the rotation
 will be performed around the center of an \code{ellipsoidGate} or the centroid of the area encompassed by

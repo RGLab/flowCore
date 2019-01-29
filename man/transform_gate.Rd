@@ -3,7 +3,7 @@
 \name{transform_gate}
 \alias{transform_gate}
 \alias{transform_gate.default}
-\title{transform_gate}
+\title{Simplified geometric transformation of gates}
 \usage{
 transform_gate(gate, scale, deg, rot_center, dx, dy, center, ...)
 }

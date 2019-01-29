@@ -3,7 +3,7 @@
 \name{shift_gate}
 \alias{shift_gate}
 \alias{shift_gate.default}
-\title{shift_gate}
+\title{Simplified geometric translation of gates}
 \usage{
 shift_gate(gate, dx, dy, center)
 }

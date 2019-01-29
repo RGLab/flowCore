@@ -1,4 +1,4 @@
-#' transform_gate
+#' Simplified geometric transformation of gates
 #' 
 #' Perform geometric transformations of Gate-type \code{\linkS4class{filter}} objects
 #'
@@ -100,7 +100,7 @@ transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = 
   return(gate) 
 }
 
-#' scale_gate
+#' Simplified geometric scaling of gates
 #' 
 #' Scale a Gate-type filter object in one or more dimensions
 #' 
@@ -150,13 +150,16 @@ scale_gate.default <- function(gate, ...){
   stop("scale_gate() does not support this gate type")
 }
 
-#' rotate_gate
+#' Simplified geometric rotation of gates
 #' 
 #' Rotate a Gate-type filter object through a specified angle
 #' 
-#' This method allows for geometric rotation of filter types defined by simple geometric gates 
+#' This method allows for 2-dimensional geometric rotation of filter types defined by simple geometric gates 
 #' (\code{\linkS4class{ellipsoidGate}}, and \code{\linkS4class{polygonGate}}). The method is not defined 
 #' for \code{rectangleGate} or \code{quadGate} objects, due to their definition as having 1-dimensional boundaries.
+#' Further, keep in mind that the 2-dimensional rotation takes place in the plane where the dimensions
+#' of the two variables are evenly linearly scaled. Displaying a rotated ellipse in a plot where the axes are not scaled
+#' evenly may make it appear that the ellipse has been distorted even though this is not the case. 
 #' 
 #' The angle provided in the \code{deg} argument should be in degrees rather than radians. By default, the rotation
 #' will be performed around the center of an \code{ellipsoidGate} or the centroid of the area encompassed by
@@ -164,6 +167,7 @@ scale_gate.default <- function(gate, ...){
 #' for \code{polygonGate} objects (it is not yet implemented for \code{ellipsoidGate} objects) but
 #' it is usually simpler to perform a rotation and a translation individually than to manually specify 
 #' the composition as a rotation around a shifted center.
+#' 
 #' 
 #' @name rotate_gate
 #' @usage 
@@ -191,7 +195,7 @@ rotate_gate.default <- function(gate, ...){
   stop("rotate_gate() does not support this gate type")
 }
 
-#' shift_gate
+#' Simplified geometric translation of gates
 #' 
 #' Shift a Gate-type filter object in one or more dimensions
 #' 
