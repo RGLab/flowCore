@@ -145,12 +145,9 @@ test_that("decompensate",{
 										package = "flowCore"),
 						full.names = TRUE)[1]
 	f = read.FCS(f)
-	spill = read.csv(list.files(
-		system.file("extdata",
-						"compdata",
+	spill = read.csv(
+		system.file("extdata","compdata","compmatrix",
 						package = "flowCore"),
-		full.names = TRUE
-	)[1],
 	sep = "\t",
 	skip = 2)
 	colnames(spill) = gsub("\\.", "-", colnames(spill))

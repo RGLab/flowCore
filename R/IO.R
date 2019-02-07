@@ -248,7 +248,7 @@ read.FCS <- function(filename,
     .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for disk-based data structure.")
     ## check file name
     if(!is.character(filename) ||  length(filename)!=1)
-        stop("'filename' must be character skalar")
+        stop("'filename' must be character scalar")
     if(!file.exists(filename))
         stop(paste("'", filename, "' is not a valid file", sep=""))
     con <- file(filename, open="rb")
@@ -1528,9 +1528,12 @@ writeFCSheader <- function(con, offsets)
 
 
 
-## ==========================================================================
-## collapse the content of the description slot into a character vector
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' collapse and concatenate the content of the description slot into a single character string
+#' @param x flowFrame
+#' @examples 
+#' fr <- GvHD[[1]]
+#' collapseDesc(fr)
+#' @noRd 
 collapseDesc <- function(x, delimiter = "\\")
 {
     d <- description(x)
@@ -1546,6 +1549,33 @@ collapseDesc <- function(x, delimiter = "\\")
       d[[paste0("flowCore_$P", i, "Rmax")]] <- NULL
     }
   }
+  d <- collapse_desc(d)
+  d <- lapply(d, function(y){
+        double_delimiter <- paste0(delimiter, delimiter)
+        
+        #now  we escape every single delimiter character occurances(include multi-delimiter string) by doubling it
+        gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
+    
+  })
+  paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
+						  delimiter, collapse="", sep=""), to="latin1",
+				  sub=" "), sep="")
+  
+}
+
+#' Coerce the list of the keywords into a character 
+#' Also flatten spillover matrix into a string
+#' 
+#' @param d a named list of keywords
+#' @param collapse.spill whether to flatten spillover matrix to a string
+#' @return a list of strings
+#' @examples
+#' data(GvHD)
+#' fr <- GvHD[[1]]
+#' collapse_desc(keyword(fr))
+#' @export 
+collapse_desc <- function(d, collapse.spill = TRUE)
+{
 	d <- lapply(d, function(y){
 				if(length(y)==0)
 					return(" ")
@@ -1557,34 +1587,31 @@ collapseDesc <- function(x, delimiter = "\\")
 					else{
 
 					  y <- sub("^$"," ",y)
-					  double_delimiter <- paste0(delimiter, delimiter)
-
-                      #now  we escape every single delimiter character occurances(include multi-delimiter string) by doubling it
-					  gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
-          
 					}
 
 				}
 
-
+  
 			})
     d <- d[order(names(d))]
 
-  for(spillName in .spillover_pattern)
+  if(collapse.spill)
   {
-     mat <-  d[[spillName]]
-     if(!is.null(mat))
-     {
-  		rNum <- as.character(nrow(mat))
-  		clNames <- paste(colnames(mat),sep=",")
-  		vec <- paste(c(t(mat)),sep=",",collapse=",")
-	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
-     }
-	}
-    paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
-                                 delimiter, collapse="", sep=""), to="latin1",
-                      sub=" "), sep="")
-
+      
+    for(spillName in .spillover_pattern)
+    {
+       mat <-  d[[spillName]]
+       if(!is.null(mat))
+       {
+    		rNum <- as.character(nrow(mat))
+    		clNames <- paste(colnames(mat),sep=",")
+    		vec <- paste(c(t(mat)),sep=",",collapse=",")
+  	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
+       }
+    }
+    
+  }
+    d
 }
 
 
@@ -1876,7 +1903,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
             filename[f] <- paste(filename[f], "fcs", sep=".")
         write.FCS(x[[f]], filename=file.path(outdir, filename[f]), ...)
     }
-    sampleNames(x) <- filename
+    sampleNames(x) <- filename#force the sampleNames (thus rownames of Pdata) to be identical to the fcs filenames
     pData(x)$FCS_File <- filename
     write.AnnotatedDataFrame(phenoData(x), file=file.path(outdir, "annotation.txt"))
     outdir

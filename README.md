@@ -2,8 +2,11 @@
 
 NEWS
 =====
-We have a new spillover method `spillover_ng` that provides a simplified API. Matching
-between single stained controls and channels is provided via a csv file that maps filenames to channels.
+`spillover_match` has been added to provide simplified matching functionality between 
+single stained controls and channels using a csv file that maps filenames to channels.
+
+This is utilized by `spillover_ng`, which has been moved to `flowStats`.
+
 
 
 flowCore

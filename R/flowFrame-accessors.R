@@ -72,26 +72,54 @@ fr_append_cols <- function(fr, cols){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## When subsetting columns (i.e., parameters) we also want to clean up the
 ## $PnX keywords
+#' @examples 
+#' fr <- GvHD[[1]]
+#' fr <- subsetKeywords(fr, c(1,3,5))
+#' kw <- description(fr)
+#' kw[c("$P1N","$P2N", "$PAR")]
+#' @noRd
 subsetKeywords <- function(x, j)
 {
     kw <- description(x)
     par.id <- as.integer(gsub("^\\$P", "", rownames(pData(parameters(x)))))
-    
     if(is.logical(j))
-        j <- which(j)
+      j <- which(j)
     if(is.character(j))
-        j <- match(j, colnames(x))
-    
-    to.del <- par.id[-j]
-    pat <- paste(to.del, collapse = "|")
-    pat <- paste0("^\\$P(", pat , ")[A-Z]$")
-    sel <- grep(pat, names(kw))
-    
-    if(length(sel))
-        x@description <- kw[-sel]
+      j <- match(j, colnames(x))
+    par.id <- par.id[j]
+	  x@description <- filter_keywords(kw, par.id)
     return(x)
 }
 
+#' filter out $PnX keywords
+#' 
+#' @param kw a named list of keywords
+#' @param par.id a vector of integer specifies the parameter ids to be perserved
+#' @return a filtered list 
+#' @examples 
+#' data(GvHD)
+#' fr <- GvHD[[1]]
+#' kw <- description(fr)
+#' kw <- filter_keywords(kw, c(1,3,5))
+#' @export 
+filter_keywords <- function(kw, par.id)
+{
+  par.id <- as.integer(par.id)
+  stopifnot(is(par.id, "integer"))
+  kn <- names(kw)
+  
+  all.pn <- kn[grep("^\\$P[0-9]+N$", kn)]
+  all.pid <- as.integer(gsub("\\$P|N", "", all.pn))
+  
+  to.del.pid <- all.pid[!all.pid %in% par.id]
+	pat <- paste(to.del.pid, collapse = "|")
+	pat <- paste0("^\\$P(", pat , ")[A-Z]$")
+	sel <- grep(pat, kn)
+	
+	if(length(sel))
+		kw <- kw[-sel]
+	return(kw)
+}
 
 ## by indices or logical vectors
 #' @export
@@ -661,10 +689,10 @@ setReplaceMethod("colnames",
 #'    package="flowCore"),
 #'  full.name=TRUE)[1]
 #' f = read.FCS(f)
-#' spill = read.csv(list.files(system.file("extdata",
-#'        "compdata",
+#' spill = read.csv(system.file("extdata",
+#'        "compdata", "compmatrix",
 #'         package="flowCore"), 
-#'    full.name=TRUE)[1],sep="\t",skip=2)
+#'         ,sep="\t",skip=2)
 #' colnames(spill) = gsub("\\.","-",colnames(spill))
 #' f.comp = compensate(f,spill)
 #' f.decomp = decompensate(f.comp,as.matrix(spill))

@@ -162,10 +162,10 @@ setGeneric("decompensate",
 			  	standardGeneric("decompensate"))
 
 ## ================================
-## Generic for new spillover method
+## Generic for spillover_match
 ## --------------------------------
 #' @export
-setGeneric("spillover_ng", function(x,...) standardGeneric("spillover_ng"))
+setGeneric("spillover_match", function(x,...) standardGeneric("spillover_match"))
 
 ## ===========================================================================
 ## Generics for apply-like methods
@@ -361,3 +361,17 @@ setGeneric("getIndexSort",def=function(x){
   standardGeneric("getIndexSort")
 })
 
+## ===========================================================================
+## Generics for modifying gates
+## ---------------------------------------------------------------------------
+#' @export
+transform_gate <- function(gate, ...) UseMethod("transform_gate")
+
+#' @export
+scale_gate <- function(gate, ...) UseMethod("scale_gate")
+
+#' @export
+rotate_gate <- function(gate, ...) UseMethod("rotate_gate")
+
+#' @export
+shift_gate <- function(gate, ...) UseMethod("shift_gate")
