@@ -2638,7 +2638,6 @@ setClass("norm2Filter",
          contains="parameterFilter",
          prototype=list(filterId="defaultNorm2Filter",
          scale.factor=1,
-         transformation=list(),
          method="covMcd",
          n=50000))
 
@@ -3216,7 +3215,7 @@ setClass("expressionFilter",
          deparse="character"),
          contains="concreteFilter",
          prototype=list(filterId="defaultExpressionFilter",
-         exprs=expression(rep(TRUE, length(get(ls()[1])))),
+         expr=expression(rep(TRUE, length(get(ls()[1])))),
          args=list(),
          deparse="default"))
 
