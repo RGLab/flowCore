@@ -705,19 +705,28 @@ setMethod("decompensate",
 			 signature = signature(x="flowFrame", spillover="matrix"),
 			 function(x, spillover) 
 			 {
-			 	cols <- colnames(spillover)
-			 	sel <- cols %in% colnames(x)
-			 	if(!all(sel)) {
-			 		stop(keyword(x)[["FILENAME"]], 
-			 			  "\\nThe following parameters in the spillover matrix are not present in the flowFrame:\\n",
-			 			  paste(cols[!sel], collapse=", "), call.=FALSE)
-			 	}
+		    cols <- .check_spillover(spillover, x)
 			 	e <- exprs(x)
 			 	e[, cols] <- e[, cols] %*% spillover
 			 	exprs(x) = e
 			 	x
 			 }
 )
+
+#' @param spillover 
+#' @param x flowFrame
+.check_spillover <- function(spillover, x){
+  cols <- colnames(spillover)
+  if(is.null(cols))
+    stop("The spillover matrix must have colnames!")
+  sel <- cols %in% colnames(x)
+  if(!all(sel))
+    stop(keyword(x)[["FILENAME"]], "\nThe following parameters in the spillover matrix\n are",
+         " not present in the flowFrame:\n",
+         paste(cols[!sel], collapse=", "), call.=FALSE)
+  cols
+  
+}
 #' @rdname decompensate-methods
 #' @export
 setMethod("decompensate",
@@ -760,12 +769,7 @@ setMethod("compensate",
 #          checkClass(inv, "logical", 1)
 #          if(inv)
 #               spillover <- solve(spillover/max(spillover))
-          cols <- colnames(spillover)
-          sel <- cols %in% colnames(x)
-          if(!all(sel))
-              stop(keyword(x)[["FILENAME"]], "\nThe following parameters in the spillover matrix\n are",
-                   " not present in the flowFrame:\n",
-                   paste(cols[!sel], collapse=", "), call.=FALSE)
+          cols <- .check_spillover(spillover, x)            
           e <- exprs(x)
 		  
           e[, cols] <- e[, cols] %*% solve(spillover)
