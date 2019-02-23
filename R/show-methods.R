@@ -452,8 +452,7 @@ setMethod("show",
             na  <-  is.na(parms)
             if(any(na))
               parms[na] <- "internal transformation"
-            cat(ifelse(length(object@transformation), "transformed", ""),
-                "norm2Filter '", identifier(object),
+            cat("norm2Filter '", identifier(object),
                 "' in dimensions ", sep="")
             cat(paste(parms, sep="", collapse=" and "),
                 "with parameters:\n")
