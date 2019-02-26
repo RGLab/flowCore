@@ -5,7 +5,7 @@
 \alias{shift_gate.default}
 \title{Simplified geometric translation of gates}
 \usage{
-shift_gate(gate, dx, dy, center)
+\S3method{shift_gate}{default}(gate, dx, dy, center, ...)
 }
 \arguments{
 \item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
@@ -20,6 +20,8 @@ in more than 2 dimensions.}
 
 \item{center}{A numeric vector specifying where the center or centroid should be moved (rather than specifiying \code{dx} 
 and/or \code{dy})}
+
+\item{\dots}{Additional arguments not used}
 }
 \value{
 A Gate-type \code{filter} object of the same type as \code{gate}, with the translation applied
