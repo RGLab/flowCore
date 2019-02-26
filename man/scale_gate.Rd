@@ -5,7 +5,7 @@
 \alias{scale_gate.default}
 \title{Simplified geometric scaling of gates}
 \usage{
-scale_gate(gate, scale)
+\S3method{scale_gate}{default}(gate, scale, ...)
 }
 \arguments{
 \item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
@@ -14,6 +14,8 @@ scale_gate(gate, scale)
 \item{scale}{Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
 which each dimension of the gate should be expanded (absolute value > 1) or contracted (absolute value < 1). Negative values 
 will result in a reflection in that dimension.}
+
+\item{\dots}{Additional arguments not used}
 }
 \value{
 A Gate-type \code{filter} object of the same type as \code{gate}, with the scaling applied

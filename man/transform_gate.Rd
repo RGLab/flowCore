@@ -5,7 +5,7 @@
 \alias{transform_gate.default}
 \title{Simplified geometric transformation of gates}
 \usage{
-transform_gate(gate, scale, deg, rot_center, dx, dy, center, ...)
+\S3method{transform_gate}{default}(gate, scale, deg, rot_center, dx, dy, center, ...)
 }
 \arguments{
 \item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},

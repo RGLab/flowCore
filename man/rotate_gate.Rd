@@ -5,7 +5,7 @@
 \alias{rotate_gate.default}
 \title{Simplified geometric rotation of gates}
 \usage{
-rotate_gate(gate, deg, rot_center)
+\S3method{rotate_gate}{default}(gate, deg, rot_center, ...)
 }
 \arguments{
 \item{gate}{An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}}
@@ -15,6 +15,8 @@ rotate_gate(gate, deg, rot_center)
 \item{rot_center}{A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
 be the center for \code{ellipsoidGate} objects or the centroid for \code{polygonGate} objects. The \code{rot_center} argument 
 is currently only supported for \code{polygonGate} objects.}
+
+\item{\dots}{Additional arguments not used}
 }
 \value{
 A Gate-type \code{filter} object of the same type as \code{gate}, with the rotation applied
@@ -40,9 +42,9 @@ the composition as a rotation around a shifted center.
 \examples{
 \dontrun{
 #' # Rotates the original gate 15 degrees counter-clockwise
-rotated_gate <- scale_gate(original_gate, deg = 15)
+rotated_gate <- rotate_gate(original_gate, deg = 15)
 # Rotates the original gate 270 degrees counter-clockwise
-rotated_gate <- scale_gate(original_gate, 270)
+rotated_gate <- rotate_gate(original_gate, 270)
 }
 
 }
