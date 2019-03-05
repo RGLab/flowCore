@@ -215,14 +215,6 @@ setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
 
 
 ## ===========================================================================
-## Generic for toTable for output in table-like structure
-## ---------------------------------------------------------------------------
-#' @export
-setGeneric("toTable",function(x,...) standardGeneric("toTable"))
-
-
-
-## ===========================================================================
 ## Generic to test for a NULL reference
 ## setMethod("is.null",
 ##           signature=signature("fcReference"),

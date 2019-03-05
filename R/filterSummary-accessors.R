@@ -56,6 +56,7 @@ setMethod("$",
 ## ==========================================================================
 ## Return a more machine-readable output in form of a data.frame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @importFrom BiocGenerics toTable
 #' @export
 setMethod("toTable",
           signature=signature(x="filterSummary"),
