@@ -616,7 +616,7 @@ readFCSheader <- function(con, start=0)
                       "dataend", "anastart", "anaend", "additional")
     ioffs[2:7] <- ioffs[2:7]+ioffs[8]
 
-    if(all(is.na(ioffs[2:5]) || ioffs[2:5]==""))
+    if(any(is.na(ioffs[2:5]) | ioffs[2:5]==""))
         stop("Missing header information to start parsing the binary ",
              "section of the file")
     return(ioffs)
