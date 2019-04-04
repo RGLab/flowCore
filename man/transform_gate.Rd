@@ -5,10 +5,11 @@
 \alias{transform_gate.default}
 \title{Simplified geometric transformation of gates}
 \usage{
-\S3method{transform_gate}{default}(gate, scale, deg, rot_center, dx, dy, center, ...)
+\method{transform_gate}{default}(obj, scale = NULL, deg = NULL,
+  rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
 }
 \arguments{
-\item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+\item{obj}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})}
 
 \item{scale}{Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 

@@ -5,10 +5,11 @@
 \alias{shift_gate.default}
 \title{Simplified geometric translation of gates}
 \usage{
-\S3method{shift_gate}{default}(gate, dx, dy, center, ...)
+\method{shift_gate}{default}(obj, dx = NULL, dy = NULL,
+  center = NULL, ...)
 }
 \arguments{
-\item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+\item{obj}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})}
 
 \item{dx}{Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 

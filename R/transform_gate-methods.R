@@ -1,3 +1,8 @@
+## ===========================================================================
+## Generics for modifying gates
+## ---------------------------------------------------------------------------
+#' @export
+transform_gate <- function(obj, ...) UseMethod("transform_gate")
 #' Simplified geometric transformation of gates
 #' 
 #' Perform geometric transformations of Gate-type \code{\linkS4class{filter}} objects
@@ -29,10 +34,8 @@
 #' 
 #' 
 #' @name transform_gate
-#' @usage 
-#' \S3method{transform_gate}{default}(gate, scale, deg, rot_center, dx, dy, center, ...)
 #' 
-#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' @param obj A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 #' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
 #' 
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
@@ -73,7 +76,8 @@
 #' }
 #'
 #' @export
-transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
+transform_gate.default <- function(obj, scale = NULL, deg = NULL, rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...){
+	gate <- obj
   if(!(class(gate) %in% c("rectangleGate", "quadGate", "ellipsoidGate", "polygonGate"))){
     stop("The object passed to transform_gate is not of a supported gate type")
   }
@@ -100,6 +104,9 @@ transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = 
   return(gate) 
 }
 
+#' @export
+scale_gate <- function(obj, ...) UseMethod("scale_gate")
+
 #' Simplified geometric scaling of gates
 #' 
 #' Scale a Gate-type filter object in one or more dimensions
@@ -123,10 +130,8 @@ transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = 
 #' will result in a reflection in the corresponding dimension.
 #' 
 #' @name scale_gate
-#' @usage 
-#' \S3method{scale_gate}{default}(gate, scale, ...)
 #' 
-#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' @param obj A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 #' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
 #' 
 #' @param scale Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
@@ -148,9 +153,12 @@ transform_gate.default <- function(gate, scale = NULL, deg = NULL, rot_center = 
 #' }
 #' 
 #' @export
-scale_gate.default <- function(gate, scale = NULL, ...){
+scale_gate.default <- function(obj, scale = NULL, ...){
   stop("scale_gate() does not support this gate type")
 }
+
+#' @export
+rotate_gate <- function(obj, ...) UseMethod("rotate_gate")
 
 #' Simplified geometric rotation of gates
 #' 
@@ -172,10 +180,8 @@ scale_gate.default <- function(gate, scale = NULL, ...){
 #' 
 #' 
 #' @name rotate_gate
-#' @usage 
-#' \S3method{rotate_gate}{default}(gate, deg, rot_center, ...)
 #' 
-#' @param gate An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}
+#' @param obj An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}
 #' 
 #' @param deg An angle in degrees by which the gate should be rotated in the counter-clockwise direction
 #' @param rot_center A separate 2-dimensional center of rotation for the gate, if desired. By default, this will
@@ -195,9 +201,12 @@ scale_gate.default <- function(gate, scale = NULL, ...){
 #' }
 #' 
 #' @export
-rotate_gate.default <- function(gate, deg = NULL, rot_center = NULL, ...){
+rotate_gate.default <- function(obj, deg = NULL, rot_center = NULL, ...){
   stop("rotate_gate() does not support this gate type")
 }
+
+#' @export
+shift_gate <- function(obj, ...) UseMethod("shift_gate")
 
 #' Simplified geometric translation of gates
 #' 
@@ -221,10 +230,8 @@ rotate_gate.default <- function(gate, deg = NULL, rot_center = NULL, ...){
 #' location provided by \code{center} and all other points on the polygon will be shifted by relation to the centroid.
 #' 
 #' @name shift_gate
-#' @usage 
-#' \S3method{shift_gate}{default}(gate, dx, dy, center, ...)
 #' 
-#' @param gate A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+#' @param obj A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 #' \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})
 #' 
 #' @param dx Either a numeric scalar or numeric vector. If it is scalar, this is just the desired shift of the gate in 
@@ -254,7 +261,7 @@ rotate_gate.default <- function(gate, deg = NULL, rot_center = NULL, ...){
 #' }
 #' 
 #' @export
-shift_gate.default <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
+shift_gate.default <- function(obj, dx=NULL, dy=NULL, center=NULL, ...){
   stop("shift_gate() does not support this gate type")
 }
 
@@ -262,8 +269,9 @@ shift_gate.default <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
 
 #' @noRd
 #' @export
-shift_gate.ellipsoidGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
-  if(!is.null(center)){
+shift_gate.ellipsoidGate <- function(obj, dx=NULL, dy=NULL, center=NULL, ...){
+	gate <- obj
+	if(!is.null(center)){
     if(length(center) == length(gate@mean)){
       names(center) <- names(gate@mean)
       gate@mean <- center
@@ -299,8 +307,9 @@ shift_gate.ellipsoidGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
 
 #' @noRd
 #' @export
-shift_gate.rectangleGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
-  if(!is.null(center)){
+shift_gate.rectangleGate <- function(obj, dx=NULL, dy=NULL, center=NULL, ...){
+	gate <- obj
+	if(!is.null(center)){
     if(any(is.infinite(gate@min), is.infinite(gate@max))){
       stop("Cannot shift center of rectangleGate with an infinite bound (has no finite center)")
     }else{
@@ -345,8 +354,9 @@ shift_gate.rectangleGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
 
 #' @noRd
 #' @export
-shift_gate.polygonGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
-  if(!is.null(center)){
+shift_gate.polygonGate <- function(obj, dx=NULL, dy=NULL, center=NULL, ...){
+	gate <- obj
+	if(!is.null(center)){
     if(any(is.infinite(gate@boundaries))){
       stop("Cannot shift center of polygonGate with an infinite bound (has no finite centroid)")
     }else{
@@ -389,8 +399,9 @@ shift_gate.polygonGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
 
 #' @noRd
 #' @export
-shift_gate.quadGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
-  if(!is.null(center)){
+shift_gate.quadGate <- function(obj, dx=NULL, dy=NULL, center=NULL, ...){
+	gate <- obj
+	if(!is.null(center)){
     if(any(is.infinite(gate@boundary))){
       stop("Cannot shift center of quadGate with an infinite bound (has no finite center)")
     }else{
@@ -430,8 +441,9 @@ shift_gate.quadGate <- function(gate, dx=NULL, dy=NULL, center=NULL, ...){
 
 #' @noRd
 #' @export
-scale_gate.rectangleGate <- function(gate, scale = NULL, ...){
-  if(any(is.infinite(gate@min), is.infinite(gate@max))){
+scale_gate.rectangleGate <- function(obj, scale = NULL, ...){
+	gate <- obj
+	if(any(is.infinite(gate@min), is.infinite(gate@max))){
     stop("Cannot resize rectangleGate with an infinite bound")
   }
   # Factor can be scalar or vector
@@ -454,8 +466,9 @@ scale_gate.rectangleGate <- function(gate, scale = NULL, ...){
 
 #' @noRd
 #' @export
-scale_gate.polygonGate <- function(gate, scale = NULL, ...){
-  if(any(is.infinite(gate@boundaries))){
+scale_gate.polygonGate <- function(obj, scale = NULL, ...){
+	gate <- obj
+	if(any(is.infinite(gate@boundaries))){
     stop("Cannot resize polygonGate with an infinite bound")
   }
   if(!is.null(scale)){
@@ -476,8 +489,9 @@ scale_gate.polygonGate <- function(gate, scale = NULL, ...){
 # Note scale should go c(major axis, minor axis) because eigen output is descending
 #' @noRd
 #' @export
-scale_gate.ellipsoidGate <- function(gate, scale = NULL, ...){
-  eigs <- eigen(gate@cov, symmetric = TRUE)
+scale_gate.ellipsoidGate <- function(obj, scale = NULL, ...){
+	gate <- obj
+	eigs <- eigen(gate@cov, symmetric = TRUE)
   # Factor can be scalar or vector
   if(!is.null(scale)){
     if(length(scale) == 1 || length(scale) == length(gate@mean)){
@@ -497,8 +511,9 @@ scale_gate.ellipsoidGate <- function(gate, scale = NULL, ...){
 
 #' @noRd
 #' @export
-scale_gate.quadGate <- function(gate, scale = NULL, ...){
-  # Factor can be scalar or vector of length 2
+scale_gate.quadGate <- function(obj, scale = NULL, ...){
+	gate <- obj
+	# Factor can be scalar or vector of length 2
   if(!is.null(scale)){
     if(length(scale) == 1 || length(scale) == 2){
       gate@boundary <- gate@boundary*scale    
@@ -513,13 +528,13 @@ scale_gate.quadGate <- function(gate, scale = NULL, ...){
 
 #' @noRd
 #' @export
-rotate_gate.quadGate <- function(gate, deg = NULL, rot_center = NULL, ...){
+rotate_gate.quadGate <- function(obj, deg = NULL, rot_center = NULL, ...){
   stop("rotate_gate is not defined for quadGate objects")
 }
 
 #' @noRd
 #' @export
-rotate_gate.rectangleGate <- function(gate, deg = NULL, rot_center = NULL, ...){
+rotate_gate.rectangleGate <- function(obj, deg = NULL, rot_center = NULL, ...){
   stop("rotate_gate is not defined for rectangleGate objects")
 }
 
@@ -527,8 +542,9 @@ rotate_gate.rectangleGate <- function(gate, deg = NULL, rot_center = NULL, ...){
 # Also, degree angular measure (not radian)
 #' @noRd
 #' @export
-rotate_gate.ellipsoidGate <- function(gate, deg = NULL, rot_center = NULL, ...){
-  if(!is.null(rot_center)){
+rotate_gate.ellipsoidGate <- function(obj, deg = NULL, rot_center = NULL, ...){
+	gate <- obj
+	if(!is.null(rot_center)){
     stop("rotate_gate only allows rotation about the ellipse center for ellipsoidGate (center argument not allowed)") 
   }
   if(!is.null(deg)){
@@ -544,8 +560,9 @@ rotate_gate.ellipsoidGate <- function(gate, deg = NULL, rot_center = NULL, ...){
 
 #' @noRd
 #' @export
-rotate_gate.polygonGate <- function(gate, deg = NULL, rot_center = NULL, ...){
-  if(!is.null(rot_center)){
+rotate_gate.polygonGate <- function(obj, deg = NULL, rot_center = NULL, ...){
+	gate <- obj
+	if(!is.null(rot_center)){
     if(length(rot_center) != 2){
       stop("If rot_center is specified, it must be of length 2")
     }

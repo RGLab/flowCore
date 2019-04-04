@@ -5,10 +5,10 @@
 \alias{rotate_gate.default}
 \title{Simplified geometric rotation of gates}
 \usage{
-\S3method{rotate_gate}{default}(gate, deg, rot_center, ...)
+\method{rotate_gate}{default}(obj, deg = NULL, rot_center = NULL, ...)
 }
 \arguments{
-\item{gate}{An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}}
+\item{obj}{An \code{\linkS4class{ellipsoidGate}} or \code{\linkS4class{polygonGate}}}
 
 \item{deg}{An angle in degrees by which the gate should be rotated in the counter-clockwise direction}
 
