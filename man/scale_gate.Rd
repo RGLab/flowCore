@@ -5,10 +5,10 @@
 \alias{scale_gate.default}
 \title{Simplified geometric scaling of gates}
 \usage{
-\S3method{scale_gate}{default}(gate, scale, ...)
+\method{scale_gate}{default}(obj, scale = NULL, ...)
 }
 \arguments{
-\item{gate}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
+\item{obj}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},
 \code{\linkS4class{rectangleGate}}, \code{\linkS4class{ellipsoidGate}}, or \code{\linkS4class{polygonGate}})}
 
 \item{scale}{Either a numeric scalar (for uniform scaling in all dimensions) or numeric vector specifying the factor by 
