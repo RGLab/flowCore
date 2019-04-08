@@ -993,7 +993,7 @@ Normally, we want to compensate the data first by using a user-supplied compensa
 gs_manual <- load_gs(list.files(pattern = "gs_manual",
                                 system.file("extdata", package = "flowWorkspaceData"),
                                 full = TRUE))
-comp <- getCompensationMatrices(gs_manual[[1]])
+comp <- gh_get_compensations(gs_manual[[1]])
 @
 <<Compensate>>=
 comp
@@ -1025,7 +1025,7 @@ gs <- transform(gs, tf)
 @
 <<plotTrans,echo=TRUE, results='hide'>>=
 p1 <- autoplot(fs_comp[[1]], "B710-A") + ggtitle("raw")
-p2 <- autoplot(flowData(gs)[[1]], "B710-A") + 
+p2 <- autoplot(gs_cyto_data(gs)[[1]], "B710-A") + 
           ggtitle("trans") + 
           ggcyto_par_set(limits = "instrument")
 grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
@@ -1065,8 +1065,8 @@ ggcyto(gs, aes(x = `FSC-A`)) + geom_density() + geom_gate("NonDebris")
 
 To get population statistics for the given populatuion
 <<getStats1>>=
-getTotal(gs[[1]], "NonDebris")#counts
-getProp(gs[[1]], "NonDebris")#proportion
+gh_get_count(gs[[1]], "NonDebris")#counts
+gh_get_proportion(gs[[1]], "NonDebris")#proportion
 @
 
 Now we add two more gates:
