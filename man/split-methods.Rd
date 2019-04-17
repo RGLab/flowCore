@@ -9,7 +9,6 @@
 \alias{split,flowFrame,character-method}
 \alias{split,flowFrame,numeric-method}
 \alias{split,flowFrame,filter-method}
-\alias{split,flowFrame,filterSet-method}
 \alias{split,flowFrame,logicalFilterResult-method}
 \alias{split,flowFrame,manyFilterResult-method}
 \alias{split,flowFrame,multipleFilterResult-method}
@@ -100,11 +99,6 @@ factor and split on that. }
 \item{split(x = "flowFrame", f = "filter", drop = "ANY")}{ First applies the
 \code{\linkS4class{filter}} to the \code{\linkS4class{flowFrame}} and then
 splits on the resulting \code{\linkS4class{filterResult}} object. }
-
-\item{split(x = "flowFrame", f = "filterSet", drop = "ANY")}{ First applies the
-\code{\linkS4class{filterSet}} to the \code{\linkS4class{flowFrame}} and
-then splits on the resulting final \code{\linkS4class{filterResult}} object.
-}
 
 \item{split(x = "flowFrame", f = "logicalFilterResult", drop = "ANY")}{ Split into
 the two subpopulations (in and out of the gate). The optional argument

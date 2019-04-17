@@ -5,7 +5,6 @@
 \alias{normalization-class}
 \alias{normalization}
 \alias{normalize}
-\alias{add,workFlow,normalization-method}
 \alias{identifier<-,normalization,character-method}
 \alias{identifier,normalization-method}
 \alias{normalize,flowSet,normalization-method}
@@ -43,8 +42,7 @@ Class and methods to normalize a a \code{flowSet} using a potentially
 complex normalization function.
 }
 \details{
-Data normalization of a \code{flowSet} is a rather fuzzy concept and the
-class mainly exists for method dispatch in the workflow tools. The idea is
+Data normalization of a \code{flowSet} is a rather fuzzy concept. The idea is
 to have a rather general function that takes a \code{flowSet} and a list of
 parameter names as input and applies any kind of normalization to the
 respective data columns. The output of the function has to be a
@@ -88,9 +86,6 @@ the \code{Usage} and \code{Arguments} sections for details.
 \section{Methods}{
 
 \describe{
-  
-  \item{add}{\code{signature(wf = "workFlow", action =
-                               "normalization")}: The constructor for the workFlow. }
   
   \item{identifier<-}{\code{signature(object = "normalization", value
                                       = "character")}: Set method for the identifier slot. }

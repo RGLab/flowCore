@@ -35,33 +35,6 @@ setMethod("summary",
                   simplify=FALSE)
       })
 
-
-
-## ==========================================================================
-## Summarize a gateActionItem object. Essentially, this is calling the summary
-## method for the associated filterResult
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("summary",
-          signature=signature(object="gateActionItem"),
-          definition=function(object){
-              fr <- get(object@filterResult)
-              tmp <- toTable(summary(fr, verbose=FALSE))
-              if(is(fr[[1]], "logicalFilterResult")){
-                  tmp2 <- tmp
-                  tmp2$population <- gsub("\\+$", "-",  tmp2$population)
-                  tmp2$false <- tmp$true
-                  tmp2$true <- tmp$false
-                  tmp2$p <- tmp$p
-                  tmp2$q <- tmp$q
-                  tmp2$percent <- tmp$q*100
-                  tmp <- rbind(tmp, tmp2)
-              }
-              return(tmp)
-          })
-
-
-
 ## ==========================================================================
 ## For filters we analyse the filterResult and create a new object of class
 ## filterSummary.
@@ -224,63 +197,4 @@ setMethod("summary",
           e <- environment(object)
           x <- ls(envir=e)
           structure(lapply(x, "get", env=e), names=x)
-      })
-
-
-
-## ==========================================================================
-## Summarize a gateView object. Essentially, this is calling the summary
-## method for the subset of the summary created by the actionItem of the
-## particular view
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("summary",
-          signature=signature(object="gateView"),
-          definition=function(object, verbose=FALSE)
-      {
-          act <- action(object)
-          population <- object@frEntry
-          tmp <- summary(act)
-          tmp[tmp$population==population,]
-      })
-
-
-
-## ==========================================================================
-## Summarize objects referenced by fcReferences in a workFlow object.
-## The optional argument reference takes another viewID and calculates
-## summary statistics relative to that population
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("summary",
-          signature=signature(object="workFlow"),
-          definition=function(object, ID, reference=NULL, verbose=FALSE)
-      {
-          if(missing(ID))
-              ID <- views(object)[-1]
-          checkClass(ID, "character")
-          if(!is.null(reference))
-              checkClass(reference, "character", 1)
-          res <- vector(length(ID), mode="list")
-          names(res) <- ID
-          for(i in ID){
-              view <- get(i, object)
-              tmp <- summary(view)
-              if(is(view, "gateView") && nrow(tmp)){
-                  if(is.null(reference)){
-                      res[[i]] <- tmp
-                  }else{
-                      tmp$count <- unlist(fsApply(Data(object[[reference]]), nrow))
-                      tmp$false <- tmp$count-tmp$true
-                      tmp$p <- tmp$true/tmp$count
-                      tmp$percent <- tmp$p*100
-                      tmp$q <- 1-tmp$p
-                      res[[i]] <- tmp
-                  }
-              }else{
-                  res[[i]] <- NULL
-              }
-          }
-          res <- if(length(res)==1) res[[1]] else res
-          return(res)
       })

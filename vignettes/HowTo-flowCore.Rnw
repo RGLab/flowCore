@@ -942,13 +942,12 @@ which has the same effect as the $\log$ transform used earlier.
 
 \section{Extensions from \Rpackage{flowWorkspace}:
 \Rclass{GatingHierarchy} and \Rclass{GatingSet}}
-\Rclass{filterSets} are very limited in their use for complex
-analysis work flows. They are  result-centric and it is hard to access
+The now-defunct \Rclass{filterSet} class was very limited in its use for complex
+analysis work flows. It was result-centric and it was hard to access
 intermediate results. \Rpackage{flowWorkspace} and the \Rpackage{openCyto} framework (http://opencyto.org) 
-offer much more versatile tools for such tasks though the \Rclass{GatingSet} class 
-(the old \Rclass{workFlow} is now deprecated). The general idea is to let the software handle 
-the organization of intermediate results and operations and to provide a unified API
-to access and summarize these operations. 
+offer much more versatile tools for such tasks through the \Rclass{GatingSet} class. 
+The general idea is to let the software handle the organization of intermediate results 
+and operations and to provide a unified API to access and summarize these operations. 
  
 
 \subsection{Abstraction of GatingSet}

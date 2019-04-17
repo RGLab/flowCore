@@ -89,7 +89,7 @@
 #' @aliases split-methods split split,flowFrame,ANY-method
 #' split,flowFrame,factor-method split,flowFrame,character-method
 #' split,flowFrame,numeric-method split,flowFrame,filter-method
-#' split,flowFrame,filterSet-method split,flowFrame,logicalFilterResult-method
+#' split,flowFrame,logicalFilterResult-method
 #' split,flowFrame,manyFilterResult-method
 #' split,flowFrame,multipleFilterResult-method split,flowSet,ANY-method
 #' split,flowSet,character-method split,flowSet,factor-method
@@ -121,11 +121,6 @@
 #' \item{split(x = "flowFrame", f = "filter", drop = "ANY")}{ First applies the
 #' \code{\linkS4class{filter}} to the \code{\linkS4class{flowFrame}} and then
 #' splits on the resulting \code{\linkS4class{filterResult}} object. }
-#' 
-#' \item{split(x = "flowFrame", f = "filterSet", drop = "ANY")}{ First applies the
-#' \code{\linkS4class{filterSet}} to the \code{\linkS4class{flowFrame}} and
-#' then splits on the resulting final \code{\linkS4class{filterResult}} object.
-#' }
 #' 
 #' \item{split(x = "flowFrame", f = "logicalFilterResult", drop = "ANY")}{ Split into
 #' the two subpopulations (in and out of the gate). The optional argument
@@ -237,15 +232,6 @@ setMethod("split",
           definition=function(x, f, drop=FALSE, ...)
           split(x, filter(x, f), drop=drop, ...))
 
-## Evaluate the filterSet first and split on the filterResult
-## FIXME: Is that really what we want? And what is the final output of
-## a filterSet filtering operation anyways? Just the leaves???
-#' @export
-setMethod("split",
-          signature=signature(x="flowFrame",
-                              f="filterSet"),
-          definition=function(x, f, drop=FALSE, ...)
-          split(x, filter(x, f), drop=drop, ...))
 
 ## Split on logicalFilterResults. This will divide the data set into those
 ## events that are contained within the gate and those that are not. 

@@ -18,8 +18,8 @@ are data-driven.
 \code{subsetFilter}s are constructed using the equivalent binary set operators 
 \code{"\%&\%"} or \code{"\%subset\%"}. The operator is not symmetric, as the
 filter on the right-hand side will take the subset of the filter on the
-left-hand side as input. Left-hand side operands can be a filter, list of
-filters, or filterSet, while the right-hand side operand must be a single
+left-hand side as input. Left-hand side operands can be a filter or list of
+filters, while the right-hand side operand must be a single
 filter.
 }
 \section{Slots}{
