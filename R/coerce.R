@@ -31,7 +31,7 @@
 #' coerce,filterResult,logical-method coerce,subsetFilter,logical-method
 #' coerce,unionFilter,logical-method coerce,complementFilter,logical-method
 #' coerce,factor,filterResult-method coerce,matrix,filterResult-method
-#' coerce,logical,filterResult-method coerce,gateView,filterResult-method
+#' coerce,logical,filterResult-method
 #' coerce,numeric,filterResult-method coerce,logicalFilterResult,logical-method
 #' coerce,randomFilterResult,logical-method coerce,environment,flowSet-method
 #' coerce,list,flowSet-method coerce,list,transformList-method
@@ -41,11 +41,10 @@
 #' coerce,filterReference,concreteFilter-method
 #' coerce,filterReference,call-method coerce,formula,filter-method
 #' coerce,character,filter-method coerce,name,filter-method
-#' coerce,call,filter-method coerce,filterSet,list-method
-#' coerce,list,filterSet-method coerce,list,filterResultList-method
+#' coerce,call,filter-method coerce,list,filterResultList-method
 #' coerce,filterResultList,list-method coerce,flowSet,list-method
 #' coerce,flowSet,flowFrame-method coerce,flowFrame,flowSet-method
-#' coerce,flowFrame,filterSet-method coerce,nullParameter,character-method
+#' coerce,nullParameter,character-method
 #' coerce,parameters,character-method coerce,ratio,character-method
 #' coerce,transform,character-method coerce,unitytransform,character-method
 #' coerce,ellipsoidGate,polygonGate-method
@@ -74,21 +73,6 @@ setAs(from="numeric", to="filterResult", def=function(from)
 
 setAs(from="matrix", to="filterResult", def=function(from)
       new("manyFilterResult", filterId="", subSet=from))
-
-
-
-
-
-setAs(from="gateView", to="filterResult", def=function(from)
-  {
-      fres <- as(from@indices, "filterResult")
-      ofres <- get(from@filterResult)
-      filter <- filterDetails(get(from@filterResult), 1)[["filter"]]
-      identifier(filter) <- from@frEntry
-      filterDetails(fres, from@frEntry) <- list(filter=filter)
-      identifier(fres) <- from@frEntry
-      return(fres)
-  })
 
 setAs(from="list", to="filterResultList",
       def=function(from)
@@ -233,34 +217,6 @@ setAs(from="complementFilter", to="call", def=function(from) {
     eval(as.call(c(as.symbol('~'), as.symbol(from@filterId),
                    as.call(c(as.symbol("!"), as(from@filters[[1]], "call"))))))
 })
-
-
-
-## ==========================================================================
-## Lists to filterSets and vice versa
-## --------------------------------------------------------------------------
-setAs(from="filterSet", to="list", def=function(from)
-  {
-      nam <- ls(envir = from@env)
-      out <- lapply(nam,function(n) as(from[[n]], "call"))
-      names(out) <- nam
-      out
-  })
-
-setAs(from="list", to="filterSet", def=function(from)
-  {
-      fs <- filterSet()
-      e <- new.env()
-      n <- names(from)
-      if(is.null(n) || length(n)==0) n = rep("", length(from))
-      for(i in 1:length(from)) {
-          filter <- from[[i]]
-          name <-if(!is.null(n[i]) && nzchar(n[i])) n[i] else NULL
-          fs[[name]] <- eval(filter,e)
-      }
-      fs
-  })
-
 
 
 ## ==========================================================================

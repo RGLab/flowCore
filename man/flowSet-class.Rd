@@ -266,8 +266,8 @@ documentation for details.
 }
 
 \item{filter}{Apply a filter object on a \code{flowSet}
-  object. There are methods for \code{\linkS4class{filter}}s,
-  \code{\link{filterSet}}s and lists of filters. The latter has to
+  object. There are methods for \code{\linkS4class{filter}}s
+  and lists of filters. The latter has to
   be a named list, where names of the list items are matching
   sampleNames of the \code{flowSet}. See \code{\linkS4class{filter}}
   for details.

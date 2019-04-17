@@ -715,6 +715,7 @@ setMethod("decompensate",
 
 #' @param spillover 
 #' @param x flowFrame
+#' @noRd
 .check_spillover <- function(spillover, x){
   cols <- colnames(spillover)
   if(is.null(cols))
@@ -921,8 +922,7 @@ updateTransformKeywords <- function(fr)
 #' @docType methods
 #' @aliases filter filter-method filter,flowFrame-method filter,flowFrame,filter-method
 #' filter,flowFrame,rectangleGate filter,flowFrame,polygonGate
-#' filter,flowFrame,norm2Filter filter,flowFrame,filterSet-method
-#' filter,flowSet,filter-method filter,flowSet,filterSet-method
+#' filter,flowFrame,norm2Filter filter,flowSet,filter-method
 #' filter,flowSet,list-method filter,flowSet,filterList-method
 #' summary,filter-method show,filter-method length,filter-method
 #' formula,filter-method character,filter-method name,filter-method
@@ -996,40 +996,6 @@ setMethod("filter",
           result@frameId <- identifier(x)
           result
       })
-
-
-## apply filterSet
-#' @export
-setMethod("filter",
-          signature=signature(x="flowFrame",
-                              filter="filterSet"),
-          definition=function(x,filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
-      {
-        ## A list of filter names sorted by dependency
-          fl <- sort(filter,dependencies=TRUE)
-          e <- filterSet()
-          m <- as(filter,"list")
-          r <-  lapply(fl,function(n) {
-              e[[n]] <- eval(m[[n]])
-              filter(x,e[n])
-          })
-          ## A place to evaluate filters
-          ## e  = new.env()
-          ## assign(".__frame",x,env=e)
-          ## Evaluate each 
-          ## r = lapply(as(filter,"list")[fl],function(f) {
-          ## if(is(f,"formula")) f = eval(as.call(c(as.symbol("as"),
-          ##      f,"filter")),e)
-          ##     print(f)
-          ## eval(as.call(c(as.symbol("filter"),as.symbol(".__frame"),f)),e)	
-          ## })
-          if(all(sapply(r,is,"logicalFilterResult"))) {
-              ## Combine into a many filter result
-              manyFilterResult(r,frameId=identifier(x),attr(fl,'AdjM'))
-          } else 
-          r
-      })
-
 
 
 ## ===========================================================================
