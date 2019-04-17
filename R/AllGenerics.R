@@ -246,14 +246,6 @@ setGeneric("action",function(object) standardGeneric("action"))
 
 
 ## ===========================================================================
-## Generics to add an actionItem to a workflow
-## ---------------------------------------------------------------------------
-#' @export
-setGeneric("add",function(wf, action, ...) standardGeneric("add"))
-
-
-
-## ===========================================================================
 ## Generics to assign values into and get values from a workflow environment
 ## ---------------------------------------------------------------------------
 #' @export
@@ -269,18 +261,6 @@ setGeneric("assign", function(x, value, pos=-1, envir=as.environment(pos),
 #' @export
 setGeneric("ls")
 
-
-
-## ===========================================================================
-## Generics to remove object from a workFlow. We pass along a substituted
-## version of symbol in order to be able to remove references as well.
-## ---------------------------------------------------------------------------
-#' @export
-setGeneric("Rm", function(symbol, envir, subSymbol, ...)
-       {
-           subSymbol <- as.character(substitute(symbol))
-           standardGeneric("Rm")
-       })
 
 
 
