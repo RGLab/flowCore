@@ -1038,7 +1038,7 @@ Some basic flowCore \Rclass{filter}s can be added to a \Rclass{GatingSet}:
 
 <<addGate-nonDebris>>=
 rg1 <- rectangleGate("FSC-A"=c(50000, Inf), filterId="NonDebris")
-gs_add_gate(gs, rg1, parent = "root")
+gs_pop_add(gs, rg1, parent = "root")
 gs_get_pop_paths(gs)
 # gate the data
 recompute(gs)
@@ -1064,8 +1064,8 @@ ggcyto(gs, aes(x = `FSC-A`)) + geom_density() + geom_gate("NonDebris")
 
 To get population statistics for the given populatuion
 <<getStats1>>=
-gh_get_count(gs[[1]], "NonDebris")#counts
-gh_get_proportion(gs[[1]], "NonDebris")#proportion
+gh_pop_get_stats(gs[[1]], "NonDebris")#counts
+gh_pop_get_stats(gs[[1]], "NonDebris", type = "percent")#proportion
 @
 
 Now we add two more gates:
@@ -1078,11 +1078,11 @@ mat <- matrix(c(54272,59392,259071.99382782
 colnames(mat) <-c("FSC-A", "FSC-H")
 mat
 pg <- polygonGate(mat)
-gs_add_gate(gs, pg, parent = "NonDebris", name = "singlets")
+gs_pop_add(gs, pg, parent = "NonDebris", name = "singlets")
 
 # add the third gate
 rg2 <- rectangleGate("V450-A"=c(2000, Inf))
-gs_add_gate(gs, rg2, parent = "singlets", name = "CD3")
+gs_pop_add(gs, rg2, parent = "singlets", name = "CD3")
 gs_get_pop_paths(gs)
 
 @
@@ -1093,8 +1093,8 @@ explicitly specified during the addition this time.
 A \Rclass{quadrantGate}, which results in four sub-populations, is also supported.
 <<addQuadGate>>=
 qg <- quadGate("B710-A" = 2000, "R780-A" = 3000)
-gs_add_gate(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
-gs_get_children(gs[[1]], "CD3")
+gs_pop_add(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+gs_pop_get_children(gs[[1]], "CD3")
 # gate the data from "singlets"
 recompute(gs, "singlets")
 @ 
@@ -1130,7 +1130,7 @@ nrow(fs[[1]])
 
 To get all the population statistics:
 <<getStats2>>=
-gs_get_pop_stats(gs)
+gs_pop_get_count_fast(gs)
 @
 
 \subsection{Removing nodes from a \Rclass{GatingSet} object}
@@ -1155,7 +1155,7 @@ thisData <- getData(gs)
 nonDebris_gate <- fsApply(thisData,
                           function(fr)
                             openCyto:::.mindensity(fr, channels = "FSC-A"))
-gs_add_gate(gs, nonDebris_gate, parent = "root", name = "nonDebris")
+gs_pop_add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
 }
 @
@@ -1167,7 +1167,7 @@ thisData <- getData(gs, "nonDebris") #get parent data
 singlet_gate <- fsApply(thisData,
                         function(fr)
                           openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
-gs_add_gate(gs, singlet_gate, parent = "nonDebris", name = "singlets")
+gs_pop_add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
 }
 @
@@ -1179,7 +1179,7 @@ thisData <- getData(gs, "singlets") #get parent data
 CD3_gate <- fsApply(thisData,
                     function(fr)
                       openCyto:::.mindensity(fr, channels ="V450-A"))
-gs_add_gate(gs, CD3_gate, parent = "singlets", name = "CD3")
+gs_pop_add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
 }
 @
@@ -1195,7 +1195,7 @@ Tsub_gate <- fsApply(thisData,
                             channels = c("B710-A", "R780-A"),
                             gFunc = 'mindensity')
                     )
-gs_add_gate(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+gs_pop_add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
 recompute(gs)
 }
 @
