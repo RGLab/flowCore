@@ -999,7 +999,7 @@ comp
 gs <- compensate(gs, comp)
 fs_comp <- getData(gs)
 @
-We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{gs_get_pop_paths} method:
+We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{gs\_get\_pop\_paths} method:
 <<nodes>>=
 gs_get_pop_paths(gs)
 @ 
