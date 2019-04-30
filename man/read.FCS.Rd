@@ -33,7 +33,9 @@ set to "custom" or "applied", no transformation will be used.}
 
 \item{which.lines}{Numeric vector to specify the indices of the lines to be
 read. If NULL all the records are read, if of length 1, a random sample of
-the size indicated by \code{which.lines} is read in.}
+the size indicated by \code{which.lines} is read in. It's used to achieve partial disk IO
+for the large FCS that can't fit the full data into memory. Be aware the potential slow read
+(especially for the large size of random sampling) due to the frequent disk seek operations.}
 
 \item{alter.names}{boolean indicating whether or not we should rename the
 columns to valid R names using \code{\link{make.names}}. The default is
