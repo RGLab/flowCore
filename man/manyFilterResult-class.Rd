@@ -16,8 +16,7 @@
 \description{
 The result of a several related, but possibly overlapping filter results.
 The usual creator of this object will usually be a \code{\link{filter}}
-operation of \code{\link{filterSet}} object on a \code{\link{flowFrame}}
-object.
+operation on a \code{\link{flowFrame}} object.
 }
 \section{Slots}{
 

@@ -12,8 +12,7 @@
 \title{Class filterReference}
 \description{
 A reference to another filter inside a reference. Users should generally not
-be aware that they are using this class, but it is used heavily by
-\code{"\linkS4class{filterSet}"} classes.
+be aware that they are using this class.
 }
 \section{Slots}{
 
@@ -36,9 +35,6 @@ so there is no constructor function.
 Class \code{"\linkS4class{filter}"}, directly.
 }
 
-\seealso{
-\code{"\linkS4class{filterSet}"}
-}
 \author{
 B. Ellis
 }

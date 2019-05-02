@@ -471,7 +471,7 @@ setMethod("transform",
 ## ==========================================================================
 ## filter methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## These methods apply single filters, filterSets or lists of filters to
+## These methods apply single filters or lists of filters to a
 ## flowSet object. In all cases, the output of the filtering operation is
 ## a filterResultList
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -487,21 +487,6 @@ setMethod("filter",
 				stop("parameters in the filter definition don't ",
 						"match the parameters in the flowSet", call.=FALSE)
 			res <- fsApply(x,function(x) filter(x,filter))
-			return(new("filterResultList", .Data=res, frameId=sampleNames(x),
-							filterId=identifier(filter)))
-		})
-
-## for filterSets
-## FIXME: Need to check that everything still works after introduction
-## of filterResultLists
-#' @noRd
-#' @export
-setMethod("filter",
-		signature=signature(x="flowSet",
-				filter="filterSet"),
-		definition=function(x, filter, method = "missing", sides = "missing", circular = "missing", init = "missing")
-		{
-			res <- fsApply(x, function(x) filter(x, filter))
 			return(new("filterResultList", .Data=res, frameId=sampleNames(x),
 							filterId=identifier(filter)))
 		})

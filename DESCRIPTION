@@ -45,14 +45,11 @@ Collate:
     AllClasses.R
     flowFrame-accessors.R
     flowSet-accessors.R
-    Rm-methods.R
     transform_gate-methods.R
-    actionItem-accessors.R
     coerce.R
     logicalFilterResult-accessors.R
     summarizeFilter-methods.R
     filterSummary-accessors.R
-    fcReference-accessors.R
     manyFilterResult-accessors.R
     summary-methods.R
     multipleFilterResult-accessors.R
@@ -60,18 +57,15 @@ Collate:
     transformList-accessors.R
     identifier-methods.R
     parameters-methods.R
-    view-accessors.R
     initialize-methods.R
     filterResult-accessors.R
     in-methods.R
     rectangleGate-accessors.R
-    workFlow-accessors.R
     filterResultList-accessors.R
     IO.R
     show-methods.R
     length-methods.R
     names-methods.R
-    filterSet-accessors.R
     split-methods.R
     eval-methods.R
     gatingML.R
