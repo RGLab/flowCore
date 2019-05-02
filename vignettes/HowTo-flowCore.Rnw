@@ -942,13 +942,12 @@ which has the same effect as the $\log$ transform used earlier.
 
 \section{Extensions from \Rpackage{flowWorkspace}:
 \Rclass{GatingHierarchy} and \Rclass{GatingSet}}
-\Rclass{filterSets} are very limited in their use for complex
-analysis work flows. They are  result-centric and it is hard to access
+The now-defunct \Rclass{filterSet} class was very limited in its use for complex
+analysis work flows. It was result-centric and it was hard to access
 intermediate results. \Rpackage{flowWorkspace} and the \Rpackage{openCyto} framework (http://opencyto.org) 
-offer much more versatile tools for such tasks though the \Rclass{GatingSet} class 
-(the old \Rclass{workFlow} is now deprecated). The general idea is to let the software handle 
-the organization of intermediate results and operations and to provide a unified API
-to access and summarize these operations. 
+offer much more versatile tools for such tasks through the \Rclass{GatingSet} class. 
+The general idea is to let the software handle the organization of intermediate results 
+and operations and to provide a unified API to access and summarize these operations. 
  
 
 \subsection{Abstraction of GatingSet}
@@ -993,16 +992,16 @@ Normally, we want to compensate the data first by using a user-supplied compensa
 gs_manual <- load_gs(list.files(pattern = "gs_manual",
                                 system.file("extdata", package = "flowWorkspaceData"),
                                 full = TRUE))
-comp <- getCompensationMatrices(gs_manual[[1]])
+comp <- gh_get_compensations(gs_manual[[1]])
 @
 <<Compensate>>=
 comp
 gs <- compensate(gs, comp)
 fs_comp <- getData(gs)
 @
-We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{getNodes} method:
+We can query the available nodes in the \Rclass{GatingSet} using the \Rfunction{gs\_get\_pop\_paths} method:
 <<nodes>>=
-getNodes(gs)
+gs_get_pop_paths(gs)
 @ 
 It shows the only node ``root'' which corresponds to the raw flow data just added.
 
@@ -1025,7 +1024,7 @@ gs <- transform(gs, tf)
 @
 <<plotTrans,echo=TRUE, results='hide'>>=
 p1 <- autoplot(fs_comp[[1]], "B710-A") + ggtitle("raw")
-p2 <- autoplot(flowData(gs)[[1]], "B710-A") + 
+p2 <- autoplot(gs_cyto_data(gs)[[1]], "B710-A") + 
           ggtitle("trans") + 
           ggcyto_par_set(limits = "instrument")
 grid.arrange(as.ggplot(p1), as.ggplot(p2), ncol = 2)
@@ -1039,8 +1038,8 @@ Some basic flowCore \Rclass{filter}s can be added to a \Rclass{GatingSet}:
 
 <<addGate-nonDebris>>=
 rg1 <- rectangleGate("FSC-A"=c(50000, Inf), filterId="NonDebris")
-add(gs, rg1, parent = "root")
-getNodes(gs)
+gs_pop_add(gs, rg1, parent = "root")
+gs_get_pop_paths(gs)
 # gate the data
 recompute(gs)
 @
@@ -1065,8 +1064,8 @@ ggcyto(gs, aes(x = `FSC-A`)) + geom_density() + geom_gate("NonDebris")
 
 To get population statistics for the given populatuion
 <<getStats1>>=
-getTotal(gs[[1]], "NonDebris")#counts
-getProp(gs[[1]], "NonDebris")#proportion
+gh_pop_get_stats(gs[[1]], "NonDebris")#counts
+gh_pop_get_stats(gs[[1]], "NonDebris", type = "percent")#proportion
 @
 
 Now we add two more gates:
@@ -1079,12 +1078,12 @@ mat <- matrix(c(54272,59392,259071.99382782
 colnames(mat) <-c("FSC-A", "FSC-H")
 mat
 pg <- polygonGate(mat)
-add(gs, pg, parent = "NonDebris", name = "singlets")
+gs_pop_add(gs, pg, parent = "NonDebris", name = "singlets")
 
 # add the third gate
 rg2 <- rectangleGate("V450-A"=c(2000, Inf))
-add(gs, rg2, parent = "singlets", name = "CD3")
-getNodes(gs)
+gs_pop_add(gs, rg2, parent = "singlets", name = "CD3")
+gs_get_pop_paths(gs)
 
 @
 
@@ -1094,8 +1093,8 @@ explicitly specified during the addition this time.
 A \Rclass{quadrantGate}, which results in four sub-populations, is also supported.
 <<addQuadGate>>=
 qg <- quadGate("B710-A" = 2000, "R780-A" = 3000)
-add(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
-getChildren(gs[[1]], "CD3")
+gs_pop_add(gs, qg, parent="CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+gs_pop_get_children(gs[[1]], "CD3")
 # gate the data from "singlets"
 recompute(gs, "singlets")
 @ 
@@ -1131,7 +1130,7 @@ nrow(fs[[1]])
 
 To get all the population statistics:
 <<getStats2>>=
-getPopStats(gs)
+gs_pop_get_count_fast(gs)
 @
 
 \subsection{Removing nodes from a \Rclass{GatingSet} object}
@@ -1140,9 +1139,9 @@ Thus, removing a particular node means also removing all of its associated child
 
 <<Rm>>=
 Rm('CD3', gs)
-getNodes(gs)
+gs_get_pop_paths(gs)
 Rm('NonDebris', gs)
-getNodes(gs)
+gs_get_pop_paths(gs)
 @ 
 
 Now for the larger data set, it would be either inaccurate to apply the same hard-coded 
@@ -1156,7 +1155,7 @@ thisData <- getData(gs)
 nonDebris_gate <- fsApply(thisData,
                           function(fr)
                             openCyto:::.mindensity(fr, channels = "FSC-A"))
-add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
+gs_pop_add(gs, nonDebris_gate, parent = "root", name = "nonDebris")
 recompute(gs)
 }
 @
@@ -1168,7 +1167,7 @@ thisData <- getData(gs, "nonDebris") #get parent data
 singlet_gate <- fsApply(thisData,
                         function(fr)
                           openCyto:::.singletGate(fr, channels =c("FSC-A", "FSC-H")))
-add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
+gs_pop_add(gs, singlet_gate, parent = "nonDebris", name = "singlets")
 recompute(gs)
 }
 @
@@ -1180,7 +1179,7 @@ thisData <- getData(gs, "singlets") #get parent data
 CD3_gate <- fsApply(thisData,
                     function(fr)
                       openCyto:::.mindensity(fr, channels ="V450-A"))
-add(gs, CD3_gate, parent = "singlets", name = "CD3")
+gs_pop_add(gs, CD3_gate, parent = "singlets", name = "CD3")
 recompute(gs)
 }
 @
@@ -1196,7 +1195,7 @@ Tsub_gate <- fsApply(thisData,
                             channels = c("B710-A", "R780-A"),
                             gFunc = 'mindensity')
                     )
-add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
+gs_pop_add(gs, Tsub_gate, parent = "CD3", names = c("CD8", "DPT", "CD4", "DNT"))
 recompute(gs)
 }
 @

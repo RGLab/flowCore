@@ -10,7 +10,6 @@
 \alias{coerce,factor,filterResult-method}
 \alias{coerce,matrix,filterResult-method}
 \alias{coerce,logical,filterResult-method}
-\alias{coerce,gateView,filterResult-method}
 \alias{coerce,numeric,filterResult-method}
 \alias{coerce,logicalFilterResult,logical-method}
 \alias{coerce,randomFilterResult,logical-method}
@@ -29,14 +28,11 @@
 \alias{coerce,character,filter-method}
 \alias{coerce,name,filter-method}
 \alias{coerce,call,filter-method}
-\alias{coerce,filterSet,list-method}
-\alias{coerce,list,filterSet-method}
 \alias{coerce,list,filterResultList-method}
 \alias{coerce,filterResultList,list-method}
 \alias{coerce,flowSet,list-method}
 \alias{coerce,flowSet,flowFrame-method}
 \alias{coerce,flowFrame,flowSet-method}
-\alias{coerce,flowFrame,filterSet-method}
 \alias{coerce,nullParameter,character-method}
 \alias{coerce,parameters,character-method}
 \alias{coerce,ratio,character-method}

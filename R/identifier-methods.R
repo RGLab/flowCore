@@ -119,26 +119,6 @@ setReplaceMethod("identifier",
              })
 
 
-
-## ==========================================================================
-## For actionItem objects we can get the ID directly from the ID slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("identifier",
-          signature=signature(object="actionItem"),
-          definition=function(object) object@ID)
-
-
-
-## ==========================================================================
-## For fcReference objects we can get the ID directly from the ID slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("identifier",
-          signature=signature("fcReference"),
-          definition=function(object) object@ID)
-
-
 ## ==========================================================================
 ## For filterList objects we can get the ID directly from the filterId slot
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,26 +175,6 @@ setReplaceMethod("identifier",
 
 
 ## ==========================================================================
-## For filterSet objects we can get the ID directly from the name slot
-## --------------------------------------------------------------------------
-#' @export
-setMethod("identifier",
-          signature=signature(object="filterSet"),
-          definition=function(object) object@name)
-
-
-
-## ==========================================================================
-## For view objects we can get the ID directly from the ID slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("identifier",
-          signature=signature(object="view"),
-          definition=function(object) object@ID)
-
-
-
-## ==========================================================================
 ## We need this to avoid type-checking
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' @export
@@ -246,23 +206,6 @@ setReplaceMethod("identifier",
                  definition=function(object,value)
              {
                  object@normalizationId <- value
-                 object
-             })
-
-
-## ==========================================================================
-## subsetting objects have a subsettingId slot
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-setMethod("identifier",
-          signature=signature(object="subsetting"),
-          definition=function(object) object@subsettingId)
-
-setReplaceMethod("identifier",
-                 signature=signature("subsetting","character"),
-                 definition=function(object,value)
-             {
-                 object@subsettingId <- value
                  object
              })
 

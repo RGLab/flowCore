@@ -10,9 +10,7 @@
 \alias{filter,flowFrame,rectangleGate}
 \alias{filter,flowFrame,polygonGate}
 \alias{filter,flowFrame,norm2Filter}
-\alias{filter,flowFrame,filterSet-method}
 \alias{filter,flowSet,filter-method}
-\alias{filter,flowSet,filterSet-method}
 \alias{filter,flowSet,list-method}
 \alias{filter,flowSet,filterList-method}
 \alias{summary,filter-method}
