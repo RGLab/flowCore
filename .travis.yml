@@ -11,9 +11,9 @@ before_install:
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
   - R -e 'devtools::install_github("RGLab/flowClust", ref = "bioc")'
-  - R -e 'devtools::install_github("RGLab/flowWorkspace", ref = "cytoverse")'
-  - R -e 'devtools::install_github("RGLab/ggcyto", ref = "cytoverse")'
-  - R -e 'devtools::install_github("RGLab/openCyto", ref = "cytoverse")'
+  - R -e 'devtools::install_github("RGLab/flowWorkspace", ref = "trunk")'
+  - R -e 'devtools::install_github("RGLab/ggcyto", ref = "trunk")'
+  - R -e 'devtools::install_github("RGLab/openCyto", ref = "trunk")'
   - tlmgr install index
 
 install:
