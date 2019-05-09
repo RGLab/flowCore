@@ -40,9 +40,9 @@ test_that("polygonGateUsage", {
 	  expect_is(p,"polygonGate")
 	
     expect_true(hasMethod("%in%",c(class(b08),class(p))))
-	x   = b08 %in% p
-	m = getMethod("%in%",c(class(b08),class(p)))(b08,p)
-	expect_equal(sum(x),3807)#used to be 3785 before the commit regarding to github #85 for including the events fallon the edge of gate
+	  x   = b08 %in% p
+	  m = getMethod("%in%",c(class(b08),class(p)))(b08,p)
+	  expect_equal(sum(x),3785)
     p2   = polygonGate(vertices[-nrow(vertices),])
    	expect_equal(sum(x),sum(b08 %in% p2))
    	
@@ -104,9 +104,24 @@ test_that("polygonGateUsage", {
    	x   = fr %in% p
    	expect_equal(sum(x),8)
    	
+   	#add in-cell event that happens to intersect with the right vertex
+   	pts <- fr@exprs[2,]
+   	pts[2] <- vertices[3,2]
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	x   = fr %in% p
+   	expect_equal(sum(x),9)
+   	
+   	#add out-cell event that happens to intersect with the right vertex
+   	pts[1] <- vertices[6,1] - 50
+   	fr@exprs <- rbind(fr@exprs, pts)
+   	p@boundaries[6,2] <- p@boundaries[6,2] + 50
+   	x   = fr %in% p
+   	expect_equal(sum(x),8)
+   	
    	# plot(rbind(p@boundaries, fr@exprs), type = "n")
    	# polygon(p@boundaries)
-   	# points(fr@exprs, col = "red")
+   	# points(fr@exprs[x,], col = "red")
+   	# points(fr@exprs[!x,,drop = F], col = "blue")
    	# title(sum(x))
 })
 #polytopeGate will be deprecated because even gatingML2 no longer supports it
