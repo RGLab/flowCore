@@ -10,6 +10,7 @@ before_install:
   - R -e 'devtools::install_github("Bioconductor/BiocGenerics", ref = "master")'
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
+  - R -e 'devtools::install_github("RGLab/cytolib", ref = "bioc")'
   - R -e 'devtools::install_github("RGLab/flowClust", ref = "bioc")'
   - R -e 'devtools::install_github("RGLab/flowWorkspace", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/ggcyto", ref = "trunk")'
