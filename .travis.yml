@@ -8,14 +8,12 @@ cache: packages
 before_install:
   - R -e 'install.packages("devtools")'
   - R -e 'devtools::install_github("Bioconductor/BiocGenerics", ref = "master")'
+
+install:
+  - R -e 'devtools::install_deps(upgrade = "always")'
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
   - R -e 'devtools::install_github("RGLab/cytolib", ref = "trunk")'
-  - R -e 'devtools::install_deps(upgrade = "always")'
-  - tlmgr install index
-
-install:
-
 
 script:
   - R CMD build . --no-build-vignettes
