@@ -37,6 +37,12 @@ test_that("range", {
   expect_equal(range(fr, "data")  ,rng2, tolerance = 4e-7)
   expect_error(range(fr, "FSC-H", type = "data"), "only accept two")
   
+  #swap cols of fr
+  origcol <- colnames(fr)
+  colnames(fr@exprs)[7:8] <- origcol[8:7]
+  rg <- as.matrix(range(fr, "data")[7:8])
+  rownames(rg) <- NULL
+  expect_equal(apply(exprs(fr)[,7:8], 2, range), rg)
 })
 
 test_that("subsetKeywords", {

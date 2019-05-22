@@ -1170,7 +1170,11 @@ setMethod("range",
               mar <- data_range[2,]
           
           ret <- rbind(min=mir, max=mar)
-          colnames(ret) <- param$name[pind]
+          if(type == "data")
+            pnames <- colnames(exprs(x))[pind]
+          else
+            pnames <- param$name[pind]
+          colnames(ret) <- pnames
           
           
             
