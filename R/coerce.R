@@ -233,7 +233,7 @@ setAs(from="environment", to="flowSet", def=function(from)
       ## If specified, remove extraneous symbols from the environment
       ## before continuing
       frameList <- frameList[isFrame]
-      new("flowSet", frames=from, colnames=colnames(from[[frameList[[1]]]]),
+      new("flowSet", frames=from,
           phenoData=new("AnnotatedDataFrame",
                         data=data.frame(name=I(frameList), row.names=frameList),
                         varMetadata=data.frame(labelDescription="Name",

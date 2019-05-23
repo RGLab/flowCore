@@ -63,10 +63,6 @@ corresponds to one of the \code{\linkS4class{flowFrame}}s in the
 \code{frames} slot.  The \code{sampleNames} of \code{phenoData}
 (see below) must match the names of the
 \code{\linkS4class{flowFrame}} in the \code{frames} environment.}
-
-\item{\code{colnames}}{A \code{character} object with the (common)
-column names of all the data matrices in the
-\code{\linkS4class{flowFrame}}s.}
 }}
 
 \section{Creating Objects}{
