@@ -80,7 +80,7 @@ data. See \code{\link[flowCore:parameterFilter-class]{here}} for details.
   compose the two filters, though summary methods will use subset
   semantics when calculating proportions. Additionally, when the
   filter is data driven, such as
-  \code{\link[flowCore:norm2Filter-class]{norm2Filter}}, the subset
+  \code{\link[flowStats:norm2Filter-class]{norm2Filter}}, the subset
   semantics are 
   applied to the data used to fit the filter possibly resulting in
   quite different, and usually more desirable, results.}

@@ -17,18 +17,14 @@ Depends:
 Imports:
     Biobase,
     BiocGenerics (>= 0.29.2),
-    graph,
     grDevices,
     graphics,
     methods,
-    rrcov,
     stats,
     utils,
     stats4,
-    corpcor,
     Rcpp,
-    matrixStats,
-    MASS
+    matrixStats
 Suggests:
     Rgraphviz,
     flowViz,

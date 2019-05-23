@@ -130,26 +130,6 @@ setMethod("summarizeFilter",
       })
 
 
-## ==========================================================================
-## For a norm2Filter we want to strip things from the attributes in the
-## subSet slot, i.e., the details about the fitted bivariate normal
-## distribution
-## ---------------------------------------------------------------------------
-#' @export
-setMethod("summarizeFilter",
-          signature=signature(result="logicalFilterResult",
-                              filter="norm2Filter"),
-          definition=function(result, filter)
-      {
-          ret <- callNextMethod()
-          ret$cov <- attr(result@subSet,'cov')
-          ret$center <- attr(result@subSet,'center')
-          ret$radius <- attr(result@subSet,'radius')
-          ret$parameters <- parameters(filter)
-          return(ret)
-      })
-
-
 
 ## ==========================================================================
 ## For a subsetFilter we need to grab things from the attributes

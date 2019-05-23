@@ -21,7 +21,7 @@ test_that("filter", {
       
       
           
-      filter2 = norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
+      filter2 = flowStats::norm2Filter("FSC-H","SSC-H",scale.factor=2,filterId="Live Cells")
       b08.result2 = filter(b08,filter2 %subset% b08.result1)
       expect_equal(filterDetails(b08.result2), expectRes[["filter.norm2Filter"]])
       expect_equal(sum(b08 %in% (filter2 %subset% b08.result1)), 6496)
@@ -50,7 +50,7 @@ test_that("filter", {
       expect_equal(summary(b08.result3 %subset% b08.result2), expectRes[["filter.b08.result3.subset"]])
 
 
-      filter4 = norm2Filter("FSC-H","FL1-H",scale.factor=2,filterId="FL1-H+")
+      filter4 = flowStats::norm2Filter("FSC-H","FL1-H",scale.factor=2,filterId="FL1-H+")
       b08.result4 = filter(b08,filter4 %subset% b08.result2)
       expect_equal(summary(b08.result4),expectRes[["filter.b08.result3.subset2"]]) 
 

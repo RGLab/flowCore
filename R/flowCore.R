@@ -35,10 +35,7 @@
 #' @importFrom Biobase listLen read.AnnotatedDataFrame
 #' @importFrom BiocGenerics colnames eval get mget nrow ncol sort
 #' @importFrom stats4 plot summary
-#' @importFrom graph "edgeRenderInfo<-" "nodeRenderInfo<-"
-#' @importFrom graphics hist text smoothScatter
-#' @importFrom rrcov CovMcd
-#' @importFrom MASS cov.rob
+#' @importFrom graphics hist text 
 #' @importFrom stats kmeans mad median qnorm quantile runif sd uniroot var
 #' @importFrom utils data find head tail write.table
 #' @importFrom corpcor pseudoinverse

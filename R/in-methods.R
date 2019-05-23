@@ -198,61 +198,6 @@ setMethod("%in%",
 
         })
 
-## ==========================================================================
-## norm2Filter -- as a logical filter, this returns a logical vector.
-## Essentially, the algorithm to evaluate the filter is similar to that of
-## ellipsoidGates with the addition of the scalefac argument, that controls
-## the cutoff in the Mahalanobis distance.
-## ---------------------------------------------------------------------------
-#' @export
-setMethod("%in%",
-          signature=signature("flowFrame",
-                              table="norm2Filter"),
-          definition=function(x, table)
-      {
-          if(nrow(x)==0)
-          {
-              result <- as.logical(NULL)
-              attr(result, 'center') <- NA
-              attr(result, 'cov') <- NA
-              attr(result, 'radius') <- NA
-              return(result)
-          }
-          if(length(parameters(table)) != 2)
-              stop("norm2 filters require exactly two parameters.")
-          y <- exprs(x)[,parameters(table)]
-          ## drop data that has piled up on the measurement ranges
-          r <- range(x)[, parameters(table)]
-          sel <- (y[,1] > r[1,1] & y[,1] < r[2,1] &
-                  y[,2] > r[1,2] & y[,2] < r[2,2])
-          values <- y[sel, ]
-          if(is.na(match(table@method,c("covMcd","cov.rob"))))
-              stop("Method must be either 'covMcd' or 'cov.rob'")
-          cov <- switch(table@method,
-                        covMcd={
-                            tmp <- if(nrow(values)>table@n)
-                                CovMcd(values[sample(nrow(values),
-                                                     table@n),])
-                            else rrcov::CovMcd(values)
-                            list(center=tmp@center, cov=tmp@cov)
-                        },
-                        cov.rob={MASS::cov.rob(values)},
-                        stop("How did you get here?")
-                        )
-          W <- t(y)-cov$center
-          ## FIXME: a long term change might be to save chol(cov$cov)
-          ## rather than cov$cov in the result.  This helps in computing
-          ## the gate boundaries and qr.solve above could be replaced by
-          ## the equivalent of chol2inv(chol(cov$cov)).
-          covsol <- qr.solve(cov$cov) %*% W
-          result <- colSums(covsol * W) < table@scale.factor^2
-          attr(result, 'center') <- cov$center
-          attr(result, 'cov') <- cov$cov
-          attr(result, 'radius') <- table@scale.factor
-          result
-      })
-
-
 
 
 ## ==========================================================================
