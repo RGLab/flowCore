@@ -1052,8 +1052,7 @@ setClass("flowSet",
          prototype=list(frames=new.env(hash=TRUE, parent=emptyenv()),
          phenoData=new("AnnotatedDataFrame",
          data=data.frame(),
-         varMetadata=data.frame()),
-         colnames=character(0)),
+         varMetadata=data.frame())),
          validity=function(object){
              nc <- length(colnames(object))
              ## Make sure that all of our samples list
