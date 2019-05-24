@@ -151,7 +151,17 @@ setGeneric("summarizeFilter", function(result,filter)
 ## Generics for spillover and compensate and decompensate
 ## ---------------------------------------------------------------------------
 #' @export
-setGeneric("spillover", function(x,...) standardGeneric("spillover"))
+setGeneric("spillover", function(x,...){
+  tryCatch(standardGeneric("spillover"),
+      error = function(e){
+        if(is(x, "flowSet")){
+          stop("The flowSet spillover method has been moved to the flowStats package.
+               Please library(flowStats) first.")
+        }else{
+          stop(e)
+        }
+      })
+})
 #' @export
 setGeneric("compensate", 
             function(x, spillover, ...)
@@ -165,7 +175,17 @@ setGeneric("decompensate",
 ## Generic for spillover_match
 ## --------------------------------
 #' @export
-setGeneric("spillover_match", function(x,...) standardGeneric("spillover_match"))
+setGeneric("spillover_match", function(x,...){
+  tryCatch(standardGeneric("spillover_match"),
+           error = function(e){
+             if(is(x, "flowSet")){
+               stop("The flowSet spillover_match method has been moved to the flowStats package.
+               Please library(flowStats) first.")
+             }else{
+               stop(e)
+             }
+           })
+})
 
 ## ===========================================================================
 ## Generics for apply-like methods

@@ -1,5 +1,6 @@
 library(testthat)
 library(flowCore)
+library(flowStats)
 
 
 test_check("flowCore")

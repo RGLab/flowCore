@@ -44,7 +44,7 @@ Class \code{"\linkS4class{filter}"}, directly.
 }
 
 \examples{
-
+require(flowStats)
 samp <- read.FCS(system.file("extdata", "0877408774.B08", package="flowCore"))
 
 ## Gate this object after log transforming the forward and side

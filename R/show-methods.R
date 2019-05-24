@@ -424,31 +424,6 @@ setMethod("show",
 
 
 ## ==========================================================================
-## norm2Filter
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#' @export
-
-setMethod("show",
-          signature=signature(object="norm2Filter"),
-          definition=function(object)
-          {
-            parms <- as.character(parameters(object))
-            na  <-  is.na(parms)
-            if(any(na))
-              parms[na] <- "internal transformation"
-            cat("norm2Filter '", identifier(object),
-                "' in dimensions ", sep="")
-            cat(paste(parms, sep="", collapse=" and "),
-                "with parameters:\n")
-            cat("  method:", object@method, "\n")
-            cat("  scale.factor:", object@scale.factor, "\n")
-            cat("  n:", object@n, "\n")
-            cat("\n")
-          })
-
-
-
-## ==========================================================================
 ## polygonGate
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' @export
