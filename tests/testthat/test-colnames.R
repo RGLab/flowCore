@@ -19,8 +19,22 @@ test_that("colnames<-", {
   expect_equal(colnames(fr)[c(1,3)], chnls)
   expect_equivalent(unlist(keyword(fr)[c("$P1N", "$P3N")]), chnls)
   
+  #update fs
+  expect_error(fs[[1]] <- fr, "don't match")
+  
   #update colnames for flowSet
   colnames(fs)[c(1,3)] <- chnls
   expect_equal(colnames(fs)[c(1,3)], chnls)
   expect_equivalent(unlist(keyword(fs[[1]])[c("$P1N", "$P3N")]), chnls)
+  
+  #now [[<- succeeds
+  newmarker <- "fsc-h"
+  markernames(fr) <- c(A = newmarker)
+  fs[[1]] <- fr
+  expect_equal(markernames(fs[[1]])[1], newmarker)
+  
+  #swap cols
+  colnames(fr)[c(1,3)] <- rev(chnls)
+  expect_error(fs[[1]] <- fr, "don't match")
+  
 })

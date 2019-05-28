@@ -649,9 +649,6 @@ flowFrame <- function(exprs, parameters, description=list())
 #' \code{frames} slot.  The \code{sampleNames} of \code{phenoData}
 #' (see below) must match the names of the
 #' \code{\linkS4class{flowFrame}} in the \code{frames} environment.
-#' @slot colnames A \code{character} object with the (common)
-#' column names of all the data matrices in the
-#' \code{\linkS4class{flowFrame}}s.
 #' 
 #' @section Creating Objects:
 #' 
@@ -1051,13 +1048,11 @@ flowFrame <- function(exprs, parameters, description=list())
 #' @export
 setClass("flowSet",                   
          representation=representation(frames="environment",
-         phenoData="AnnotatedDataFrame",
-         colnames="character"),
+         phenoData="AnnotatedDataFrame"),
          prototype=list(frames=new.env(hash=TRUE, parent=emptyenv()),
          phenoData=new("AnnotatedDataFrame",
          data=data.frame(),
-         varMetadata=data.frame()),
-         colnames=character(0)),
+         varMetadata=data.frame())),
          validity=function(object){
              nc <- length(colnames(object))
              ## Make sure that all of our samples list
@@ -1070,10 +1065,12 @@ setClass("flowSet",
              }
              
              ##Ensure that all frames match our colnames
-             if(!all(sapply(sampleNames(object), function(i) {
+			 sn <- sampleNames(object)
+			 coln <- colnames(object@frames[[sn[1]]])
+             if(!all(sapply(sn, function(i) {
                  x <- get(i, env=object@frames)
                  
-                 if(all(object@colnames == colnames(x))){
+                 if(all(coln == colnames(x))){
                      TRUE
                  }else{ 
                      message(i, " doesn't have the identical colnames as the other samples!")

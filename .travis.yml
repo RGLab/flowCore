@@ -8,17 +8,27 @@ cache: packages
 before_install:
   - R -e 'install.packages("devtools")'
   - R -e 'devtools::install_github("Bioconductor/BiocGenerics", ref = "master")'
+
+install:
+  - R -e 'devtools::install_deps(upgrade = "always")'
   - R -e 'install.packages("reshape2")'
   - R -e 'install.packages("covr")'
   - R -e 'devtools::install_github("RGLab/cytolib", ref = "trunk")'
+
+script:
+  - R CMD build . --no-build-vignettes
+  - R -e 'install.packages(list.files(pattern="*tar.gz"), repos=NULL, type="source")'
+  - R -e 'devtools::install_github("RGLab/flowWorkspace", ref="trunk")'  
+  - R -e 'devtools::install_github("RGLab/flowWorkspaceData", ref="trunk")'
+  - R -e 'devtools::install_github("RGLab/flowViz", ref="trunk")'
+  - R -e 'devtools::install_github("RGLab/flowStats", ref="trunk")'
   - R -e 'devtools::install_github("RGLab/flowClust", ref = "trunk")'
-  - R -e 'devtools::install_github("RGLab/flowWorkspace", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/ggcyto", ref = "trunk")'
   - R -e 'devtools::install_github("RGLab/openCyto", ref = "trunk")'
-  - tlmgr install index
-
-install:
   - R -e 'devtools::install_deps(dep = T, upgrade = "always")'
+  - R CMD build .
+  - R CMD check *tar.gz
+
 
 group: stable
 warnings_are_errors: false 

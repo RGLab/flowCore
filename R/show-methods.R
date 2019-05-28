@@ -51,7 +51,7 @@ setMethod("show",
           }
         }
           cat("  column names:\n  ")
-          cat(paste(object@colnames,sep=","))
+          cat(paste(colnames(object[[1]]),sep=","))
           cat("\n")
       })
 

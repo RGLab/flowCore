@@ -85,7 +85,7 @@ setReplaceMethod("[[",
 						"length 1)")
                         cnx <- colnames(x)
                         cnv <- colnames(value)
-                        if(length(cnx) != length(cnv) || !all(sort(cnv) == sort(cnx)))
+                        if(!all(cnx == cnv))
                             stop("The colnames of this flowFrame don't match ",
                                  "the colnames of the flowSet.")
                         
@@ -102,7 +102,7 @@ setReplaceMethod("[[",
 setMethod("colnames",
 		signature=signature(x="flowSet"),
 		definition=function(x, do.NULL="missing", prefix="missing")
-			x@colnames)
+			colnames(x[[1, use.exprs = FALSE]]))#use.exprs is used by h5-based fs
 
 #' @export
 setReplaceMethod("colnames",
@@ -110,7 +110,6 @@ setReplaceMethod("colnames",
 				value="ANY"),
 		definition=function(x, value)
 		{
-			x@colnames <- value
                         for(i in sampleNames(x))
                             colnames(x@frames[[i]]) <- value
 			x
