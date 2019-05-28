@@ -622,7 +622,20 @@ setMethod("eval",
                    }
                    else
                    {
-                       resMatrix <- df[,cols] %*% pseudoinverse(spillMat)
+                       # Jacob Wagner, May 21, 2019
+                       # Inlined pseudoinverse calculation to avoid package dependency
+                       # on corpcor or MASS. This method may no longer be necessary anyway.
+                       tol <- sqrt(.Machine$double.eps)
+                       msvd <- svd(spillMat)
+                       pos <- msvd$d > max(tol * msvd$d[1], 0)
+                       if (all(pos)){
+                         resMatrix <- msvd$v %*% (1/msvd$d * t(msvd$u))
+                       }else if(!any(pos)){
+                         resMatrix <- array(0, dim(mat)[2L:1L])
+                       }else{
+                         resMatrix <- msvd$v[, pos, drop=FALSE] %*% ((1/msv$d[pos]) * t(msvd$u[, pos, drop=FALSE]))
+                       }
+                       # resMatrix <- df[,cols] %*% pseudoinverse(spillMat)
                        colnames(resMatrix) <- rownames(spillMat)
                        # Note that bellow we are using expr@transformationId rather than parameter
                        # since the parameter of a compensatedParameter reflects the detector name,

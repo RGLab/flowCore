@@ -781,7 +781,8 @@ density estimation:
 
 \begin{description}
 \item[norm2Filter]{ A robust method for finding a region that most
-    resembles a bivariate Normal distribution. }
+    resembles a bivariate Normal distribution. Note that this
+    method now resides in the \Rpackage{flowStats} package}
 \item[kmeansFilter]{ Identifies populations based on a one dimensional
     k-means clustering operation. Allows the specification of
     \textbf{multiple} populations. }
@@ -847,6 +848,7 @@ only with that population, we might use \Rfunction{Subset} along with
 a \Rclass{norm2Filter} object as follows:
 
 <<Norm2Filter2, echo=TRUE, results='markup'>>=
+library(flowStats)
 morphGate <- norm2Filter("FSC-H", "SSC-H", filterId="MorphologyGate", 
                          scale=2)
 smaller <- Subset(fs, morphGate)

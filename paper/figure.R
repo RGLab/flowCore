@@ -1,5 +1,6 @@
 ## Loading library
 library("flowCore")
+library("flowStats")
 library("flowQ")
 library("flowViz")
 

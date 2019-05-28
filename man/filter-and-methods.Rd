@@ -38,7 +38,7 @@ calculations, which are ordinarily calculated with respect to the entire
 population as well as data-driven gating procedures which will operate only
 on elements contained by the right hand filter.  This becomes especially
 important when using filters such as
-\code{\link[flowCore:norm2Filter-class]{norm2Filter}}
+\code{\link[flowStats:norm2Filter-class]{norm2Filter}}
 }
 \author{
 B. Ellis
