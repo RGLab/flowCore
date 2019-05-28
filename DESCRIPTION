@@ -28,7 +28,7 @@ Imports:
 Suggests:
     Rgraphviz,
     flowViz,
-    flowStats (>= 3.43.5),
+    flowStats (>= 3.43.4),
     testthat,
     flowWorkspace,
     flowWorkspaceData,
