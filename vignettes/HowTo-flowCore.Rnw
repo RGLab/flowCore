@@ -567,8 +567,11 @@ each of the measurement channels. If these files are not already
 incorporated as \Rclass{flowFrame}s in a \Rclass{flowSet} object, this
 must be done first. Here we also are assigning the appropriate channel name
 for each control file before coercion of the frames to a \Rclass{flowSet}.
+This spillover calculation method is now part of the \Rpackage{flowStats}
+package.
 
 <<Comp4, echo=TRUE, results='markup'>>=
+library(flowStats)
 fcs.dir <- system.file("extdata", "compdata", "data",
                        package="flowCore")
 frames <- lapply(dir(fcs.dir, full.names=TRUE), read.FCS)

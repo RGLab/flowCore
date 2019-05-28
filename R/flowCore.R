@@ -30,15 +30,12 @@
 #' @importMethodsFrom Biobase description "description<-" exprs "exprs<-"
 #' featureNames pData "pData<-" phenoData "phenoData<-" sampleNames 
 #' "sampleNames<-" varLabels "varLabels<-" varMetadata "varMetadata<-"
-#' @importMethodsFrom graph addEdge addNode adj edgeData "edgeData<-"
-#' "edgeDataDefaults<-" nodes removeNode
 #' @importFrom Biobase listLen read.AnnotatedDataFrame
 #' @importFrom BiocGenerics colnames eval get mget nrow ncol sort
 #' @importFrom stats4 plot summary
 #' @importFrom graphics hist text 
 #' @importFrom stats kmeans mad median qnorm quantile runif sd uniroot var
 #' @importFrom utils data find head tail write.table
-#' @importFrom corpcor pseudoinverse
 #' 
 #' 
 #' 
