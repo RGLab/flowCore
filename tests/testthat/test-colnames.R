@@ -2,6 +2,14 @@ data(GvHD)
 fs <- GvHD[1:2]
 fr <- GvHD[[1]]
 
+test_that("change colnames separately through parameter or exprs", {
+  expect_error(pData(parameters(fr))[["name"]][[1]] <- "A", "don't match")
+  expect_error(colnames(exprs(fr))[1] <- "A", "unable to replace")
+  colnames(fr@exprs)[1] <- "A"
+  expect_error(fr[, "FSC-H"], "out of bounds")
+  expect_error(fr[, "A"], "out of bounds")
+})
+
 test_that("colnames", {
   channels <- c('FSC-H', 'SSC-H', 'FL1-H', 'FL2-H', 'FL3-H', 'FL2-A', 'FL4-H', 'Time')
   expect_equal(colnames(fr), channels)
