@@ -1054,7 +1054,6 @@ setClass("flowSet",
          data=data.frame(),
          varMetadata=data.frame())),
          validity=function(object){
-             nc <- length(colnames(object))
              ## Make sure that all of our samples list
              name.check <- is.na(match(sampleNames(object), ls(object@frames,
                                                                all.names=TRUE)))
