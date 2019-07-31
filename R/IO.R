@@ -41,7 +41,7 @@ isFCSfile <- function(files)
 #' @param path Directory where to look for the files.
 #' @param keyword An optional character vector that specifies the FCS keyword
 #' to read.
-#' @param emptyValue see \code{link[flowCore]{read.FCS}}
+#' @param ... other arguments passed to \code{link[flowCore]{read.FCS}}
 #' 
 #' @return A list of character vectors. Each element of the list correspond to
 #' one FCS file.
@@ -60,7 +60,7 @@ isFCSfile <- function(files)
 #' samp
 #' 
 #' @export
-read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
+read.FCSheader <- function(files, path=".", keyword=NULL, ...)
 {
   
     stopifnot(is.character(files), length(files)>=1, files!="")
@@ -69,7 +69,7 @@ read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
         files = file.path(path, files)
     res <- lapply(files, function(file){
       
-                              thisRes <- try(header(file, emptyValue = emptyValue), silent = TRUE)
+                              thisRes <- try(header(file, ...), silent = TRUE)
                               if(class(thisRes) == "try-error"){
                                 stop(thisRes, file)
                               }else
@@ -81,10 +81,10 @@ read.FCSheader <- function(files, path=".", keyword=NULL, emptyValue = TRUE)
     res
 }
 
-header <- function(files,emptyValue=TRUE){
+header <- function(files, ...){
     con <- file(files, open="rb")
-    offsets <- readFCSheader(con)
-    txt     <- readFCStext(con, offsets,emptyValue=emptyValue)
+    offsets <- findOffsets(con, ...)
+    txt     <- readFCStext(con, offsets, ...)
     close(con)
     txt
 }
@@ -478,7 +478,7 @@ readFCSgetPar <- function(x, pnam, strict=TRUE)
 ## ==========================================================================
 ## Find all data sections in a file and record their offsets.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-findOffsets <- function(con,emptyValue=TRUE, dataset, ...)
+findOffsets <- function(con,emptyValue=TRUE, dataset = NULL, ...)
 {
     offsets <- readFCSheader(con)
     offsets <- matrix(offsets, nrow = 1, dimnames = list(NULL, names(offsets)))
@@ -629,7 +629,7 @@ readFCSheader <- function(con, start=0)
 ## ==========================================================================
 ## parse FCS file text section
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-readFCStext <- function(con, offsets,emptyValue, cpp = TRUE, ...)
+readFCStext <- function(con, offsets,emptyValue = TRUE, cpp = TRUE, ...)
 {
 
     seek(con, offsets["textstart"])
