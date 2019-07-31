@@ -154,7 +154,7 @@ setGeneric("summarizeFilter", function(result,filter)
 setGeneric("spillover", function(x,...){
   tryCatch(standardGeneric("spillover"),
       error = function(e){
-        if(is(x, "flowSet")){
+        if(grepl("unable to find an inherited method for function ‘spillover’ for signature.*(flowSet|ncdfFlowSet)", e$message)){
           stop("The flowSet spillover method has been moved to the flowStats package.
                Please library(flowStats) first.")
         }else{
