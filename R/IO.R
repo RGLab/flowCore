@@ -297,24 +297,33 @@ read.FCS <- function(filename,
     absMin <- colMins(mat,,na.rm=TRUE) # replace apply with matrixStats::colMins to speed up
     # absMin <- apply(mat,2,min,na.rm=TRUE)
     realMin <- pmin(zeroVals,pmax(-111, absMin, na.rm=TRUE), na.rm=TRUE)
+    
+    keep_idx <- seq_along(colnames(mat))
+    remove_idx <- NULL
+    # Only keep certain parameters
+    if(!is.null(column.pattern)) {
+      n <- colnames(mat)
+      keep_idx <- grep(column.pattern, n, invert = invert.pattern)
+      remove_idx <- setdiff(seq_along(colnames(mat)), keep_idx)
+      cols <- names(attr(mat, "dimnames")[[2]])
+      mat <- mat[,keep_idx,drop=FALSE]
+      matRanges <- matRanges[keep_idx]
+      names(attr(mat, "dimnames")[[2]]) <- cols[keep_idx]
+      attr(mat, "ranges") <- matRanges
+      absMin <- absMin[keep_idx]
+      realMin <- realMin[keep_idx]
+      zeroVals <- zeroVals[keep_idx]
+      id <- id[keep_idx]
+    }
 
 	if("transformation" %in% names(txt) && txt[["transformation"]] == "custom") {
 		for(i in seq_along(colnames(mat))) {
-			realMin[i] <- as.numeric(txt[[sprintf("flowCore_$P%sRmin", i)]])
+			realMin[i] <- as.numeric(txt[[sprintf("flowCore_$P%sRmin", keep_idx[i])]])
 		}
 	}
 
     params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
-                                 decades, realMin)
-
-    ## only keep certain parameters
-    if(!is.null(column.pattern)) {
-        n <- colnames(mat)
-        i <- grep(column.pattern, n, invert = invert.pattern)
-
-		 mat <- mat[,i,drop=FALSE]
-        params <- params[i,]
-    }
+                                 decades, realMin, id=keep_idx)
 
     ## check for validity
     if(is.null(which.lines)){
@@ -331,8 +340,8 @@ read.FCS <- function(filename,
        txt[["transformation"]] <-"applied"
        for(p in seq_along(pData(params)$name)) {
           txt[[sprintf("$P%sE", p)]] <- sprintf("0,%g", 0)
-          txt[[sprintf("flowCore_$P%sRmax", p)]] <- matRanges[p] +1
-          txt[[sprintf("flowCore_$P%sRmin", p)]] <- realMin[p]
+          txt[[sprintf("flowCore_$P%sRmax", keep_idx[p])]] <- matRanges[p] +1
+          txt[[sprintf("flowCore_$P%sRmin", keep_idx[p])]] <- realMin[p]
        }
        txt[["$DATATYPE"]] <- "F"
     }
@@ -348,6 +357,12 @@ read.FCS <- function(filename,
 		description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}
 	}
 
+  # Remove keywords for removed parameters
+  if(!is.null(remove_idx)){
+    remove_regex <- paste0("(\\$P|^P)", remove_idx, "[A-Z]+")
+    remove_keys <- lapply(remove_regex, function(rx) grep(rx, names(description), value=TRUE))
+    description <- description[!names(description) %in% do.call(c, remove_keys)]
+  }
 
     ## the spillover matrix
     for(sn in .spillover_pattern){
@@ -388,7 +403,7 @@ txt2spillmatrix <- function(txt){
 ## create AnnotatedDataFrame describing the flow parameters (channels)
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 makeFCSparameters <- function(cn, txt, transformation, scale, decades,
-                              realMin) {
+                              realMin, id) {
     dattype <- switch(readFCSgetPar(txt, "$DATATYPE"),
         "I" = "integer",
         "F" = "numeric",
@@ -397,8 +412,11 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
                 readFCSgetPar(txt, "$DATATYPE"))))
     
     npar <- length(cn)
-    id <- paste("$P",1:npar,sep="")
-
+    if(missing(id)){
+      id = 1:npar
+    }
+    id <- paste("$P", id ,sep="")
+    
     range <- sapply(id, function(this_id){
       rid <- paste("flowCore_", this_id,"Rmax",sep="")
       original <- is.na(txt[rid])
@@ -1747,7 +1765,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     
     #must clear the old $PnX before assigning the new ones since the old ones may not be dropped if fr was subsetted previously
     # because description<- only update or insert but does not delete the old
-    x@description <- orig.kw[!grepl("^\\$P[0-9]+[BERNS]$", names(orig.kw))]
+    x@description <- orig.kw[!grepl("\\$P[0-9]+[BERNS]", names(orig.kw))]
     description(x) <- mk
     
     ## Figure out the offsets based on the size of the initial text section
