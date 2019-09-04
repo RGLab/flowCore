@@ -1763,9 +1763,14 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     names(pns) <- sprintf("$P%sS", newid.pns)
     mk <- c(mk, pns)
     
-    #must clear the old $PnX before assigning the new ones since the old ones may not be dropped if fr was subsetted previously
-    # because description<- only update or insert but does not delete the old
-    x@description <- orig.kw[!grepl("\\$P[0-9]+[BERNS]", names(orig.kw))]
+    # Must correct PnX keys for the case that fr was subsetted by bumping them down to be consecutive (like newid)
+    names(newid) <-  gsub("\\$", "", pid)
+    # bump indices on remaining keys down to their new values
+    newnames <- names(x@description)
+    for(i in newid){
+      newnames <- gsub(paste0(names(newid)[[i]], "([a-zA-z])"), paste0("P", i, "\\1"), newnames)
+    }
+    names(x@description) <- newnames
     description(x) <- mk
     
     ## Figure out the offsets based on the size of the initial text section
