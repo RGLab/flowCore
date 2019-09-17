@@ -11,6 +11,23 @@ rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 tmpdir <- tempfile()
 
 write.flowSet(fs, tmpdir)
+
+
+test_that("read.FCSheader--multi data segment", {
+  dataPath <- "~/rglab/workspace/flowCore/misc/"
+  filename  <- file.path(dataPath, "multi-datasegment.fcs")
+  skip_if_not(file.exists(filename))
+  
+  expect_warning(txt <- read.FCSheader(filename)[[1]], "39 additional data")
+  expect_equal(txt[['$TOT']], "1244")
+  
+  txt <- read.FCSheader(filename, dataset = 1)[[1]]
+  expect_equal(txt[['$TOT']], "1244")
+  
+  txt <- read.FCSheader(filename, dataset = 10)[[1]]
+  expect_equal(txt[['$TOT']], "955")
+  
+})
 test_that("write.FCS--write correct $BEGINDATA",{
       
         mat <- matrix(1:30,ncol = 3, dimnames = list(NULL, letters[1:3]))

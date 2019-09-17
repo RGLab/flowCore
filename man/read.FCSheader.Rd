@@ -4,7 +4,7 @@
 \alias{read.FCSheader}
 \title{Read the TEXT section of a FCS file}
 \usage{
-read.FCSheader(files, path = ".", keyword = NULL, emptyValue = TRUE)
+read.FCSheader(files, path = ".", keyword = NULL, ...)
 }
 \arguments{
 \item{files}{Character vector of filenames.}
@@ -14,7 +14,7 @@ read.FCSheader(files, path = ".", keyword = NULL, emptyValue = TRUE)
 \item{keyword}{An optional character vector that specifies the FCS keyword
 to read.}
 
-\item{emptyValue}{see \code{link[flowCore]{read.FCS}}}
+\item{...}{other arguments passed to \code{link[flowCore]{read.FCS}}}
 }
 \value{
 A list of character vectors. Each element of the list correspond to
