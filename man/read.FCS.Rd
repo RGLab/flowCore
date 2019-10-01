@@ -80,11 +80,21 @@ treated.  IF TRUE, The double delimiters are parsed as a pair of start and
 end single delimiter for an empty value.  Otherwise, double delimiters are
 parsed one part of string as the keyword value.  default is TRUE.}
 
-\item{channel_alias}{a data.frame used to provide the alias of the channels
-to standardize and solve the discrepancy across FCS files.It is expected to
-contain 'alias' and 'channels' column. Each row/entry specifies the common
+\item{channel_alias}{an optional data.frame used to provide the alias of the channels
+to standardize and solve the discrepancy across FCS files. It is expected to
+contain 'alias' and 'channels' column of 'channel_alias'. Each row/entry specifies the common
 alias name for a collection of channels (comma separated). See examples for
-details.}
+details. 
+
+For each channel in the FCS file, read.FCS will first attempt
+to find an exact match in the 'channels' column. If no exact match is found,
+it will check for partial matches. That is, if "V545" is in the 'channels'
+column of 'channel_alias' and "V545-A" is present in the FCS file, this
+partial match will allow the corresponding 'alias' to be assigned. This partial
+matching only works in this direction ("V545-A" in the 'channels' column will
+not match "V545" in the FCS file) and care should be exercised to ensure no unintended
+partial matching of other channel names. If no exact or partial match is found, 
+the channel is unchanged in the resulting \code{flowFrame}.}
 
 \item{...}{ignore.text.offset: whether to ignore the keyword values in TEXT
 segment when they don't agree with the HEADER.  Default is FALSE, which
