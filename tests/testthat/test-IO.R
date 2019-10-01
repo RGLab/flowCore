@@ -410,7 +410,7 @@ test_that("read.FCS: channel_alias", {
   
   #validity check on possible multiple channels matching to the same alias within one FCS
   fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
-  expect_error(fr <- read.FCS(fcsfile, channel_alias = data.frame(alias = c("FL1", "FL3"), channels = c("B710-A,V545", "R780-A"))), "channel_alias: Multiple channels from one FCS")
+  expect_warning(fr <- read.FCS(fcsfile, channel_alias = data.frame(alias = c("FL1", "FL3"), channels = c("B710-A,V545", "R780-A"))), "channel_alias: Multiple channels from one FCS")
   
 })
 

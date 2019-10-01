@@ -372,7 +372,7 @@ read.FCS <- function(filename,
           if(is.matrix(sp))
           {
             cnames <- colnames(sp)
-            cnames <- update_channel_by_alias(cnames, channel_alias)
+            cnames <- update_channel_by_alias(cnames, channel_alias, silent = TRUE)
             if(alter.names)
               cnames <- make.names(cnames)
             colnames(sp) <- cnames
@@ -904,7 +904,7 @@ check_channel_alias <- function(channel_alias){
 	 stop("channel_alias must be either an environment or a data.frame")
 }
 
-update_channel_by_alias <- function(orig_chnl_names, channel_alias)
+update_channel_by_alias <- function(orig_chnl_names, channel_alias, silent = FALSE)
 {
   keys <- ls(channel_alias)
   
@@ -932,13 +932,20 @@ update_channel_by_alias <- function(orig_chnl_names, channel_alias)
   if(any(is.dup))
   {
     dup <- names(tb)[is.dup]
-    dup.ind <- which(new_channels == dup)
+    dup.ind <- which(new_channels %in% dup)
+    for(chnl in dup){
+      chnl.ind <- which(new_channels == chnl)
+      new_channels[chnl.ind] <- paste0(chnl, "-", seq(tb[chnl]))
+    }
     dt <- data.frame(orig_channel_name = orig_chnl_names[dup.ind], new_channel_name = new_channels[dup.ind])
-    print(dt)
-    stop("channel_alias: Multiple channels from one FCS are matched to the same alias!")
-    
-  }else
-    return (new_channels)
+    if(!silent){
+      print(dt)
+      warning(paste0("channel_alias: Multiple channels from one FCS are matched to the same alias!\n",
+                     "                 Integer suffixes added to disambiguate channels.\n",
+                     "                 It is also recommended to verify correct mapping of spillover matrix columns."))
+    }
+  }
+  return (new_channels)
   
 }
 ## ==========================================================================
