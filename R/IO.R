@@ -941,8 +941,8 @@ update_channel_by_alias <- function(orig_chnl_names, channel_alias, silent = FAL
     if(!silent){
       print(dt)
       warning(paste0("channel_alias: Multiple channels from one FCS are matched to the same alias!\n",
-                     "                 Integer suffixes added to disambiguate channels.\n",
-                     "                 It is also recommended to verify correct mapping of spillover matrix columns."))
+                     "Integer suffixes added to disambiguate channels.\n",
+                     "It is also recommended to verify correct mapping of spillover matrix columns."))
     }
   }
   return (new_channels)
