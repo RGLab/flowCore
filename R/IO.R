@@ -165,11 +165,12 @@ header <- function(files, ...){
 #' boundary is not that well defined, since compensation might shift some
 #' values below the original measurement range of the instrument. This can be 
 #' set to an arbitrary number or to \code{NULL} (the default value), in which 
-#' case the original values are kept.
+#' case the original values are kept. When the transformation keyword of the FCS header is
+#' set (typically to "custom" or "applied"), no shift up to min.limit will occur.
 #' @param truncate_max_range logical type. Default is TRUE. can be optionally
 #' turned off to avoid truncating the extreme positive value to the instrument
-#' measurement range .i.e.'$PnR'. This truncation only occurs if no transformation
-#' has been applied to the measured values.
+#' measurement range .i.e.'$PnR'. When the transformation keyword of the FCS header is
+#' set (typically to "custom" or "applied"), no truncation will occur.
 #' @param dataset The FCS file specification allows for multiple data segments
 #' in a single file. Since the output of \code{read.FCS} is a single
 #' \code{flowFrame} we can't automatically read in all available sets. This
