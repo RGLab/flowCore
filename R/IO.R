@@ -1768,6 +1768,9 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     empty_range_ind <- sapply(pnr, length)==0
     empty_range_chnl <- as.character(pd[pid[empty_range_ind],"name"])
     pnr[empty_range_ind] <- colMaxs(mat[, empty_range_chnl, drop = FALSE])
+    # Make sure PnR is an integer
+    if(length(pnr[empty_range_ind]) > 0)
+      pnr[empty_range_ind] <- as.character(ceiling(unlist(pnr[empty_range_ind])))
     mk <- c(mk, pnr)
     
     ## Now update the PnN keyword
