@@ -168,7 +168,8 @@ header <- function(files, ...){
 #' case the original values are kept.
 #' @param truncate_max_range logical type. Default is TRUE. can be optionally
 #' turned off to avoid truncating the extreme positive value to the instrument
-#' measurement range .i.e.'$PnR'.
+#' measurement range .i.e.'$PnR'. This truncation only occurs if no transformation
+#' has been applied to the measured values.
 #' @param dataset The FCS file specification allows for multiple data segments
 #' in a single file. Since the output of \code{read.FCS} is a single
 #' \code{flowFrame} we can't automatically read in all available sets. This
