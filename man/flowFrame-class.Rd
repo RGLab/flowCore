@@ -166,9 +166,10 @@ creating objects using \code{new} or the constructor is discouraged.
     \code{   tail(flowFrame)}
     
   }
-  \item{description, description<-}{Extract or replace the whole list
-    of annotation keywords. Usually one would only be interested in a
-    subset of keywords, in which case the \code{keyword} method is
+  \item{description, description<-}{Extract the whole list
+    of annotation keywords and their corresponding values or replace values by keyword 
+    (\code{description<-} is equivalent to \code{keyword<-}). Usually one would only be 
+    interested in a subset of keywords, in which case the \code{keyword} method is
     more appropriate. The optional \code{hideInternal} parameter can
     be used to exclude internal FCS parameters starting
     with \code{$}.
