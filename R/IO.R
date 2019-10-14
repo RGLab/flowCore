@@ -165,10 +165,12 @@ header <- function(files, ...){
 #' boundary is not that well defined, since compensation might shift some
 #' values below the original measurement range of the instrument. This can be 
 #' set to an arbitrary number or to \code{NULL} (the default value), in which 
-#' case the original values are kept.
+#' case the original values are kept. When the transformation keyword of the FCS header is
+#' set (typically to "custom" or "applied"), no shift up to min.limit will occur.
 #' @param truncate_max_range logical type. Default is TRUE. can be optionally
 #' turned off to avoid truncating the extreme positive value to the instrument
-#' measurement range .i.e.'$PnR'.
+#' measurement range .i.e.'$PnR'. When the transformation keyword of the FCS header is
+#' set (typically to "custom" or "applied"), no truncation will occur.
 #' @param dataset The FCS file specification allows for multiple data segments
 #' in a single file. Since the output of \code{read.FCS} is a single
 #' \code{flowFrame} we can't automatically read in all available sets. This
@@ -180,11 +182,22 @@ header <- function(files, ...){
 #' treated.  IF TRUE, The double delimiters are parsed as a pair of start and
 #' end single delimiter for an empty value.  Otherwise, double delimiters are
 #' parsed one part of string as the keyword value.  default is TRUE.
-#' @param channel_alias a data.frame used to provide the alias of the channels
-#' to standardize and solve the discrepancy across FCS files.It is expected to
-#' contain 'alias' and 'channels' column. Each row/entry specifies the common
+#' @param channel_alias an optional data.frame used to provide the alias of the channels
+#' to standardize and solve the discrepancy across FCS files. It is expected to
+#' contain 'alias' and 'channels' column of 'channel_alias'. Each row/entry specifies the common
 #' alias name for a collection of channels (comma separated). See examples for
-#' details.
+#' details. 
+#' 
+#' For each channel in the FCS file, read.FCS will first attempt
+#' to find an exact match in the 'channels' column. If no exact match is found,
+#' it will check for partial matches. That is, if "V545" is in the 'channels'
+#' column of 'channel_alias' and "V545-A" is present in the FCS file, this
+#' partial match will allow the corresponding 'alias' to be assigned. This partial
+#' matching only works in this direction ("V545-A" in the 'channels' column will
+#' not match "V545" in the FCS file) and care should be exercised to ensure no unintended
+#' partial matching of other channel names. If no exact or partial match is found, 
+#' the channel is unchanged in the resulting \code{flowFrame}.
+#' 
 #' @param ... ignore.text.offset: whether to ignore the keyword values in TEXT
 #' segment when they don't agree with the HEADER.  Default is FALSE, which
 #' throws the error when such discrepancy is found.  User can turn it on to
@@ -372,7 +385,7 @@ read.FCS <- function(filename,
           if(is.matrix(sp))
           {
             cnames <- colnames(sp)
-            cnames <- update_channel_by_alias(cnames, channel_alias)
+            cnames <- update_channel_by_alias(cnames, channel_alias, silent = TRUE)
             if(alter.names)
               cnames <- make.names(cnames)
             colnames(sp) <- cnames
@@ -884,7 +897,7 @@ check_channel_alias <- function(channel_alias){
 	else if(is(channel_alias, "data.frame"))
 	{
 	 if(!setequal(c("alias", "channels"), colnames(channel_alias)))
-		stop("channel_alias must contain 'alias' and 'channels' columns")
+		stop("channel_alias must contain only 'alias' and 'channels' columns")
  	 env <- new.env(parent = emptyenv())
 	 apply(channel_alias, 1, function(row){
     		channels <- strsplit(split = ",", row["channels"])[[1]]
@@ -904,7 +917,7 @@ check_channel_alias <- function(channel_alias){
 	 stop("channel_alias must be either an environment or a data.frame")
 }
 
-update_channel_by_alias <- function(orig_chnl_names, channel_alias)
+update_channel_by_alias <- function(orig_chnl_names, channel_alias, silent = FALSE)
 {
   keys <- ls(channel_alias)
   
@@ -932,13 +945,20 @@ update_channel_by_alias <- function(orig_chnl_names, channel_alias)
   if(any(is.dup))
   {
     dup <- names(tb)[is.dup]
-    dup.ind <- which(new_channels == dup)
+    dup.ind <- which(new_channels %in% dup)
+    for(chnl in dup){
+      chnl.ind <- which(new_channels == chnl)
+      new_channels[chnl.ind] <- paste0(chnl, "-", seq(tb[chnl]))
+    }
     dt <- data.frame(orig_channel_name = orig_chnl_names[dup.ind], new_channel_name = new_channels[dup.ind])
-    print(dt)
-    stop("channel_alias: Multiple channels from one FCS are matched to the same alias!")
-    
-  }else
-    return (new_channels)
+    if(!silent){
+      print(dt)
+      warning(paste0("\nchannel_alias: Multiple channels from one FCS are matched to the same alias!\n",
+                     "Integer suffixes added to disambiguate channels.\n",
+                     "It is also recommended to verify correct mapping of spillover matrix columns.\n"))
+    }
+  }
+  return (new_channels)
   
 }
 ## ==========================================================================
@@ -1749,6 +1769,9 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     empty_range_ind <- sapply(pnr, length)==0
     empty_range_chnl <- as.character(pd[pid[empty_range_ind],"name"])
     pnr[empty_range_ind] <- colMaxs(mat[, empty_range_chnl, drop = FALSE])
+    # Make sure PnR is an integer
+    if(length(pnr[empty_range_ind]) > 0)
+      pnr[empty_range_ind] <- as.character(ceiling(unlist(pnr[empty_range_ind])))
     mk <- c(mk, pnr)
     
     ## Now update the PnN keyword
