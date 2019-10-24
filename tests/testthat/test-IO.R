@@ -12,6 +12,13 @@ tmpdir <- tempfile()
 
 write.flowSet(fs, tmpdir)
 
+test_that("duplicated channels", {
+  dataPath <- "~/rglab/workspace/flowCore/misc/"
+  filename  <- file.path(dataPath, "duplicate_channel.fcs")
+  skip_if_not(file.exists(filename))
+  expect_warning(fr <- read.FCS(filename), "disambiguate channels")
+  expect_equal(colnames(fr)[3:4], c("FL1-H-1", "FL1-H-2"))
+})
 
 test_that("read.FCSheader--multi data segment", {
   dataPath <- "~/rglab/workspace/flowCore/misc/"
