@@ -71,6 +71,7 @@ Collate:
     RcppExports.R
     flowCore.R
     GvHD.R
+    CytoExploreR_wrappers.R
 License: Artistic-2.0
 biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.65.0.1), cytolib(>= 1.7.2)
