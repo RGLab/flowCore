@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.53.0
+Version: 1.53.1
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
@@ -24,7 +24,8 @@ Imports:
     utils,
     stats4,
     Rcpp,
-    matrixStats
+    matrixStats,
+    cytolib
 Suggests:
     Rgraphviz,
     flowViz,
