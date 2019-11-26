@@ -37,15 +37,17 @@ samp <- read.FCS(system.file("extdata",
 \seealso{
 \code{\link{transform-class}}, \code{\link{transform}}
 
-Other Transform functions: \code{\link{arcsinhTransform}},
-  \code{\link{biexponentialTransform}},
-  \code{\link{inverseLogicleTransform}},
-  \code{\link{linearTransform}}, \code{\link{lnTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{splitScaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{arcsinhTransform}()},
+\code{\link{biexponentialTransform}()},
+\code{\link{inverseLogicleTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{lnTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{splitScaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 N. Le Meur

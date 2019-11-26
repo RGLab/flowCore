@@ -78,5 +78,5 @@ biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, BH(>= 1.65.0.1), cytolib(>= 1.7.2)
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Encoding: UTF-8

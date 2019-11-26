@@ -57,15 +57,17 @@ signals and compensated data. CytometryA, 96(6):541-51.
 \seealso{
 \code{\link[flowCore]{logicleTransform}}
 
-Other Transform functions: \code{\link{arcsinhTransform}},
-  \code{\link{biexponentialTransform}},
-  \code{\link{linearTransform}}, \code{\link{lnTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{quadraticTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{splitScaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{arcsinhTransform}()},
+\code{\link{biexponentialTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{lnTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{quadraticTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{splitScaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 Wayne Moore, N. Gopalakrishnan

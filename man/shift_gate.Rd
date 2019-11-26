@@ -5,8 +5,7 @@
 \alias{shift_gate.default}
 \title{Simplified geometric translation of gates}
 \usage{
-\method{shift_gate}{default}(obj, dx = NULL, dy = NULL,
-  center = NULL, ...)
+\method{shift_gate}{default}(obj, dx = NULL, dy = NULL, center = NULL, ...)
 }
 \arguments{
 \item{obj}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},

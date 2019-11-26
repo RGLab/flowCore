@@ -40,10 +40,11 @@ Class \code{"\linkS4class{filter}"}, directly.
 \seealso{
 \code{\link[flowCore:filter-methods]{filter}}, \code{\linkS4class{setOperationFilter}}
 
-Other setOperationFilter classes: \code{\link{complementFilter-class}},
-  \code{\link{intersectFilter-class}},
-  \code{\link{setOperationFilter-class}},
-  \code{\link{unionFilter-class}}
+Other setOperationFilter classes: 
+\code{\link{complementFilter-class}},
+\code{\link{intersectFilter-class}},
+\code{\link{setOperationFilter-class}},
+\code{\link{unionFilter-class}}
 }
 \author{
 B. Ellis

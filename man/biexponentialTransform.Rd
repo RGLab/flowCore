@@ -65,15 +65,17 @@ plot(density(exprs(after.2[[1]])[, 1]), main="Shifted Zero Point")
 \seealso{
 \code{\link{transform}}
 
-Other Transform functions: \code{\link{arcsinhTransform}},
-  \code{\link{inverseLogicleTransform}},
-  \code{\link{linearTransform}}, \code{\link{lnTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{quadraticTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{splitScaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{arcsinhTransform}()},
+\code{\link{inverseLogicleTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{lnTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{quadraticTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{splitScaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 B. Ellis, N Gopalakrishnan

@@ -39,16 +39,17 @@ plot(density(exprs(ln1[[1]])[ ,1]), main="Ln Transform")
 \seealso{
 \code{\link{transform-class}}, \code{\link{transform}}
 
-Other Transform functions: \code{\link{arcsinhTransform}},
-  \code{\link{biexponentialTransform}},
-  \code{\link{inverseLogicleTransform}},
-  \code{\link{linearTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{quadraticTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{splitScaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{arcsinhTransform}()},
+\code{\link{biexponentialTransform}()},
+\code{\link{inverseLogicleTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{quadraticTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{splitScaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 B. Ellis and N. LeMeur

@@ -30,7 +30,7 @@ This method allows for 2-dimensional geometric rotation of filter types defined 
 for \code{rectangleGate} or \code{quadGate} objects, due to their definition as having 1-dimensional boundaries.
 Further, keep in mind that the 2-dimensional rotation takes place in the plane where the dimensions
 of the two variables are evenly linearly scaled. Displaying a rotated ellipse in a plot where the axes are not scaled
-evenly may make it appear that the ellipse has been distorted even though this is not the case.
+evenly may make it appear that the ellipse has been distorted even though this is not the case. 
 
 The angle provided in the \code{deg} argument should be in degrees rather than radians. By default, the rotation
 will be performed around the center of an \code{ellipsoidGate} or the centroid of the area encompassed by
