@@ -81,7 +81,7 @@ fr_append_cols <- function(fr, cols){
 subsetKeywords <- function(x, j)
 {
     kw <- description(x)
-    par.id <- as.integer(gsub("^\\$P", "", rownames(pData(parameters(x)))))
+    par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
     if(is.logical(j))
       j <- which(j)
     if(is.character(j))
