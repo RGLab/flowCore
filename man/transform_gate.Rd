@@ -5,8 +5,16 @@
 \alias{transform_gate.default}
 \title{Simplified geometric transformation of gates}
 \usage{
-\method{transform_gate}{default}(obj, scale = NULL, deg = NULL,
-  rot_center = NULL, dx = NULL, dy = NULL, center = NULL, ...)
+\method{transform_gate}{default}(
+  obj,
+  scale = NULL,
+  deg = NULL,
+  rot_center = NULL,
+  dx = NULL,
+  dy = NULL,
+  center = NULL,
+  ...
+)
 }
 \arguments{
 \item{obj}{A Gate-type \code{\link{filter}} object (\code{\linkS4class{quadGate}},

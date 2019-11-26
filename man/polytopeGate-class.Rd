@@ -46,7 +46,7 @@ Rectangle gate objects can also be multiplied together using the \code{*}
 operator, provided that both gate have orthogonal axes.
 
 For polygon gate, the boundaries are specified as vertices in 2 dimensions,
-for polytope gate objects as vertices in n dimensions.
+for polytope gate objects as vertices in n dimensions. 
 
 Polytope gate objects will represent the convex polytope determined
 by the vertices and parameter b which together specify the polytope as 
@@ -59,10 +59,11 @@ of length two.
 \seealso{
 \code{\link{flowFrame}}, \code{\link{filter}}
 
-Other Gate classes: \code{\link{ellipsoidGate-class}},
-  \code{\link{polygonGate-class}},
-  \code{\link{quadGate-class}},
-  \code{\link{rectangleGate-class}}
+Other Gate classes: 
+\code{\link{ellipsoidGate-class}},
+\code{\link{polygonGate-class}},
+\code{\link{quadGate-class}},
+\code{\link{rectangleGate-class}}
 }
 \author{
 F.Hahne, B. Ellis N. Le Meur

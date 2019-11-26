@@ -39,15 +39,17 @@ samp <- read.FCS(system.file("extdata",
 \code{\link{transform-class}}, \code{\link{transform}},
 \code{asinh}
 
-Other Transform functions: \code{\link{biexponentialTransform}},
-  \code{\link{inverseLogicleTransform}},
-  \code{\link{linearTransform}}, \code{\link{lnTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{quadraticTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{splitScaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{biexponentialTransform}()},
+\code{\link{inverseLogicleTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{lnTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{quadraticTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{splitScaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 B. Ellis

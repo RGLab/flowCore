@@ -120,10 +120,11 @@ split(dat, fres)
 \code{\link{split}} and \code{\link{Subset}}for splitting and subsetting of
 flow cytometry data sets based on that.
 
-Other Gate classes: \code{\link{ellipsoidGate-class}},
-  \code{\link{polytopeGate-class}},
-  \code{\link{quadGate-class}},
-  \code{\link{rectangleGate-class}}
+Other Gate classes: 
+\code{\link{ellipsoidGate-class}},
+\code{\link{polytopeGate-class}},
+\code{\link{quadGate-class}},
+\code{\link{rectangleGate-class}}
 }
 \author{
 F.Hahne, B. Ellis N. Le Meur
