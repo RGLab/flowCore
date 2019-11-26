@@ -54,15 +54,17 @@ http://www.wehi.edu.au/cytometry/Abstracts/AFCG05B.html.
 \seealso{
 \code{\link{transform}}
 
-Other Transform functions: \code{\link{arcsinhTransform}},
-  \code{\link{biexponentialTransform}},
-  \code{\link{inverseLogicleTransform}},
-  \code{\link{linearTransform}}, \code{\link{lnTransform}},
-  \code{\link{logTransform}},
-  \code{\link{logicleTransform}},
-  \code{\link{quadraticTransform}},
-  \code{\link{scaleTransform}},
-  \code{\link{truncateTransform}}
+Other Transform functions: 
+\code{\link{arcsinhTransform}()},
+\code{\link{biexponentialTransform}()},
+\code{\link{inverseLogicleTransform}()},
+\code{\link{linearTransform}()},
+\code{\link{lnTransform}()},
+\code{\link{logTransform}()},
+\code{\link{logicleTransform}()},
+\code{\link{quadraticTransform}()},
+\code{\link{scaleTransform}()},
+\code{\link{truncateTransform}()}
 }
 \author{
 N. LeMeur

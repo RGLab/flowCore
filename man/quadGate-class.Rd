@@ -130,10 +130,11 @@ split(dat, fres, population=list(keep=c("FSC-H-SSC-H-",
 evaluation of \code{quadGates} and \code{\link{split}} for splitting of flow
 cytometry data sets based on that.
 
-Other Gate classes: \code{\link{ellipsoidGate-class}},
-  \code{\link{polygonGate-class}},
-  \code{\link{polytopeGate-class}},
-  \code{\link{rectangleGate-class}}
+Other Gate classes: 
+\code{\link{ellipsoidGate-class}},
+\code{\link{polygonGate-class}},
+\code{\link{polytopeGate-class}},
+\code{\link{rectangleGate-class}}
 }
 \author{
 F.Hahne, B. Ellis N. Le Meur

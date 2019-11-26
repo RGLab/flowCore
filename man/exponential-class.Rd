@@ -62,23 +62,25 @@ Flow Cytometry V 1.5
 \seealso{
 logarithm
 
-Other mathematical transform classes: \code{\link{EHtrans-class}},
-  \code{\link{asinht-class}},
-  \code{\link{asinhtGml2-class}},
-  \code{\link{dg1polynomial-class}},
-  \code{\link{hyperlog-class}},
-  \code{\link{hyperlogtGml2-class}},
-  \code{\link{invsplitscale-class}},
-  \code{\link{lintGml2-class}},
-  \code{\link{logarithm-class}},
-  \code{\link{logicletGml2-class}},
-  \code{\link{logtGml2-class}},
-  \code{\link{quadratic-class}}, \code{\link{ratio-class}},
-  \code{\link{ratiotGml2-class}},
-  \code{\link{sinht-class}},
-  \code{\link{splitscale-class}},
-  \code{\link{squareroot-class}},
-  \code{\link{unitytransform-class}}
+Other mathematical transform classes: 
+\code{\link{EHtrans-class}},
+\code{\link{asinht-class}},
+\code{\link{asinhtGml2-class}},
+\code{\link{dg1polynomial-class}},
+\code{\link{hyperlog-class}},
+\code{\link{hyperlogtGml2-class}},
+\code{\link{invsplitscale-class}},
+\code{\link{lintGml2-class}},
+\code{\link{logarithm-class}},
+\code{\link{logicletGml2-class}},
+\code{\link{logtGml2-class}},
+\code{\link{quadratic-class}},
+\code{\link{ratio-class}},
+\code{\link{ratiotGml2-class}},
+\code{\link{sinht-class}},
+\code{\link{splitscale-class}},
+\code{\link{squareroot-class}},
+\code{\link{unitytransform-class}}
 }
 \author{
 Gopalakrishnan N, F.Hahne

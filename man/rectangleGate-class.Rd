@@ -173,10 +173,11 @@ as(rg, "polygonGate")
 \code{\link{split}} and \code{\link{Subset}}for splitting and subsetting of
 flow cytometry data sets based on that.
 
-Other Gate classes: \code{\link{ellipsoidGate-class}},
-  \code{\link{polygonGate-class}},
-  \code{\link{polytopeGate-class}},
-  \code{\link{quadGate-class}}
+Other Gate classes: 
+\code{\link{ellipsoidGate-class}},
+\code{\link{polygonGate-class}},
+\code{\link{polytopeGate-class}},
+\code{\link{quadGate-class}}
 }
 \author{
 F.Hahne, B. Ellis N. Le Meur
