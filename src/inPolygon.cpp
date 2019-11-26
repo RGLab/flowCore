@@ -36,7 +36,7 @@ std::vector<bool> inPolygon(NumericMatrix data, NumericMatrix vertices)
       stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
 
      /* Do it! */
-    vector<cytolib::POINT> points(nrv);
+    vector<cytolib::CYTO_POINT> points(nrv);
     for(int i = 0; i < nrv; i++)
     {
     	points[i].x = vertices[i];
