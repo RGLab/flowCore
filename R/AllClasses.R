@@ -5352,8 +5352,8 @@ setClass("transformFilter",
 #' series of compensation cells or beads collected before the experiment. If
 #' you have set of FCS files with one file per fluorochrome as well as an
 #' unstained FCS file you can use the
-#' \code{\link[flowCore:spillover-flowSet]{spillover}} method for
-#' \code{\link[flowStats:flowSet-class]{flowSets}} to automatically calculate a
+#' \code{\link[flowStats:spillover-flowSet]{spillover}} method for
+#' \code{\link[flowCore:flowSet-class]{flowSets}} to automatically calculate a
 #' spillover matrix.
 #' 
 #' The \code{compensation} class is essentially a wrapper around a
