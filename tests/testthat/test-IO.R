@@ -340,6 +340,20 @@ test_that("write.FCS -- add new cols", {
   expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
 })
 
+test_that("write.FCS -- reordered cols", {
+  tmp <- GvHD[[1]]
+  idx <- c(3,1,2)
+  tmp <- tmp[, idx]
+
+  tmpfile <- tempfile()
+  write.FCS(tmp, tmpfile)  
+  tmp1 <- read.FCS(tmpfile)
+  pd <- parameters(tmp)
+  cn <- as.vector(pd[["name"]])
+  expect_equal(rownames(parameters(tmp1)), paste0("$P", 1:3))
+  expect_equivalent(keyword(tmp1)[paste0("BD$P", 1:3, "N")], keyword(tmp)[paste0("BD$P", idx, "N")])
+  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
+})
 test_that("write.FCS -- handle umlaut characters", {
   tmp <- GvHD[[1]]
   keyword(tmp)[["FILENAME"]] <- "ü_umlaut"
