@@ -372,7 +372,7 @@ read.FCS <- function(filename,
 
   # Remove keywords for removed parameters
   if(!is.null(remove_idx)&&length(remove_idx)>0){
-    remove_regex <- paste0("(\\$P|^P)", remove_idx, "[A-Z]+")
+    remove_regex <- paste0("\\$P", remove_idx, "[A-Z]+")
     remove_keys <- lapply(remove_regex, function(rx) grep(rx, names(description), value=TRUE))
     description <- description[!names(description) %in% do.call(c, remove_keys)]
   }
