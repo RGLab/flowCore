@@ -371,8 +371,8 @@ read.FCS <- function(filename,
 	}
 
   # Remove keywords for removed parameters
-  if(!is.null(remove_idx)){
-    remove_regex <- paste0("(\\$P|^P)", remove_idx, "[A-Z]+")
+  if(!is.null(remove_idx)&&length(remove_idx)>0){
+    remove_regex <- paste0("\\$P", remove_idx, "[A-Z]+")
     remove_keys <- lapply(remove_regex, function(rx) grep(rx, names(description), value=TRUE))
     description <- description[!names(description) %in% do.call(c, remove_keys)]
   }
@@ -1786,14 +1786,31 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     names(pns) <- sprintf("$P%sS", newid.pns)
     mk <- c(mk, pns)
     
-    # Must correct PnX keys for the case that fr was subsetted by bumping them down to be consecutive (like newid)
-    names(newid) <-  gsub("\\$", "", pid)
-    # bump indices on remaining keys down to their new values
-    newnames <- names(x@description)
-    for(i in newid){
-      newnames <- gsub(paste0(names(newid)[[i]], "([a-zA-z])"), paste0("P", i, "\\1"), newnames)
+    
+    # Must correct keys for the case that fr was subsetted by bumping them down to be consecutive (like newid)
+    # this is for non-standard keys such as flowCore$PnX since standard keys($P[0-9]+[BERNS]) is/will be taken care of by mk
+   
+     #TODO: rm unsed extra non-stand $P keys first
+    
+     # bump indices on remaining keys down to their new values
+    knames <- names(x@description)
+    new_names <- NULL
+    old_idices <- NULL
+    for(i in seq_along(newid)){
+      old_id <- pid[i]
+      new_id <- paste0("$P", newid[i])
+      old_idx <- grep(old_id, knames, fixed = TRUE)
+      if(length(old_idx)>0)
+      {
+        old_idices <- c(old_idices, old_idx)
+       old_name <- knames[old_idx]
+        new_names <- c(new_names, sub(old_id, new_id, old_name, fixed = TRUE))
+      }    
     }
-    names(x@description) <- newnames
+    knames[old_idices] <- new_names
+    names(x@description) <- knames
+    
+    
     description(x) <- mk
     
     ## Figure out the offsets based on the size of the initial text section
