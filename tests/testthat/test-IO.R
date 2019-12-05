@@ -6,7 +6,7 @@ expectPD <- pData(fs)
 expectPD[["Patient"]] <- as.integer(as.vector(expectPD[["Patient"]]))
 expectPD[["Visit"]] <- as.integer(expectPD[["Visit"]])
 expectPD[["name"]] <- I(paste0(expectPD[["name"]], ".fcs"))
-rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
+# rownames(expectPD) <- paste0(rownames(expectPD), ".fcs")
 
 tmpdir <- tempfile()
 
@@ -76,7 +76,6 @@ test_that("read.flowSet", {
       pd[["name"]] <- I(paste0(pd[["name"]], ".fcs"))
       #with phenoData supplied
       suppressWarnings(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd))
-      pData(fs1)["FCS_File"] <- NULL
       expect_equal(pData(fs1), expectPD)
       
       #pd without name
@@ -90,6 +89,7 @@ test_that("read.flowSet", {
       pd <- Biobase::read.AnnotatedDataFrame(anno)
       pData(pd)[["name"]] <- paste0(pData(pd)[["name"]], "dummy")
       suppressWarnings(fs1 <- read.flowSet(files, path = tmpdir, phenoData = pd))
+      pData(pd)["FCS_File"] <- NULL
       expect_equal(pData(fs1), pData(pd))
       
       #create duplicated folder
@@ -112,10 +112,12 @@ test_that("phenoData<-", {
       # without name column
       pd[["name"]] <- NULL
       
-      sampleNames(fs) <- paste0(sampleNames(fs), ".fcs") 
       pData(fs) <- pd
+      n1 <- pData(fs)[["name"]]
+      n1 <- paste0(n1, ".fcs") 
+      
       #name column is added
-      expect_equal(expectPD[["name"]], I(pData(fs)[["name"]]))
+      expect_equal(expectPD[["name"]], I(n1))
       
       # name to be different from rownames
       pd[["name"]] <- letters[1:2] 
