@@ -1366,7 +1366,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 #' 
 #' 
 #' @export
-read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
+read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
                          descriptions, name.keyword, alter.names=FALSE,
                          transformation="linearize", which.lines=NULL,
                          column.pattern=NULL, invert.pattern = FALSE, decades=0,
@@ -1379,72 +1379,13 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
    channel_alias <- check_channel_alias(channel_alias)
     if(ncdf)
       .Deprecated("'ncdf' argument is deprecated!Please use 'ncdfFlow' package for hdf5-based data structure.")
-    ## A frame of phenoData information
-    phenoFrame <- NULL
-
-    ## deal with the case that the phenoData is provided, either as
-    ## character vector or as AnnotatedDataFrame.
-    if(!missing(phenoData)) {
-        if(is.character(phenoData) && length(phenoData) == 1){
-            phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
-                                                 header = TRUE, sep=sep,
-                                                 as.is=as.is, ...)
-            ## the sampleNames of the Annotated data frame must match the
-            ## file names and we try to guess them from the input
-            fnams <- grep("file|filename", varLabels(phenoData),
-                          ignore.case=TRUE)
-            if(length(fnams)){
-                fn <- as.character(unlist(pData(phenoData[,fnams[1]])))
-                if(any(duplicated(fn)))
-                    stop("The file names supplied as part of the ",
-                         "phenoData are not unique", call.=FALSE)
-                sampleNames(phenoData) <- fn
-                pd <- pData(phenoData)
-                pd[,fnams[1]] <- fn
-                pData(phenoData) <- pd
-            }
-            phenoFrame <- phenoData
-        }else if(is(phenoData,"AnnotatedDataFrame")){
-            phenoFrame <- phenoData
-        }else{if(!is.list(phenoData))
-                  stop("Argument 'phenoData' must be of type 'list', ",
-                       "'AnnotatedDataFrame' or a filename\n",
-                       "of a text file containing the phenotypic information")
-          }
-    }
-
-    ## go on and find the files
-    if(!is.null(phenoFrame)) {
-        if(!is.null(files))
-            warning("Supplied file names will be ignored, ",
-                    "using names in the phenoData slot instead.")
-        file.names <- sampleNames(phenoFrame)
-	    files <- file.path(path, file.names)
-      	if(!all(file.exists(files)))
-            stop(paste("Not all files given by phenoData could be found in",
-                       path))
-        if(!"name" %in% varLabels(phenoFrame)){
-            phenoFrame$name <- basename(files)
-            varMetadata(phenoFrame)["name",] <- "Filename"
-        }
-    }else{
-        ## if we haven't found files by now try to search according to
-        ## 'pattern'
-        if(is.null(files)) {
-            files <- dir(path,pattern,full.names=TRUE)
-            file.names <- dir(path,pattern,full.names=FALSE)
-            if(length(files)<1)
-                stop(paste("No matching files found in ",path))
-        } else {
-            if(!is.character(files))
-                stop("'files' must be a character vector.")
-            file.names <- basename(files) ## strip path from names
-            if(path != ".")
-                files <- file.path(path, files)
-        }
-    }
-
-    flowSet <- lapply(files, read.FCS, alter.names=alter.names,
+   phenoData <- parse_pd_for_read_fs(files, path, pattern, phenoData, sep, as.is,...)
+   pd <- pData(phenoData)
+   cols <- colnames(pd)
+   fidx <- grep("file|filename", cols, ignore.case=TRUE)
+   file_col_name <- cols[fidx]
+   files <- pd[[file_col_name]]
+   flowSet <- lapply(files, read.FCS, alter.names=alter.names,
                       transformation=transformation, which.lines=which.lines,
                       column.pattern=column.pattern, invert.pattern = invert.pattern,
                       decades=decades,min.limit=min.limit,emptyValue=emptyValue
@@ -1452,56 +1393,11 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
                       , dataset=dataset
                       , truncate_max_range = truncate_max_range
                       , channel_alias = channel_alias)
-    ## Allows us to specify a particular keyword to use as our sampleNames
-    ## rather than requiring the GUID or the filename be used. This is handy
-    ## when something like SAMPLE ID is a more reasonable choice.
-    ## Sadly reading the flowSet is a lot more insane now.
-    if(!missing(name.keyword)){
-        keys <- unlist(sapply(flowSet,keyword,name.keyword))
-        if(is.null(keys))
-            stop("'", name.keyword, "' is not a valid keyword in any of ",
-                 "the available FCS files.", call.=FALSE)
-        if(length(keys) != length(flowSet))
-            stop("One or several FCS files do not contain a keyword '",
-                 name.keyword, "'.", call.=FALSE)
-        if(any(duplicated(keys)))
-            stop("The values of '", name.keyword, "' are not unique.", call.=FALSE)
-        names(flowSet) <- sapply(flowSet,keyword,name.keyword)
-    }else{
-        names(flowSet) <- make.unique(file.names)
-    }
+    names(flowSet) <- rownames(pd)
+    
     flowSet <- as(flowSet,"flowSet")
-    if(!is.null(phenoFrame))
-        phenoData(flowSet) <- phenoFrame
-    else if(!missing(phenoData)){
-        ##Collect the names for each field in the data frame
-        field.names <- names(phenoData)
-        if(is.null(field.names))
-            stop("phenoData list must have names")
-        field.names <- sapply(seq(along=phenoData),function(i) {
-            if(length(field.names[i]) == 0) as(phenoData[i],"character")
-            else field.names[i]
-        })
-        if(!missing(descriptions)) {
-            ##If the descriptions have names, reorder them as needed.
-            if(!is.null(names(descriptions)))
-                descriptions = descriptions[field.names]
-        } else
-        descriptions <- field.names
-        names(phenoData) <- field.names
-        oldpDat <- pData(flowSet)
-        newpDat <- as.data.frame(keyword(flowSet, phenoData))
-        sel <- intersect(colnames(newpDat), colnames(oldpDat))
-        if(length(sel))
-            oldpDat <- oldpDat[, -which(colnames(oldpDat)%in% sel), drop=FALSE]
-        newpDat <- cbind(oldpDat, as.data.frame(keyword(flowSet,phenoData)))
-        if(any(duplicated(newpDat$name)))
-            stop("The character strings in the 'name' variable in the phenoData slot ",
-                 "have to be unique.", call.=FALSE)
-        phenoData(flowSet) <- new("AnnotatedDataFrame", data=newpDat,
-                                  varMetadata=data.frame(labelDescription=I(colnames(newpDat)),
-                                                         row.names=colnames(newpDat)))
-    }
+    pd[[file_col_name]] <- NULL
+    pData(flowSet) <- pd
     ## finally decide on which names to use for the sampleNames, but retain the
     ## original GUIDs in case there are some
     guids <- unlist(fsApply(flowSet, identifier))
@@ -1520,6 +1416,84 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData,
     flowSet
 }
 
+parse_pd_for_read_fs <- function(files, path, pattern, phenoData,sep="\t", as.is=TRUE, ...){
+  ## deal with the case that the phenoData is provided, either as
+  ## character vector or as AnnotatedDataFrame.
+  file_col_name <- "FCS_File"
+  if(!is.null(phenoData)) {
+    if(is.character(phenoData) && length(phenoData) == 1){
+      phenoData <- read.AnnotatedDataFrame(file.path(path, phenoData),
+                                           header = TRUE, sep=sep
+                                           , as.is=as.is
+                                           , colClasses = c(FCS_File = "character") #avoid coersing filename to numbers that  accidentally tampers the filename by stripping leading zeros
+                                           , ...)
+      ## the sampleNames of the Annotated data frame must match the
+      ## file names and we try to guess them from the input
+      cols <- varLabels(phenoData)
+      fidx <- grep("file|filename", cols, ignore.case=TRUE)
+      if(length(fidx)>1)
+        stop("Ambiguious columns for fcs filenames in phenoData: ", paste(cols[fidx], collapse = ","))
+      else if(length(fidx) == 0)
+        stop("columns for fcs filenames not detected in phenoData: ", paste(cols, collapse = ","))
+      else
+      {
+        file_col_name <- cols[fidx]
+        fn <- as.character(pData(phenoData)[[file_col_name]])
+        if(any(duplicated(fn)))
+          stop("The file names supplied as part of the ",
+               "phenoData are not unique", call.=FALSE)
+        # sampleNames(phenoData) <- fn
+        # pd <- pData(phenoData)
+        # pd[,fnams[1]] <- fn
+        # pData(phenoData) <- pd
+      }
+    }else if(!is(phenoData,"AnnotatedDataFrame")){
+      stop("Argument 'phenoData' must be of type 'AnnotatedDataFrame' or a filename\n",
+           "of a text file containing the phenotypic information")
+    }
+    ## go on and find the files
+    
+    if(!is.null(files))
+      warning("Supplied file names will be ignored, ",
+              "using names in the phenoData slot instead.")
+    file.names <- pData(phenoData)[[file_col_name]]
+    files <- file.path(path, file.names)
+    if(!all(file.exists(files)))
+      stop(paste("Not all files given by phenoData could be found in",
+                 path))
+    if(!"name" %in% varLabels(phenoData)){
+      phenoData$name <- basename(files)
+      varMetadata(phenoData)["name",] <- "Filename"
+    }
+  }else{
+    ## search path for fcs when pd is not given
+    if(is.null(files)) {
+      files <- dir(path,pattern,full.names=TRUE)
+      if(length(files)<1)
+        stop(paste("No matching files found in ",path))
+    } else {
+      if(!is.character(files))
+        stop("'files' must be a character vector.")
+      if(path != ".")
+        files <- file.path(path, files)
+    }
+    fn <- make.unique(basename(files))
+    
+    phenoData=new("AnnotatedDataFrame",
+                  data=data.frame(name=I(fn)
+                                  , row.names=fn
+                  )
+                  ,varMetadata=data.frame(labelDescription="Name"
+                                          ,row.names="name"
+                  )
+    )
+    
+    
+  }
+  pData(phenoData)[[file_col_name]] <- files
+  
+  phenoData
+}
 
 
 write.AnnotatedDataFrame <- function(frame, file)
@@ -1968,7 +1942,7 @@ write.flowSet <- function(x, outdir=identifier(x), filename, ...)
             filename[f] <- paste(filename[f], "fcs", sep=".")
         write.FCS(x[[f]], filename=file.path(outdir, filename[f]), ...)
     }
-    sampleNames(x) <- filename#force the sampleNames (thus rownames of Pdata) to be identical to the fcs filenames
+    # sampleNames(x) <- filename#force the sampleNames (thus rownames of Pdata) to be identical to the fcs filenames
     pData(x)$FCS_File <- filename
     write.AnnotatedDataFrame(phenoData(x), file=file.path(outdir, "annotation.txt"))
     outdir
