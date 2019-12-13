@@ -392,22 +392,9 @@ processing:
     will be used in place of the data frame that is ordinarily
     created. Additionally, the row names of this object will be taken
     to be the filenames of the FCS files in the directory specified by
-    \Robject{path}. This argument may also be a named list made up of
-    a combination of \Robject{character} and \Robject{function}
-    objects that specify a keyword to extract from the FCS file or a
-    function to apply to each frame that will return a result. }
+    \Robject{path}.  }
 \end{description}
 
-To recreate the \Rclass{flowSet} that we created by hand from the last
-section we can use \Rfunction{read.flowSet}'s advanced functionality:
-
-<<ReadFowSet2, echo=TRUE,results='markup'>>=
-fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
-                   package="flowCore"), name.keyword="SAMPLE ID",
-                   phenoData=list(name="SAMPLE ID", Filename="$FIL"))
-fs
-pData(phenoData(fs))
-@
 
 \subsubsection{Manipulating a \Rclass{flowSet}}
 
@@ -651,8 +638,7 @@ scale we might write:
 
 <<Transfo1, echo=TRUE, results='hide'>>=
 fs <- read.flowSet(path=system.file("extdata", "compdata", "data",
-                   package="flowCore"), name.keyword="SAMPLE ID",
-                   phenoData=list(name="SAMPLE ID", Filename="$FIL"))
+                   package="flowCore"), name.keyword="SAMPLE ID")
 autoplot(transform(fs[[1]],
                    `FL1-H`=log(`FL1-H`),
                    `FL2-H`=log(`FL2-H`)
