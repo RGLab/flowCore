@@ -1,6 +1,8 @@
+#the FCS files are not included in package due to the size , thus only for internal testing
 context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
 library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
+skip_if_not(dir.exists(dataPath))
 expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
 expectRes.new <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")
 # saveRDS(expectRes.new, file = "~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")

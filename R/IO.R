@@ -1186,11 +1186,30 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     {
         if(truncate_max_range){
           for(i in seq_len(ncol(dat)))
-            dat[dat[,i]>range[i],i] <- range[i]
+		  {
+			  idx <- dat[,i]>range[i]
+			  if(any(idx))
+			  {
+				  warning("Some data values of '", cn[i], "' channel exceed its $PnR value ", range[i], " and will be truncated!"
+				  			, "\n To avoid truncation, either fix $PnR before generating FCS or set 'truncate_max_range = FALSE'")
+				  dat[idx,i] <- range[i]
+				  
+			  }
+			  
+		  }
         }
 
         if(!is.null(min.limit))
-            dat[dat<min.limit] <- min.limit
+		{
+			idx <- dat<min.limit
+			if(any(idx))
+			{
+				warning("Some data value are below 'min.limit' ", min.limit, " and will be truncated"
+						, "\n To avoid truncation, set 'min.limit = NULL'")
+				dat[idx] <- min.limit
+				
+			}
+		}
     }
 
     ## Transform or scale if necessary
