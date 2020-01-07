@@ -354,6 +354,19 @@ test_that("write.FCS -- add new cols", {
   write.FCS(tmp, tmpfile)  
   tmp1 <- read.FCS(tmpfile)
   expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
+  
+  #set transformation flag and reload it to append flowCore_$PnRmax
+  keyword(tmp)[["transformation"]] <- "none"
+  write.FCS(tmp, tmpfile)  
+  tmp <- read.FCS(tmpfile)
+  #append again to check whether it takes care of flowCore_$PnRmax
+  keyword(tmp)[["transformation"]] <- "custom"
+  colnames(cols) <- "km1"
+  tmp <- fr_append_cols(tmp, cols)
+  write.FCS(tmp, tmpfile)  
+  tmp1 <- read.FCS(tmpfile)
+  expect_equal(keyword(tmp1)[["flowCore_$P10Rmax"]], "3")
+  expect_equivalent(tmp@exprs, tmp1@exprs, tolerance = 3e-08)
 })
 
 test_that("write.FCS -- reordered cols", {

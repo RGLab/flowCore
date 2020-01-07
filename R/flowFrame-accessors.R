@@ -63,7 +63,12 @@ fr_append_cols <- function(fr, cols){
   #add to exprs
   fr@exprs <- cbind(exprs(fr), cols)
   pData(parameters(fr)) <- pd
-  
+  #take care of flowCore_$PnRmax
+  trans <- keyword(fr)[["transformation"]]
+  if(!is.null(trans) && trans == "custom"){
+    keyword(fr)[[paste0("flowCore_", new_pid, "Rmax")]] <- new_pd[new_pid, "maxRange"]
+    keyword(fr)[[paste0("flowCore_", new_pid, "Rmin")]] <- new_pd[new_pid, "minRange"]
+  }
   fr
 }
 
