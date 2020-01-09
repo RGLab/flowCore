@@ -47,25 +47,39 @@
 #' @param ... other arguments: not used.
 #' @export
 getChannelMarker <- function(frm, name, ...) {
-  #escape ( since we see that often times in Cytof data
-  
-  name <- gsub(")", "\\)", gsub("(", "\\(", name, fixed = TRUE), fixed = TRUE)
   pd <- pData(parameters(frm))
-  # try complete match first
-  ind <- .flowParamMatch(pd, name, ...)
-  
-  if (length(ind) > 1) {
-    stop("multiple markers matched: ", name)
+  #try strict exact whole word match first
+  ind <- which(toupper(pd$name) %in% toupper(name))
+  if (length(ind) == 0) 
+  {
+    ind <- which(toupper(pd$desc) %in% toupper(name))
   }
   
-  if (length(ind) == 0) {
-    # if no match then give a second try to patial match
-    ind <- .flowParamMatch(pd, name, partial = TRUE, ...)
-    if (length(ind) == 0)
-      stop("can't find ", name) else if (length(ind) > 1)
-      stop("multiple markers matched: ", name) else warning(name, " is partially matched with ", pd[ind, c("name", "desc")])
+  #do fuzzy match if exact match fails
+  if (length(ind) != 1) 
+  {
+    #escape ( since we see that often times in Cytof data
+    
+    name <- gsub(")", "\\)", gsub("(", "\\(", name, fixed = TRUE), fixed = TRUE)
+    
+    # try complete match first
+    ind <- .flowParamMatch(pd, name, ...)
+    
+    if (length(ind) > 1) {
+      stop("multiple markers matched: ", name)
+    }
+    
+    if (length(ind) == 0) {
+      # if no match then give a second try to patial match
+      ind <- .flowParamMatch(pd, name, partial = TRUE, ...)
+      if (length(ind) == 0)
+        stop("can't find ", name) 
+      else if (length(ind) > 1)
+        stop("multiple markers matched: ", name) 
+      else
+        warning(name, " is partially matched with ", pd[ind, c("name", "desc")])
+    }
   }
-  
   pd <- pd[ind, c("name", "desc")]
   pd[, "name"] <- as.vector(pd[, "name"])
   pd[, "desc"] <- as.vector(pd[, "desc"])
