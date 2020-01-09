@@ -13,3 +13,6 @@ vignettes/*.bbl
 vignettes/*.blg
 examples
 paper
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
