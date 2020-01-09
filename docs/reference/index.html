@@ -112,29 +112,24 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-data-classes" class="hasAnchor"><a href="#section-data-classes" class="anchor"></a>Data classes</h2>
+          <p class="section-desc"><p>Classes for managing the data from one or more cytometry datasets (FCS files) and additional methods for accessing the data or metadata associated with them</p></p>
         </th>
       </tr>
       <tr>
         
         <td>
-          <p><code><a href="EHtrans-class.html">EHtrans-class</a></code> </p>
+          <p><code><a href="flowFrame-class.html">flowFrame-class</a></code> </p>
         </td>
-        <td><p>Class "EHtrans"</p></td>
+        <td><p>'flowFrame': a class for storing observed quantitative properties for a
+population of cells from a FACS run</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="FCSTransTransform.html">FCSTransTransform()</a></code> </p>
+          <p><code><a href="flowSet-class.html">flowSet-class</a></code> </p>
         </td>
-        <td><p>Computes a transform using the 'iplogicle' function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="GvHD.html">GvHD</a></code> </p>
-        </td>
-        <td><p>Extract of a Graft versus Host Disease monitoring experiment (Rizzieri et
-al., 2007)</p></td>
+        <td><p>'flowSet': a class for storing flow cytometry raw data from quantitative
+cell-based assays</p></td>
       </tr><tr>
         
         <td>
@@ -144,64 +139,83 @@ al., 2007)</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="arcsinhTransform.html">arcsinhTransform()</a></code> </p>
+          <p><code><a href="each_col.html">each_col()</a></code> <code><a href="each_col.html">each_row()</a></code> </p>
         </td>
-        <td><p>Create the definition of an arcsinh transformation function (base specified
-by user) to be applied on a data set</p></td>
+        <td><p>Methods to apply functions over flowFrame margins</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="asinht-class.html">asinht-class</a></code> </p>
+          <p><code><a href="fr_append_cols.html">fr_append_cols()</a></code> </p>
         </td>
-        <td><p>Class "asinht"</p></td>
+        <td><p>Append data columns to a flowFrame</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="asinhtGml2-class.html">asinhtGml2-class</a></code> </p>
+          <p><code><a href="getIndexSort-methods.html">getIndexSort-methods</a></code> </p>
         </td>
-        <td><p>Class asinhtGml2</p></td>
+        <td><p>Extract Index Sorted Data from an FCS File</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="biexponentialTransform.html">biexponentialTransform()</a></code> </p>
+          <p><code><a href="fsApply.html">fsApply()</a></code> </p>
         </td>
-        <td><p>Compute a transform using the 'biexponential' function</p></td>
+        <td><p>Apply a Function over values in a flowSet</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="boundaryFilter-class.html">boundaryFilter()</a></code> </p>
+          <p><code><a href="identifier-methods.html">identifier()</a></code> </p>
         </td>
-        <td><p>Class "boundaryFilter"</p></td>
+        <td><p>Retrieve the GUID of flowCore objects</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="characterOrNumeric-class.html">characterOrNumeric-class</a></code> </p>
+          <p><code><a href="getChannelMarker.html">getChannelMarker()</a></code> </p>
         </td>
-        <td><p>Class "characterOrNumeric"</p></td>
+        <td><p>get channel and marker information from a <code>flowFrame</code> that matches to the given keyword</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="characterOrParameters-class.html">characterOrParameters-class</a></code> </p>
+          <p><code><a href="parameters-methods.html">parameters()</a></code> </p>
         </td>
-        <td><p>Class "characterOrParameters"</p></td>
+        <td><p>Obtain information about parameters for flow cytometry objects.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="characterOrTransformation-class.html">characterOrTransformation-class</a></code> </p>
+          <p><code><a href="keyword-methods.html">keyword()</a></code> </p>
         </td>
-        <td><p>Class "characterOrTransformation"</p></td>
+        <td><p>Methods to retrieve keywords of a flowFrame</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="checkOffset.html">checkOffset()</a></code> </p>
+          <p><code><a href="filter_keywords.html">filter_keywords()</a></code> </p>
         </td>
-        <td><p>Fix the offset when its values recorded in header and TEXT don't agree</p></td>
+        <td><p>filter out $PnX keywords</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-reading-writing-data" class="hasAnchor"><a href="#section-reading-writing-data" class="anchor"></a>Reading/writing data</h2>
+          <p class="section-desc"><p>Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="read.FCS.html">isFCSfile()</a></code> <code><a href="read.FCS.html">read.FCS()</a></code> </p>
+        </td>
+        <td><p>Read an FCS file</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="coerce.html">coerce</a></code> </p>
+          <p><code><a href="read.FCSheader.html">read.FCSheader()</a></code> </p>
         </td>
-        <td><p>Convert an object to another class</p></td>
+        <td><p>Read the TEXT section of a FCS file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="read.flowSet.html">read.flowSet()</a></code> </p>
+        </td>
+        <td><p>Read a set of FCS files</p></td>
       </tr><tr>
         
         <td>
@@ -212,27 +226,29 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="compensatedParameter-class.html">compensatedParameter-class</a></code> </p>
+          <p><code><a href="write.FCS.html">write.FCS()</a></code> </p>
         </td>
-        <td><p>Class "compensatedParameter"</p></td>
+        <td><p>Write an FCS file</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="write.flowSet.html">write.flowSet()</a></code> </p>
+        </td>
+        <td><p>Write an FCS file</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-compensation" class="hasAnchor"><a href="#section-compensation" class="anchor"></a>Compensation</h2>
+          <p class="section-desc"><p>Classes to represent compensation to be applied to raw cytometry data and methods to apply them</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="compensation-class.html">compensation()</a></code> <code><a href="compensation-class.html">compensate()</a></code> </p>
         </td>
         <td><p>Class "compensation"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="complementFilter-class.html">complementFilter-class</a></code> </p>
-        </td>
-        <td><p>Class complementFilter</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="concreteFilter-class.html">concreteFilter-class</a></code> </p>
-        </td>
-        <td><p>Class "concreteFilter"</p></td>
       </tr><tr>
         
         <td>
@@ -242,33 +258,35 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="dg1polynomial-class.html">dg1polynomial-class</a></code> </p>
+          <p><code><a href="compensatedParameter-class.html">compensatedParameter-class</a></code> </p>
         </td>
-        <td><p>Class "dg1polynomial"</p></td>
+        <td><p>Class "compensatedParameter"</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-filters" class="hasAnchor"><a href="#section-filters" class="anchor"></a>Filters</h2>
+          <p class="section-desc"><p>Classes representing general filters applied to cytometry data and methods for using them, accessing information about them, and logically combining them</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="filter-class.html">filter-class</a></code> </p>
+        </td>
+        <td><p>A class for representing filtering operations to be applied to flow data.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="each_col.html">each_col()</a></code> <code><a href="each_col.html">each_row()</a></code> </p>
+          <p><code><a href="concreteFilter-class.html">concreteFilter-class</a></code> </p>
         </td>
-        <td><p>Methods to apply functions over flowFrame margins</p></td>
+        <td><p>Class "concreteFilter"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="ellipsoidGate-class.html">ellipsoidGate()</a></code> </p>
+          <p><code><a href="transformFilter-class.html">transformFilter-class</a></code> </p>
         </td>
-        <td><p>Class "ellipsoidGate"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="estimateMedianLogicle.html">estimateMedianLogicle()</a></code> </p>
-        </td>
-        <td><p>Estimates a common logicle transformation for a flowSet.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="exponential-class.html">exponential-class</a></code> </p>
-        </td>
-        <td><p>Class "exponential"</p></td>
+        <td><p>A class for encapsulating a filter to be performed on transformed parameters</p></td>
       </tr><tr>
         
         <td>
@@ -278,39 +296,9 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="filter-and-methods.html">`%&%`</a></code> <code><a href="filter-and-methods.html">`%subset%`</a></code> </p>
+          <p><code><a href="parameterFilter-class.html">parameterFilter-class</a></code> </p>
         </td>
-        <td><p>Take the intersection of two filters</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filter-class.html">filter-class</a></code> </p>
-        </td>
-        <td><p>A class for representing filtering operations to be applied to flow data.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filter-in-methods.html">`%in%`</a></code> </p>
-        </td>
-        <td><p>Filter-specific membership methods</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filter-methods.html">filter()</a></code> </p>
-        </td>
-        <td><p>Filter FCS files</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filter-on-methods.html">`%on%`</a></code> </p>
-        </td>
-        <td><p>Methods for Function %on% in Package `flowCore'</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filterDetails-methods.html">filterDetails-methods</a></code> </p>
-        </td>
-        <td><p>Obtain details about a filter operation</p></td>
+        <td><p>Class "parameterFilter"</p></td>
       </tr><tr>
         
         <td>
@@ -320,9 +308,9 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="filterReference-class.html">filterReference-class</a></code> </p>
+          <p><code><a href="filters-class.html">filters()</a></code> <code><a href="filters-class.html">filtersList()</a></code> </p>
         </td>
-        <td><p>Class filterReference</p></td>
+        <td><p>Class "filters" and "filtersList"</p></td>
       </tr><tr>
         
         <td>
@@ -350,102 +338,27 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="filter_keywords.html">filter_keywords()</a></code> </p>
+          <p><code><a href="filterReference-class.html">filterReference-class</a></code> </p>
         </td>
-        <td><p>filter out $PnX keywords</p></td>
+        <td><p>Class filterReference</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="filters-class.html">filters()</a></code> <code><a href="filters-class.html">filtersList()</a></code> </p>
+          <p><code><a href="filterDetails-methods.html">filterDetails-methods</a></code> </p>
         </td>
-        <td><p>Class "filters" and "filtersList"</p></td>
+        <td><p>Obtain details about a filter operation</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="flowCore-package.html">flowCore-package</a></code> </p>
+          <p><code><a href="timeFilter-class.html">timeFilter()</a></code> </p>
         </td>
-        <td><p>flowCore: Basic structures for flow cytometry data</p></td>
+        <td><p>Class "timeFilter"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="flowFrame-class.html">flowFrame-class</a></code> </p>
+          <p><code><a href="boundaryFilter-class.html">boundaryFilter()</a></code> </p>
         </td>
-        <td><p>'flowFrame': a class for storing observed quantitative properties for a
-population of cells from a FACS run</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="flowSet-class.html">flowSet-class</a></code> </p>
-        </td>
-        <td><p>'flowSet': a class for storing flow cytometry raw data from quantitative
-cell-based assays</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fr_append_cols.html">fr_append_cols()</a></code> </p>
-        </td>
-        <td><p>Append data columns to a flowFrame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fsApply.html">fsApply()</a></code> </p>
-        </td>
-        <td><p>Apply a Function over values in a flowSet</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getChannelMarker.html">getChannelMarker()</a></code> </p>
-        </td>
-        <td><p>get channel and marker information from a <code>flowFrame</code> that matches to the given keyword</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getIndexSort-methods.html">getIndexSort-methods</a></code> </p>
-        </td>
-        <td><p>Extract Index Sorted Data from an FCS File</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="hyperlog-class.html">hyperlog-class</a></code> </p>
-        </td>
-        <td><p>Class "hyperlog"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="hyperlogtGml2-class.html">hyperlogtGml2-class</a></code> </p>
-        </td>
-        <td><p>Class hyperlogtGml2</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="identifier-methods.html">identifier()</a></code> </p>
-        </td>
-        <td><p>Retrieve the GUID of flowCore objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="intersectFilter-class.html">intersectFilter-class</a></code> </p>
-        </td>
-        <td><p>Class intersectFilter</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="inverseLogicleTransform.html">inverseLogicleTransform()</a></code> </p>
-        </td>
-        <td><p>Computes the inverse of the transform defined by the 'logicleTransform'
-function or the transformList generated by 'estimateLogicle' function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="invsplitscale-class.html">invsplitscale-class</a></code> </p>
-        </td>
-        <td><p>Class "invsplitscale"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keyword-methods.html">keyword()</a></code> </p>
-        </td>
-        <td><p>Methods to retrieve keywords of a flowFrame</p></td>
+        <td><p>Class "boundaryFilter"</p></td>
       </tr><tr>
         
         <td>
@@ -455,36 +368,39 @@ function or the transformList generated by 'estimateLogicle' function</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="linearTransform.html">linearTransform()</a></code> </p>
+          <p><code><a href="unionFilter-class.html">unionFilter-class</a></code> </p>
         </td>
-        <td><p>Create the definition of a linear transformation function to be applied on a
-data set</p></td>
+        <td><p>Class unionFilter</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="lintGml2-class.html">lintGml2-class</a></code> </p>
+          <p><code><a href="intersectFilter-class.html">intersectFilter-class</a></code> </p>
         </td>
-        <td><p>Class lintGml2</p></td>
+        <td><p>Class intersectFilter</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="lnTransform.html">lnTransform()</a></code> </p>
+          <p><code><a href="complementFilter-class.html">complementFilter-class</a></code> </p>
         </td>
-        <td><p>Create the definition of a ln transformation function (natural logarthim) to
-be applied on a data set</p></td>
+        <td><p>Class complementFilter</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="logTransform.html">logTransform()</a></code> </p>
+          <p><code><a href="subsetFilter-class.html">subsetFilter-class</a></code> </p>
         </td>
-        <td><p>Create the definition of a log transformation function (base specified by
-user) to be applied on a data set</p></td>
+        <td><p>Class subsetFilter</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="logarithm-class.html">logarithm-class</a></code> </p>
+          <p><code><a href="setOperationFilter-class.html">setOperationFilter-class</a></code> </p>
         </td>
-        <td><p>Class "logarithm"</p></td>
+        <td><p>Class "setOperationFilter"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="sampleFilter-class.html">sampleFilter()</a></code> </p>
+        </td>
+        <td><p>Class "sampleFilter"</p></td>
       </tr><tr>
         
         <td>
@@ -494,21 +410,9 @@ user) to be applied on a data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="logicleTransform.html">logicleTransform()</a></code> <code><a href="logicleTransform.html">estimateLogicle()</a></code> </p>
+          <p><code><a href="randomFilterResult-class.html">randomFilterResult-class</a></code> </p>
         </td>
-        <td><p>Computes a transform using the 'logicle_transform' function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="logicletGml2-class.html">logicletGml2-class</a></code> </p>
-        </td>
-        <td><p>Class logicletGml2</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="logtGml2-class.html">logtGml2-class</a></code> </p>
-        </td>
-        <td><p>Class logtGml2</p></td>
+        <td><p>Class "randomFilterResult"</p></td>
       </tr><tr>
         
         <td>
@@ -518,51 +422,59 @@ user) to be applied on a data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="markernames.html">markernames()</a></code> <code><a href="markernames.html">`markernames<-`()</a></code> </p>
+          <p><code><a href="filter-and-methods.html">`%&%`</a></code> <code><a href="filter-and-methods.html">`%subset%`</a></code> </p>
         </td>
-        <td><p>get or update the marker names</p></td>
+        <td><p>Take the intersection of two filters</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="multipleFilterResult-class.html">multipleFilterResult-class</a></code> </p>
+          <p><code><a href="filter-in-methods.html">`%in%`</a></code> </p>
         </td>
-        <td><p>Class "multipleFilterResult"</p></td>
+        <td><p>Filter-specific membership methods</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="normalization-class.html">normalization()</a></code> <code><a href="normalization-class.html">normalize()</a></code> </p>
+          <p><code><a href="filter-on-methods.html">`%on%`</a></code> </p>
         </td>
-        <td><p>Class "normalization"</p></td>
+        <td><p>Methods for Function %on% in Package `flowCore'</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="nullParameter-class.html">nullParameter-class</a></code> </p>
+          <p><code><a href="filter-methods.html">filter()</a></code> </p>
         </td>
-        <td><p>Class "nullParameter"</p></td>
+        <td><p>Filter FCS files</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="parameterFilter-class.html">parameterFilter-class</a></code> </p>
+          <p><code><a href="split-methods.html">split-methods</a></code> </p>
         </td>
-        <td><p>Class "parameterFilter"</p></td>
+        <td><p>Methods to split flowFrames and flowSets according to filters</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="parameterTransform-class.html">parameterTransform-class</a></code> </p>
+          <p><code><a href="summarizeFilter-methods.html">summarizeFilter()</a></code> </p>
         </td>
-        <td><p>Class "parameterTransform"</p></td>
+        <td><p>Methods for function summarizeFilter</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-gates" class="hasAnchor"><a href="#section-gates" class="anchor"></a>Gates</h2>
+          <p class="section-desc"><p>Classes representing geometric gates (which are themselves filter objects) and methods for manipulating them</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="rectangleGate-class.html">rectangleGate()</a></code> </p>
+        </td>
+        <td><p>Class "rectangleGate"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="parameters-class.html">parameters-class</a></code> </p>
+          <p><code><a href="quadGate-class.html">quadGate()</a></code> </p>
         </td>
-        <td><p>Class "parameters"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="parameters-methods.html">parameters()</a></code> </p>
-        </td>
-        <td><p>Obtain information about parameters for flow cytometry objects.</p></td>
+        <td><p>Class "quadGate"</p></td>
       </tr><tr>
         
         <td>
@@ -578,83 +490,15 @@ user) to be applied on a data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="quadGate-class.html">quadGate()</a></code> </p>
+          <p><code><a href="ellipsoidGate-class.html">ellipsoidGate()</a></code> </p>
         </td>
-        <td><p>Class "quadGate"</p></td>
+        <td><p>Class "ellipsoidGate"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="quadratic-class.html">quadratic-class</a></code> </p>
+          <p><code><a href="transform_gate.html">transform_gate(<i>&lt;default&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Class "quadratic"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="quadraticTransform.html">quadraticTransform()</a></code> </p>
-        </td>
-        <td><p>Create the definition of a quadratic transformation function to be applied
-on a data set</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="randomFilterResult-class.html">randomFilterResult-class</a></code> </p>
-        </td>
-        <td><p>Class "randomFilterResult"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ratio-class.html">ratio-class</a></code> </p>
-        </td>
-        <td><p>Class "ratio"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ratiotGml2-class.html">ratiotGml2-class</a></code> </p>
-        </td>
-        <td><p>Class "ratiotGml2"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read.FCS.html">isFCSfile()</a></code> <code><a href="read.FCS.html">read.FCS()</a></code> </p>
-        </td>
-        <td><p>Read an FCS file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read.FCSheader.html">read.FCSheader()</a></code> </p>
-        </td>
-        <td><p>Read the TEXT section of a FCS file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read.flowSet.html">read.flowSet()</a></code> </p>
-        </td>
-        <td><p>Read a set of FCS files</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rectangleGate-class.html">rectangleGate()</a></code> </p>
-        </td>
-        <td><p>Class "rectangleGate"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rotate_gate.html">rotate_gate(<i>&lt;default&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Simplified geometric rotation of gates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sampleFilter-class.html">sampleFilter()</a></code> </p>
-        </td>
-        <td><p>Class "sampleFilter"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="scaleTransform.html">scaleTransform()</a></code> </p>
-        </td>
-        <td><p>Create the definition of a scale transformation function to be applied on a
-data set</p></td>
+        <td><p>Simplified geometric transformation of gates</p></td>
       </tr><tr>
         
         <td>
@@ -664,82 +508,30 @@ data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="setOperationFilter-class.html">setOperationFilter-class</a></code> </p>
-        </td>
-        <td><p>Class "setOperationFilter"</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="shift_gate.html">shift_gate(<i>&lt;default&gt;</i>)</a></code> </p>
         </td>
         <td><p>Simplified geometric translation of gates</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="singleParameterTransform-class.html">singleParameterTransform-class</a></code> </p>
+          <p><code><a href="rotate_gate.html">rotate_gate(<i>&lt;default&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Class "singleParameterTransform"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sinht-class.html">sinht-class</a></code> </p>
-        </td>
-        <td><p>Class "sinht"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="split-methods.html">split-methods</a></code> </p>
-        </td>
-        <td><p>Methods to split flowFrames and flowSets according to filters</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="splitScaleTransform.html">splitScaleTransform()</a></code> </p>
-        </td>
-        <td><p>Compute the split-scale transformation describe by FL. Battye</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="splitscale-class.html">splitscale-class</a></code> </p>
-        </td>
-        <td><p>Class "splitscale"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="squareroot-class.html">squareroot-class</a></code> </p>
-        </td>
-        <td><p>Class "squareroot"</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="subsetFilter-class.html">subsetFilter-class</a></code> </p>
-        </td>
-        <td><p>Class subsetFilter</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="summarizeFilter-methods.html">summarizeFilter()</a></code> </p>
-        </td>
-        <td><p>Methods for function summarizeFilter</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="timeFilter-class.html">timeFilter()</a></code> </p>
-        </td>
-        <td><p>Class "timeFilter"</p></td>
-      </tr><tr>
+        <td><p>Simplified geometric rotation of gates</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-transformations" class="hasAnchor"><a href="#section-transformations" class="anchor"></a>Transformations</h2>
+          <p class="section-desc"><p>Classes for representing transformations to be applied to cytometry data in analysis and methods for generating them, interacting with them, and applying them</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="transform-class.html">transform-class</a></code> </p>
         </td>
         <td><p>'transform': a class for transforming flow-cytometry data by applying scale
 factors.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="transformFilter-class.html">transformFilter-class</a></code> </p>
-        </td>
-        <td><p>A class for encapsulating a filter to be performed on transformed parameters</p></td>
       </tr><tr>
         
         <td>
@@ -761,15 +553,22 @@ factors.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="transform_gate.html">transform_gate(<i>&lt;default&gt;</i>)</a></code> </p>
+          <p><code><a href="parameterTransform-class.html">parameterTransform-class</a></code> </p>
         </td>
-        <td><p>Simplified geometric transformation of gates</p></td>
+        <td><p>Class "parameterTransform"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="transformation-class.html">transformation-class</a></code> </p>
+          <p><code><a href="unitytransform-class.html">unitytransform-class</a></code> </p>
         </td>
-        <td><p>Class "transformation"</p></td>
+        <td><p>Class "unitytransform"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="scaleTransform.html">scaleTransform()</a></code> </p>
+        </td>
+        <td><p>Create the definition of a scale transformation function to be applied on a
+data set</p></td>
       </tr><tr>
         
         <td>
@@ -780,40 +579,189 @@ a data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="unionFilter-class.html">unionFilter-class</a></code> </p>
+          <p><code><a href="dg1polynomial-class.html">dg1polynomial-class</a></code> </p>
         </td>
-        <td><p>Class unionFilter</p></td>
+        <td><p>Class "dg1polynomial"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="unitytransform-class.html">unitytransform-class</a></code> </p>
+          <p><code><a href="ratio-class.html">ratio-class</a></code> </p>
         </td>
-        <td><p>Class "unitytransform"</p></td>
+        <td><p>Class "ratio"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="updateTransformKeywords.html">updateTransformKeywords()</a></code> </p>
+          <p><code><a href="ratiotGml2-class.html">ratiotGml2-class</a></code> </p>
         </td>
-        <td><p>modify description to reflect the transformation
-Involve inserting/updating 'transformation' and flowCore_$PnRmax keywords</p></td>
+        <td><p>Class "ratiotGml2"</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="validFilters.html">validFilters()</a></code> </p>
+          <p><code><a href="linearTransform.html">linearTransform()</a></code> </p>
         </td>
-        <td><p>Check if all filters in a filters matches same paramters</p></td>
+        <td><p>Create the definition of a linear transformation function to be applied on a
+data set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="write.FCS.html">write.FCS()</a></code> </p>
+          <p><code><a href="lintGml2-class.html">lintGml2-class</a></code> </p>
         </td>
-        <td><p>Write an FCS file</p></td>
+        <td><p>Class lintGml2</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="write.flowSet.html">write.flowSet()</a></code> </p>
+          <p><code><a href="squareroot-class.html">squareroot-class</a></code> </p>
         </td>
-        <td><p>Write an FCS file</p></td>
+        <td><p>Class "squareroot"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="quadratic-class.html">quadratic-class</a></code> </p>
+        </td>
+        <td><p>Class "quadratic"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="quadraticTransform.html">quadraticTransform()</a></code> </p>
+        </td>
+        <td><p>Create the definition of a quadratic transformation function to be applied
+on a data set</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="exponential-class.html">exponential-class</a></code> </p>
+        </td>
+        <td><p>Class "exponential"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logarithm-class.html">logarithm-class</a></code> </p>
+        </td>
+        <td><p>Class "logarithm"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logTransform.html">logTransform()</a></code> </p>
+        </td>
+        <td><p>Create the definition of a log transformation function (base specified by
+user) to be applied on a data set</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logtGml2-class.html">logtGml2-class</a></code> </p>
+        </td>
+        <td><p>Class logtGml2</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="hyperlog-class.html">hyperlog-class</a></code> </p>
+        </td>
+        <td><p>Class "hyperlog"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="hyperlogtGml2-class.html">hyperlogtGml2-class</a></code> </p>
+        </td>
+        <td><p>Class hyperlogtGml2</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="lnTransform.html">lnTransform()</a></code> </p>
+        </td>
+        <td><p>Create the definition of a ln transformation function (natural logarthim) to
+be applied on a data set</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="splitscale-class.html">splitscale-class</a></code> </p>
+        </td>
+        <td><p>Class "splitscale"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="splitScaleTransform.html">splitScaleTransform()</a></code> </p>
+        </td>
+        <td><p>Compute the split-scale transformation describe by FL. Battye</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="invsplitscale-class.html">invsplitscale-class</a></code> </p>
+        </td>
+        <td><p>Class "invsplitscale"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="sinht-class.html">sinht-class</a></code> </p>
+        </td>
+        <td><p>Class "sinht"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="asinht-class.html">asinht-class</a></code> </p>
+        </td>
+        <td><p>Class "asinht"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="arcsinhTransform.html">arcsinhTransform()</a></code> </p>
+        </td>
+        <td><p>Create the definition of an arcsinh transformation function (base specified
+by user) to be applied on a data set</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="asinhtGml2-class.html">asinhtGml2-class</a></code> </p>
+        </td>
+        <td><p>Class asinhtGml2</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="biexponentialTransform.html">biexponentialTransform()</a></code> </p>
+        </td>
+        <td><p>Compute a transform using the 'biexponential' function</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="EHtrans-class.html">EHtrans-class</a></code> </p>
+        </td>
+        <td><p>Class "EHtrans"</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logicleTransform.html">logicleTransform()</a></code> <code><a href="logicleTransform.html">estimateLogicle()</a></code> </p>
+        </td>
+        <td><p>Computes a transform using the 'logicle_transform' function</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="FCSTransTransform.html">FCSTransTransform()</a></code> </p>
+        </td>
+        <td><p>Computes a transform using the 'iplogicle' function</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logicletGml2-class.html">logicletGml2-class</a></code> </p>
+        </td>
+        <td><p>Class logicletGml2</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="estimateMedianLogicle.html">estimateMedianLogicle()</a></code> </p>
+        </td>
+        <td><p>Estimates a common logicle transformation for a flowSet.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="inverseLogicleTransform.html">inverseLogicleTransform()</a></code> </p>
+        </td>
+        <td><p>Computes the inverse of the transform defined by the 'logicleTransform'
+function or the transformList generated by 'estimateLogicle' function</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="normalization-class.html">normalization()</a></code> <code><a href="normalization-class.html">normalize()</a></code> </p>
+        </td>
+        <td><p>Class "normalization"</p></td>
       </tr>
     </tbody>
     </table>
@@ -822,7 +770,12 @@ Involve inserting/updating 'transformation' and flowCore_$PnRmax keywords</p></t
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-data-classes">Data classes</a></li>
+      <li><a href="#section-reading-writing-data">Reading/writing data</a></li>
+      <li><a href="#section-compensation">Compensation</a></li>
+      <li><a href="#section-filters">Filters</a></li>
+      <li><a href="#section-gates">Gates</a></li>
+      <li><a href="#section-transformations">Transformations</a></li>
     </ul>
   </div>
 </div>
