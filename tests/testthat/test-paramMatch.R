@@ -59,6 +59,13 @@ test_that("getChannelMarker ",{
       suppressWarnings(expect_equivalent(getChannelMarker(fr, "CD45"), res))
       expect_warning(getChannelMarker(fr, "CD45"), "partially matched")
       expect_equivalent(getChannelMarker(fr, "CD45RA"), res)
+    
+      #succeed when exact match found  
+      fr <- flowFrame(matrix(1:100, ncol = 3, dimnames = list(NULL, c("cd18", "cd186", "cd18 apc"))))
+      expect_error(getChannelMarker(fr, "cd1")[["name"]], "multiple")
+      expect_equal(getChannelMarker(fr, "cd18")[["name"]], "cd18")
+      expect_equal(getChannelMarker(fr, "cd186")[["name"]], "cd186")
       
-      
+      fr <- flowFrame(matrix(1:100, ncol = 3, dimnames = list(NULL, c("cd4", "cd186", "cd18 apc"))))
+      expect_equal(getChannelMarker(fr, "cd18")[["name"]], "cd18 apc")
     })
