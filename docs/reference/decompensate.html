@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A class for encapsulating a filter to be performed on transformed parameters — transformFilter-class • flowCore</title>
+<title>Decompensate a flowFrame — decompensate • flowCore</title>
 
 
 <!-- jquery -->
@@ -35,13 +35,8 @@
 
 
 
-<meta property="og:title" content="A class for encapsulating a filter to be performed on transformed parameters — transformFilter-class" />
-<meta property="og:description" content="The transformFilter class is a mechanism for including one or more
-variable transformations into the filtering process. Using a special case of
-transform we can introduce
-transformations inline with the filtering process eliminating the need to
-process flowFrame objects before
-applying a filter." />
+<meta property="og:title" content="Decompensate a flowFrame — decompensate" />
+<meta property="og:description" content="Reverse the application of a compensation matrix on a flowFrame" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,81 +100,60 @@ applying a filter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A class for encapsulating a filter to be performed on transformed parameters</h1>
+    <h1>Decompensate a flowFrame</h1>
     
-    <div class="hidden name"><code>transformFilter-class.Rd</code></div>
+    <div class="hidden name"><code>decompensate.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The <code>transformFilter</code> class is a mechanism for including one or more
-variable transformations into the filtering process. Using a special case of
-<code><a href='transform-class.html'>transform</a></code> we can introduce
-transformations inline with the filtering process eliminating the need to
-process <code><a href='flowFrame-class.html'>flowFrame</a></code> objects before
-applying a filter.</p>
+    <p>Reverse the application of a compensation matrix on a flowFrame</p>
     </div>
 
+    <pre class="usage"><span class='fu'>decompensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>flowFrame.</p></td>
+    </tr>
+    <tr>
+      <th>spillover</th>
+      <td><p>matrix or data.frame.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
-
-<dl class='dl-horizontal'>
-<dt><code>transforms</code></dt><dd><p>A list of transforms to perform on the
-target <code><a href='flowFrame-class.html'>flowFrame</a></code></p></dd>
-
-<dt><code>filter</code></dt><dd><p>The filter to be applied to the transformed
-frame</p></dd>
-
-<dt><code>filterId</code></dt><dd><p>The name of the filter (chosen
-automatically)</p></dd>
-
-</dl>
-    <h2 class="hasAnchor" id="objects-from-the-class"><a class="anchor" href="#objects-from-the-class"></a>Objects from the Class</h2>
-
-    
-
-
-<p>Objects of this type are not generally created ``by hand''. They are a side
-effect of the use of the <code><a href='filter-on-methods.html'>%on%</a></code>
-method with a <code><a href='filter-methods.html'>filter</a></code> object on the
-left hand side and a
-<code><a href='transformList-class.html'>transformList</a></code> on the right hand
-side.</p>
-    <h2 class="hasAnchor" id="extends"><a class="anchor" href="#extends"></a>Extends</h2>
-
-    
-
-<p>Class <code>"<a href='filter-class.html'>filter</a>"</code>, directly.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code>"<a href='filter-class.html'>filter</a>"</code>, <code>"<a href='transform-class.html'>transform</a>"</code>,
-<code><a href='transform-class.html'>transform</a></code></p></div>
+    <p>a decompensated flowFrame</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowStats</span>)
-<span class='no'>samp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.FCS.html'>read.FCS</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"0877408774.B08"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>))
-
-<span class='co'>## Gate this object after log transforming the forward and side</span>
-<span class='co'>## scatter variables</span>
-<span class='fu'><a href='filter-methods.html'>filter</a></span>(<span class='no'>samp</span>, <span class='fu'><a href='https://rdrr.io/pkg/flowStats/man/norm2Filter-class.html'>norm2Filter</a></span>(<span class='st'>"FSC-H"</span>, <span class='st'>"SSC-H"</span>, <span class='kw'>scale.factor</span><span class='kw'>=</span><span class='fl'>2</span>)
-       <span class='kw'>%on%</span> <span class='fu'><a href='transform.html'>transform</a></span>(<span class='st'>"FSC-H"</span><span class='kw'>=</span><span class='no'>log</span>,<span class='st'>"SSC-H"</span><span class='kw'>=</span><span class='no'>log</span>))</div><div class='output co'>#&gt; A filterResult produced by the filter named 'defaultNorm2Filter on transformed values of FSC-H,SSC-H'</div><div class='input'>
-
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>flowCore</span>)
+<span class='no'>f</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
+   <span class='st'>"compdata"</span>,
+   <span class='st'>"data"</span>,
+   <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>),
+ <span class='kw'>full.name</span><span class='kw'>=</span><span class='fl'>TRUE</span>)[<span class='fl'>1</span>]
+<span class='no'>f</span> <span class='kw'>=</span> <span class='fu'><a href='read.FCS.html'>read.FCS</a></span>(<span class='no'>f</span>)
+<span class='no'>spill</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
+       <span class='st'>"compdata"</span>, <span class='st'>"compmatrix"</span>,
+        <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>),
+        ,<span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"\t"</span>,<span class='kw'>skip</span><span class='kw'>=</span><span class='fl'>2</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>spill</span>) <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\\."</span>,<span class='st'>"-"</span>,<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>spill</span>))
+<span class='no'>f.comp</span> <span class='kw'>=</span> <span class='fu'><a href='compensation-class.html'>compensate</a></span>(<span class='no'>f</span>,<span class='no'>spill</span>)
+<span class='no'>f.decomp</span> <span class='kw'>=</span> <span class='fu'>decompensate</span>(<span class='no'>f.comp</span>,<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>spill</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='no'>f</span>@<span class='kw'>exprs</span>-<span class='no'>f.decomp</span>@<span class='kw'>exprs</span>))</div><div class='output co'>#&gt; [1] 2.811873e-11</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='fu'>decompensate</span>(<span class='no'>f.comp</span>,<span class='no'>spill</span>)@<span class='kw'>exprs</span>,<span class='fu'>decompensate</span>(<span class='no'>f.comp</span>,<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>spill</span>))@<span class='kw'>exprs</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='no'>f</span>@<span class='kw'>exprs</span>,<span class='fu'>decompensate</span>(<span class='no'>f.comp</span>,<span class='no'>spill</span>)@<span class='kw'>exprs</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#slots">Slots</a></li>
-      <li><a href="#objects-from-the-class">Objects from the Class</a></li>
-      <li><a href="#extends">Extends</a></li>
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
-    <h2>Author</h2>
-    <p>B. Ellis</p>
   </div>
 </div>
 

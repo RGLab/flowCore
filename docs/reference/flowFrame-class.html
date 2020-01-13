@@ -19,8 +19,8 @@ population of cells from a FACS run — flowFrame-class • flowCore</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -80,7 +80,7 @@ file
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.7</span>
       </span>
     </div>
 
@@ -271,7 +271,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
     <code>flowFrame</code> like a regular <code>data.frame</code>. <code>flowCore</code>
     provides an additional inline mechanism for transformations (see
     <code><a href='filter-on-methods.html'>%on%</a></code>) which is strictly more limited
-    than the out-of-line transformation described here.    <em>Usage:</em>    <code><a href='transform-class.html'>   transform(flowFrame, translist, ...)</a></code></p></dd>
+    than the out-of-line transformation described here.    <em>Usage:</em>    <code><a href='transform.html'>   transform(flowFrame, translist, ...)</a></code></p></dd>
   <dt>filter</dt><dd><p>Apply a <code><a href='filter-class.html'>filter</a></code> object on a
     <code>flowFrame</code> object. This returns an object of class
     <code><a href='filterResult-class.html'>filterResult</a></code>, which could then be used for
@@ -298,8 +298,8 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
     <code><a href='compensation-class.html'>   compensate(flowFrame, data.frame)</a></code></p></dd>
   <dt>decompensate</dt><dd><p>Reverse the application of a compensation matrix (or a
     <code><a href='compensation-class.html'>compensation</a></code> object) on a <code>flowFrame</code>
-    object. This returns a decompensated <code>flowFrame</code>.    <em>Usage:</em>    <code><a href='decompensate-methods.html'>   decompensate(flowFrame, matrix)</a></code>
-    <code><a href='decompensate-methods.html'>   decompensate(flowFrame, data.frame)</a></code></p></dd>
+    object. This returns a decompensated <code>flowFrame</code>.    <em>Usage:</em>    <code><a href='decompensate.html'>   decompensate(flowFrame, matrix)</a></code>
+    <code><a href='decompensate.html'>   decompensate(flowFrame, data.frame)</a></code></p></dd>
   <dt>spillover</dt><dd><p>Extract spillover matrix from description slot if
     present. It is equivalent to 
     <code><a href='keyword-methods.html'>keyword(x, c("spillover", "SPILL"))</a></code>
@@ -451,7 +451,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 <span class='no'>opar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfcol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>))
 <span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowViz</span>))
 <span class='fu'><a href='https://rdrr.io/pkg/flowViz/man/plot.html'>plot</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1.H"</span>, <span class='st'>"FL2.H"</span>))
-<span class='no'>frame</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='transform-class.html'>transform</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='transformList-class.html'>transformList</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1.H"</span>, <span class='st'>"FL2.H"</span>), <span class='no'>log</span>))
+<span class='no'>frame</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='transform.html'>transform</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='transformList-class.html'>transformList</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1.H"</span>, <span class='st'>"FL2.H"</span>), <span class='no'>log</span>))
 <span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowViz</span>))
 <span class='fu'><a href='https://rdrr.io/pkg/flowViz/man/plot.html'>plot</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1.H"</span>, <span class='st'>"FL2.H"</span>))</div><div class='img'><img src='flowFrame-class-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='no'>opar</span>)
 <span class='fu'>range</span>(<span class='no'>frame</span>)</div><div class='output co'>#&gt;     FSC.H SSC.H   FL1.H   FL2.H FL3.H FL2.A
@@ -609,7 +609,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#details">Details</a></li>
@@ -632,7 +632,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>

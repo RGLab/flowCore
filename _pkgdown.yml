@@ -1,12 +1,15 @@
 destination: docs
 reference:
-  - title: "Data classes"
+  - title: "Data: Classes"
     desc: >
-      Classes for managing the data from one or more cytometry datasets (FCS files) and additional
-      methods for accessing the data or metadata associated with them
+      Classes for managing the data from one or more cytometry datasets (FCS files).
     contents:
       - flowFrame-class
       - flowSet-class
+  - title: "Data: Methods"
+    desc: >
+      Methods for accessing the data and metadata associated with flowFrame or flowSet objects.
+    contents:
       - Subset-methods
       - each_col
       - fr_append_cols
@@ -19,7 +22,7 @@ reference:
       - filter_keywords
   - title: "Reading/writing data"
     desc: >
-      Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures
+      Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures.
     contents:
       - read.FCS
       - read.FCSheader
@@ -29,15 +32,14 @@ reference:
       - write.flowSet
   - title: "Compensation"
     desc: >
-      Classes to represent compensation to be applied to raw cytometry data and methods to apply them
+      Classes to represent compensation to be applied to raw cytometry data and methods to apply them.
     contents:
       - compensation-class
       - decompensate-methods
       - compensatedParameter-class
-  - title: "Filters"
+  - title: "Filters: Classes"
     desc: >
-      Classes representing general filters applied to cytometry data and methods for using them, accessing
-      information about them, and logically combining them
+      Classes representing general filters applied to cytometry data and methods to create them.
     contents:
       - filter-class
       - concreteFilter-class
@@ -65,22 +67,30 @@ reference:
       - logicalFilterResult-class
       - randomFilterResult-class
       - manyFilterResult-class
+  - title: "Filters: Methods"
+    desc: >
+      Methods for applying filters, accessing information about them, and logically combining them.
+    contents:
       - '%&%'
       - '%in%'
       - '%on%'
       - filter-methods
       - split-methods
       - summarizeFilter-methods
-  - title: "Gates"
+  - title: "Gates: Classes"
     desc: >
-      Classes representing geometric gates (which are themselves filter objects) and
-      methods for manipulating them
+      Classes representing geometric gates (which are themselves filter objects).
+      Note that gates are applied to data in the same way as other filters.
     contents:
       - rectangleGate-class
       - quadGate-class
       - polygonGate-class
       - polytopeGate-class
       - ellipsoidGate-class
+  - title: "Gates: Methods"
+    desc: >
+      Methods for applying simple geometric manipulations to gates.
+    contents:
       - transform_gate
       - scale_gate
       - shift_gate
@@ -88,8 +98,9 @@ reference:
   - title: "Transformations"
     desc: >
       Classes for representing transformations to be applied to cytometry data in analysis
-      and methods for generating them, interacting with them, and applying them
+      and methods for generating them, interacting with them, and applying them.
     contents:
+      - transform
       - transform-class
       - transformList-class
       - transformMap-class
@@ -128,5 +139,8 @@ reference:
       - estimateMedianLogicle
       - inverseLogicleTransform
       - normalization-class
-
+articles:
+  - title: Introduction
+    contents:
+      - HowTo-flowCore
       

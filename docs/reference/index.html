@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.7</span>
       </span>
     </div>
 
@@ -112,8 +112,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-data-classes" class="hasAnchor"><a href="#section-data-classes" class="anchor"></a>Data classes</h2>
-          <p class="section-desc"><p>Classes for managing the data from one or more cytometry datasets (FCS files) and additional methods for accessing the data or metadata associated with them</p></p>
+          <h2 id="section-data-classes" class="hasAnchor"><a href="#section-data-classes" class="anchor"></a>Data: Classes</h2>
+          <p class="section-desc"><p>Classes for managing the data from one or more cytometry datasets (FCS files).</p></p>
         </th>
       </tr>
       <tr>
@@ -130,7 +130,15 @@ population of cells from a FACS run</p></td>
         </td>
         <td><p>'flowSet': a class for storing flow cytometry raw data from quantitative
 cell-based assays</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data-methods" class="hasAnchor"><a href="#section-data-methods" class="anchor"></a>Data: Methods</h2>
+          <p class="section-desc"><p>Methods for accessing the data and metadata associated with flowFrame or flowSet objects.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="Subset-methods.html">Subset()</a></code> </p>
@@ -151,7 +159,7 @@ cell-based assays</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="getIndexSort-methods.html">getIndexSort-methods</a></code> </p>
+          <p><code><a href="getIndexSort.html">getIndexSort</a></code> </p>
         </td>
         <td><p>Extract Index Sorted Data from an FCS File</p></td>
       </tr><tr>
@@ -195,7 +203,7 @@ cell-based assays</p></td>
       <tr>
         <th colspan="2">
           <h2 id="section-reading-writing-data" class="hasAnchor"><a href="#section-reading-writing-data" class="anchor"></a>Reading/writing data</h2>
-          <p class="section-desc"><p>Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures</p></p>
+          <p class="section-desc"><p>Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures.</p></p>
         </th>
       </tr>
       <tr>
@@ -240,7 +248,7 @@ Also flatten spillover matrix into a string</p></td>
       <tr>
         <th colspan="2">
           <h2 id="section-compensation" class="hasAnchor"><a href="#section-compensation" class="anchor"></a>Compensation</h2>
-          <p class="section-desc"><p>Classes to represent compensation to be applied to raw cytometry data and methods to apply them</p></p>
+          <p class="section-desc"><p>Classes to represent compensation to be applied to raw cytometry data and methods to apply them.</p></p>
         </th>
       </tr>
       <tr>
@@ -252,7 +260,7 @@ Also flatten spillover matrix into a string</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="decompensate-methods.html">decompensate(<i>&lt;flowFrame&gt;</i>,<i>&lt;matrix&gt;</i>)</a></code> <code><a href="decompensate-methods.html">decompensate(<i>&lt;flowFrame&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> </p>
+          <p><code><a href="decompensate.html">decompensate()</a></code> </p>
         </td>
         <td><p>Decompensate a flowFrame</p></td>
       </tr><tr>
@@ -265,8 +273,8 @@ Also flatten spillover matrix into a string</p></td>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-filters" class="hasAnchor"><a href="#section-filters" class="anchor"></a>Filters</h2>
-          <p class="section-desc"><p>Classes representing general filters applied to cytometry data and methods for using them, accessing information about them, and logically combining them</p></p>
+          <h2 id="section-filters-classes" class="hasAnchor"><a href="#section-filters-classes" class="anchor"></a>Filters: Classes</h2>
+          <p class="section-desc"><p>Classes representing general filters applied to cytometry data and methods to create them.</p></p>
         </th>
       </tr>
       <tr>
@@ -419,7 +427,15 @@ Also flatten spillover matrix into a string</p></td>
           <p><code><a href="manyFilterResult-class.html">manyFilterResult-class</a></code> </p>
         </td>
         <td><p>Class "manyFilterResult"</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-filters-methods" class="hasAnchor"><a href="#section-filters-methods" class="anchor"></a>Filters: Methods</h2>
+          <p class="section-desc"><p>Methods for applying filters, accessing information about them, and logically combining them.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="filter-and-methods.html">`%&%`</a></code> <code><a href="filter-and-methods.html">`%subset%`</a></code> </p>
@@ -459,8 +475,8 @@ Also flatten spillover matrix into a string</p></td>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-gates" class="hasAnchor"><a href="#section-gates" class="anchor"></a>Gates</h2>
-          <p class="section-desc"><p>Classes representing geometric gates (which are themselves filter objects) and methods for manipulating them</p></p>
+          <h2 id="section-gates-classes" class="hasAnchor"><a href="#section-gates-classes" class="anchor"></a>Gates: Classes</h2>
+          <p class="section-desc"><p>Classes representing geometric gates (which are themselves filter objects). Note that gates are applied to data in the same way as other filters.</p></p>
         </th>
       </tr>
       <tr>
@@ -493,7 +509,15 @@ Also flatten spillover matrix into a string</p></td>
           <p><code><a href="ellipsoidGate-class.html">ellipsoidGate()</a></code> </p>
         </td>
         <td><p>Class "ellipsoidGate"</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-gates-methods" class="hasAnchor"><a href="#section-gates-methods" class="anchor"></a>Gates: Methods</h2>
+          <p class="section-desc"><p>Methods for applying simple geometric manipulations to gates.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="transform_gate.html">transform_gate(<i>&lt;default&gt;</i>)</a></code> </p>
@@ -522,10 +546,16 @@ Also flatten spillover matrix into a string</p></td>
       <tr>
         <th colspan="2">
           <h2 id="section-transformations" class="hasAnchor"><a href="#section-transformations" class="anchor"></a>Transformations</h2>
-          <p class="section-desc"><p>Classes for representing transformations to be applied to cytometry data in analysis and methods for generating them, interacting with them, and applying them</p></p>
+          <p class="section-desc"><p>Classes for representing transformations to be applied to cytometry data in analysis and methods for generating them, interacting with them, and applying them.</p></p>
         </th>
       </tr>
       <tr>
+        
+        <td>
+          <p><code><a href="transform.html">transform</a></code> </p>
+        </td>
+        <td><p>Transform a flowFrame or flowSet</p></td>
+      </tr><tr>
         
         <td>
           <p><code><a href="transform-class.html">transform-class</a></code> </p>
@@ -767,14 +797,17 @@ function or the transformList generated by 'estimateLogicle' function</p></td>
     </table>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-data-classes">Data classes</a></li>
+      <li><a href="#section-data-classes">Data: Classes</a></li>
+      <li><a href="#section-data-methods">Data: Methods</a></li>
       <li><a href="#section-reading-writing-data">Reading/writing data</a></li>
       <li><a href="#section-compensation">Compensation</a></li>
-      <li><a href="#section-filters">Filters</a></li>
-      <li><a href="#section-gates">Gates</a></li>
+      <li><a href="#section-filters-classes">Filters: Classes</a></li>
+      <li><a href="#section-filters-methods">Filters: Methods</a></li>
+      <li><a href="#section-gates-classes">Gates: Classes</a></li>
+      <li><a href="#section-gates-methods">Gates: Methods</a></li>
       <li><a href="#section-transformations">Transformations</a></li>
     </ul>
   </div>
@@ -787,7 +820,7 @@ function or the transformList generated by 'estimateLogicle' function</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>

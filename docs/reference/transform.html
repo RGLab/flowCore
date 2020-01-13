@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A class for encapsulating a filter to be performed on transformed parameters — transformFilter-class • flowCore</title>
+<title>Transform a flowFrame or flowSet — transform • flowCore</title>
 
 
 <!-- jquery -->
@@ -35,13 +35,14 @@
 
 
 
-<meta property="og:title" content="A class for encapsulating a filter to be performed on transformed parameters — transformFilter-class" />
-<meta property="og:description" content="The transformFilter class is a mechanism for including one or more
-variable transformations into the filtering process. Using a special case of
-transform we can introduce
-transformations inline with the filtering process eliminating the need to
-process flowFrame objects before
-applying a filter." />
+<meta property="og:title" content="Transform a flowFrame or flowSet — transform" />
+<meta property="og:description" content="Similar to the base transform method, this will transform the values of
+a flowFrame or flowSet object according to the transformations specified
+in one of two ways:
+a transformList or list of transform objects
+named arguments specifying transformations to be applied to channels (see details)
+
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,81 +106,68 @@ applying a filter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A class for encapsulating a filter to be performed on transformed parameters</h1>
+    <h1>Transform a flowFrame or flowSet</h1>
     
-    <div class="hidden name"><code>transformFilter-class.Rd</code></div>
+    <div class="hidden name"><code>transform.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The <code>transformFilter</code> class is a mechanism for including one or more
-variable transformations into the filtering process. Using a special case of
-<code><a href='transform-class.html'>transform</a></code> we can introduce
-transformations inline with the filtering process eliminating the need to
-process <code><a href='flowFrame-class.html'>flowFrame</a></code> objects before
-applying a filter.</p>
+    <p>Similar to the base transform method, this will transform the values of
+a flowFrame or flowSet object according to the transformations specified
+in one of two ways:</p><ol>
+<li><p>a <a href='transformList-class.html'>transformList</a> or list of <a href='transform-class.html'>transform</a> objects</p></li>
+<li><p>named arguments specifying transformations to be applied to channels (see details)</p></li>
+</ol>
+
     </div>
 
+    <pre class="usage">transform(_data, trans, ...)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>_data</th>
+      <td><p>a flowFrame or flowSet object</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments. e.g. <code>FL1-H</code> = myFunc(<code>FL1-H</code>)</p></td>
+    </tr>
+    <tr>
+      <th>trans</th>
+      <td><p>a transformList object</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    
-
-<dl class='dl-horizontal'>
-<dt><code>transforms</code></dt><dd><p>A list of transforms to perform on the
-target <code><a href='flowFrame-class.html'>flowFrame</a></code></p></dd>
-
-<dt><code>filter</code></dt><dd><p>The filter to be applied to the transformed
-frame</p></dd>
-
-<dt><code>filterId</code></dt><dd><p>The name of the filter (chosen
-automatically)</p></dd>
-
-</dl>
-    <h2 class="hasAnchor" id="objects-from-the-class"><a class="anchor" href="#objects-from-the-class"></a>Objects from the Class</h2>
-
-    
-
-
-<p>Objects of this type are not generally created ``by hand''. They are a side
-effect of the use of the <code><a href='filter-on-methods.html'>%on%</a></code>
-method with a <code><a href='filter-methods.html'>filter</a></code> object on the
-left hand side and a
-<code><a href='transformList-class.html'>transformList</a></code> on the right hand
-side.</p>
-    <h2 class="hasAnchor" id="extends"><a class="anchor" href="#extends"></a>Extends</h2>
-
-    
-
-<p>Class <code>"<a href='filter-class.html'>filter</a>"</code>, directly.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code>"<a href='filter-class.html'>filter</a>"</code>, <code>"<a href='transform-class.html'>transform</a>"</code>,
-<code><a href='transform-class.html'>transform</a></code></p></div>
+    <p>To specify the transformations in the second way, the names of these arguments
+should correspond to the new channel names and the values should be functions applied to
+channels currently present in the flowFrame or flowSet. There are a few examples below.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowStats</span>)
-<span class='no'>samp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.FCS.html'>read.FCS</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"0877408774.B08"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>))
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>GvHD</span>)
+<span class='co'># logarithmically transform FL1-H and FL2-H for the entire flowSet</span>
+<span class='co'># using a transformList</span>
+<span class='no'>fs</span> <span class='kw'>&lt;-</span> <span class='fu'>transform</span>(<span class='no'>GvHD</span>,
+                 <span class='fu'><a href='transformList-class.html'>transformList</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FL1-H"</span>, <span class='st'>"FL2-H"</span>), <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>log</span>, <span class='no'>log</span>)))
 
-<span class='co'>## Gate this object after log transforming the forward and side</span>
-<span class='co'>## scatter variables</span>
-<span class='fu'><a href='filter-methods.html'>filter</a></span>(<span class='no'>samp</span>, <span class='fu'><a href='https://rdrr.io/pkg/flowStats/man/norm2Filter-class.html'>norm2Filter</a></span>(<span class='st'>"FSC-H"</span>, <span class='st'>"SSC-H"</span>, <span class='kw'>scale.factor</span><span class='kw'>=</span><span class='fl'>2</span>)
-       <span class='kw'>%on%</span> <span class='fu'><a href='transform.html'>transform</a></span>(<span class='st'>"FSC-H"</span><span class='kw'>=</span><span class='no'>log</span>,<span class='st'>"SSC-H"</span><span class='kw'>=</span><span class='no'>log</span>))</div><div class='output co'>#&gt; A filterResult produced by the filter named 'defaultNorm2Filter on transformed values of FSC-H,SSC-H'</div><div class='input'>
-
-</div></pre>
+<span class='co'># transform a single flowFrame using named arguments. Note the first</span>
+<span class='co'># transformation will overwrite FL1-H while the second will create a new</span>
+<span class='co'># channel </span>
+<span class='no'>fr</span> <span class='kw'>&lt;-</span> <span class='fu'>transform</span>(<span class='no'>GvHD</span><span class='kw'>[[</span><span class='fl'>1</span>]],
+                 <span class='kw'>`FL1-H`</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>`FL1-H`</span>),
+                 <span class='kw'>`logFL2`</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>`FL2-H`</span>))</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#slots">Slots</a></li>
-      <li><a href="#objects-from-the-class">Objects from the Class</a></li>
-      <li><a href="#extends">Extends</a></li>
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#details">Details</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
-    <h2>Author</h2>
-    <p>B. Ellis</p>
   </div>
 </div>
 

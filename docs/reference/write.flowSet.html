@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.7</span>
       </span>
     </div>
 
@@ -166,12 +166,12 @@ of the FCS files.</p>
 <span class='no'>outDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(), <span class='st'>"foo"</span>)
 
 <span class='co'>## now write out into  files</span>
-<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmprOujRC/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
+<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmpRB1QkF/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
 #&gt; [5] "s5a04.fcs"      "s5a05.fcs"     </div><div class='input'>
 <span class='co'>## and read back in</span>
 <span class='no'>bar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.flowSet.html'>read.flowSet</a></span>(<span class='kw'>path</span><span class='kw'>=</span><span class='no'>outDir</span>, <span class='kw'>phenoData</span><span class='kw'>=</span><span class='st'>"annotation.txt"</span>)</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
@@ -193,7 +193,7 @@ of the FCS files.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>

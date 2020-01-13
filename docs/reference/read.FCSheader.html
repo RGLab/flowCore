@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -70,7 +70,7 @@ that contains FACS keywords." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.7</span>
       </span>
     </div>
 
@@ -155,7 +155,7 @@ interest.</p>
     <pre class="examples"><div class='input'>
 <span class='no'>samp</span> <span class='kw'>&lt;-</span> <span class='fu'>read.FCSheader</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
    <span class='st'>"0877408774.B08"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>))
-<span class='no'>samp</span></div><div class='output co'>#&gt; $`/tmp/Rtmp6rinOM/temp_libpathbcf6ecae5c9/flowCore/extdata/0877408774.B08`
+<span class='no'>samp</span></div><div class='output co'>#&gt; $`/tmp/RtmpINjmPE/temp_libpath618f421a5c04/flowCore/extdata/0877408774.B08`
 #&gt;                        FCSversion                          $BYTEORD 
 #&gt;                               "2"                         "4,3,2,1" 
 #&gt;                         $DATATYPE                         $NEXTDATA 
@@ -305,13 +305,13 @@ interest.</p>
 #&gt; </div><div class='input'>
 <span class='no'>samp</span> <span class='kw'>&lt;-</span> <span class='fu'>read.FCSheader</span>(<span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
    <span class='st'>"0877408774.B08"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"flowCore"</span>), <span class='kw'>keyword</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"$DATE"</span>, <span class='st'>"$FIL"</span>))
-<span class='no'>samp</span></div><div class='output co'>#&gt; $`/tmp/Rtmp6rinOM/temp_libpathbcf6ecae5c9/flowCore/extdata/0877408774.B08`
+<span class='no'>samp</span></div><div class='output co'>#&gt; $`/tmp/RtmpINjmPE/temp_libpath618f421a5c04/flowCore/extdata/0877408774.B08`
 #&gt;            $DATE             $FIL 
 #&gt;      "03-Feb-06" "0877408774.B08" 
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
@@ -333,7 +333,7 @@ interest.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>
