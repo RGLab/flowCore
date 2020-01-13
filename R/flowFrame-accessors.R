@@ -677,10 +677,12 @@ setReplaceMethod("colnames",
 #' 
 #' Reverse the application of a compensation matrix on a flowFrame
 #'
-#' @name decompensate-methods
+#' @name decompensate
 #' @docType methods
 #' @aliases decompensate,flowFrame,matrix-method decompensate
-#' decompensate,flowFrame,data.frame-method
+#' decompensate,flowFrame,data.frame-method decompensate-methods
+#' 
+#' @usage decompensate(x, spillover)
 #' @param x flowFrame. 
 #' @param spillover matrix or data.frame. 
 #'
@@ -733,7 +735,7 @@ setMethod("decompensate",
   cols
   
 }
-#' @rdname decompensate-methods
+
 #' @export
 setMethod("decompensate",
 			 signature = signature(x="flowFrame", spillover="data.frame"),
@@ -799,17 +801,48 @@ setMethod("compensate",
 
 
 
-# transform method
-# we are also making sure that the values of the dynamic range in the
+#' Transform a flowFrame or flowSet
+#' 
+#' Similar to the base transform method, this will transform the values of
+#' a flowFrame or flowSet object according to the transformations specified
+#' in one of two ways:
+#' 1. a [transformList][flowCore::transformList-class] or list of [transform][flowCore::transform-class] objects
+#' 2. named arguments specifying transformations to be applied to channels (see details)
+#' 
+#' @name transform
+#' @md
+#' @usage transform(_data, trans, ...)
+#' @param _data a flowFrame or flowSet object
+#' @param trans a transformList object
+#' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
+#' 
+#' @details To specify the transformations in the second way, the names of these arguments 
+#' should correspond to the new channel names and the values should be functions applied to
+#' channels currently present in the flowFrame or flowSet. There are a few examples below.
+#' 
+#' @examples 
+#' data(GvHD)
+#' # logarithmically transform FL1-H and FL2-H for the entire flowSet
+#' # using a transformList
+#' fs <- transform(GvHD,
+#'                  transformList(c("FL1-H", "FL2-H"), list(log, log)))
+#'                  
+#' # transform a single flowFrame using named arguments. Note the first
+#' # transformation will overwrite FL1-H while the second will create a new
+#' # channel 
+#' fr <- transform(GvHD[[1]],
+#'                  `FL1-H`=log(`FL1-H`),
+#'                  `logFL2`=log(`FL2-H`))
+#' 
+#' 
+#' @export
+# 
+# We are also making sure that the values of the dynamic range in the
 # parameters slot are transformed accordingly. Note that this does not
 # happen in the inline form of transformation!
 # 
-# @param _data flowFrame object
-# @param translist transformList object. The recommended way of using this method.
-# @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
-#            but this form is not intended to be used in programmatic way since use non-standard evalution could fail to find
-#            'myFunc' definition.   
-#' @export
+# The `FL1-H` = myFunc(`FL1-H` ) form is not intended to be used in programmatic way
+# since use non-standard evalution could fail to find 'myFunc' definition. 
 setMethod("transform",
           signature=signature(`_data`="flowFrame"),
           definition=function(`_data`, translist, ...)
@@ -1361,7 +1394,7 @@ setMethod("cbind2",
 #' coordinates are names 'XLoc','YLoc', and a 'name' column is also prepended
 #' with the FCS file name.
 #' 
-#' @name getIndexSort-methods
+#' @name getIndexSort
 #' @aliases getIndexSort getIndexSort-methods getIndexSort,flowFrame-method
 #' @docType methods
 #' @usage NULL

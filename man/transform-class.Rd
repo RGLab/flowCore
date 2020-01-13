@@ -3,7 +3,6 @@
 \docType{class}
 \name{transform-class}
 \alias{transform-class}
-\alias{transform}
 \alias{transform,missing-method}
 \alias{summary,transform-method}
 \alias{show,transform-method}
