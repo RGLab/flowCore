@@ -1446,34 +1446,33 @@ parse_pd_for_read_fs <- function(files, path, pattern, phenoData,sep="\t", as.is
                                            , as.is=as.is
                                            , colClasses = c(FCS_File = "character") #avoid coersing filename to numbers that  accidentally tampers the filename by stripping leading zeros
                                            , ...)
-	  if(is.null(file_col_name))						   
-      {
-		  ## the sampleNames of the Annotated data frame must match the
-	      ## file names and we try to guess them from the input
-	      cols <- varLabels(phenoData)
-	      fidx <- grep("file|filename", cols, ignore.case=TRUE)
-	      if(length(fidx)>1)
-	        stop("Ambiguious columns for fcs filenames in phenoData: ", paste(cols[fidx], collapse = ","))
-	      else if(length(fidx) == 0)
-	        stop("columns for fcs filenames not detected in phenoData: ", paste(cols, collapse = ","))
-	      else
-	      {
-	        file_col_name <- cols[fidx]
-	        
-	      }
-	  }
-	  fn <- as.character(pData(phenoData)[[file_col_name]])
-	  if(any(duplicated(fn)))
-		  stop("The file names supplied as part of the ",
-				  "phenoData are not unique", call.=FALSE)
-	  # sampleNames(phenoData) <- fn
-	  # pd <- pData(phenoData)
-	  # pd[,fnams[1]] <- fn
-  # pData(phenoData) <- pd
+	  
+	 
     }else if(!is(phenoData,"AnnotatedDataFrame")){
       stop("Argument 'phenoData' must be of type 'AnnotatedDataFrame' or a filename\n",
            "of a text file containing the phenotypic information")
     }
+    
+    if(is.null(file_col_name))						   
+    {
+      ## the sampleNames of the Annotated data frame must match the
+      ## file names and we try to guess them from the input
+      cols <- varLabels(phenoData)
+      fidx <- grep("file|filename", cols, ignore.case=TRUE)
+      if(length(fidx)>1)
+        stop("Ambiguious columns for fcs filenames in phenoData: ", paste(cols[fidx], collapse = ","))
+      else if(length(fidx) == 0)
+        stop("columns for fcs filenames not detected in phenoData: ", paste(cols, collapse = ","))
+      else
+      {
+        file_col_name <- cols[fidx]
+        
+      }
+    }
+    fn <- as.character(pData(phenoData)[[file_col_name]])
+    if(any(duplicated(fn)))
+      stop("The file names supplied as part of the ",
+           "phenoData are not unique", call.=FALSE)
     ## go on and find the files
     
     if(!is.null(files))
