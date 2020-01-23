@@ -1511,7 +1511,8 @@ parse_pd_for_read_fs <- function(files, path, pattern, phenoData,sep="\t", as.is
                   )
     )
     
-    
+	if(is.null(file_col_name))						   
+		file_col_name <- "FCS_File"
   }
   pData(phenoData)[[file_col_name]] <- files
   
