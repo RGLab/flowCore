@@ -1290,6 +1290,7 @@ setMethod("cbind2",
           signature=signature(x="flowFrame", y="matrix"),
           definition=function(x, y)
       {
+		  .Deprecated("fr_append_cols")
           nx <- nrow(x)
           ny <- nrow(y)
           if(mode(y) != "numeric")
