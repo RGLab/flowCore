@@ -669,6 +669,7 @@ readFCStext <- function(con, offsets,emptyValue = TRUE, cpp = TRUE, ...)
     ## handle just fine.
     txt <- readBin(con,"raw", offsets["textend"]-offsets["textstart"]+1)
     txt <- iconv(rawToChar(txt), "", "latin1", sub="byte")
+	txt <- trimws(txt, "right")
 #	browser()
 	if(offsets["FCSversion"]<=2)##
 	{
