@@ -6,20 +6,24 @@ skip_if_not(dir.exists(dataPath))
 expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
 expectRes.new <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")
 # saveRDS(expectRes.new, file = "~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")
+test_that("trailing double delimiter", {
+  expect_silent(fr <- read.FCS(file.path(dataPath, "trailingdoubledelimiter.fcs")))
+  expect_equal(length(keyword(fr)), 38)
+  expect_equal(keyword(fr)[["keyword1234"]], "")#check the last keyword is parsed correctly
+  
+  #disable empty value
+  expect_silent(fr <- read.FCS(file.path(dataPath, "trailingdoubledelimiter.fcs"), emptyValue = F))
+  expect_equal(length(keyword(fr)), 37)
+  expect_equal(keyword(fr)[["SAMPLE ID"]], "Default Patient ID")#check the second last keyword is parsed correctly
+  expect_null(keyword(fr)[["keyword1234"]])#check the last keyword is dropped correctly
+  
+})
+test_that("trailing space", {
+  expect_silent(fr <- read.FCS(file.path(dataPath, "trailing_space.fcs")))
+  expect_equal(length(keyword(fr)), 37)
+  expect_equal(keyword(fr)[["SAMPLE ID"]], "Default Patient ID")#check the last keyword is parsed correctly
 
-# test_that("Miltenyi's Macsquantify", {
-#   expect_warning(
-#     fr <- read.FCS(file.path(dataPath, "Miltenyi/1696_12017-04-30.0001_compatible.fcs"))
-#     , "Missing the required")
-#   expect_is(fr, "flowFrame")
-#   
-#   range(fr, type = "data")
-#   range(fr)
-#   expect_warning(fr <- read.FCS(file.path(dataPath, "double_precision/wishbone_thymus_panel1_rep1.fcs")), "Missing the required")
-#   
-#   expect_equal(nrow(fr), 250170)
-#   
-# })
+})
 # expectRes.new <- list()
 test_that("big file", {
   #too slow to run
@@ -310,3 +314,4 @@ test_that("handle > 2^32-1 bytes", {
   fr1 <- read.FCS(tmp, which.lines = lines)
   expect_equivalent(exprs(fr)[lines,], exprs(fr1))
 })
+
