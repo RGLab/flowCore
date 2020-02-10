@@ -5,6 +5,7 @@
 .Rhistory
 .gitignore
 .travis.yml
+misc
 R/.Rhistory
 vignettes/.Rhistory
 .Rproj.user
