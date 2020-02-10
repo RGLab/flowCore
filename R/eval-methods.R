@@ -720,7 +720,7 @@ parseMatrixFromString <- function(spilloverString, requiredParameter)
 # this mehtod is called if we want to be sure we have the data matrix only
 flowFrameToMatrix <- function(x)
 {
-    if (class(x) == "flowFrame")
+    if (is(x, "flowFrame"))
         exprs(x)
     else
         x
