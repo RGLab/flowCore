@@ -1,0 +1,146 @@
+destination: docs
+reference:
+  - title: "Data: Classes"
+    desc: >
+      Classes for managing the data from one or more cytometry datasets (FCS files).
+    contents:
+      - flowFrame-class
+      - flowSet-class
+  - title: "Data: Methods"
+    desc: >
+      Methods for accessing the data and metadata associated with flowFrame or flowSet objects.
+    contents:
+      - Subset-methods
+      - each_col
+      - fr_append_cols
+      - getIndexSort-methods
+      - fsApply
+      - identifier
+      - getChannelMarker
+      - parameters-methods
+      - keyword-methods
+      - filter_keywords
+  - title: "Reading/writing data"
+    desc: >
+      Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures.
+    contents:
+      - read.FCS
+      - read.FCSheader
+      - read.flowSet
+      - collapse_desc
+      - write.FCS
+      - write.flowSet
+  - title: "Compensation"
+    desc: >
+      Classes to represent compensation to be applied to raw cytometry data and methods to apply them.
+    contents:
+      - compensation-class
+      - decompensate-methods
+      - compensatedParameter-class
+  - title: "Filters: Classes"
+    desc: >
+      Classes representing general filters applied to cytometry data and methods to create them.
+    contents:
+      - filter-class
+      - concreteFilter-class
+      - transformFilter-class
+      - expressionFilter-class
+      - parameterFilter-class
+      - filterList-class
+      - filters-class
+      - filtersList-class
+      - filterResult-class
+      - filterResultList-class
+      - filterSummary-class
+      - filterSummaryList-class
+      - filterReference-class
+      - filterDetails
+      - timeFilter-class
+      - boundaryFilter-class
+      - kmeansFilter-class
+      - unionFilter-class
+      - intersectFilter-class
+      - complementFilter-class
+      - subsetFilter-class
+      - setOperationFilter-class
+      - sampleFilter-class
+      - logicalFilterResult-class
+      - randomFilterResult-class
+      - manyFilterResult-class
+  - title: "Filters: Methods"
+    desc: >
+      Methods for applying filters, accessing information about them, and logically combining them.
+    contents:
+      - '%&%'
+      - '%in%'
+      - '%on%'
+      - filter-methods
+      - split-methods
+      - summarizeFilter-methods
+  - title: "Gates: Classes"
+    desc: >
+      Classes representing geometric gates (which are themselves filter objects).
+      Note that gates are applied to data in the same way as other filters.
+    contents:
+      - rectangleGate-class
+      - quadGate-class
+      - polygonGate-class
+      - polytopeGate-class
+      - ellipsoidGate-class
+  - title: "Gates: Methods"
+    desc: >
+      Methods for applying simple geometric manipulations to gates.
+    contents:
+      - transform_gate
+      - scale_gate
+      - shift_gate
+      - rotate_gate
+  - title: "Transformations"
+    desc: >
+      Classes for representing transformations to be applied to cytometry data in analysis
+      and methods for generating them, interacting with them, and applying them.
+    contents:
+      - transform
+      - transform-class
+      - transformList-class
+      - transformMap-class
+      - transformReference-class
+      - parameterTransform-class
+      - unitytransform-class
+      - scaleTransform
+      - truncateTransform
+      - dg1polynomial-class
+      - ratio-class
+      - ratiotGml2-class
+      - linearTransform
+      - lintGml2-class
+      - squareroot-class
+      - quadratic-class
+      - quadraticTransform
+      - exponential-class
+      - logarithm-class
+      - logTransform
+      - logtGml2-class
+      - hyperlog-class
+      - hyperlogtGml2-class
+      - lnTransform
+      - splitscale-class
+      - splitScaleTransform
+      - invsplitscale-class
+      - sinht-class
+      - asinht-class
+      - arcsinhTransform
+      - asinhtGml2-class
+      - biexponentialTransform
+      - EHtrans-class
+      - logicleTransform
+      - FCSTransTransform
+      - logicletGml2-class
+      - estimateMedianLogicle
+      - inverseLogicleTransform
+      - normalization-class
+articles:
+  - title: Introduction
+    contents:
+      - HowTo-flowCore
+      

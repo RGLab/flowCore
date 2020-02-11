@@ -1116,7 +1116,7 @@ flowSet <- function(..., phenoData, name)
 #' 
 #' 
 #' @name transform-class
-#' @aliases transform transform,missing-method transform-class
+#' @aliases transform,missing-method transform-class
 #' summary,transform-method show,transform-method
 #' @docType class
 #' 
