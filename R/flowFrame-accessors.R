@@ -1048,7 +1048,7 @@ setMethod("spillover",
       {
           present <- keyword(x, .spillover_pattern)
           if(all(sapply(present, is.null)))
-              stop("No spillover matrix stored in that flowFrame")
+              stop("No spillover matrix stored in that sample")
           else present
       })
 

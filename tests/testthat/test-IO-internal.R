@@ -305,6 +305,7 @@ test_that("test diverse Bitwidths", {
     })
 
 test_that("handle > 2^32-1 bytes", {
+  skip("skip big flowFrame test")
   fr <- flowFrame(matrix(data = rnorm(3e8), nrow = 1e8, ncol =3, dimnames = list(NULL, c("A", "B", "C"))))
   expect_gt(object.size(exprs(fr)), 2^31-1)
   tmp <- tempfile()

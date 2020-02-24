@@ -400,17 +400,40 @@ read.FCS <- function(filename,
     return(tmp)
 }
 
-txt2spillmatrix <- function(txt){
-  splt <- strsplit(txt, ",")[[1]]
-  nrCols <- as.numeric(splt[1])
-  if(!is.na(nrCols)&&nrCols > 0)
+txt2spillmatrix <- function(txt, cpp = TRUE){
+  if(cpp)
   {
-    cnames <- splt[2:(nrCols+1)]
-    vals <- as.numeric(splt[(nrCols+2):length(splt)])
-    matrix(vals, ncol=nrCols, byrow=TRUE, dimnames = list(NULL, cnames))
+	  string_to_spill(txt)
   }else
-    txt
-  
+  {
+	  
+	  splt <- strsplit(txt, ",")[[1]]
+	  nrCols <- as.numeric(splt[1])
+	  if(!is.na(nrCols)&&nrCols > 0)
+	  {
+	    cnames <- splt[2:(nrCols+1)]
+	    vals <- as.numeric(splt[(nrCols+2):length(splt)])
+	    matrix(vals, ncol=nrCols, byrow=TRUE, dimnames = list(NULL, cnames))
+	  }else
+	    txt
+	}
+
+}
+spill2txt <- function(mat, cpp = TRUE){
+	cols <- colnames(mat)
+	if(cpp)
+	{
+		spill_to_string(mat, cols)
+	}else
+	{
+		
+		rNum <- as.character(nrow(mat))
+		clNames <- paste(cols,sep=",")
+		vec <- paste(c(t(mat)),sep=",",collapse=",")
+		paste(c(rNum,clNames,vec),sep=",",collapse=",")
+		
+	}
+	
 }
 ## ==========================================================================
 ## create AnnotatedDataFrame describing the flow parameters (channels)
@@ -1641,10 +1664,7 @@ collapse_desc <- function(d, collapse.spill = TRUE)
        mat <-  d[[spillName]]
        if(!is.null(mat))
        {
-    		rNum <- as.character(nrow(mat))
-    		clNames <- paste(colnames(mat),sep=",")
-    		vec <- paste(c(t(mat)),sep=",",collapse=",")
-  	    d[spillName] <- paste(c(rNum,clNames,vec),sep=",",collapse=",")
+		   d[spillName] <-spill2txt(mat)
        }
     }
     
