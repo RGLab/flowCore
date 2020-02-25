@@ -75,7 +75,7 @@ Collate:
     CytoExploreR_wrappers.R
 License: Artistic-2.0
 biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
-LinkingTo: Rcpp, RcppArmadillo, BH(>= 1.65.0.1), cytolib(>= 1.7.2)
+LinkingTo: Rcpp, RcppArmadillo, BH(>= 1.65.0.1), cytolib(>= 1.7.2), RProtoBufLib
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
 RoxygenNote: 7.0.2
