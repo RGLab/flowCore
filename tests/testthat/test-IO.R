@@ -30,7 +30,7 @@ test_that("duplicated channels", {
   dataPath <- "~/rglab/workspace/flowCore/misc/"
   filename  <- file.path(dataPath, "duplicate_channel.fcs")
   skip_if_not(file.exists(filename))
-  expect_warning(fr <- read.FCS(filename), "disambiguate channels")
+  expect_output(expect_warning(fr <- read.FCS(filename), "disambiguate channels"))
   expect_equal(colnames(fr)[3:4], c("FL1-H-1", "FL1-H-2"))
 })
 
@@ -154,7 +154,7 @@ test_that("test write.FCS", {
   keys[c("$BEGINDATA", "$ENDDATA")] <- NULL
   keys.new <- description(fr1)
   keys.new[["FILENAME"]] <- "setToDummy"
-  expect_equal(keys.new[names(keys)], keys)
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
   expect_equivalent(exprs(fr), exprs(fr1))
   
   #disable default linearize trans
@@ -203,7 +203,7 @@ test_that("test write.FCS", {
   keys.new[["FILENAME"]] <- "setToDummy"
   expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
-  expect_equal(keys.new[names(keys)], keys)
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
   expect_equivalent(exprs(fr), exprs(fr1))
   
   # write it again to see if the existing double delimiter is handled properly
@@ -213,7 +213,7 @@ test_that("test write.FCS", {
   keys.new[["FILENAME"]] <- "setToDummy"
   expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
-  expect_equal(keys.new[names(keys)], keys)
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
   expect_equivalent(exprs(fr), exprs(fr1))
   
   #test other delimiter
@@ -223,7 +223,7 @@ test_that("test write.FCS", {
   keys.new[["FILENAME"]] <- "setToDummy"
   expect_equal(keys.new[["$DATE"]], "05\\JUN\\2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
-  expect_equal(keys.new[names(keys)], keys)
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
   expect_equivalent(exprs(fr), exprs(fr1))
   
   #test quadrual-delimiter string
@@ -234,7 +234,7 @@ test_that("test write.FCS", {
   keys.new[["FILENAME"]] <- "setToDummy"
   expect_equal(keys.new[["$DATE"]], "05||JUN||2012")
   keys.new[["$DATE"]] <- keys[["$DATE"]]
-  expect_equal(keys.new[names(keys)], keys)
+  expect_equal(keys.new[names(keys)], keys, tol = 6e-6)
   expect_equivalent(exprs(fr), exprs(fr1))
   
   #when colmn.pattern is used to subset channels in read.FCS
@@ -460,7 +460,7 @@ test_that("read.FCS: channel_alias", {
   
   #validity check on possible multiple channels matching to the same alias within one FCS
   fcsfile <- system.file("extdata/CytoTrol_CytoTrol_1.fcs", package = "flowWorkspaceData")
-  expect_warning(fr <- read.FCS(fcsfile, channel_alias = data.frame(alias = c("FL1", "FL3"), channels = c("B710-A,V545", "R780-A"))), "channel_alias: Multiple channels from one FCS")
+  expect_output(expect_warning(fr <- read.FCS(fcsfile, channel_alias = data.frame(alias = c("FL1", "FL3"), channels = c("B710-A,V545", "R780-A"))), "channel_alias: Multiple channels from one FCS"))
   
 })
 

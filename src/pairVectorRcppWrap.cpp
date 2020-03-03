@@ -4,7 +4,6 @@
  *  Created on: Feb 9, 2015
  *      Author: wjiang2
  */
-#include <Rcpp.h>
 #include "pairVectorRcppWrap.h"
 
 namespace Rcpp {

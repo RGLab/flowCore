@@ -408,7 +408,7 @@ setMethod("keyword",
           signature=signature(object="flowFrame",
                               keyword="character"),
           function(object, keyword)
-              structure(object@description[keyword], names=keyword)
+              structure(keyword(object, compact = FALSE)[keyword], names=keyword)
           )
 
 ## select or combine keywords by function
@@ -429,7 +429,7 @@ setMethod("keyword",
       {
           sapply(keyword, function(k) {
               if(is.character(k))
-                  object@description[k]
+                  keyword(object, compact = FALSE)[k]
               else if(is.function(k))
                   k(object)
               else NA
@@ -1048,7 +1048,7 @@ setMethod("spillover",
       {
           present <- keyword(x, .spillover_pattern)
           if(all(sapply(present, is.null)))
-              stop("No spillover matrix stored in that flowFrame")
+              stop("No spillover matrix stored in that sample")
           else present
       })
 

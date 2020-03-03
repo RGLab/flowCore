@@ -8,8 +8,27 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include "pairVectorRcppWrap.h"
+
 using namespace std;
-//#include <Rcpp.h>
+// [[Rcpp::export]]
+NumericMatrix string_to_spill(string key){
+	compensation comp(key);
+  // Rcout << comp.marker.size() << endl;
+  // Rcout << comp.spillOver.size() << endl;
+	arma::mat spillover = comp.get_spillover_mat();
+	// Rcpp::RcogetPairsut << spillover << endl;
+	NumericMatrix res(Rcpp::wrap(spillover));//can't directly convert arma::mat to NumericMatrix
+	colnames(res) = StringVector(wrap(comp.marker));
+	// return Rcpp::List::create(spillover, comp.marker);
+	return res;
+}
+// [[Rcpp::export]]
+string spill_to_string(const arma::Mat<double> & mat, vector<string> markers){
+  
+	compensation comp(mat, markers);
+	return comp.to_string();
+
+}
 // [[Rcpp::plugins(myRegEx)]]
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::export]]

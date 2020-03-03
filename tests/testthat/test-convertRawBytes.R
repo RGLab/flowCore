@@ -10,7 +10,7 @@ test_that("raw to int", {
   size <- rep(nByteSize, nPar)
   rawVec <- writeBin(origVec, raw(), size = nByteSize, endian = "little")
   # wrong size vec
-  expect_error(convertRawBytes(rawVec, isInt = T, colSize = 4, ncol = nPar, isBigEndian = F), "length of 'colSize'")
+  expect_error(convertRawBytes(rawVec, isInt = T, colSize = 4, ncol = nPar, isBigEndian = F), "length of 'colSize'", class = "error")
   
   expect_identical(origVec_num, convertRawBytes(rawVec, isInt = T, colSize = size, ncol = nPar, isBigEndian = F))
   

@@ -7,9 +7,12 @@
 
 #ifndef PAIRVECTORRCPPWRAP_H_
 #define PAIRVECTORRCPPWRAP_H_
+#include <cytolib/compensation.hpp>
+using namespace cytolib;
 
+#include <RcppArmadillo.h> //include this instead of Rcpp.h so that RcppArmadillo inclusion won't be preceded by Rcpp.h in RcppExport.cpp
 #include <RcppCommon.h>
-#include <Rcpp.h>
+
 using namespace Rcpp;
 
 typedef std::pair<std::string, std::string> myPair;
