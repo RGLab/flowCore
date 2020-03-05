@@ -50,3 +50,25 @@ test_that("subsetKeywords", {
 expect_equal(length(description(fr[,c(1:6,8)])), length(description(fr[,-7])))
   
 })
+
+
+test_that("fr_append_cols", {
+  
+  n <- matrix(1:(nrow(fr)), ncol = 1)
+  colnames(n) <- "A"
+  m <- matrix(1:(2*nrow(fr)), ncol = 2)
+  colnames(m) <- c("B", "C")
+  
+  # Add single column and make sure min/max keywords set appropriately
+  fr_plus <- fr_append_cols(fr, n)
+  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  expect_equal(unname(unlist(key_range)), range(n[,"A"]))
+  
+  # Add multiple columns
+  fr_plus <- fr_append_cols(fr, m)
+  key_range <- keyword(fr_plus)[c("flowCore_$P9Rmin", "flowCore_$P9Rmax")]
+  expect_equal(unname(unlist(key_range)), range(m[,"B"]))
+  key_range <- keyword(fr_plus)[c("flowCore_$P10Rmin", "flowCore_$P10Rmax")]
+  expect_equal(unname(unlist(key_range)), range(m[,"C"]))
+  
+})
