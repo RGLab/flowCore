@@ -1813,9 +1813,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
      # bump indices on remaining keys down to their new values
     this_desc <- keyword(x)
     knames <- names(this_desc)
-    # # Only change names that don't overlap with mk
-    # knames <- knames[!(knames %in% names(mk))]
-    # bumped_down <- this_desc[knames]
+
     new_names <- NULL
     old_idices <- NULL
     for(i in seq_along(newid)){
@@ -1869,9 +1867,6 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     this_desc[["$BEGINDATA"]] <- datastart
     this_desc[["$ENDDATA"]] <- dataend
     keyword(x) <- this_desc
-    
-    # description(x) <- list("$BEGINDATA" = datastart,
-    #                        "$ENDDATA" = dataend)
     
     ctxt <- collapseDesc(x, delimiter = delimiter)
 
