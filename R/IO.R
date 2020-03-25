@@ -1597,7 +1597,7 @@ writeFCSheader <- function(con, offsets)
 #' @noRd 
 collapseDesc <- function(x, delimiter = "\\")
 {
-    d <- description(x)
+    d <- keyword(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
 #	browser()
   ##skip flowCore_$PnRMax when trans is not applied 
@@ -1773,7 +1773,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     names(pnb) <- paste0("$P", newid, "B")
     mk <- c(mk, pnb)
 #	browser()
-    orig.kw <- description(x)
+    orig.kw <- keyword(x)
     ## We need all PnE keywords and assume "0,0" if they are missing
     pne <- orig.kw[paste0(pid, "E")]
     names(pne) <- sprintf("$P%sE", newid)
@@ -1811,7 +1811,9 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
      #TODO: rm unsed extra non-stand $P keys first
     
      # bump indices on remaining keys down to their new values
-    knames <- names(x@description)
+    this_desc <- keyword(x)
+    knames <- names(this_desc)
+
     new_names <- NULL
     old_idices <- NULL
     for(i in seq_along(newid)){
@@ -1821,15 +1823,20 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
       if(length(old_idx)>0)
       {
         old_idices <- c(old_idices, old_idx)
-       old_name <- knames[old_idx]
+        old_name <- knames[old_idx]
         new_names <- c(new_names, sub(old_id, new_id, old_name, fixed = TRUE))
       }    
     }
     knames[old_idices] <- new_names
-    names(x@description) <- knames
+    # Only change names that don't overlap with mk
+    bump_idx <- !(knames %in% names(mk))
+    knames <- knames[bump_idx]
+    bumped_down <- this_desc[bump_idx]
+    names(bumped_down) <- knames
     
+    mk <- c(mk, bumped_down)
     
-    description(x) <- mk
+    keyword(x) <- mk
     
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(mat) * types[what, "bitwidth"]
@@ -1856,8 +1863,11 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
         break
     }
   
-    description(x) <- list("$BEGINDATA" = datastart,
-                           "$ENDDATA" = dataend)
+    this_desc <- keyword(x)
+    this_desc[["$BEGINDATA"]] <- datastart
+    this_desc[["$ENDDATA"]] <- dataend
+    keyword(x) <- this_desc
+    
     ctxt <- collapseDesc(x, delimiter = delimiter)
 
     offsets <- c(begTxt, endTxt, datastart, dataend, 0,0)
