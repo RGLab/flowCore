@@ -61,3 +61,12 @@ write.FCS
 
 CHANGES IN VERSION 1.47.10
 + All documentation converted converted to roxygen2 with some additions and reorganization
+
+CHANGES IN VERSION 1.53.x
++ 'workFlow' class and related classes and methods now defunct #148 -- superseded by flowWorkspace
++ Add support for multiple data segments in 'read.FCSheader'
++ Fixed some edge cases with 'read.FCS 'with column.pattern argument #157
++ Added 'transform_gate' methods for geometric transformations of gates
++ Added 'collapse_desc' for coercing keyword lists in to character
++ 'spillover' method for calculating compensation matrix from a 'flowSet' of controls moved to 'flowStats'
++ Added 'filter_keywords' for filtering lists of keywords
