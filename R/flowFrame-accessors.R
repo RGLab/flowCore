@@ -582,6 +582,7 @@ setMethod("markernames",
     definition=function(object){
       param <- parameters(object)
       markers <- as.vector(param[["desc"]])
+      names(markers) <- param[["name"]]
       ind <- grepl("time|fsc|ssc", param[["name"]], ignore.case = TRUE)
       markers <- markers[!ind]
       markers[!is.na(markers)]

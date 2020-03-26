@@ -139,7 +139,7 @@ test_that("test write.FCS", {
   tmp <- tempfile()
   write.FCS(fr,tmp)
   fr1 <- read.FCS(tmp)
-  expect_equal(markernames(fr1)[2], "38")
+  expect_equivalent(markernames(fr1)[2], "38")
   
   # When I read the file back in, the SPILL matrix appears to be malformed.
   fr <- read.FCS(fcsfile)
