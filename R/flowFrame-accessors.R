@@ -80,12 +80,12 @@ fr_append_cols <- function(fr, cols){
 #' @examples 
 #' fr <- GvHD[[1]]
 #' fr <- subsetKeywords(fr, c(1,3,5))
-#' kw <- description(fr)
+#' kw <- keyword(fr)
 #' kw[c("$P1N","$P2N", "$PAR")]
 #' @noRd
 subsetKeywords <- function(x, j)
 {
-    kw <- description(x)
+    kw <- keyword(x)
     par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
     if(is.logical(j))
       j <- which(j)
@@ -104,7 +104,7 @@ subsetKeywords <- function(x, j)
 #' @examples 
 #' data(GvHD)
 #' fr <- GvHD[[1]]
-#' kw <- description(fr)
+#' kw <- keyword(fr)
 #' kw <- filter_keywords(kw, c(1,3,5))
 #' @export 
 filter_keywords <- function(kw, par.id)
@@ -278,7 +278,7 @@ setReplaceMethod("exprs",
 setMethod("description",
           signature=signature(object="flowFrame"),
           function(object, hideInternal=FALSE){
-              
+			  .Deprecated("keyword")
               kw <- keyword(object)
               if(hideInternal){
                   sel <- grep("^\\$", names(kw))
@@ -295,6 +295,7 @@ setReplaceMethod("description",
                                      value="list"),
                  definition=function(object, value)
              {
+				 .Deprecated("keyword<-")
                  n <- names(value)
                  if(length(n) == 0)
                      stop(descError, call.=FALSE)
@@ -475,8 +476,8 @@ setReplaceMethod("keyword",
                  n <- names(value)
                  if(length(n) == 0)
                      stop(kwdError, call.=FALSE)
-                 description(object) <- value
-                 return(object)
+				 object@description[n] <- value
+				 return(object)
              })
 
 setReplaceMethod("keyword", signature=c("flowFrame", "ANY"),
@@ -914,8 +915,8 @@ setMethod("transform",
 #' @return updated description slot
 updateTransformKeywords <- function(fr)
 {
-  description(fr) <- list(transformation="custom")
-  desc <- description(fr)
+  keyword(fr) <- list(transformation="custom")
+  desc <- keyword(fr)
   pd <- pData(parameters(fr))
   for(p in seq_along(pd[["name"]]))
   { 
@@ -1311,7 +1312,7 @@ setMethod("cbind2",
           for(i in seq_along(cn)){
               tmp <- list(cn[i])
               names(tmp) <- sprintf("$P%dN", i+ncol(x))
-              description(x) <- tmp
+              keyword(x) <- tmp
           }
           return(x)
       })

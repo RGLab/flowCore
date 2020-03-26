@@ -224,7 +224,7 @@ header <- function(files, ...){
 #' ## read file and linearize values
 #' samp <-  read.FCS(fcsFile, transformation="linearize")
 #' exprs(samp[1:3,])
-#' description(samp)[3:6]
+#' keyword(samp)[3:6]
 #' class(samp)
 #' 
 #' ## Only read in lines 2 to 5
@@ -1448,7 +1448,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
         guids <- sampleNames(flowSet)
     if(any(duplicated(guids)))
         guids <- make.unique(guids)
-    if("GUID" %in% names(description(flowSet[[1]])))
+    if("GUID" %in% names(keyword(flowSet[[1]])))
         flowSet <- fsApply(flowSet, function(x){
             keyword(x) <- c(GUID.original=as.character(keyword(x, "GUID")))
             x
