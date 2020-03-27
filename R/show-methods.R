@@ -22,7 +22,7 @@ setMethod("show",
                     "'\nwith ", nrow(object), " cells and ",
                     ncol(object), " observables:\n", sep=""))
           show(pData(parameters(object)))
-          cat(paste(length(description(object)), " keywords are stored in the ",
+          cat(paste(length(keyword(object)), " keywords are stored in the ",
                     "'description' slot\n", sep = ""))
           return(invisible(NULL))
       })
