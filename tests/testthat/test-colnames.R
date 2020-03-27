@@ -39,7 +39,7 @@ test_that("colnames<-", {
   newmarker <- "fsc-h"
   markernames(fr) <- c(A = newmarker)
   fs[[1]] <- fr
-  expect_equal(markernames(fs[[1]])[1], newmarker)
+  expect_equivalent(markernames(fs[[1]])[1], newmarker)
   
   #swap cols
   colnames(fr)[c(1,3)] <- rev(chnls)

@@ -159,7 +159,7 @@ setMethod("%on%",
           exprs(e2) <- x
           parameters(e2) <- pars
          
-		  description(e2) <- updateTransformKeywords(e2)
+		  keyword(e2) <- updateTransformKeywords(e2)
           e2
       })
 

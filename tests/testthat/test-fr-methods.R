@@ -47,7 +47,7 @@ test_that("range", {
 
 test_that("subsetKeywords", {
   
-expect_equal(length(description(fr[,c(1:6,8)])), length(description(fr[,-7])))
+expect_equal(length(keyword(fr[,c(1:6,8)])), length(keyword(fr[,-7])))
   
 })
 
