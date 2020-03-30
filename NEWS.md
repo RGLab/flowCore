@@ -95,3 +95,4 @@ dependency chain from 'feature'). These functions have been collated into
 + Added 'collapse_desc' for coercing keyword lists in to character
 + 'spillover' method for calculating compensation matrix from a 'flowSet' of controls moved to 'flowStats'
 + Added 'filter_keywords' for filtering lists of keywords
++ Deprecate `description` and `description<-` for `keyword` and `keyword<-` to reduce redundancy and give consistent behavior for `cytoframe` RGLab/flowWorkspace #311
