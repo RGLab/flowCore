@@ -265,9 +265,9 @@ setMethod("split",
           }
           out <- structure(list(x[f@subSet, ], x[!f@subSet, ]),
                            names=names(f))
-          description(out[[1]])$GUID <-
+          keyword(out[[1]])$GUID <-
               sprintf("%s (%s)", identifier(out[[1]]), names(f)[1])
-          description(out[[2]])$GUID <-
+          keyword(out[[2]])$GUID <-
               sprintf("%s (%s)", identifier(out[[2]]), names(f)[2])
           keep <- match(population, names(f))
           out <- out[keep]
@@ -324,7 +324,7 @@ setMethod("split",
               cn <- match("Original", colnames(combined))
               if(!is.na(cn))
                   combined <- combined[,-cn]
-              description(combined)$GUID <-
+              keyword(combined)$GUID <-
                   sprintf("%s (%s)", identifier(tmp[[1]]),
                           paste(p, collapse=","))
               out[[i]] <- combined

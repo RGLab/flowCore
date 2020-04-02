@@ -66,8 +66,8 @@ fr_append_cols <- function(fr, cols){
   #take care of flowCore_$PnRmax
   trans <- keyword(fr)[["transformation"]]
   if(!is.null(trans) && trans == "custom"){
-    keyword(fr)[[paste0("flowCore_", new_pid, "Rmax")]] <- new_pd[new_pid, "maxRange"]
-    keyword(fr)[[paste0("flowCore_", new_pid, "Rmin")]] <- new_pd[new_pid, "minRange"]
+    keyword(fr)[paste0("flowCore_", new_pid, "Rmax")] <- new_pd[new_pid, "maxRange"]
+    keyword(fr)[paste0("flowCore_", new_pid, "Rmin")] <- new_pd[new_pid, "minRange"]
   }
   fr
 }
@@ -80,12 +80,12 @@ fr_append_cols <- function(fr, cols){
 #' @examples 
 #' fr <- GvHD[[1]]
 #' fr <- subsetKeywords(fr, c(1,3,5))
-#' kw <- description(fr)
+#' kw <- keyword(fr)
 #' kw[c("$P1N","$P2N", "$PAR")]
 #' @noRd
 subsetKeywords <- function(x, j)
 {
-    kw <- description(x)
+    kw <- keyword(x)
     par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
     if(is.logical(j))
       j <- which(j)
@@ -104,7 +104,7 @@ subsetKeywords <- function(x, j)
 #' @examples 
 #' data(GvHD)
 #' fr <- GvHD[[1]]
-#' kw <- description(fr)
+#' kw <- keyword(fr)
 #' kw <- filter_keywords(kw, c(1,3,5))
 #' @export 
 filter_keywords <- function(kw, par.id)
@@ -278,7 +278,7 @@ setReplaceMethod("exprs",
 setMethod("description",
           signature=signature(object="flowFrame"),
           function(object, hideInternal=FALSE){
-              
+			  .Deprecated("keyword")
               kw <- keyword(object)
               if(hideInternal){
                   sel <- grep("^\\$", names(kw))
@@ -295,6 +295,7 @@ setReplaceMethod("description",
                                      value="list"),
                  definition=function(object, value)
              {
+				 .Deprecated("keyword<-")
                  n <- names(value)
                  if(length(n) == 0)
                      stop(descError, call.=FALSE)
@@ -331,8 +332,7 @@ setReplaceMethod("description",
 #' raw data. The function has to return a single character string. The
 #' \code{list} methods allow to combine functional and direct keyword access.
 #' The replacement method takes a named character vector or a named list as
-#' input. R's usual recycling rules apply when replacing keywords for a whole
-#' \code{flowSet}
+#' input. 
 #' 
 #' @name keyword-methods
 #' @aliases keyword keyword-methods keyword,flowFrame,missing-method
@@ -393,12 +393,12 @@ setReplaceMethod("description",
 #' keyword(samp, function(x,...) paste(keyword(x, "SAMPLE ID"), keyword(x,
 #' "GUID"), sep="_"))
 #' 
-#' keyword(samp) <- list(foo="bar")
+#' keyword(samp)[["foo"]] <- "bar"
 #' 
 #' data(GvHD)
 #' keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
 #' 
-#' keyword(GvHD) <- list(sample=sampleNames(GvHD))
+#' keyword(GvHD)[["sample"]] <- sampleNames(GvHD))
 #' 
 #' 
 
@@ -475,8 +475,8 @@ setReplaceMethod("keyword",
                  n <- names(value)
                  if(length(n) == 0)
                      stop(kwdError, call.=FALSE)
-                 description(object) <- value
-                 return(object)
+				 object@description <- value
+				 return(object)
              })
 
 setReplaceMethod("keyword", signature=c("flowFrame", "ANY"),
@@ -582,6 +582,7 @@ setMethod("markernames",
     definition=function(object){
       param <- parameters(object)
       markers <- as.vector(param[["desc"]])
+      names(markers) <- param[["name"]]
       ind <- grepl("time|fsc|ssc", param[["name"]], ignore.case = TRUE)
       markers <- markers[!ind]
       markers[!is.na(markers)]
@@ -913,8 +914,8 @@ setMethod("transform",
 #' @return updated description slot
 updateTransformKeywords <- function(fr)
 {
-  description(fr) <- list(transformation="custom")
-  desc <- description(fr)
+  keyword(fr)[["transformation"]] <- "custom"
+  desc <- keyword(fr)
   pd <- pData(parameters(fr))
   for(p in seq_along(pd[["name"]]))
   { 
@@ -1309,8 +1310,8 @@ setMethod("cbind2",
           exprs(x) <- exp
           for(i in seq_along(cn)){
               tmp <- list(cn[i])
-              names(tmp) <- sprintf("$P%dN", i+ncol(x))
-              description(x) <- tmp
+			  kn <- sprintf("$P%dN", i+ncol(x))
+              keyword(x)[kn] <- tmp
           }
           return(x)
       })

@@ -4,9 +4,9 @@ fr <- GvHD[[1]]
 
 test_that("markernames", {
   markers <- c('CD15 FITC','CD45 PE','CD14 PerCP','CD33 APC')
-  expect_equal(markernames(fr), markers)
+  expect_equivalent(markernames(fr), markers)
   
-  expect_equal(markernames(fs), markers)
+  expect_equivalent(markernames(fs), markers)
   
   markers.new <- c("15", "14")
   names(markers.new) <- c("FL1-H", "FL3-H")

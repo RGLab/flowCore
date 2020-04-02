@@ -1,9 +1,10 @@
 #the FCS files are not included in package due to the size , thus only for internal testing
 context("Functional Tests Related to Loading/Saving flowFrames from FCS ")
-library(digest)
 dataPath <- "~/rglab/workspace/flowCore/misc/"
 skip_if_not(dir.exists(dataPath))
 expectRes <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectResults.rds")
+refs <- readRDS("~/rglab/workspace/flowCore/tests/testthat/ref_flowframes.rds")
+# saveRDS(refs, "~/rglab/workspace/flowCore/misc/test_reference/flowframes.rds")
 expectRes.new <- readRDS("~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")
 # saveRDS(expectRes.new, file = "~/rglab/workspace/flowCore/tests/testthat/expectRes.new.rds")
 test_that("trailing double delimiter", {
@@ -151,10 +152,11 @@ test_that("test in consistent datastart between header and TEXT", {
 
 test_that("test odd-bitwidth FCS", {
       filename <- "Sample 2.fcs"
-      fr <- read.FCS(file.path(dataPath, filename))
+      set.seed(1)
+      fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy" 
-      expect_equal(expectRes[["read.FCS"]][["Sample2"]], digest(fr))
+      expect_equal(refs[["Sample2"]], fr)
       
       filename <- "11ColorSmall.fcs"
       fr <- read.FCS(file.path(dataPath, "oddbitwith", filename))
@@ -176,15 +178,16 @@ test_that("test odd-bitwidth FCS", {
 
 test_that("test other FCS", {
     filename <- "20110125240_F06_I025.fcs"
-    fr <- read.FCS(file.path(dataPath, filename))
+    set.seed(1)
+    fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
     #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
     keyword(fr)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["ITN029ST"]], digest(fr))
+    expect_equal(refs[["ITN029ST"]], fr)
     
-    
-    fr <- read.FCS(list.files(system.file("extdata", package="flowCore"),full=T)[1])
+    set.seed(1)
+    fr <- read.FCS(list.files(system.file("extdata", package="flowCore"),full=T)[1], which.lines = 100)
     keyword(fr)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["flowCore"]], digest(fr))
+    expect_equal(refs[["flowCore"]], fr)
     
     filename <- "Blank.FCS"
     fr <- read.FCS(file.path(dataPath, filename))
@@ -193,11 +196,12 @@ test_that("test other FCS", {
     expect_equal(expectRes[["read.FCS"]][["Blank"]], summary(fr))
     
     filename <- "Bendall et al Cell Sample A_basal.fcs"
-    expect_output(fr <- read.FCS(file.path(dataPath, filename))
+    set.seed(1)
+    expect_output(fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
                   , "dropped")
     #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
     keyword(fr)[["FILENAME"]] <- "setToDummy"
-    expect_equal(expectRes[["read.FCS"]][["Bendall"]], digest(fr))              
+    expect_equal(refs[["Bendall"]], fr)
 })
 
 
@@ -212,45 +216,50 @@ test_that("test delimiter issue", {
       expect_match(keyword(fr)[["GTI$WORKLIST"]], "C:/Document")
       
       filename <- "RAINBOW_OK.fcs"
-      fr <- read.FCS(file.path(dataPath, filename))
+      set.seed(1)
+      fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["RAINBOW"]], digest(fr))
-      fr <- read.FCS(file.path(dataPath, filename), emptyValue = F)
+      expect_equal(refs[["RAINBOW"]], fr)
+      fr <- read.FCS(file.path(dataPath, filename), emptyValue = F, which.lines = 100)
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["RAINBOWEmptyValue"]], digest(fr))               
+      expect_equal(refs[["RAINBOWEmptyValue"]], fr)               
 
       #\ as delimiter  with empty value
       filename <- "sample_1071.001"
-      fr <- read.FCS(file.path(dataPath, filename))
+      set.seed(1)
+      fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["sample1071"]], digest(fr))
-      fr <-read.FCS(file.path(dataPath, filename),emptyValue=F)
+      expect_equal(refs[["sample1071"]], fr)
+      fr <-read.FCS(file.path(dataPath, filename),emptyValue=F, which.lines = 100)
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["sample1071.double"]], digest(fr))
+      expect_equal(refs[["sample1071.double"]], fr)
     })
 
 
 # latest R no longer permit overflowed coersion by as.integer
 test_that("test Beckman_Coulter_XDP issue", {
-                
+                set.seed(1)
       frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter/Beckman_Coulter_XDP/"),full=T)
                         , function(thisFile){
-                          fr <- read.FCS(thisFile)
+                          fr <- read.FCS(thisFile, which.lines = 100)
                           keyword(fr)[["FILENAME"]] <- "setToDummy"
+                          fr
                         })
-      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterXDP"]], digest(frList))
+      expect_equal(refs[["BeckmanCoulterXDP"]], frList)
       
     })
 
 test_that("test Beckman_Coulter $SPILLOVER keyword", {
+  set.seed(1)
       frList <- lapply(list.files(file.path(dataPath, "Beckman_Coulter"),full=T, pattern = ".fcs")
                     , function(thisFile){
-                     fr <- read.FCS(thisFile)
+                     fr <- read.FCS(thisFile, which.lines = 100)
                      keyword(fr)[["FILENAME"]] <- "setToDummy"
+                     fr
                     })
-      expect_equal(expectRes[["read.FCS"]][["BeckmanCoulterSPILLOVER"]], digest(frList))
+      expect_equal(refs[["BeckmanCoulterSPILLOVER"]], frList)
       
     })
 
@@ -261,39 +270,44 @@ test_that("test U mode", {
 
 test_that("test pre-gated data", {
   filename <- "HC002_Col1_P3.fcs"
-  fr <- read.FCS(file.path(dataPath, filename))
+  set.seed(1)
+  fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
   #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
   keyword(fr)[["FILENAME"]] <- "setToDummy"
-  expect_equal(expectRes[["read.FCS"]][["HC002_Col1_P3"]], digest(fr))
+  expect_equal(refs[["HC002_Col1_P3"]], fr)
   
   filename <- "HC002_Col1.fcs"
-  fr <- read.FCS(file.path(dataPath, filename))
+  set.seed(1)
+  fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
   #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
   keyword(fr)[["FILENAME"]] <- "setToDummy"
-  expect_equal(expectRes[["read.FCS"]][["HC002_Col1"]], digest(fr))
+  expect_equal(refs[["HC002_Col1"]], fr)
 
 })
 
 test_that("test flowJo exported data with offset = 99999999 and  missing the $BEGINDATA and $ENDDATA keywords ", {
     filename <- "badFlowJoExport.fcs"
-  fr <- read.FCS(file.path(dataPath, filename))
+    set.seed(1)
+    fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["badFlowJoExport"]], digest(fr))
+      expect_equal(refs[["badFlowJoExport"]], fr)
     })
 
 test_that("test integer overflow issue", {
       filename <- "intOverFlow.fcs"
-      fr <- read.FCS(file.path(dataPath, filename))
+      set.seed(1)
+      fr <- read.FCS(file.path(dataPath, filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["intOverFlow"]], digest(fr))
+      expect_equal(refs[["intOverFlow"]], fr)
       
       filename <- "MoFlo Astrios EQ 9C bis all.fcs"
-      fr <- read.FCS(file.path(dataPath,"/Beckman_Coulter", filename))
+      set.seed(1)
+      fr <- read.FCS(file.path(dataPath,"/Beckman_Coulter", filename), which.lines = 100)
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["MoFlo EQ 9C"]],  digest(fr))
+      expect_equal(refs[["MoFlo EQ 9C"]],  fr)
     })
 
 test_that("test diverse Bitwidths", {
@@ -301,7 +315,7 @@ test_that("test diverse Bitwidths", {
       fr <- read.FCS(file.path(dataPath, filename))
       #expectRes.new[[filename]] <<- list(ncol = ncol(fr), nrow = nrow(fr), chnl = colnames(fr), marker = markernames(fr), range = range(fr), range_data= range(fr, "data"), colmean = colMeans(exprs(fr)))  
       keyword(fr)[["FILENAME"]] <- "setToDummy"
-      expect_equal(expectRes[["read.FCS"]][["diverseBitwidths"]], digest(fr))
+      expect_equal(refs[["diverseBitwidths"]], fr)
     })
 
 test_that("handle > 2^32-1 bytes", {

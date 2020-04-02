@@ -144,7 +144,7 @@ fcsFile <- system.file("extdata", "0877408774.B08", package="flowCore")
 ## read file and linearize values
 samp <-  read.FCS(fcsFile, transformation="linearize")
 exprs(samp[1:3,])
-description(samp)[3:6]
+keyword(samp)[3:6]
 class(samp)
 
 ## Only read in lines 2 to 5

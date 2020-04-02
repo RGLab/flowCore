@@ -461,7 +461,7 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
 #' frame
 #' 
 #' ## access FCS keywords
-#' head(description(frame))
+#' head(keyword(frame))
 #' keyword(frame, c("FILENAME", "$FIL"))
 #' 
 #' ## parameter annotation

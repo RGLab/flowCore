@@ -737,3 +737,10 @@ setMethod("normalize",
 			args$parameters <- parms
 			do.call(x@normFunction, args)
 		})
+
+#' @export
+flowSet_to_list <- function(fs){
+  frs <- lapply(1:length(fs), function(idx) {fs[[idx]]})
+  names(frs) <- sampleNames(fs)
+  frs
+}

@@ -46,8 +46,7 @@ information from the \code{flowFrames} \code{description} slot or even the
 raw data. The function has to return a single character string. The
 \code{list} methods allow to combine functional and direct keyword access.
 The replacement method takes a named character vector or a named list as
-input. R's usual recycling rules apply when replacing keywords for a whole
-\code{flowSet}
+input.
 }
 \section{Methods}{
  
@@ -91,12 +90,12 @@ keyword(samp, "FCSversion")
 keyword(samp, function(x,...) paste(keyword(x, "SAMPLE ID"), keyword(x,
 "GUID"), sep="_"))
 
-keyword(samp) <- list(foo="bar")
+keyword(samp)[["foo"]] <- "bar"
 
 data(GvHD)
 keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
 
-keyword(GvHD) <- list(sample=sampleNames(GvHD))
+keyword(GvHD)[["sample"]] <- sampleNames(GvHD))
 
 
 }
