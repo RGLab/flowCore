@@ -449,7 +449,7 @@ exprs(frame) <- exprs(frame)[,1:6]
 frame
 
 ## access FCS keywords
-head(description(frame))
+head(keyword(frame))
 keyword(frame, c("FILENAME", "$FIL"))
 
 ## parameter annotation

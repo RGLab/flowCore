@@ -332,8 +332,7 @@ setReplaceMethod("description",
 #' raw data. The function has to return a single character string. The
 #' \code{list} methods allow to combine functional and direct keyword access.
 #' The replacement method takes a named character vector or a named list as
-#' input. R's usual recycling rules apply when replacing keywords for a whole
-#' \code{flowSet}
+#' input. 
 #' 
 #' @name keyword-methods
 #' @aliases keyword keyword-methods keyword,flowFrame,missing-method
@@ -394,12 +393,12 @@ setReplaceMethod("description",
 #' keyword(samp, function(x,...) paste(keyword(x, "SAMPLE ID"), keyword(x,
 #' "GUID"), sep="_"))
 #' 
-#' keyword(samp) <- list(foo="bar")
+#' keyword(samp)[["foo"]] <- "bar"
 #' 
 #' data(GvHD)
 #' keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
 #' 
-#' keyword(GvHD) <- list(sample=sampleNames(GvHD))
+#' keyword(GvHD)[["sample"]] <- sampleNames(GvHD))
 #' 
 #' 
 
@@ -476,7 +475,7 @@ setReplaceMethod("keyword",
                  n <- names(value)
                  if(length(n) == 0)
                      stop(kwdError, call.=FALSE)
-				 object@description[n] <- value
+				 object@description <- value
 				 return(object)
              })
 
@@ -915,7 +914,7 @@ setMethod("transform",
 #' @return updated description slot
 updateTransformKeywords <- function(fr)
 {
-  keyword(fr) <- list(transformation="custom")
+  keyword(fr)[["transformation"]] <- "custom"
   desc <- keyword(fr)
   pd <- pData(parameters(fr))
   for(p in seq_along(pd[["name"]]))
@@ -1311,8 +1310,8 @@ setMethod("cbind2",
           exprs(x) <- exp
           for(i in seq_along(cn)){
               tmp <- list(cn[i])
-              names(tmp) <- sprintf("$P%dN", i+ncol(x))
-              keyword(x) <- tmp
+			  kn <- sprintf("$P%dN", i+ncol(x))
+              keyword(x)[kn] <- tmp
           }
           return(x)
       })

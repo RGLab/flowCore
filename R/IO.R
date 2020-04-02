@@ -1450,7 +1450,7 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
         guids <- make.unique(guids)
     if("GUID" %in% names(keyword(flowSet[[1]])))
         flowSet <- fsApply(flowSet, function(x){
-            keyword(x) <- c(GUID.original=as.character(keyword(x, "GUID")))
+            keyword(x)[["GUID.original"]] <- as.character(keyword(x, "GUID"))
             x
         })
     sampleNames(flowSet) <- guids
@@ -1836,7 +1836,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     
     mk <- c(mk, bumped_down)
     
-    keyword(x) <- mk
+    keyword(x)[names(mk)] <- mk
     
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(mat) * types[what, "bitwidth"]
