@@ -96,3 +96,8 @@ dependency chain from 'feature'). These functions have been collated into
 + 'spillover' method for calculating compensation matrix from a 'flowSet' of controls moved to 'flowStats'
 + Added 'filter_keywords' for filtering lists of keywords
 + Deprecate `description` and `description<-` for `keyword` and `keyword<-` to reduce redundancy and give consistent behavior for `cytoframe` RGLab/flowWorkspace #311
+
+# CHANGES IN VERSION 2.0.0
+
+--------------------------
++ keyword<- behaves now as normal replacement method, i.e. keyword(fr) <- list(name = value) will replace the entire keyword list instead of partial updating/inserting, to achieve latter, use keyword(fr)["name"] <- value
