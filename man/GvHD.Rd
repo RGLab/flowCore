@@ -5,7 +5,8 @@
 \alias{GvHD}
 \title{Extract of a Graft versus Host Disease monitoring experiment (Rizzieri et
 al., 2007)}
-\format{The format is an object of class \code{flowSet} composed of 35
+\format{
+The format is an object of class \code{flowSet} composed of 35
 \code{flowFrames}.  Each \code{flowFrame} corresponds to one sample at one
 time point.  
 The \code{phenodata} lists: 
@@ -15,7 +16,8 @@ The \code{phenodata} lists:
 \item{Days}{The number of days since the graft. Negative values correpond to
 days before the graft.} 
 \item{Grade}{Grade of the cancer} 
-}}
+}
+}
 \source{
 Complete dataset available at
 \url{http://www.ficcs.org/software.html#Data_Files}, the Flow Informatics
