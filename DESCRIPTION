@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.99.17
+Version: 1.99.18
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
@@ -78,5 +78,5 @@ biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: Rcpp, RcppArmadillo, BH(>= 1.65.0.1), cytolib(>= 1.7.2), RProtoBufLib
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8

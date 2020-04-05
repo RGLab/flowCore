@@ -398,9 +398,6 @@ setReplaceMethod("description",
 #' data(GvHD)
 #' keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
 #' 
-#' keyword(GvHD)[["sample"]] <- sampleNames(GvHD))
-#' 
-#' 
 
 ## select keywords by name
 #' @export

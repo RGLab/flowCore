@@ -95,9 +95,6 @@ keyword(samp)[["foo"]] <- "bar"
 data(GvHD)
 keyword(GvHD, list("GUID", cellnumber=function(x) nrow(x)))
 
-keyword(GvHD)[["sample"]] <- sampleNames(GvHD))
-
-
 }
 \seealso{
 \code{\link{description}}
