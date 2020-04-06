@@ -12,13 +12,14 @@
 #' keywords and parameters properly to ensure the new flowFrame can be written
 #' as a valid FCS through the function \code{write.FCS} .
 #' 
+#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' 
 #' @name fr_append_cols
 #' @aliases fr_append_cols
 #' @usage 
 #' fr_append_cols(fr, cols)
-#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
-#' @param cols A numeric matrix containing the new data columns to be added.
-#' Must has column names to be used as new channel names.
 #' @return
 #' 
 #' A \code{\linkS4class{flowFrame}}
@@ -41,37 +42,53 @@
 #' 
 #' @export
 fr_append_cols <- function(fr, cols){
-  checkClass(cols, "matrix")
-  ncol <- ncol(cols)
-  cn <- colnames(cols)
-  if(length(cn) != ncol)
-    stop("All columns in 'cols' must have colnames!")
-  #add to pdata
+  new_pd <- cols_to_pd(fr, cols)
   pd <- pData(parameters(fr))
-  ncol_old <- ncol(fr)
-  new_pid <- max(as.integer(gsub("\\$P", "", rownames(pd)))) + 1
-  new_pid <- seq(new_pid, length.out = ncol)
-  new_pid <- paste0("$P", new_pid)
-  
-  new_pd <- do.call(rbind, lapply(cn, function(i){
-      vec <- cols[,i]
-      rg <- range(vec)
-      data.frame(name = i, desc = NA, range = diff(rg) + 1, minRange = rg[1], maxRange = rg[2])
-    }))
-  rownames(new_pd) <- new_pid
-  pd <- rbind(pd, new_pd)  
+  pd <- rbind(pd, new_pd)
   #add to exprs
   fr@exprs <- cbind(exprs(fr), cols)
   pData(parameters(fr)) <- pd
-  #take care of flowCore_$PnRmax
-  trans <- keyword(fr)[["transformation"]]
-  if(!is.null(trans) && trans == "custom"){
-    keyword(fr)[paste0("flowCore_", new_pid, "Rmax")] <- new_pd[new_pid, "maxRange"]
-    keyword(fr)[paste0("flowCore_", new_pid, "Rmin")] <- new_pd[new_pid, "minRange"]
-  }
-  fr
+  
+  update_kw_from_pd(fr, new_pd)
 }
 
+update_kw_from_pd <- function(fr, new_pd)
+{
+  new_pid <- rownames(new_pd)
+	#take care of flowCore_$PnRmax
+	trans <- keyword(fr)[["transformation"]]
+	if(!is.null(trans) && trans == "custom"){
+		keyword(fr)[paste0("flowCore_", new_pid, "Rmax")] <- new_pd[new_pid, "maxRange"]
+		keyword(fr)[paste0("flowCore_", new_pid, "Rmin")] <- new_pd[new_pid, "minRange"]
+	}
+	fr
+}
+#' generate new pData of flowFrame based on the new cols added
+#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' @noRd 
+cols_to_pd <- function(fr, cols){
+	checkClass(cols, "matrix")
+	ncol <- ncol(cols)
+	cn <- colnames(cols)
+	if(length(cn) != ncol)
+		stop("All columns in 'cols' must have colnames!")
+	#add to pdata
+	pd <- pData(parameters(fr))
+	ncol_old <- ncol(fr)
+	new_pid <- max(as.integer(gsub("\\$P", "", rownames(pd)))) + 1
+	new_pid <- seq(new_pid, length.out = ncol)
+	new_pid <- paste0("$P", new_pid)
+	
+	new_pd <- do.call(rbind, lapply(cn, function(i){
+						vec <- cols[,i]
+						rg <- range(vec)
+						data.frame(name = i, desc = NA, range = diff(rg) + 1, minRange = rg[1], maxRange = rg[2])
+					}))
+	rownames(new_pd) <- new_pid
+	new_pd
+}
 ## ==========================================================================
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
