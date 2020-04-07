@@ -1593,18 +1593,18 @@ writeFCSheader <- function(con, offsets)
 #' @param x flowFrame
 #' @examples 
 #' fr <- GvHD[[1]]
-#' collapseDesc(fr)
+#' kw <- keyword(fr)
+#' collapseDesc(kw, 8)
 #' @noRd 
-collapseDesc <- function(x, delimiter = "\\")
+collapseDesc <- function(d, npar, delimiter = "\\")
 {
-    d <- keyword(x)
 	##make sure there is no empty value for each keyword in order to conform to FCS3.0
 #	browser()
   ##skip flowCore_$PnRMax when trans is not applied 
   trans <- d[["transformation"]]
   if(is.null(trans))
   {
-    for(i in 1:ncol(x))
+    for(i in seq_len(npar))
     {
       d[[paste0("flowCore_$P", i, "Rmin")]] <- NULL
       d[[paste0("flowCore_$P", i, "Rmax")]] <- NULL
@@ -1618,9 +1618,12 @@ collapseDesc <- function(x, delimiter = "\\")
         gsub(delimiter, double_delimiter, y, fixed = TRUE, useBytes = TRUE)
     
   })
-  paste(delimiter, iconv(paste(names(d), delimiter, sapply(d, paste, collapse=" "),
-						  delimiter, collapse="", sep=""), to="latin1",
-				  sub=" "), sep="")
+  paste(delimiter, iconv(paste(names(d), delimiter
+                               , sapply(d, paste, collapse=" "),
+                                delimiter, collapse=""
+                               , sep="")
+                         , to="latin1",sub=" ")
+        , sep="")
   
 }
 
@@ -1765,24 +1768,30 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
                "$PAR"=ncol(x),
                "$TOT"=nrow(x),
                "FCSversion"="3")
+    orig.kw <- keyword(x)
+    
     npar <- ncol(x)
     pd <- pData(parameters(x))
     pid <- rownames(pd)
     newid <- seq_len(npar)
-    pnb <- as.list(rep(types[what, "bitwidth"]*8, ncol(x)))
+    
+    pnb <- as.list(rep(types[what, "bitwidth"]*8, npar))
     names(pnb) <- paste0("$P", newid, "B")
     mk <- c(mk, pnb)
+    old.kn <- paste0(pid, "B")
+    
 #	browser()
-    orig.kw <- keyword(x)
     ## We need all PnE keywords and assume "0,0" if they are missing
-    pne <- orig.kw[paste0(pid, "E")]
+    old.kn <- paste0(pid, "E")
+    pne <- orig.kw[old.kn]
     names(pne) <- sprintf("$P%sE", newid)
     pne[sapply(pne, length)==0] <- "0,0"
     mk <- c(mk, pne)
     
     mat <- exprs(x)
     ## The same for PnR, 
-    pnr <- orig.kw[paste0(pid, "R")]
+    old.kn <- paste0(pid, "R")
+    pnr <- orig.kw[old.kn]
     names(pnr) <- sprintf("$P%sR", newid)
     empty_range_ind <- sapply(pnr, length)==0
     empty_range_chnl <- as.character(pd[pid[empty_range_ind],"name"])
@@ -1805,14 +1814,17 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     mk <- c(mk, pns)
     
     
+    #purge the old PnX keywords
+    old.kn <- paste0("^\\$P[0-9]+[BERNS]")
+    orig.kw[grepl(old.kn, names(orig.kw))] <- NULL
+    
     # Must correct keys for the case that fr was subsetted by bumping them down to be consecutive (like newid)
     # this is for non-standard keys such as flowCore$PnX since standard keys($P[0-9]+[BERNS]) is/will be taken care of by mk
    
      #TODO: rm unsed extra non-stand $P keys first
     
      # bump indices on remaining keys down to their new values
-    this_desc <- keyword(x)
-    knames <- names(this_desc)
+    knames <- names(orig.kw)
 
     new_names <- NULL
     old_idices <- NULL
@@ -1831,16 +1843,16 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     # Only change names that don't overlap with mk
     bump_idx <- !(knames %in% names(mk))
     knames <- knames[bump_idx]
-    bumped_down <- this_desc[bump_idx]
+    bumped_down <- orig.kw[bump_idx]
     names(bumped_down) <- knames
     
     mk <- c(mk, bumped_down)
     
-    keyword(x)[names(mk)] <- mk
+    orig.kw[names(mk)] <- mk
     
     ## Figure out the offsets based on the size of the initial text section
     ld <-  length(mat) * types[what, "bitwidth"]
-    ctxt <- collapseDesc(x, delimiter = delimiter)
+    ctxt <- collapseDesc(orig.kw, npar, delimiter = delimiter)
     
     #try to update the Txt with actual BEGINDATA and  ENDDATA values
     kw.len.old <- 2 #two initial '0' s
@@ -1863,12 +1875,11 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
         break
     }
   
-    this_desc <- keyword(x)
-    this_desc[["$BEGINDATA"]] <- datastart
-    this_desc[["$ENDDATA"]] <- dataend
-    keyword(x) <- this_desc
+    orig.kw[["$BEGINDATA"]] <- datastart
+    orig.kw[["$ENDDATA"]] <- dataend
     
-    ctxt <- collapseDesc(x, delimiter = delimiter)
+    
+    ctxt <- collapseDesc(orig.kw, npar, delimiter = delimiter)
 
     offsets <- c(begTxt, endTxt, datastart, dataend, 0,0)
     ## Write out to file

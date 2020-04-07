@@ -101,3 +101,4 @@ dependency chain from 'feature'). These functions have been collated into
 
 --------------------------
 + keyword<- behaves now as normal replacement method, i.e. keyword(fr) <- list(name = value) will replace the entire keyword list instead of partial updating/inserting, to achieve latter, use keyword(fr)["name"] <- value
++ [ method (e.g. fr[, 1:4]) no longer deletes $PnX keywords automatically so that it is compatible with cytoframe

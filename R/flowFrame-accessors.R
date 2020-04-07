@@ -12,13 +12,14 @@
 #' keywords and parameters properly to ensure the new flowFrame can be written
 #' as a valid FCS through the function \code{write.FCS} .
 #' 
+#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' 
 #' @name fr_append_cols
 #' @aliases fr_append_cols
 #' @usage 
 #' fr_append_cols(fr, cols)
-#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
-#' @param cols A numeric matrix containing the new data columns to be added.
-#' Must has column names to be used as new channel names.
 #' @return
 #' 
 #' A \code{\linkS4class{flowFrame}}
@@ -41,90 +42,108 @@
 #' 
 #' @export
 fr_append_cols <- function(fr, cols){
-  checkClass(cols, "matrix")
-  ncol <- ncol(cols)
-  cn <- colnames(cols)
-  if(length(cn) != ncol)
-    stop("All columns in 'cols' must have colnames!")
-  #add to pdata
+  new_pd <- cols_to_pd(fr, cols)
   pd <- pData(parameters(fr))
-  ncol_old <- ncol(fr)
-  new_pid <- max(as.integer(gsub("\\$P", "", rownames(pd)))) + 1
-  new_pid <- seq(new_pid, length.out = ncol)
-  new_pid <- paste0("$P", new_pid)
-  
-  new_pd <- do.call(rbind, lapply(cn, function(i){
-      vec <- cols[,i]
-      rg <- range(vec)
-      data.frame(name = i, desc = NA, range = diff(rg) + 1, minRange = rg[1], maxRange = rg[2])
-    }))
-  rownames(new_pd) <- new_pid
-  pd <- rbind(pd, new_pd)  
+  pd <- rbind(pd, new_pd)
   #add to exprs
   fr@exprs <- cbind(exprs(fr), cols)
   pData(parameters(fr)) <- pd
-  #take care of flowCore_$PnRmax
-  trans <- keyword(fr)[["transformation"]]
-  if(!is.null(trans) && trans == "custom"){
-    keyword(fr)[paste0("flowCore_", new_pid, "Rmax")] <- new_pd[new_pid, "maxRange"]
-    keyword(fr)[paste0("flowCore_", new_pid, "Rmin")] <- new_pd[new_pid, "minRange"]
-  }
-  fr
+  
+  update_kw_from_pd(fr, new_pd)
 }
 
+update_kw_from_pd <- function(fr, new_pd)
+{
+  new_pid <- rownames(new_pd)
+	#take care of flowCore_$PnRmax
+	trans <- keyword(fr)[["transformation"]]
+	if(!is.null(trans) && trans == "custom"){
+		keyword(fr)[paste0("flowCore_", new_pid, "Rmax")] <- new_pd[new_pid, "maxRange"]
+		keyword(fr)[paste0("flowCore_", new_pid, "Rmin")] <- new_pd[new_pid, "minRange"]
+	}
+	fr
+}
+#' generate new pData of flowFrame based on the new cols added
+#' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
+#' @param cols A numeric matrix containing the new data columns to be added.
+#' Must has column names to be used as new channel names.
+#' @noRd 
+cols_to_pd <- function(fr, cols){
+	checkClass(cols, "matrix")
+	ncol <- ncol(cols)
+	cn <- colnames(cols)
+	if(length(cn) != ncol)
+		stop("All columns in 'cols' must have colnames!")
+	#add to pdata
+	pd <- pData(parameters(fr))
+	ncol_old <- ncol(fr)
+	new_pid <- max(as.integer(gsub("\\$P", "", rownames(pd)))) + 1
+	new_pid <- seq(new_pid, length.out = ncol)
+	new_pid <- paste0("$P", new_pid)
+	
+	new_pd <- do.call(rbind, lapply(cn, function(i){
+						vec <- cols[,i]
+						rg <- range(vec)
+						data.frame(name = i, desc = NA, range = diff(rg) + 1, minRange = rg[1], maxRange = rg[2])
+					}))
+	rownames(new_pd) <- new_pid
+	new_pd
+}
 ## ==========================================================================
 ## subsetting methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## When subsetting columns (i.e., parameters) we also want to clean up the
 ## $PnX keywords
+## Now deprecated
 #' @examples 
 #' fr <- GvHD[[1]]
 #' fr <- subsetKeywords(fr, c(1,3,5))
 #' kw <- keyword(fr)
 #' kw[c("$P1N","$P2N", "$PAR")]
 #' @noRd
-subsetKeywords <- function(x, j)
-{
-    kw <- keyword(x)
-    par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
-    if(is.logical(j))
-      j <- which(j)
-    if(is.character(j))
-      j <- match(j, colnames(x))
-    par.id <- par.id[j]
-	  x@description <- filter_keywords(kw, par.id)
-    return(x)
-}
+# subsetKeywords <- function(x, j)
+# {
+#     kw <- keyword(x)
+#     par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
+#     if(is.logical(j))
+#       j <- which(j)
+#     if(is.character(j))
+#       j <- match(j, colnames(x))
+#     par.id <- par.id[j]
+# 	  x@description <- filter_keywords(kw, par.id)
+#     return(x)
+# }
 
-#' filter out $PnX keywords
-#' 
-#' @param kw a named list of keywords
-#' @param par.id a vector of integer specifies the parameter ids to be perserved
-#' @return a filtered list 
+#' remove the redundant $PnX keywords
+#' no longer needed
+#' @param fr a flowFrame
+#' @return a flowFrame
 #' @examples 
 #' data(GvHD)
 #' fr <- GvHD[[1]]
-#' kw <- keyword(fr)
-#' kw <- filter_keywords(kw, c(1,3,5))
-#' @export 
-filter_keywords <- function(kw, par.id)
-{
-  par.id <- as.integer(par.id)
-  stopifnot(is(par.id, "integer"))
-  kn <- names(kw)
-  
-  all.pn <- kn[grep("^\\$P[0-9]+N$", kn)]
-  all.pid <- as.integer(gsub("\\$P|N", "", all.pn))
-  
-  to.del.pid <- all.pid[!all.pid %in% par.id]
-	pat <- paste(to.del.pid, collapse = "|")
-	pat <- paste0("^\\$P(", pat , ")[A-Z]$")
-	sel <- grep(pat, kn)
-	
-	if(length(sel))
-		kw <- kw[-sel]
-	return(kw)
-}
+#' fr <- fr[, c(1, 3, 5)]
+#' keyword(fr)[c("$P1N","$P2N", "$PAR")]
+#' fr <- fr_remove_redundant_pnx_kw(fr)
+#' keyword(fr)[c("$P1N","$P2N", "$PAR")]
+# fr_remove_redundant_pnx_kw <- function(fr)
+# {
+#   par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(fr))), value = TRUE)))
+#   kw <- keyword(fr)
+#   kn <- names(kw)
+#   
+#   all.pn <- kn[grep("^\\$P[0-9]+N$", kn)]
+#   all.pid <- as.integer(gsub("\\$P|N", "", all.pn))
+#   
+#   to.del.pid <- all.pid[!all.pid %in% par.id]
+# 	pat <- paste(to.del.pid, collapse = "|")
+# 	pat <- paste0("^\\$P(", pat , ")[A-Z]$")
+# 	sel <- grep(pat, kn)
+# 	
+# 	if(length(sel))
+# 		kw <- kw[-sel]
+# 	keyword(fr) <- kw
+# 	fr
+# }
 
 ## by indices or logical vectors
 #' @export
@@ -151,12 +170,10 @@ setMethod("[",
                    stop(msg, call.=FALSE)
           switch(1+missing(i)+2*missing(j),
              {
-                 x <- subsetKeywords(x, j)
                  exprs(x) <- exprs(x)[i, j, ..., drop=FALSE]
                  x
              },
              {
-                 x <- subsetKeywords(x, j)
                  exprs(x) <- exprs(x)[ , j, ..., drop=FALSE]
                  x
              },
