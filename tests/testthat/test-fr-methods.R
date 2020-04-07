@@ -45,7 +45,7 @@ test_that("range", {
   expect_equal(apply(exprs(fr)[,7:8], 2, range), rg)
 })
 
-test_that("subsetKeywords", {
+test_that("fr_remove_redundant_pnx_kw", {
   
 expect_equal(length(keyword(fr[,c(1:6,8)])), length(keyword(fr[,-7])))
   

@@ -94,54 +94,56 @@ cols_to_pd <- function(fr, cols){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## When subsetting columns (i.e., parameters) we also want to clean up the
 ## $PnX keywords
+## Now deprecated
 #' @examples 
 #' fr <- GvHD[[1]]
 #' fr <- subsetKeywords(fr, c(1,3,5))
 #' kw <- keyword(fr)
 #' kw[c("$P1N","$P2N", "$PAR")]
 #' @noRd
-subsetKeywords <- function(x, j)
-{
-    kw <- keyword(x)
-    par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
-    if(is.logical(j))
-      j <- which(j)
-    if(is.character(j))
-      j <- match(j, colnames(x))
-    par.id <- par.id[j]
-	  x@description <- filter_keywords(kw, par.id)
-    return(x)
-}
+# subsetKeywords <- function(x, j)
+# {
+#     kw <- keyword(x)
+#     par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(x))), value = TRUE)))
+#     if(is.logical(j))
+#       j <- which(j)
+#     if(is.character(j))
+#       j <- match(j, colnames(x))
+#     par.id <- par.id[j]
+# 	  x@description <- filter_keywords(kw, par.id)
+#     return(x)
+# }
 
-#' filter out $PnX keywords
-#' 
-#' @param kw a named list of keywords
-#' @param par.id a vector of integer specifies the parameter ids to be perserved
-#' @return a filtered list 
+#' remove the redundant $PnX keywords
+#' no longer needed
+#' @param fr a flowFrame
+#' @return a flowFrame
 #' @examples 
 #' data(GvHD)
 #' fr <- GvHD[[1]]
-#' kw <- keyword(fr)
-#' kw <- filter_keywords(kw, c(1,3,5))
-#' @export 
-filter_keywords <- function(kw, par.id)
-{
-  par.id <- as.integer(par.id)
-  stopifnot(is(par.id, "integer"))
-  kn <- names(kw)
-  
-  all.pn <- kn[grep("^\\$P[0-9]+N$", kn)]
-  all.pid <- as.integer(gsub("\\$P|N", "", all.pn))
-  
-  to.del.pid <- all.pid[!all.pid %in% par.id]
-	pat <- paste(to.del.pid, collapse = "|")
-	pat <- paste0("^\\$P(", pat , ")[A-Z]$")
-	sel <- grep(pat, kn)
-	
-	if(length(sel))
-		kw <- kw[-sel]
-	return(kw)
-}
+#' fr <- fr[, c(1, 3, 5)]
+#' keyword(fr)[c("$P1N","$P2N", "$PAR")]
+#' fr <- fr_remove_redundant_pnx_kw(fr)
+#' keyword(fr)[c("$P1N","$P2N", "$PAR")]
+# fr_remove_redundant_pnx_kw <- function(fr)
+# {
+#   par.id <- as.integer(gsub("^\\$P", "", grep("^\\$P", rownames(pData(parameters(fr))), value = TRUE)))
+#   kw <- keyword(fr)
+#   kn <- names(kw)
+#   
+#   all.pn <- kn[grep("^\\$P[0-9]+N$", kn)]
+#   all.pid <- as.integer(gsub("\\$P|N", "", all.pn))
+#   
+#   to.del.pid <- all.pid[!all.pid %in% par.id]
+# 	pat <- paste(to.del.pid, collapse = "|")
+# 	pat <- paste0("^\\$P(", pat , ")[A-Z]$")
+# 	sel <- grep(pat, kn)
+# 	
+# 	if(length(sel))
+# 		kw <- kw[-sel]
+# 	keyword(fr) <- kw
+# 	fr
+# }
 
 ## by indices or logical vectors
 #' @export
@@ -168,12 +170,10 @@ setMethod("[",
                    stop(msg, call.=FALSE)
           switch(1+missing(i)+2*missing(j),
              {
-                 x <- subsetKeywords(x, j)
                  exprs(x) <- exprs(x)[i, j, ..., drop=FALSE]
                  x
              },
              {
-                 x <- subsetKeywords(x, j)
                  exprs(x) <- exprs(x)[ , j, ..., drop=FALSE]
                  x
              },
