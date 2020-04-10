@@ -331,7 +331,7 @@ test_that("handle > 2^32-1 bytes", {
 })
 
 test_that("whitespace in spillover matrix", {
-  fr <- read.FCS(dataPath, "spillover_spaces.fcs")
+  fr <- read.FCS(file.path(dataPath, "spillover_spaces.fcs"))
   expect_equal(spillover(fr), expectRes[["read.FCS"]][["spillover_spaces"]])
   # Simple checks to make sure it continued parsing fine
   expect_equal(nrow(fr), 10)
