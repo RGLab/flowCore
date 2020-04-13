@@ -39,7 +39,6 @@
 \alias{range,flowFrame-method}
 \alias{cbind2,flowFrame,matrix-method}
 \alias{cbind2,flowFrame,numeric-method}
-\alias{transform,flowFrame-method}
 \alias{compensate,flowFrame,matrix-method}
 \alias{compensate,flowFrame,data.frame-method}
 \alias{compensate,flowFrame,compensation-method}
@@ -50,6 +49,7 @@
 \alias{>,flowFrame,ANY-method}
 \alias{>=,flowFrame,ANY-method}
 \alias{spillover,flowFrame-method}
+\alias{spillover}
 \title{'flowFrame': a class for storing observed quantitative properties for a
 population of cells from a FACS run}
 \description{

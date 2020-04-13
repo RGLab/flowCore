@@ -1389,7 +1389,7 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 #' storage.
 #' @param dataset see \code{\link[flowCore]{read.FCS}} for details.
 #' @param min.limit see \code{\link[flowCore]{read.FCS}} for details.
-#' @param truncate.max.range see \code{link[flowCore]{read.FCS}} for details.
+#' @param truncate_max_range see \code{\link[flowCore]{read.FCS}} for details.
 #' @param emptyValue see \code{\link[flowCore]{read.FCS}} for details.
 #' @param ignore.text.offset see \code{\link[flowCore]{read.FCS}} for details.
 #' @param truncate_max_range see \code{\link[flowCore]{read.FCS}} for details.

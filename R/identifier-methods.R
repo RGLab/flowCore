@@ -24,7 +24,7 @@
 #' 
 #' @name identifier-methods
 #' @aliases identifier identifier-methods identifier,filter-method
-#' identifier,transform-method identifier,filterReference-method
+#' identifier,transform-method identifier,filterReference-method identifier,NULL-method
 #' identifier,filterResult-method identifier,flowFrame-method identifier<-
 #' identifier<-,flowFrame-method identifier<-,flowFrame,ANY-method
 #' @docType methods

@@ -36,7 +36,6 @@
 \alias{compensate,flowSet,ANY-method}
 \alias{compensate,flowSet,list-method}
 \alias{compensate,flowSet,data.frame-method}
-\alias{transform,flowSet-method}
 \alias{rbind2,flowSet,missing}
 \alias{rbind2,flowSet,flowSet-method}
 \alias{rbind2,flowSet,flowSet,missing-method}

@@ -79,11 +79,12 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
 #' featureNames featureNames,flowFrame-method colnames,flowFrame-method
 #' colnames<- colnames<-,flowFrame-method names names,flowFrame-method range
 #' range,flowFrame-method cbind2,flowFrame,matrix-method
-#' cbind2,flowFrame,numeric-method transform,flowFrame-method
+#' cbind2,flowFrame,numeric-method
 #' compensate,flowFrame,matrix-method compensate,flowFrame,data.frame-method
 #' compensate,flowFrame,compensation-method ==,flowFrame,filterResult-method
 #' ==,flowFrame,flowFrame-method <,flowFrame,ANY-method <=,flowFrame,ANY-method
 #' >,flowFrame,ANY-method >=,flowFrame,ANY-method spillover,flowFrame-method
+#' spillover
 #' @docType class
 #' 
 #' @slot exprs {Object of class \code{matrix} containing the
@@ -634,7 +635,7 @@ flowFrame <- function(exprs, parameters, description=list())
 #' varLabels<-,flowSet-method varLabels<-,flowSet,ANY-method
 #' varMetadata,flowSet-method varMetadata<-,flowSet,ANY-method
 #' compensate,flowSet,ANY-method compensate,flowSet,list-method
-#' compensate,flowSet,data.frame-method transform,flowSet-method
+#' compensate,flowSet,data.frame-method
 #' rbind2,flowSet,missing rbind2,flowSet,flowSet-method
 #' rbind2,flowSet,flowSet,missing-method rbind2,flowSet,flowFrame-method
 #' rbind2,flowFrame,flowSet-method rbind2,flowSet,missing-method
@@ -5494,7 +5495,7 @@ setClass("transformFilter",
 #' @author F.Hahne, B. Ellis, N. Le Meur
 #' @seealso
 #' 
-#' \code{\link[flowCore:spillover-flowSet]{spillover}}
+#' \code{\link[flowStats:spillover-flowSet]{spillover}}
 #' @keywords methods classes
 #' @examples
 #' 

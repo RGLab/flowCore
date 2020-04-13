@@ -8,7 +8,7 @@
 \alias{decompensate-methods}
 \title{Decompensate a flowFrame}
 \usage{
-decompensate(x, spillover)
+\S4method{decompensate}{flowFrame,matrix}(x, spillover)
 }
 \arguments{
 \item{x}{flowFrame.}

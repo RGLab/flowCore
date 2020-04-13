@@ -7,6 +7,7 @@
 \alias{identifier,filter-method}
 \alias{identifier,transform-method}
 \alias{identifier,filterReference-method}
+\alias{identifier,NULL-method}
 \alias{identifier,filterResult-method}
 \alias{identifier,flowFrame-method}
 \alias{identifier<-}
