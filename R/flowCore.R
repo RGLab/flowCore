@@ -36,7 +36,6 @@
 #' @importFrom graphics hist text 
 #' @importFrom stats kmeans mad median qnorm quantile runif sd uniroot var
 #' @importFrom utils data find head tail write.table
-#' @importFrom cytolib cytolib_LdFlags 
 #' 
 #' 
 #' @name flowCore-package
