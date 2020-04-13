@@ -171,22 +171,6 @@ setGeneric("decompensate",
 			  function(x, spillover, ...)
 			  	standardGeneric("decompensate"))
 
-## ================================
-## Generic for spillover_match
-## --------------------------------
-#' @export
-setGeneric("spillover_match", function(x,...){
-  tryCatch(standardGeneric("spillover_match"),
-           error = function(e){
-             if(is(x, "flowSet")){
-               stop("The flowSet spillover_match method has been moved to the flowStats package.
-               Please library(flowStats) first.")
-             }else{
-               stop(e)
-             }
-           })
-})
-
 ## ===========================================================================
 ## Generics for apply-like methods
 ## ---------------------------------------------------------------------------
