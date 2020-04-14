@@ -738,6 +738,13 @@ setMethod("normalize",
 			do.call(x@normFunction, args)
 		})
 
+#' Convert a flowSet to a list of flowFrames
+#' 
+#' This is a simple helper function for splitting a \code{\link[flowCore:flowSet-class]{flowSet}}
+#' in to a list of its constituent \code{\link[flowCore:flowFrame-class]{flowFrames}}.
+#' 
+#' @param fs a flowSet
+#' @return a list of flowFrames
 #' @export
 flowSet_to_list <- function(fs){
   frs <- lapply(1:length(fs), function(idx) {fs[[idx]]})

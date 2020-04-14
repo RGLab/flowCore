@@ -100,7 +100,7 @@ cols_to_pd <- function(fr, cols){
 #' fr <- subsetKeywords(fr, c(1,3,5))
 #' kw <- keyword(fr)
 #' kw[c("$P1N","$P2N", "$PAR")]
-#' @noRd
+#' 
 # subsetKeywords <- function(x, j)
 # {
 #     kw <- keyword(x)
@@ -697,7 +697,6 @@ setReplaceMethod("colnames",
 #' @aliases decompensate,flowFrame,matrix-method decompensate
 #' decompensate,flowFrame,data.frame-method decompensate-methods
 #' 
-#' @usage decompensate(x, spillover)
 #' @param x flowFrame. 
 #' @param spillover matrix or data.frame. 
 #'
@@ -825,11 +824,11 @@ setMethod("compensate",
 #' 2. named arguments specifying transformations to be applied to channels (see details)
 #' 
 #' @name transform
-#' @md
-#' @usage transform(_data, trans, ...)
+#' @aliases transform,flowFrame-method transform,flowSet-method
 #' @param _data a flowFrame or flowSet object
-#' @param trans a transformList object
+#' @param translist a transformList object
 #' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
+#' 
 #' 
 #' @details To specify the transformations in the second way, the names of these arguments 
 #' should correspond to the new channel names and the values should be functions applied to

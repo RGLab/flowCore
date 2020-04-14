@@ -154,7 +154,7 @@ setGeneric("summarizeFilter", function(result,filter)
 setGeneric("spillover", function(x,...){
   tryCatch(standardGeneric("spillover"),
       error = function(e){
-        if(grepl("unable to find an inherited method for function ‘spillover’ for signature.*(flowSet|ncdfFlowSet)", e$message)){
+        if(grepl("unable to find an inherited method for function 'spillover' for signature.*(flowSet|ncdfFlowSet)", e$message)){
           stop("The flowSet spillover method has been moved to the flowStats package.
                Please library(flowStats) first.")
         }else{
@@ -170,22 +170,6 @@ setGeneric("compensate",
 setGeneric("decompensate",
 			  function(x, spillover, ...)
 			  	standardGeneric("decompensate"))
-
-## ================================
-## Generic for spillover_match
-## --------------------------------
-#' @export
-setGeneric("spillover_match", function(x,...){
-  tryCatch(standardGeneric("spillover_match"),
-           error = function(e){
-             if(is(x, "flowSet")){
-               stop("The flowSet spillover_match method has been moved to the flowStats package.
-               Please library(flowStats) first.")
-             }else{
-               stop(e)
-             }
-           })
-})
 
 ## ===========================================================================
 ## Generics for apply-like methods
@@ -231,19 +215,6 @@ setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE)
 setGeneric("each_col",function(x,FUN,...) standardGeneric("each_col"))
 #' @export
 setGeneric("each_row",function(x,FUN,...) standardGeneric("each_row"))
-
-
-
-## ===========================================================================
-## Generic to test for a NULL reference
-## setMethod("is.null",
-##           signature=signature("fcReference"),
-##           definition=function(f) is(f, "fcNullReference"))
-## Doesn't work in this R version. We are not allowed to define methods
-## on all primitives
-## ---------------------------------------------------------------------------
-#' @export
-setGeneric("isNull",function(f) standardGeneric("isNull"))
 
 
 

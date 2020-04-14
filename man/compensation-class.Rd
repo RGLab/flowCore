@@ -216,7 +216,7 @@ compensate(samp, comps)
 
 }
 \seealso{
-\code{\link[flowCore:spillover-flowSet]{spillover}}
+\code{\link[flowStats:spillover-flowSet]{spillover}}
 }
 \author{
 F.Hahne, B. Ellis, N. Le Meur

@@ -2,28 +2,28 @@
 % Please edit documentation in R/flowFrame-accessors.R
 \name{transform}
 \alias{transform}
+\alias{transform,flowFrame-method}
+\alias{transform,flowSet-method}
 \title{Transform a flowFrame or flowSet}
 \usage{
-transform(_data, trans, ...)
+\S4method{transform}{flowFrame}(`_data`, translist, ...)
 }
 \arguments{
 \item{_data}{a flowFrame or flowSet object}
 
-\item{...}{other arguments. e.g. \code{FL1-H} = myFunc(\code{FL1-H})}
+\item{translist}{a transformList object}
 
-\item{trans}{a transformList object}
+\item{...}{other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)}
 }
 \description{
 Similar to the base transform method, this will transform the values of
 a flowFrame or flowSet object according to the transformations specified
 in one of two ways:
-\enumerate{
-\item a \link[flowCore:transformList-class]{transformList} or list of \link[flowCore:transform-class]{transform} objects
-\item named arguments specifying transformations to be applied to channels (see details)
-}
+1. a [transformList][flowCore::transformList-class] or list of [transform][flowCore::transform-class] objects
+2. named arguments specifying transformations to be applied to channels (see details)
 }
 \details{
-To specify the transformations in the second way, the names of these arguments
+To specify the transformations in the second way, the names of these arguments 
 should correspond to the new channel names and the values should be functions applied to
 channels currently present in the flowFrame or flowSet. There are a few examples below.
 }

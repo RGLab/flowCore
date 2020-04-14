@@ -70,8 +70,6 @@ storage.}
 
 \item{\dots}{Further arguments that get passed on to
 \code{\link[Biobase]{read.AnnotatedDataFrame}}, see details.}
-
-\item{truncate.max.range}{see \code{link[flowCore]{read.FCS}} for details.}
 }
 \value{
 An object of class \code{\link[flowCore:flowSet-class]{flowSet}}.
