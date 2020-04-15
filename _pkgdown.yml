@@ -6,6 +6,8 @@ reference:
     contents:
       - flowFrame-class
       - flowSet-class
+      - coerce
+      - flowSet_to_list
   - title: "Data: Methods"
     desc: >
       Methods for accessing the data and metadata associated with flowFrame or flowSet objects.
@@ -16,10 +18,10 @@ reference:
       - getIndexSort-methods
       - fsApply
       - identifier
+      - markernames
       - getChannelMarker
       - parameters-methods
       - keyword-methods
-      - filter_keywords
   - title: "Reading/writing data"
     desc: >
       Methods for reading/writing cytometry data and metadata from FCS files to/from flowCore data structures.
@@ -139,6 +141,11 @@ reference:
       - estimateMedianLogicle
       - inverseLogicleTransform
       - normalization-class
+  - title: "Data"
+    desc: >
+      Datasets included for use in examples to illustrate flowCore functionality
+    contents:
+      - GvHD
 articles:
   - title: Introduction
     contents:
