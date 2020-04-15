@@ -11,23 +11,27 @@ population of cells from a FACS run — flowFrame-class • flowCore</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -48,7 +52,6 @@ additional annotation provided through keywords in the FCS
 file
 
 " />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -66,7 +69,7 @@ file
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -80,7 +83,7 @@ file
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.53.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.99.20</span>
       </span>
     </div>
 
@@ -94,6 +97,12 @@ file
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../articles/index.html">Articles</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -143,7 +152,7 @@ information on using the object system for handling of flow-cytometry data.</p>
 
     
 
-<dl class='dl-horizontal'>
+<dl'>
 <dt><code>exprs</code></dt><dd><p>Object of class <code>matrix</code> containing the
 measured intensities. Rows correspond to cells, columns to the
 different measurement channels. The <code>colnames</code> attribute of
@@ -182,7 +191,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
     
 
 <p>There are separate documentation pages for most of the methods
-  listed here which should be consulted for more details.</p><dl class='dl-horizontal'>
+  listed here which should be consulted for more details.</p><dl'>
   <dt>[</dt><dd><p>Subsetting. Returns an object of class <code>flowFrame</code>.
     The subsetting is applied to the <code>exprs</code> slot, while the
     <code>description</code> slot is unchanged. The syntax for subsetting is
@@ -334,19 +343,19 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P6 FL2-A              &lt;NA&gt;  1024        0     1023
 #&gt; $P7 FL4-H          CD33 APC  1024        1    10000
 #&gt; $P8  Time Time (51.20 sec.)  1024        0     1023
-#&gt; 153 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[,<span class='fl'>3</span>]</div><div class='output co'>#&gt; flowFrame object 's5a01'
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[,<span class='fl'>3</span>]</div><div class='output co'>#&gt; flowFrame object 's5a01'
 #&gt; with 3420 cells and 1 observables:
 #&gt;      name      desc range minRange maxRange
 #&gt; $P3 FL1-H CD15 FITC  1024        1    10000
-#&gt; 119 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[,<span class='st'>"FSC-H"</span>]</div><div class='output co'>#&gt; flowFrame object 's5a01'
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[,<span class='st'>"FSC-H"</span>]</div><div class='output co'>#&gt; flowFrame object 's5a01'
 #&gt; with 3420 cells and 1 observables:
 #&gt;      name       desc range minRange maxRange
 #&gt; $P1 FSC-H FSC-Height  1024        0     1023
-#&gt; 119 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>$<span class='st'>"SSC-H"</span></div><div class='output co'>#&gt; flowFrame object 's5a01'
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>$<span class='st'>"SSC-H"</span></div><div class='output co'>#&gt; flowFrame object 's5a01'
 #&gt; with 3420 cells and 1 observables:
 #&gt;      name       desc range minRange maxRange
 #&gt; $P2 SSC-H SSC-Height  1024        0     1023
-#&gt; 119 keywords are stored in the 'description' slot</div><div class='input'>
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'>
 <span class='co'>## accessing and replacing raw values</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'>exprs</span>(<span class='no'>frame</span>))</div><div class='output co'>#&gt;      FSC-H SSC-H       FL1-H       FL2-H     FL3-H FL2-A     FL4-H Time
 #&gt; [1,]   371   396 2432.871983  507.887297 18.156914   110 21.739192    1
@@ -366,7 +375,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P6 FL2-A              &lt;NA&gt;  1024        0     1023
 #&gt; $P7 FL4-H          CD33 APC  1024        1    10000
 #&gt; $P8  Time Time (51.20 sec.)  1024        0     1023
-#&gt; 153 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'>exprs</span>(<span class='no'>frame</span>) <span class='kw'>&lt;-</span> <span class='fu'>exprs</span>(<span class='no'>frame</span>)[,<span class='fl'>1</span>:<span class='fl'>6</span>]
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'>exprs</span>(<span class='no'>frame</span>) <span class='kw'>&lt;-</span> <span class='fu'>exprs</span>(<span class='no'>frame</span>)[,<span class='fl'>1</span>:<span class='fl'>6</span>]
 <span class='no'>frame</span></div><div class='output co'>#&gt; flowFrame object 's5a01'
 #&gt; with 3000 cells and 6 observables:
 #&gt;      name       desc range minRange maxRange
@@ -376,9 +385,9 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2-H    CD45 PE  1024        1    10000
 #&gt; $P5 FL3-H CD14 PerCP  1024        1    10000
 #&gt; $P6 FL2-A       &lt;NA&gt;  1024        0     1023
-#&gt; 153 keywords are stored in the 'description' slot</div><div class='input'>
+#&gt; 169 keywords are stored in the 'description' slot</div><div class='input'>
 <span class='co'>## access FCS keywords</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'>description</span>(<span class='no'>frame</span>))</div><div class='output co'>#&gt; $FCSversion
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'><a href='keyword-methods.html'>keyword</a></span>(<span class='no'>frame</span>))</div><div class='output co'>#&gt; $FCSversion
 #&gt; [1] "2"
 #&gt; 
 #&gt; $`$BYTEORD`
@@ -421,7 +430,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; 3rd Qu.  337.0000  237.0000  1111.586603  540.92597    8.446683  121.00000
 #&gt; Max.    1023.0000 1023.0000 10000.000000 9221.66591 1131.783715 1023.00000</div><div class='input'>
 <span class='co'>## plotting</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>frame</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='input'><span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowViz</span>)){
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>frame</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Binning grid too coarse for current (small) bandwidth: consider increasing 'gridsize'</span></div><div class='input'><span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>flowViz</span>)){
 <span class='fu'><a href='https://rdrr.io/pkg/flowViz/man/plot.html'>plot</a></span>(<span class='no'>frame</span>)
 <span class='fu'><a href='https://rdrr.io/pkg/flowViz/man/plot.html'>plot</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FSC-H"</span>, <span class='st'>"SSC-H"</span>))
 <span class='fu'><a href='https://rdrr.io/pkg/flowViz/man/plot.html'>plot</a></span>(<span class='no'>frame</span>[,<span class='fl'>1</span>])
@@ -472,7 +481,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; 
 #&gt; $`nonDebris-`
 #&gt; flowFrame object 'test (nonDebris-)'
@@ -484,7 +493,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; </div><div class='input'><span class='fu'><a href='split-methods.html'>split</a></span>(<span class='no'>frame</span>, <span class='no'>rectGate</span>, <span class='kw'>flowSet</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; A flowSet with 2 experiments.
 #&gt; 
 #&gt; An object of class 'AnnotatedDataFrame'
@@ -503,7 +512,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; 
 #&gt; $`nonDebris-`
 #&gt; flowFrame object 'test (nonDebris-)'
@@ -515,7 +524,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; </div><div class='input'><span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span>(<span class='fu'>exprs</span>(<span class='no'>frame</span>$<span class='no'>FSC.H</span>), <span class='fl'>3</span>)
 <span class='fu'><a href='split-methods.html'>split</a></span>(<span class='no'>frame</span>, <span class='no'>f</span>)</div><div class='output co'>#&gt; $`(58,380]`
 #&gt; flowFrame object 'test'
@@ -527,7 +536,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; 
 #&gt; $`(380,702]`
 #&gt; flowFrame object 'test'
@@ -539,7 +548,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; 
 #&gt; $`(702,1.02e+03]`
 #&gt; flowFrame object 'test'
@@ -551,7 +560,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot
+#&gt; 170 keywords are stored in the 'description' slot
 #&gt; </div><div class='input'>
 <span class='co'>## subsetting according to filters and filter results</span>
 <span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>frame</span>, <span class='no'>rectGate</span>)</div><div class='output co'>#&gt; flowFrame object 'test'
@@ -563,7 +572,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>frame</span>, <span class='no'>fres</span>)</div><div class='output co'>#&gt; flowFrame object 'test'
+#&gt; 170 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>frame</span>, <span class='no'>fres</span>)</div><div class='output co'>#&gt; flowFrame object 'test'
 #&gt; with 1494 cells and 6 observables:
 #&gt;      name       desc range minRange    maxRange
 #&gt; $P1 FSC.H FSC-Height  1024        0  1023.00000
@@ -572,7 +581,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='https://rdrr.io/r/base/logical.html'>as.logical</a></span>(<span class='fu'>exprs</span>(<span class='no'>frame</span>$<span class='no'>FSC.H</span>) <span class='kw'>&lt;</span> <span class='fl'>300</span>))</div><div class='output co'>#&gt; flowFrame object 'test'
+#&gt; 170 keywords are stored in the 'description' slot</div><div class='input'><span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>frame</span>, <span class='fu'><a href='https://rdrr.io/r/base/logical.html'>as.logical</a></span>(<span class='fu'>exprs</span>(<span class='no'>frame</span>$<span class='no'>FSC.H</span>) <span class='kw'>&lt;</span> <span class='fl'>300</span>))</div><div class='output co'>#&gt; flowFrame object 'test'
 #&gt; with 2075 cells and 6 observables:
 #&gt;      name       desc range minRange    maxRange
 #&gt; $P1 FSC.H FSC-Height  1024        0  1023.00000
@@ -581,7 +590,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[<span class='no'>rectGate</span>,]</div><div class='output co'>#&gt; flowFrame object 'test'
+#&gt; 170 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[<span class='no'>rectGate</span>,]</div><div class='output co'>#&gt; flowFrame object 'test'
 #&gt; with 1494 cells and 6 observables:
 #&gt;      name       desc range minRange    maxRange
 #&gt; $P1 FSC.H FSC-Height  1024        0  1023.00000
@@ -590,7 +599,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[<span class='no'>fres</span>,]</div><div class='output co'>#&gt; flowFrame object 'test'
+#&gt; 170 keywords are stored in the 'description' slot</div><div class='input'><span class='no'>frame</span>[<span class='no'>fres</span>,]</div><div class='output co'>#&gt; flowFrame object 'test'
 #&gt; with 1494 cells and 6 observables:
 #&gt;      name       desc range minRange    maxRange
 #&gt; $P1 FSC.H FSC-Height  1024        0  1023.00000
@@ -599,9 +608,9 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 #&gt; $P4 FL2.H    CD45 PE  1024        0     9.21034
 #&gt; $P5 FL3.H CD14 PerCP  1024        1 10000.00000
 #&gt; $P6 FL2.A       &lt;NA&gt;  1024        0  1023.00000
-#&gt; 166 keywords are stored in the 'description' slot</div><div class='input'>
+#&gt; 170 keywords are stored in the 'description' slot</div><div class='input'>
 <span class='co'>## accessing the spillover matrix</span>
-<span class='fu'><a href='https://rdrr.io/r/base/try.html'>try</a></span>(<span class='fu'>spillover</span>(<span class='no'>frame</span>))</div><div class='output co'>#&gt; Error in .local(x, ...) : No spillover matrix stored in that flowFrame</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/try.html'>try</a></span>(<span class='fu'>spillover</span>(<span class='no'>frame</span>))</div><div class='output co'>#&gt; Error in .local(x, ...) : No spillover matrix stored in that sample</div><div class='input'>
 <span class='co'>## check equality</span>
 <span class='no'>frame2</span> <span class='kw'>&lt;-</span> <span class='no'>frame</span>
 <span class='no'>frame</span> <span class='kw'>==</span> <span class='no'>frame2</span></div><div class='output co'>#&gt; [1] TRUE</div><div class='input'><span class='fu'>exprs</span>(<span class='no'>frame2</span>) <span class='kw'>&lt;-</span> <span class='fu'>exprs</span>(<span class='no'>frame</span>)*<span class='fl'>2</span>
@@ -610,18 +619,9 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#details">Details</a></li>
-      <li><a href="#slots">Slots</a></li>
-      <li><a href="#creating-objects">Creating Objects</a></li>
-      <li><a href="#methods">Methods</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>F. Hahne, B. Ellis, P. Haaland and N. Le Meur</p>
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -632,7 +632,7 @@ creating objects using <code>new</code> or the constructor is discouraged.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
