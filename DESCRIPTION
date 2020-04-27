@@ -1,6 +1,6 @@
 Package: flowCore
 Title: flowCore: Basic structures for flow cytometry data
-Version: 1.99.20
+Version: 2.0.0
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
