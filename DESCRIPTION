@@ -4,7 +4,7 @@ Version: 1.99.20
 Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Perry", "Haaland", role = "aut"),
 							 person("Florian", "Hahne", role = "aut"),
-							 person("Nathan", "Le Meur", role = "aut"),
+							 person("Nolwenn", "Le Meur", role = "aut"),
 							 person("Nishant", "Gopalakrishnan", role = "aut"),
 							 person("Josef", "Spidlen", role = "aut"),
 							 person("Mike", "Jiang", role = c("aut","cre"), email = "wjiang2@fhcrc.org"),
