@@ -175,7 +175,7 @@ of the FCS files.</p>
 <span class='no'>outDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(), <span class='st'>"foo"</span>)
 
 <span class='co'>## now write out into  files</span>
-<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmpgIZtc8/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
+<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmptCYwQw/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
 #&gt; [5] "s5a04.fcs"      "s5a05.fcs"     </div><div class='input'>
 <span class='co'>## and read back in</span>
 <span class='no'>bar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.flowSet.html'>read.flowSet</a></span>(<span class='kw'>path</span><span class='kw'>=</span><span class='no'>outDir</span>, <span class='kw'>phenoData</span><span class='kw'>=</span><span class='st'>"annotation.txt"</span>)</div></pre>
@@ -190,7 +190,7 @@ of the FCS files.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by B Ellis, Perry Haaland, Florian Hahne, Nathan Le Meur, Nishant Gopalakrishnan, Josef Spidlen, Mike Jiang, Greg Finak.</p>
+  <p>Developed by B Ellis, Perry Haaland, Florian Hahne, Nolwenn Le Meur, Nishant Gopalakrishnan, Josef Spidlen, Mike Jiang, Greg Finak.</p>
 </div>
 
 <div class="pkgdown">
