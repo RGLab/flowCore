@@ -601,8 +601,11 @@ flowFrame <- function(exprs, parameters, description=list())
     else
         isValidParameters(parameters, exprs)
     checkClass(description, "list")
-    new("flowFrame", exprs=exprs, parameters=parameters,
-        description=description)
+    fr <- new("flowFrame", exprs=exprs, parameters=parameters,description=description)
+    tmp <- tempfile()
+    on.exit(unlink(tmp))
+    suppressMessages(write.FCS(fr, tmp))
+    suppressMessages(read.FCS(tmp))
 }
 
 
