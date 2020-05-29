@@ -114,6 +114,7 @@ setMethod("%in%",
                                 !is.na(cut(e[, i],
                                            c(table@min[i],table@max[i]),
                                            labels=FALSE,
+                                           include.lowest = TRUE,
                                            right=FALSE
                                            ))
                             }})
