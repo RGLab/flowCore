@@ -153,9 +153,12 @@ test_that("decompensate",{
 	colnames(spill) = gsub("\\.", "-", colnames(spill))
 	f.comp = compensate(f, spill)
 	f.decomp = decompensate(f.comp, as.matrix(spill))
+	comp_object <- compensation(spill)
 	expect_lt(sum(abs(f@exprs - f.decomp@exprs)),1e-10)
 	expect_true(all.equal(decompensate(f.comp, spill)@exprs,
 				 decompensate(f.comp, as.matrix(spill))@exprs))
+	expect_true(all.equal(decompensate(f.comp, spill)@exprs,
+	                      decompensate(f.comp, comp_object)@exprs))
 	expect_true(all.equal(f@exprs, decompensate(f.comp, spill)@exprs))
 })
 test_that("biexponential", {

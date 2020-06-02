@@ -6,14 +6,17 @@
 \alias{decompensate,flowFrame,matrix-method}
 \alias{decompensate,flowFrame,data.frame-method}
 \alias{decompensate-methods}
+\alias{decompensate,flowFrame,compensation-method}
 \title{Decompensate a flowFrame}
 \usage{
 \S4method{decompensate}{flowFrame,matrix}(x, spillover)
+
+\S4method{decompensate}{flowFrame,compensation}(x, spillover)
 }
 \arguments{
 \item{x}{flowFrame.}
 
-\item{spillover}{matrix or data.frame.}
+\item{spillover}{matrix or data.frame or a compensation object}
 }
 \value{
 a decompensated flowFrame
