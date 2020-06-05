@@ -2,6 +2,12 @@ context("flowFrame methods...")
 data("GvHD")
 fr <- GvHD[[1]]
 
+test_that("flowFrame constructor", {
+  mat <- matrix(1:30,ncol = 3, dimnames = list(NULL, letters[1:3]))
+  fr <- flowFrame(mat)
+  markernames(fr)[1] <- "A"
+  expect_equal(markernames(fr)[1] , c(a = "A"))
+})
 test_that("range", {
   rng1 <- data.frame("FSC-H" = c(0,1023)
                      ,"SSC-H" = c(0,1023)

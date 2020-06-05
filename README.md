@@ -15,6 +15,6 @@ flowCore
 Core flow infrastructure
 
 Install the devtools package and then do
-`devtools::install_github("RGLab/flowCore",ref="trunk")`
+`devtools::install_github("RGLab/flowCore")`
 
 You may need to install other dependencies as well.

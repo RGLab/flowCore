@@ -19,7 +19,7 @@ test_that("rectGateUsage", {
 		
 
 	x = getMethod("%in%",c(class(b08),class(r)))(b08,r)
-	expect_equal(sum(x), 6906)
+	expect_equal(sum(x), 6922)
 })
 
 

@@ -698,7 +698,7 @@ setReplaceMethod("colnames",
 #' decompensate,flowFrame,data.frame-method decompensate-methods
 #' 
 #' @param x flowFrame. 
-#' @param spillover matrix or data.frame. 
+#' @param spillover matrix or data.frame or a compensation object 
 #'
 #' @return a decompensated flowFrame
 #'
@@ -733,6 +733,17 @@ setMethod("decompensate",
 			 	x
 			 }
 )
+
+#' @rdname decompensate
+#' @export
+setMethod("decompensate",
+          signature = signature(x="flowFrame", spillover="compensation"),
+          function(x, spillover)
+          {
+            decompensate(x, spillover@spillover)
+          }
+)
+
 
 #' @param spillover 
 #' @param x flowFrame
