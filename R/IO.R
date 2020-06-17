@@ -337,7 +337,16 @@ read.FCS <- function(filename,
 
     params <- makeFCSparameters(colnames(mat),txt, transformation, scale,
                                  decades, realMin, id=keep_idx)
-
+    
+    
+    # Fill invalid/missing range values with channel maxima read from data 
+    fix_pnr_idx <- which(is.na(params@data[, "maxRange"]))
+    if(length(fix_pnr_idx) > 0){
+      fix_pnr_vals <- matRanges[fix_pnr_idx]
+      params@data[fix_pnr_idx, "maxRange"] <- fix_pnr_vals
+      params@data[fix_pnr_idx, "range"] <- fix_pnr_vals + 1 
+    }
+    
     ## check for validity
     if(is.null(which.lines)){
       total_number_of_events <- as.integer(readFCSgetPar(txt, "$TOT"));
@@ -370,6 +379,10 @@ read.FCS <- function(filename,
 		description <- strsplit(txt, split=NA) # not really splitting, but converting the data structure}
 	}
 
+  # Fill invalid/missing PnR values with channel maxima read from data 
+  if(length(fix_pnr_idx) > 0)
+    description[paste0("$P", fix_pnr_idx, "R")] <- fix_pnr_vals + 1
+    
   # Remove keywords for removed parameters
   if(!is.null(remove_idx)&&length(remove_idx)>0){
     remove_regex <- paste0("\\$P", remove_idx, "[A-Z]+")
@@ -459,9 +472,8 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
       if(!original)
         as.numeric(txt[rid]) + 1
       else
-        as.numeric(txt[paste(this_id,"R",sep="")])
+        suppressWarnings(as.numeric(txt[paste(this_id,"R",sep="")]))
     })
-
 
     origRange <- range
     range <- rbind(realMin,range-1)
@@ -496,7 +508,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
             else
               thisDesc
           })
-    new("AnnotatedDataFrame",
+    suppressWarnings(new("AnnotatedDataFrame",
         data=data.frame(row.names=I(id),name=I(cn),
         desc=I(desc),
         range=as.numeric(txt[paste(id,"R",sep="")]), minRange=range[1,], maxRange=range[2,]),
@@ -504,7 +516,7 @@ makeFCSparameters <- function(cn, txt, transformation, scale, decades,
                                "minRange", "maxRange")),
         labelDescription=I(c("Name of Parameter","Description of Parameter",
         "Range of Parameter", "Minimum Parameter Value after Transforamtion",
-        "Maximum Parameter Value after Transformation"))))
+        "Maximum Parameter Value after Transformation")))))
 }
 
 
@@ -1033,16 +1045,17 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
       suppressWarnings(range <- as.integer(range_str))
 
       #when any channel has range > 2147483647 (i.e. 2^31-1)
+      # NA Also occurs if coercion fails for any reason (e.g. non-numeric string like "NA")
       if(any(is.na(range)))
-        range <- as.numeric(range_str)
+        range <-suppressWarnings(as.numeric(range_str))
 
       if(any(is.na(range)))#throws if still fails
-        stop("$PnR", range_str[is.na(range)][1], "is larger than R's integer limit:", .Machine$integer.max)
+        stop('$PnR "', range_str[is.na(range)][1], " is invalid. If it is a numeric string, this could be because it is larger than R's integer limit: ", .Machine$integer.max)
       else if(any(range>2^32)){
         #check if larger than C's uint32 limit ,which should be 2^32-1
         #but strangely(and inaccurately) these flow data uses 2^32 to specifiy the upper bound of 32 uint
         #we try to tolerate this and hopefully there is no such extreme value exsiting in the actual data section
-        stop("$PnR", range_str[range>2^32][1], "is larger than C's uint32 limit:", 2^32-1)
+        stop("$PnR ", range_str[range>2^32][1], " is invalid. If it is a numeric string, this could be because it is larger than C's uint32 limit:", 2^32-1)
       }
 
       if(multiSize){
@@ -1055,9 +1068,10 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     }
     else{
       splitInt <- FALSE
-      range <- as.numeric(range_str)
+      range <- suppressWarnings(as.numeric(range_str))
       if(any(is.na(range)))
-        stop("$PnR", range_str[is.na(range)][1], "is larger than R's numeric limit:", .Machine$double.xmax)
+        warning("$PnR ", range_str[is.na(range)][1], " is invalid. If it is a numeric string, this could be because it is larger than R's numeric limit: ", .Machine$double.xmax,
+             ". The assigned $PnR value will be imputed from the maximum value of the data in this channel.")
     }
 
 
@@ -1065,11 +1079,11 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     if(!multiSize){
       if(bitwidth==10){
         if(!gsub(" " ,"", tolower(readFCSgetPar(x, "$SYS"))) ==  "cxp")
-          warning("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
+          stop("Invalid bitwidth specification.\nThis is a known bug in Beckman ",
                   "Coulter's CPX software.\nThe data might be corrupted if produced ",
                   "by another software.", call.=FALSE)
         else
-          warning("Beckma Coulter CPX data.\nCorrected for invalid bitwidth 10.",
+          stop("Beckman Coulter CPX data.\nCorrected for invalid bitwidth 10.",
                   call.=FALSE)
         bitwidth <- 16
       }
@@ -1199,6 +1213,13 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
     else
     {
         dat <- matrix(dat, ncol=nrpar, byrow=TRUE)
+        # Fill invalid/missing range/PnR values with channel maxima read from data 
+        fix_pnr_idx <- which(is.na(range))
+        if(length(fix_pnr_idx) > 0){
+          fix_pnr_vals <- colMaxs(dat, cols = fix_pnr_idx)
+          x[paste0("$P", fix_pnr_idx, "R")] <- fix_pnr_vals
+          range[fix_pnr_idx] <- fix_pnr_vals
+        }
     }
 
     cn  <- readFCSgetPar(x, paste("$P", 1:nrpar, "N", sep=""))
