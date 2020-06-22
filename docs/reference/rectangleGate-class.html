@@ -73,7 +73,7 @@ filter objects." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.99.20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -96,7 +96,12 @@ filter objects." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowCore">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -270,10 +275,10 @@ flow cytometry data sets based on that.</p>
 
 <span class='co'>## Filtering using rectangleGates</span>
 <span class='no'>fres</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='filter-methods.html'>filter</a></span>(<span class='no'>dat</span>, <span class='no'>rg</span>)
-<span class='no'>fres</span></div><div class='output co'>#&gt; A filterResult produced by the filter named 'myRectGate'</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>fres</span>)</div><div class='output co'>#&gt; myRectGate+: 7379 of 10000 events (73.79%)</div><div class='input'>
+<span class='no'>fres</span></div><div class='output co'>#&gt; A filterResult produced by the filter named 'myRectGate'</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>fres</span>)</div><div class='output co'>#&gt; myRectGate+: 7380 of 10000 events (73.80%)</div><div class='input'>
 <span class='co'>## The result of rectangle filtering is a logical subset</span>
 <span class='fu'><a href='Subset-methods.html'>Subset</a></span>(<span class='no'>dat</span>, <span class='no'>fres</span>)</div><div class='output co'>#&gt; flowFrame object '0877408774.B08'
-#&gt; with 7379 cells and 8 observables:
+#&gt; with 7380 cells and 8 observables:
 #&gt;      name              desc range minRange maxRange
 #&gt; $P1 FSC-H             FSC-H  1024 0.000000     1023
 #&gt; $P2 SSC-H             SSC-H  1024 0.000000     1023
@@ -288,7 +293,7 @@ flow cytometry data sets based on that.</p>
 <span class='co'>## not in the gate as separate populations</span>
 <span class='fu'><a href='split-methods.html'>split</a></span>(<span class='no'>dat</span>, <span class='no'>fres</span>)</div><div class='output co'>#&gt; $`myRectGate+`
 #&gt; flowFrame object '0877408774.B08 (myRectGate+)'
-#&gt; with 7379 cells and 8 observables:
+#&gt; with 7380 cells and 8 observables:
 #&gt;      name              desc range minRange maxRange
 #&gt; $P1 FSC-H             FSC-H  1024 0.000000     1023
 #&gt; $P2 SSC-H             SSC-H  1024 0.000000     1023
@@ -302,7 +307,7 @@ flow cytometry data sets based on that.</p>
 #&gt; 
 #&gt; $`myRectGate-`
 #&gt; flowFrame object '0877408774.B08 (myRectGate-)'
-#&gt; with 2621 cells and 8 observables:
+#&gt; with 2620 cells and 8 observables:
 #&gt;      name              desc range minRange maxRange
 #&gt; $P1 FSC-H             FSC-H  1024 0.000000     1023
 #&gt; $P2 SSC-H             SSC-H  1024 0.000000     1023
