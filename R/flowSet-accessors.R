@@ -370,8 +370,10 @@ setMethod("fsApply",
 			## row.names and sampleNames had damn well better match, use this to
 			## give us access to the phenoData
 			res <- structure(lapply(sampleNames(x),function(n) {
-								# y <- as(x[[n]],"flowFrame")
-			          y <- x[[n]]
+								#can't define coerce method for cytoframe
+								#since there is already existing implitcit coerce 
+#								 y <- as(x[[n]],"flowFrame") 
+			          y <- x[[n, returnType = "flowFrame"]]
 								FUN(if(use.exprs) exprs(y) else y,...)
 							}),names=sampleNames(x))
 			if(simplify) {
