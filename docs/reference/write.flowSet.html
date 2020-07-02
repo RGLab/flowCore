@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.99.20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -95,7 +95,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowCore">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -175,7 +180,7 @@ of the FCS files.</p>
 <span class='no'>outDir</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(), <span class='st'>"foo"</span>)
 
 <span class='co'>## now write out into  files</span>
-<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmptCYwQw/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
+<span class='fu'>write.flowSet</span>(<span class='no'>foo</span>, <span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "/tmp/RtmpexaeiJ/foo"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>dir</a></span>(<span class='no'>outDir</span>)</div><div class='output co'>#&gt; [1] "annotation.txt" "s5a01.fcs"      "s5a02.fcs"      "s5a03.fcs"     
 #&gt; [5] "s5a04.fcs"      "s5a05.fcs"     </div><div class='input'>
 <span class='co'>## and read back in</span>
 <span class='no'>bar</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='read.flowSet.html'>read.flowSet</a></span>(<span class='kw'>path</span><span class='kw'>=</span><span class='no'>outDir</span>, <span class='kw'>phenoData</span><span class='kw'>=</span><span class='st'>"annotation.txt"</span>)</div></pre>

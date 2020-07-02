@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowCore</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.99.20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -95,7 +95,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/RGLab/flowCore">
+    <span class="fas fa fa fas fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -119,6 +124,9 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for flowFrame,matrix</span>
+<span class='fu'>decompensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)
+
+<span class='co'># S4 method for flowFrame,compensation</span>
 <span class='fu'>decompensate</span>(<span class='no'>x</span>, <span class='no'>spillover</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -130,7 +138,7 @@
     </tr>
     <tr>
       <th>spillover</th>
-      <td><p>matrix or data.frame.</p></td>
+      <td><p>matrix or data.frame or a compensation object</p></td>
     </tr>
     </table>
 

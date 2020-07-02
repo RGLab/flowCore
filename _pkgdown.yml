@@ -146,6 +146,11 @@ reference:
       Datasets included for use in examples to illustrate flowCore functionality
     contents:
       - GvHD
+navbar:
+  title: flowCore
+  right:
+    - icon: fas fa fa-github fa-lg
+      href: https://github.com/RGLab/flowCore
 articles:
   - title: Introduction
     contents:
