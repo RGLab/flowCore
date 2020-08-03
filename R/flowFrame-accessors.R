@@ -14,7 +14,7 @@
 #' 
 #' @param fr A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
 #' @param cols A numeric matrix containing the new data columns to be added.
-#' Must has column names to be used as new channel names.
+#' Must have unique column names to be used as new channel names.
 #' 
 #' @name fr_append_cols
 #' @aliases fr_append_cols
@@ -72,8 +72,8 @@ cols_to_pd <- function(fr, cols){
 	checkClass(cols, "matrix")
 	ncol <- ncol(cols)
 	cn <- colnames(cols)
-	if(length(cn) != ncol)
-		stop("All columns in 'cols' must have colnames!")
+	if(length(cn) != ncol | any(cn %in% colnames(fr)))
+		stop("All columns in 'cols' must have unique colnames!")
 	#add to pdata
 	pd <- pData(parameters(fr))
 	ncol_old <- ncol(fr)
