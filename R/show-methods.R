@@ -22,6 +22,8 @@ setMethod("show",
                     "'\nwith ", nrow(object), " cells and ",
                     ncol(object), " observables:\n", sep=""))
           pd <- pData(parameters(object))
+		  #strip AsIs for successful coersion to DF
+		  rownames(pd) <- as.character(rownames(pd))
           show(as(pd, "DataFrame"))
           cat(paste(length(keyword(object)), " keywords are stored in the ",
                     "'description' slot\n", sep = ""))
