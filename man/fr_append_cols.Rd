@@ -10,7 +10,7 @@ fr_append_cols(fr, cols)
 \item{fr}{A \code{\link[flowCore:flowFrame-class]{flowFrame}}.}
 
 \item{cols}{A numeric matrix containing the new data columns to be added.
-Must has column names to be used as new channel names.}
+Must have unique column names to be used as new channel names.}
 }
 \value{
 A \code{\linkS4class{flowFrame}}
