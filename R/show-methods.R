@@ -24,7 +24,11 @@ setMethod("show",
           pd <- pData(parameters(object))
 		  #strip AsIs for successful coersion to DF
 		  rownames(pd) <- as.character(rownames(pd))
-          show(as(pd, "DataFrame"))
+		  
+		  #use show method of DF to avoid lenghty output
+          pd <- capture.output(show(as(pd, "DataFrame")))
+          pd <- pd[c(-1,-3)]#rm DF specific content
+          cat(pd, sep = "\n")
           cat(paste(length(keyword(object)), " keywords are stored in the ",
                     "'description' slot\n", sep = ""))
           return(invisible(NULL))
