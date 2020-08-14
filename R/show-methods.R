@@ -24,6 +24,7 @@ setMethod("show",
           pd <- pData(parameters(object))
 		  #strip AsIs for successful coersion to DF
 		  rownames(pd) <- as.character(rownames(pd))
+		  names(pd$desc) <- NULL #strip names of desc column to avoid error when print DF due to it's potential NA vals
 		  
 		  #use show method of DF to avoid lenghty output
           pd <- capture.output(show(as(pd, "DataFrame")))
