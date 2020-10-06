@@ -1474,6 +1474,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
             keyword(x)[["GUID.original"]] <- as.character(keyword(x, "GUID"))
             x
         })
+    #sub / or \,: with _ to avoid trouble later when write.flowSet
+    guids <- as.vector(gsub("[/:\\\\]", "_", guids))
     sampleNames(flowSet) <- guids
     if(!missing(name))
         identifier(flowSet) <- name
