@@ -19,6 +19,7 @@ NumericMatrix string_to_spill(string key){
 	// Rcpp::RcogetPairsut << spillover << endl;
 	NumericMatrix res(Rcpp::wrap(spillover));//can't directly convert arma::mat to NumericMatrix
 	colnames(res) = StringVector(wrap(comp.marker));
+	rownames(res) = StringVector(wrap(comp.detector));
 	// return Rcpp::List::create(spillover, comp.marker);
 	return res;
 }
