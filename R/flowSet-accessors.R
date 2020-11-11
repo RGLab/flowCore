@@ -338,9 +338,9 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' @param use.exprs logical (default: FALSE); should the \code{FUN} be applied
 #' on the \code{\link[flowCore:flowFrame-class]{flowFrame}} object or the
 #' expression values.
-#' @param \dots optional arguments to \code{FUN}.
 #' @param parallel logical (default: FALSE); should the \code{FUN} be run
 #' in parallel using future.apply (see example).
+#' @param \dots optional arguments to \code{FUN}.
 #' 
 #' @author B. Ellis
 #' @seealso \code{\link{apply}}, \code{\link{sapply}}

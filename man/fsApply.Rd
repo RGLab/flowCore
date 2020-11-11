@@ -5,7 +5,7 @@
 \alias{fsApply,flowSet,ANY}
 \title{Apply a Function over values in a flowSet}
 \usage{
-fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE)
+fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE, parallel=FALSE)
 }
 \arguments{
 \item{x}{\code{\link[flowCore:flowSet-class]{flowSet}} to be used}
@@ -45,9 +45,9 @@ fsApply(samp,summary)
 fsApply(samp,each_col,median)
 
 #Same run in parallel.
-library(future)
-plan(strategy="multiprocess", workers=4)
-fsApply(samp,each_col,median, parallel=TRUE)
+#library(future)
+#plan(strategy="multiprocess", workers=4)
+#fsApply(samp,each_col,median, parallel=TRUE)
 
 
 }
