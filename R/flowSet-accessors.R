@@ -326,7 +326,7 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' @aliases fsApply fsApply,flowSet,ANY
 #' 
 #' @usage 
-#' fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE)
+#' fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE, parallel=FALSE)
 #' 
 #' @param x \code{\link[flowCore:flowSet-class]{flowSet}} to be used
 #' @param FUN the function to be applied to each element of \code{x}
@@ -358,9 +358,9 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' fsApply(samp,each_col,median)
 #' 
 #' #Same in parallel.
-#' library(future)
-#' plan(strategy="multiprocess", workers=4)
-#' fsApply(samp,each_col,median, parallel=TRUE)
+#' #library(future)
+#' #plan(strategy="multiprocess", workers=4)
+#' #fsApply(samp,each_col,median, parallel=TRUE)
 #' 
 #' @export
 setMethod("fsApply",
@@ -374,9 +374,9 @@ setMethod("fsApply",
 			if(!is.function(FUN))
 				stop("This is not a function!")
 			if(parallel){
-			  if(!suppressWarnings(require(future.apply))) 
+			  if(!requireNamespace("future.apply", quietly = TRUE))
 			    stop("For parallelization, please install future and future.apply.")
-			  res <- structure(future_lapply(sampleNames(x),function(n) {
+			  res <- structure(future.apply::future_lapply(sampleNames(x),function(n) {
 			    y <- x[[n, returnType = "flowFrame"]]
 			    FUN(if(use.exprs) exprs(y) else y,...)
 			  }),names=sampleNames(x))} else {
