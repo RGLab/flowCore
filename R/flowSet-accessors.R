@@ -360,22 +360,30 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 setMethod("fsApply",
 		signature=signature(x="flowSet",
 				FUN="ANY"),
-		definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE)
+		definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE, parallel=FALSE)
 		{
 			if(missing(FUN))
 				stop("fsApply function missing")
 			FUN <- match.fun(FUN)
 			if(!is.function(FUN))
 				stop("This is not a function!")
-			## row.names and sampleNames had damn well better match, use this to
-			## give us access to the phenoData
-			res <- structure(lapply(sampleNames(x),function(n) {
-								#can't define coerce method for cytoframe
-								#since there is already existing implitcit coerce 
-#								 y <- as(x[[n]],"flowFrame") 
-			          y <- x[[n, returnType = "flowFrame"]]
-								FUN(if(use.exprs) exprs(y) else y,...)
-							}),names=sampleNames(x))
+			if(parallel){
+			  if(!suppressWarnings(require(future.apply))) 
+			    stop("For parallelization, please install future and future.apply.")
+			  res <- structure(future_lapply(sampleNames(x),function(n) {
+			    y <- x[[n, returnType = "flowFrame"]]
+			    FUN(if(use.exprs) exprs(y) else y,...)
+			  }),names=sampleNames(x))} else {
+			    ## row.names and sampleNames had damn well better match, use this to
+			    ## give us access to the phenoData
+			    res <- structure(lapply(sampleNames(x),function(n) {
+			      #can't define coerce method for cytoframe
+			      #since there is already existing implitcit coerce 
+			      #								 y <- as(x[[n]],"flowFrame") 
+			      y <- x[[n, returnType = "flowFrame"]]
+			      FUN(if(use.exprs) exprs(y) else y,...)
+			    }),names=sampleNames(x))  
+			  }
 			if(simplify) {
 				if(all(sapply(res,is,"flowFrame"))) {
 					res <- as(res,"flowSet")
