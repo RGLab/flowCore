@@ -175,7 +175,7 @@ setGeneric("decompensate",
 ## Generics for apply-like methods
 ## ---------------------------------------------------------------------------
 #' @export
-setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE)
+setGeneric("fsApply",function(x,FUN,...,simplify=TRUE,use.exprs=FALSE,parallel=FALSE)
            standardGeneric("fsApply"))
 
 #' Methods to apply functions over flowFrame margins
