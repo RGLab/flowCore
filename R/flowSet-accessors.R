@@ -339,6 +339,8 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' on the \code{\link[flowCore:flowFrame-class]{flowFrame}} object or the
 #' expression values.
 #' @param \dots optional arguments to \code{FUN}.
+#' @param parallel logical (default: FALSE); should the \code{FUN} be run
+#' in parallel using future.apply (see example).
 #' 
 #' @author B. Ellis
 #' @seealso \code{\link{apply}}, \code{\link{sapply}}
@@ -355,6 +357,10 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' #Obtain the median of each parameter in each frame.
 #' fsApply(samp,each_col,median)
 #' 
+#' #Same in parallel.
+#' library(future)
+#' plan(strategy="multiprocess", workers=4)
+#' fsApply(samp,each_col,median, parallel=TRUE)
 #' 
 #' @export
 setMethod("fsApply",

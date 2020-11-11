@@ -23,14 +23,15 @@ return a matrix).}
 \item{use.exprs}{logical (default: FALSE); should the \code{FUN} be applied
 on the \code{\link[flowCore:flowFrame-class]{flowFrame}} object or the
 expression values.}
+
+\item{parallel}{logical (default: FALSE); should the \code{FUN} be parallelized using future.apply (see examples).}
 }
 \description{
 \code{fsApply}, like many of the \code{apply}-style functions in R, acts as an
 iterator for \code{flowSet} objects, allowing the application of a function
 to either the \code{flowFrame} or the data matrix itself. The output can then
 be reconstructed as either a \code{flowSet}, a list, or a matrix depending on
-options and the type of objects returned.
-}
+options and the type of objects returned.}
 \examples{
 
 fcs.loc <- system.file("extdata",package="flowCore")
@@ -42,6 +43,11 @@ fsApply(samp,summary)
 
 #Obtain the median of each parameter in each frame.
 fsApply(samp,each_col,median)
+
+#Same run in parallel.
+library(future)
+plan(strategy="multiprocess", workers=4)
+fsApply(samp,each_col,median, parallel=TRUE)
 
 
 }
