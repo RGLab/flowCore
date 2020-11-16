@@ -45,6 +45,9 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
       
+      - uses: r-lib/actions/setup-tinytex@v1
+      - run: tlmgr --version
+      
       - name: set token for cytoinstaller(and remotes) to increase github API rate limit
         env:
           SUPER_SECRET: ${{ secrets.CYTOINSTALLER_TOKEN }}
