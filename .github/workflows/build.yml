@@ -11,6 +11,7 @@ on:
     branches: [ release, master ]
   pull_request:
     branches: [ release, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -47,6 +48,12 @@ jobs:
       
       - uses: r-lib/actions/setup-tinytex@v1
       - run: tlmgr --version
+      
+      - name: add more tex pkgs
+        run: |
+          install.packages('tinytex')
+          tinytex:::install_yihui_pkgs()
+        shell: Rscript {0}
       
       - name: set token for cytoinstaller(and remotes) to increase github API rate limit
         env:
