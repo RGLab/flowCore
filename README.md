@@ -2,6 +2,7 @@
 
 NEWS
 =====
+
 `spillover_match` has been added to provide simplified matching functionality between 
 single stained controls and channels using a csv file that maps filenames to channels.
 
