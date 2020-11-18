@@ -1203,5 +1203,5 @@ To further automate the process, a gating pipeline can be established through \R
 
 \clearpage
 \bibliographystyle{plainnat} 
-\bibliography{../inst/doc/cytoref}
+\bibliography{cytoref}
 \end{document}
