@@ -4027,7 +4027,7 @@ validFilterResultList <- function(fres, set, strict=TRUE)
     checkClass(fres, "filterResultList")
     checkClass(strict, "logical", 1)
     if(!missing(set)){
-        checkClass(set, "flowSet")
+        #checkClass(set, "flowSet")
         if(res <- !all(names(fres) == sampleNames(set)))
             warning("Sample names don't match between flowSet and ",
                     "filterResultList", call.=FALSE)
