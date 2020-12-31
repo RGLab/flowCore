@@ -4838,7 +4838,7 @@ estimateLogicle.flowFrame <- function(x, channels, ...){
   transformList(channels, trans)
 }
 .estimateLogicle <- function(x, channels,...){
-            if(!is(x,"flowFrame"))
+            if(!is(x,"flowFrame")&&!is(x,"cytoframe"))
                 stop("x has to be an object of class \"flowFrame\"")
             if(missing(channels))
                 stop("Please specify the channels to be logicle transformed");
