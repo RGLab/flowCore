@@ -1474,6 +1474,8 @@ read.flowSet <- function(files=NULL, path=".", pattern=NULL, phenoData=NULL,
             keyword(x)[["GUID.original"]] <- as.character(keyword(x, "GUID"))
             x
         })
+    #sub / or \,: with _ to avoid trouble later when write.flowSet
+    guids <- as.vector(gsub("[/:\\\\]", "_", guids))
     sampleNames(flowSet) <- guids
     if(!missing(name))
         identifier(flowSet) <- name
@@ -1767,8 +1769,8 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     endian <- match.arg(endian, c("little","big"))
     if(!is.character(filename) || length(filename)!=1)
         stop("Argument 'filename' has to be a character of length 1.")
-    if(!is(x, "flowFrame"))
-        stop("Argument 'x' has to be a 'flowFrame'.")
+    if(!is(x, "flowFrame")&&!is(x, "cytoframe"))
+        stop("Argument 'x' has to be a 'flowFrame' or a 'cytoframe'.")
     ## Set the mandatory keywords first
     begTxt <- 58
     types <- data.frame(symbol=c("I", "F", "D"),

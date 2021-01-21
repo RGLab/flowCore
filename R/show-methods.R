@@ -12,7 +12,7 @@
 ## flowFrame
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' @export
-
+#' @importFrom S4Vectors DataFrame
 setMethod("show",
           signature=signature(object="flowFrame"),
           definition=function(object)
@@ -21,7 +21,15 @@ setMethod("show",
           cat(paste(class(object), " object '", identifier(object),
                     "'\nwith ", nrow(object), " cells and ",
                     ncol(object), " observables:\n", sep=""))
-          show(pData(parameters(object)))
+          pd <- pData(parameters(object))
+		  #strip AsIs for successful coersion to DF
+		  rownames(pd) <- as.character(rownames(pd))
+		  names(pd$desc) <- NULL #strip names of desc column to avoid error when print DF due to it's potential NA vals
+		  
+		  #use show method of DF to avoid lenghty output
+          pd <- capture.output(show(as(pd, "DataFrame")))
+          pd <- pd[c(-1,-3)]#rm DF specific content
+          cat(pd, sep = "\n")
           cat(paste(length(keyword(object)), " keywords are stored in the ",
                     "'description' slot\n", sep = ""))
           return(invisible(NULL))
@@ -33,7 +41,7 @@ setMethod("show",
 ## flowSet
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' @export
-
+#' @importFrom S4Vectors coolcat
 setMethod("show",
           signature=signature(object="flowSet"),
           definition=function(object)
@@ -50,8 +58,8 @@ setMethod("show",
               cat("\n")
           }
         }
-          cat("  column names:\n  ")
-          cat(paste(colnames(object[[1]]),sep=","))
+
+          coolcat("column names(%d): %s\n", colnames(object[[1]]))
           cat("\n")
       })
 

@@ -243,9 +243,10 @@ creating objects using \code{new} or the constructor is discouraged.
                                      argument to \code{plot}. The smooth parameters lets you toggle
                                      between density-type
                                      \code{\link[graphics]{smoothScatter}}
-                                     plots and regular scatterplots.  For far more sophisticated
+                                     plots and regular scatterplots.  This simple method still uses the legacy
+                                     \code{\link[flowViz:flowViz-package]{flowViz}} package. For far more sophisticated
                                      plotting of flow cytometry data, see the
-                                     \code{\link[flowViz:flowViz-package]{flowViz}} package.
+                                     \code{\link[ggcyto:ggcyto]{ggcyto}} package.
                                      
                                      \emph{Usage:}
                                      

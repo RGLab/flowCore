@@ -337,3 +337,23 @@ test_that("whitespace in spillover matrix", {
   expect_equal(nrow(fr), 10)
   expect_equal(ncol(fr), 27)
 })
+
+test_that("Alternate decimal separator in spillover matrix", {
+  fr <- read.FCS(file.path(dataPath, "spillover_comma_decimal.fcs"))
+  refMat <- diag(8)
+  # This example FCS just uses the N values for the column names of this
+  # dummy spillover matrix
+  colnames(refMat) <- c(3,4,5,6,9,10,11,12)
+  expect_equal(spillover(fr)$`$SPILLOVER`, refMat)
+  # Simple checks to make sure it continued parsing fine
+  expect_equal(nrow(fr), 26053)
+  expect_equal(ncol(fr), 14)
+  
+  # This one should error out, but more gracefully with a message as opposed
+  # to a C++ memory allocation failure
+  expect_error(fr <- read.FCS(file.path(dataPath, "spillover_wrong_number.fcs")),
+               class = "std::domain_error",
+               regexp="SPILLOVER size discrepancy could not be resolved")
+  
+})
+
