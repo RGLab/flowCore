@@ -4027,7 +4027,7 @@ validFilterResultList <- function(fres, set, strict=TRUE)
     checkClass(fres, "filterResultList")
     checkClass(strict, "logical", 1)
     if(!missing(set)){
-        checkClass(set, "flowSet")
+        #checkClass(set, "flowSet")
         if(res <- !all(names(fres) == sampleNames(set)))
             warning("Sample names don't match between flowSet and ",
                     "filterResultList", call.=FALSE)
@@ -4838,7 +4838,7 @@ estimateLogicle.flowFrame <- function(x, channels, ...){
   transformList(channels, trans)
 }
 .estimateLogicle <- function(x, channels,...){
-            if(!is(x,"flowFrame"))
+            if(!is(x,"flowFrame")&&!is(x,"cytoframe"))
                 stop("x has to be an object of class \"flowFrame\"")
             if(missing(channels))
                 stop("Please specify the channels to be logicle transformed");
