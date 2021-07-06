@@ -71,13 +71,13 @@ Collate:
     FCSTransTransform.R
     median-logicle-transform.R
     utils.R
-    RcppExports.R
     flowCore.R
     GvHD.R
     CytoExploreR_wrappers.R
+    cpp11.R
 License: Artistic-2.0
 biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
-LinkingTo: Rcpp, RcppArmadillo, BH(>= 1.65.0.1), cytolib, RProtoBufLib
+LinkingTo: cpp11, BH(>= 1.65.0.1), cytolib, RProtoBufLib
 VignetteBuilder: knitr
 SystemRequirements: GNU make, C++11
 RoxygenNote: 7.1.1

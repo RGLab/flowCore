@@ -2,11 +2,9 @@
  * Gopalakrishnan N 10/14/2008
  */
 
-#include <Rcpp.h>
-
+#include "cpp11.hpp"
 #include <stdlib.h>
-using namespace Rcpp;
-
+#include <vector>
 
 void inPolytope_c(double *data, double *A, double *b, int nRowData, int nRowA, int nColA, 
                   std::vector<bool> & result) {
@@ -54,8 +52,9 @@ void inPolytope_c(double *data, double *A, double *b, int nRowData, int nRowA, i
      A:   matrix , number of columns = number of columns of data
     b: matrix with 1 column,number of rows = number of rows of A 
 ------------------------------------------------------------------*/
-//[[Rcpp::export]]
-std::vector<bool> inPolytope(NumericMatrix data, NumericMatrix A, NumericVector b)
+[[cpp11::register]] std::vector<bool> inPolytope(cpp11::doubles_matrix data,
+                                                 cpp11::doubles_matrix A,
+                                                 cpp11::doubles b)
 { 
   int nRowData = data.nrow();
   std::vector<bool> result(nRowData);   
@@ -63,8 +62,8 @@ std::vector<bool> inPolytope(NumericMatrix data, NumericMatrix A, NumericVector 
   int nColA = A.ncol(); 
 
   
-  if(b.length()!=nRowA)
-      stop("Invalid argument 'b': must be a real vector of length 'nrow(A)'."); 
+  if(b.size()!=nRowA)
+      cpp11::stop("Invalid argument 'b': must be a real vector of length 'nrow(A)'."); 
   
   inPolytope_c(REAL(data), REAL(A), REAL(b), nRowData, nRowA, nColA, result);
 

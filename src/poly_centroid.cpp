@@ -1,13 +1,11 @@
-#include <Rcpp.h>
+#include <cpp11.hpp>
 #include <stdlib.h>
-using namespace Rcpp;
 
-// [[Rcpp::export]]
-NumericVector poly_centroid(NumericMatrix verts) {
-//Improvement -- Use RcppArmadillo::det (for cross) or even better just use boost::geometry::centroid
+[[cpp11::register]] cpp11::doubles_matrix poly_centroid(
+    cpp11::doubles_matrix verts) {
   int nrv = verts.nrow();
   if(nrv < 2 || verts.ncol() != 2)
-    stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
+    cpp11::stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
   double area = 0.0, cx = 0.0, cy = 0.0, cross = 0.0;
   for(int i = 0; i < nrv; i++){
     cross = (verts(i, 0)*verts((i+1) % nrv, 1) - verts((i+1) % nrv, 0)*verts(i, 1));
@@ -17,7 +15,9 @@ NumericVector poly_centroid(NumericMatrix verts) {
   }
   cx /= (3*area);
   cy /= (3*area);
-  NumericVector centroid = NumericVector::create(cx, cy);
+  cpp11::writable::doubles_matrix centroid(1, 2);  // a 1 x 2 matrix
+  centroid(0, 0) = cx;
+  centroid(0, 1) = cy;
   return centroid;
 }
 

@@ -1,12 +1,12 @@
-/**
-  Hyperlog transformation added by Josef Spidlen.
-  This hyperlog implementation is based on Java reference 
-  implementation that is part of the full Gating-ML 2.0
-  specification. The Java reference implementation has
-  been provided by Wayne Moore, see hyperlog.notice.html
-  for details. Josef Spidlen ported it to C/CPP and 
-  integrated it with R/flowCore.
-*/
+// Copyright (c) 2021 Ozette Technologies
+// Copyright (c) 2021 Fred Hutch Cancer Center
+// Hyperlog transformation added by Josef Spidlen.
+// This hyperlog implementation is based on Java reference
+// implementation that is part of the full Gating-ML 2.0
+// specification. The Java reference implementation has
+// been provided by Wayne Moore, see hyperlog.notice.html
+// for details. Josef Spidlen ported it to C/CPP and
+// integrated it with R/flowCore.
 
 #ifdef __cplusplus
 

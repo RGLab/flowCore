@@ -6,12 +6,11 @@
  *      Author: wjiang2
  */
 
-#include <Rcpp.h>
-
+#include <cpp11.hpp>
+#include <vector>
 //#include <vector>
 
-// [[Rcpp::export]]
-std::vector<double> uint2double(std::vector<unsigned> input, bool isBigEndian){
+[[cpp11::register]] std::vector<double> uint2double(std::vector<int> input, bool isBigEndian){
 	unsigned nInput = input.size();
 	unsigned nOut = nInput/2;
 	std::vector<double> output(nOut);
