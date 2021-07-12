@@ -100,6 +100,7 @@ jobs:
         run: |
           remotes::install_cran(c("rcmdcheck", "devtools"))
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_bioc("flowStats")
           #remotes::install_github("RGLab/cytoinstaller")
           #cytoinstaller::cyto_install_deps(dependencies = TRUE)
         shell: Rscript {0}
