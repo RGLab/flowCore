@@ -326,7 +326,7 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' @aliases fsApply fsApply,flowSet,ANY
 #' 
 #' @usage 
-#' fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE)
+#' fsApply(x, FUN, \dots, simplify=TRUE, use.exprs=FALSE, parallel=FALSE)
 #' 
 #' @param x \code{\link[flowCore:flowSet-class]{flowSet}} to be used
 #' @param FUN the function to be applied to each element of \code{x}
@@ -338,6 +338,8 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' @param use.exprs logical (default: FALSE); should the \code{FUN} be applied
 #' on the \code{\link[flowCore:flowFrame-class]{flowFrame}} object or the
 #' expression values.
+#' @param parallel logical (default: FALSE); should the \code{FUN} be run
+#' in parallel using future.apply (see example).
 #' @param \dots optional arguments to \code{FUN}.
 #' 
 #' @author B. Ellis
@@ -355,27 +357,39 @@ setReplaceMethod("keyword", signature=c("flowSet", "list"),
 #' #Obtain the median of each parameter in each frame.
 #' fsApply(samp,each_col,median)
 #' 
+#' #Same in parallel.
+#' #library(future)
+#' #plan(strategy="multiprocess", workers=4)
+#' #fsApply(samp,each_col,median, parallel=TRUE)
 #' 
 #' @export
 setMethod("fsApply",
 		signature=signature(x="flowSet",
 				FUN="ANY"),
-		definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE)
+		definition=function(x,FUN,...,simplify=TRUE, use.exprs=FALSE, parallel=FALSE)
 		{
 			if(missing(FUN))
 				stop("fsApply function missing")
 			FUN <- match.fun(FUN)
 			if(!is.function(FUN))
 				stop("This is not a function!")
-			## row.names and sampleNames had damn well better match, use this to
-			## give us access to the phenoData
-			res <- structure(lapply(sampleNames(x),function(n) {
-								#can't define coerce method for cytoframe
-								#since there is already existing implitcit coerce 
-#								 y <- as(x[[n]],"flowFrame") 
-			          y <- x[[n, returnType = "flowFrame"]]
-								FUN(if(use.exprs) exprs(y) else y,...)
-							}),names=sampleNames(x))
+			if(parallel){
+			  if(!requireNamespace("future.apply", quietly = TRUE))
+			    stop("For parallelization, please install future and future.apply.")
+			  res <- structure(future.apply::future_lapply(sampleNames(x),function(n) {
+			    y <- x[[n, returnType = "flowFrame"]]
+			    FUN(if(use.exprs) exprs(y) else y,...)
+			  }),names=sampleNames(x))} else {
+			    ## row.names and sampleNames had damn well better match, use this to
+			    ## give us access to the phenoData
+			    res <- structure(lapply(sampleNames(x),function(n) {
+			      #can't define coerce method for cytoframe
+			      #since there is already existing implitcit coerce 
+			      #								 y <- as(x[[n]],"flowFrame") 
+			      y <- x[[n, returnType = "flowFrame"]]
+			      FUN(if(use.exprs) exprs(y) else y,...)
+			    }),names=sampleNames(x))  
+			  }
 			if(simplify) {
 				if(all(sapply(res,is,"flowFrame"))) {
 					res <- as(res,"flowSet")
