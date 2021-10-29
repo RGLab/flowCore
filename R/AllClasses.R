@@ -421,8 +421,8 @@ checkClass <- function(x, class, length=NULL, verbose=FALSE,
 #'     }
 #'   \item{spillover}{Extract spillover matrix from description slot if
 #'     present. It is equivalent to 
-#'     \code{keyword(x, c("spillover", "SPILL"))}
-#'     Thus will simply return a list of keywords value for "spillover" and "SPILL".
+#'     \code{keyword(x, c("spillover", "SPILL", "$SPILLOVER"))}
+#'     Thus will simply return a list of keywords value for "spillover", "SPILL" and "$SPILLOVER".
 #'     
 #'     \emph{Usage:}
 #'     
