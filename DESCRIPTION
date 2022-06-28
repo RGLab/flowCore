@@ -7,10 +7,10 @@ Authors@R: personList(person("B","Ellis", role = "aut"),
 							 person("Nolwenn", "Le Meur", role = "aut"),
 							 person("Nishant", "Gopalakrishnan", role = "aut"),
 							 person("Josef", "Spidlen", role = "aut"),
-							 person("Mike", "Jiang", role = c("aut","cre"), email = "mike@ozette.ai"),
+							 person("Mike", "Jiang", role = c("aut","cre"), email = "mike@ozette.com"),
 							 person("Greg", "Finak", role = "aut"),
 							 person("Samuel","Granjeaud", role = "ctb"))
-Maintainer: Mike Jiang <mike@ozette.ai>
+Maintainer: Mike Jiang <mike@ozette.com>
 Description: Provides S4 data structures and basic functions to deal with flow
     cytometry data.
 Depends:
