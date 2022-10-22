@@ -13,7 +13,7 @@
      vertices:   matrix with vertices
 ------------------------------------------------------------------*/
 [[cpp11::register]] std::vector<bool> inPolygon(
-    cpp11::doubles_matrix data, cpp11::doubles_matrix vertices) {
+    cpp11::doubles_matrix<> data, cpp11::doubles_matrix<> vertices) {
  
 
   int nrd = data.nrow();

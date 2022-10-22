@@ -1,8 +1,8 @@
 #include <cpp11.hpp>
 #include <stdlib.h>
 
-[[cpp11::register]] cpp11::doubles_matrix poly_centroid(
-    cpp11::doubles_matrix verts) {
+[[cpp11::register]] cpp11::doubles_matrix<> poly_centroid(
+    cpp11::doubles_matrix<> verts) {
   int nrv = verts.nrow();
   if(nrv < 2 || verts.ncol() != 2)
     cpp11::stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
@@ -15,7 +15,7 @@
   }
   cx /= (3*area);
   cy /= (3*area);
-  cpp11::writable::doubles_matrix centroid(1, 2);  // a 1 x 2 matrix
+  cpp11::writable::doubles_matrix<> centroid(1, 2);  // a 1 x 2 matrix
   centroid(0, 0) = cx;
   centroid(0, 1) = cy;
   return centroid;

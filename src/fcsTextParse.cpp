@@ -13,10 +13,10 @@
 #include <cytolib/compensation.hpp>
 using namespace std;
 using namespace cytolib;
-[[cpp11::register]] cpp11::writable::doubles_matrix string_to_spill(string key){
+[[cpp11::register]] cpp11::writable::doubles_matrix<> string_to_spill(string key){
 	compensation comp(key);
  	arma::mat spillover = comp.get_spillover_mat();
-cpp11::writable::doubles_matrix res(spillover.n_rows, spillover.n_cols);
+cpp11::writable::doubles_matrix<> res(spillover.n_rows, spillover.n_cols);
   // copy spillover matrix.
   for (auto j = 0; j < spillover.n_cols; j++) {
     for (auto i = 0; i < spillover.n_rows; i++) {
@@ -32,7 +32,7 @@ cpp11::writable::doubles_matrix res(spillover.n_rows, spillover.n_cols);
 	return res;
 }
 [[cpp11::register]] std::string spill_to_string(
-    cpp11::doubles_matrix rmat, std::vector<std::string> markers) {
+    cpp11::doubles_matrix<> rmat, std::vector<std::string> markers) {
   arma::Mat<double> mat(rmat.nrow(), rmat.ncol());
   for (auto j = 0; j < rmat.ncol(); j++) {
     for (auto i = 0; i < rmat.nrow(); i++) {

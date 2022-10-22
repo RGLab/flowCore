@@ -52,8 +52,8 @@ void inPolytope_c(double *data, double *A, double *b, int nRowData, int nRowA, i
      A:   matrix , number of columns = number of columns of data
     b: matrix with 1 column,number of rows = number of rows of A 
 ------------------------------------------------------------------*/
-[[cpp11::register]] std::vector<bool> inPolytope(cpp11::doubles_matrix data,
-                                                 cpp11::doubles_matrix A,
+[[cpp11::register]] std::vector<bool> inPolytope(cpp11::doubles_matrix<> data,
+                                                 cpp11::doubles_matrix<> A,
                                                  cpp11::doubles b)
 { 
   int nRowData = data.nrow();

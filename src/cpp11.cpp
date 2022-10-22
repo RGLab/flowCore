@@ -3,6 +3,7 @@
 
 #include "flowCore_types.h"
 #include "cpp11/declarations.hpp"
+#include <R_ext/Visibility.h>
 
 // biexponential.cpp
 std::vector<double> biexponential_transform(std::vector<double> input, double A, double B, double C, double D, double F, double W, double tol, int maxIt);
@@ -19,17 +20,17 @@ extern "C" SEXP _flowCore_convertRawBytes(SEXP bytes, SEXP isInt, SEXP colSize, 
   END_CPP11
 }
 // fcsTextParse.cpp
-cpp11::writable::doubles_matrix string_to_spill(string key);
+cpp11::writable::doubles_matrix<> string_to_spill(string key);
 extern "C" SEXP _flowCore_string_to_spill(SEXP key) {
   BEGIN_CPP11
     return cpp11::as_sexp(string_to_spill(cpp11::as_cpp<cpp11::decay_t<string>>(key)));
   END_CPP11
 }
 // fcsTextParse.cpp
-std::string spill_to_string(cpp11::doubles_matrix rmat, std::vector<std::string> markers);
+std::string spill_to_string(cpp11::doubles_matrix<> rmat, std::vector<std::string> markers);
 extern "C" SEXP _flowCore_spill_to_string(SEXP rmat, SEXP markers) {
   BEGIN_CPP11
-    return cpp11::as_sexp(spill_to_string(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(rmat), cpp11::as_cpp<cpp11::decay_t<std::vector<std::string>>>(markers)));
+    return cpp11::as_sexp(spill_to_string(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(rmat), cpp11::as_cpp<cpp11::decay_t<std::vector<std::string>>>(markers)));
   END_CPP11
 }
 // fcsTextParse.cpp
@@ -47,17 +48,17 @@ extern "C" SEXP _flowCore_hyperlog_transform(SEXP input, SEXP T, SEXP W, SEXP M,
   END_CPP11
 }
 // inPolygon.cpp
-std::vector<bool> inPolygon(cpp11::doubles_matrix data, cpp11::doubles_matrix vertices);
+std::vector<bool> inPolygon(cpp11::doubles_matrix<> data, cpp11::doubles_matrix<> vertices);
 extern "C" SEXP _flowCore_inPolygon(SEXP data, SEXP vertices) {
   BEGIN_CPP11
-    return cpp11::as_sexp(inPolygon(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(vertices)));
+    return cpp11::as_sexp(inPolygon(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vertices)));
   END_CPP11
 }
 // inPolytope.cpp
-std::vector<bool> inPolytope(cpp11::doubles_matrix data, cpp11::doubles_matrix A, cpp11::doubles b);
+std::vector<bool> inPolytope(cpp11::doubles_matrix<> data, cpp11::doubles_matrix<> A, cpp11::doubles b);
 extern "C" SEXP _flowCore_inPolytope(SEXP data, SEXP A, SEXP b) {
   BEGIN_CPP11
-    return cpp11::as_sexp(inPolytope(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(A), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(b)));
+    return cpp11::as_sexp(inPolytope(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(data), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(A), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(b)));
   END_CPP11
 }
 // logicleTransform.cpp
@@ -68,10 +69,10 @@ extern "C" SEXP _flowCore_logicle_transform(SEXP input, SEXP T, SEXP W, SEXP M, 
   END_CPP11
 }
 // poly_centroid.cpp
-cpp11::doubles_matrix poly_centroid(cpp11::doubles_matrix verts);
+cpp11::doubles_matrix<> poly_centroid(cpp11::doubles_matrix<> verts);
 extern "C" SEXP _flowCore_poly_centroid(SEXP verts) {
   BEGIN_CPP11
-    return cpp11::as_sexp(poly_centroid(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix>>(verts)));
+    return cpp11::as_sexp(poly_centroid(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(verts)));
   END_CPP11
 }
 // sortBytes.cpp
@@ -90,20 +91,6 @@ extern "C" SEXP _flowCore_uint2double(SEXP input, SEXP isBigEndian) {
 }
 
 extern "C" {
-/* .Call calls */
-extern SEXP _flowCore_biexponential_transform(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowCore_convertRawBytes(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowCore_fcsTextParse(SEXP, SEXP);
-extern SEXP _flowCore_hyperlog_transform(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowCore_inPolygon(SEXP, SEXP);
-extern SEXP _flowCore_inPolytope(SEXP, SEXP, SEXP);
-extern SEXP _flowCore_logicle_transform(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _flowCore_poly_centroid(SEXP);
-extern SEXP _flowCore_sortBytes(SEXP, SEXP);
-extern SEXP _flowCore_spill_to_string(SEXP, SEXP);
-extern SEXP _flowCore_string_to_spill(SEXP);
-extern SEXP _flowCore_uint2double(SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_flowCore_biexponential_transform", (DL_FUNC) &_flowCore_biexponential_transform, 9},
     {"_flowCore_convertRawBytes",         (DL_FUNC) &_flowCore_convertRawBytes,         5},
@@ -121,7 +108,7 @@ static const R_CallMethodDef CallEntries[] = {
 };
 }
 
-extern "C" void R_init_flowCore(DllInfo* dll){
+extern "C" attribute_visible void R_init_flowCore(DllInfo* dll){
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
   R_forceSymbols(dll, TRUE);
