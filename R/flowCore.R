@@ -20,7 +20,6 @@
 #' 
 #' @useDynLib flowCore, .registration=TRUE 
 #' @import methods
-#' @import Rcpp
 #' @importFrom matrixStats colMins colMaxs
 #' @importClassesFrom Biobase AnnotatedDataFrame
 #' @importFrom grDevices devAskNewPage

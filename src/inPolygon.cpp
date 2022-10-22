@@ -1,11 +1,9 @@
 /*
  * F. Hahne  12/10/2005
  */
-#include <Rcpp.h>
+#include "cpp11.hpp"
 
 #include <cytolib/in_polygon.hpp>
-
-using namespace Rcpp;
 
 
 
@@ -14,10 +12,10 @@ using namespace Rcpp;
      data :    matrix of numerics
      vertices:   matrix with vertices
 ------------------------------------------------------------------*/
-//[[Rcpp::export]]
-std::vector<bool> inPolygon(NumericMatrix data, NumericMatrix vertices)
-{ 
-  
+[[cpp11::register]] std::vector<bool> inPolygon(
+    cpp11::doubles_matrix data, cpp11::doubles_matrix vertices) {
+ 
+
   int nrd = data.nrow();
   int nrv = vertices.nrow();
   
@@ -30,17 +28,17 @@ std::vector<bool> inPolygon(NumericMatrix data, NumericMatrix vertices)
   {
     
     if(data.ncol() != 2)
-      stop("Argument 'points' must be numeric matrix of two columns and at least\none row specifiying points on a two-dimensional plane");
+      cpp11::stop("Argument 'points' must be numeric matrix of two columns and at least\none row specifiying points on a two-dimensional plane");
 
     if(nrv < 2 || vertices.ncol() != 2)
-      stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
+      cpp11::stop("Argument 'vertices' must be numeric matrix of two columns and at least\ntwo rows specifying vertices of a polygon on a two-dimensional plane");
 
      /* Do it! */
     vector<cytolib::CYTO_POINT> points(nrv);
     for(int i = 0; i < nrv; i++)
     {
-    	points[i].x = vertices[i];
-    	points[i].y = vertices[i + nrv];
+      points[i].x = vertices(i, 0);  // vertices must have two columns
+      points[i].y = vertices(i, 1);
     }
     double * xdata = REAL(data);
     double * ydata = xdata + nrd;

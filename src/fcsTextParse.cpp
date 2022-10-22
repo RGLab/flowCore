@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Ozette Technologies
 /*
  * readFCS.cpp
  *
@@ -7,32 +8,45 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include "pairVectorRcppWrap.h"
-
+#include "cpp11.hpp"
+#include <iostream>
+#include <cytolib/compensation.hpp>
 using namespace std;
-// [[Rcpp::export]]
-NumericMatrix string_to_spill(string key){
+using namespace cytolib;
+[[cpp11::register]] cpp11::writable::doubles_matrix string_to_spill(string key){
 	compensation comp(key);
-  // Rcout << comp.marker.size() << endl;
-  // Rcout << comp.spillOver.size() << endl;
-	arma::mat spillover = comp.get_spillover_mat();
-	// Rcpp::RcogetPairsut << spillover << endl;
-	NumericMatrix res(Rcpp::wrap(spillover));//can't directly convert arma::mat to NumericMatrix
-	colnames(res) = StringVector(wrap(comp.marker));
-	// return Rcpp::List::create(spillover, comp.marker);
+ 	arma::mat spillover = comp.get_spillover_mat();
+cpp11::writable::doubles_matrix res(spillover.n_rows, spillover.n_cols);
+  // copy spillover matrix.
+  for (auto j = 0; j < spillover.n_cols; j++) {
+    for (auto i = 0; i < spillover.n_rows; i++) {
+      res(i, j) = spillover(i, j);
+    }
+  }
+  
+  cpp11::writable::strings markers(comp.marker);
+  cpp11::writable::list_of<cpp11::writable::strings> mydims(
+      {R_NilValue, markers});
+  Rf_setAttrib(cpp11::as_sexp(res), cpp11::as_sexp({"dimnames"}),
+               cpp11::as_sexp(mydims));
 	return res;
 }
-// [[Rcpp::export]]
-string spill_to_string(const arma::Mat<double> & mat, vector<string> markers){
-  
+[[cpp11::register]] std::string spill_to_string(
+    cpp11::doubles_matrix rmat, std::vector<std::string> markers) {
+  arma::Mat<double> mat(rmat.nrow(), rmat.ncol());
+  for (auto j = 0; j < rmat.ncol(); j++) {
+    for (auto i = 0; i < rmat.nrow(); i++) {
+      mat(i, j) = rmat(i, j);
+    }
+  }
 	compensation comp(mat, markers);
 	return comp.to_string();
 
 }
-// [[Rcpp::plugins(myRegEx)]]
-// [[Rcpp::depends(BH)]]
-// [[Rcpp::export]]
-myPairs fcsTextParse(std::string txt, bool emptyValue){
+
+[[cpp11::register]] cpp11::sexp fcsTextParse(std::string txt, bool emptyValue){
+typedef std::pair<std::string, std::string> myPair;
+typedef std::vector<myPair> myPairs;
 
 		myPairs pairs;
 
@@ -64,7 +78,7 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 				break;
 		}
 		if(oddChar == (unsigned char) 256)
-			Rcpp::stop("Can't find the unused odd character from ASCII(127-255) in FSC TEXT section!");
+			cpp11::stop("Can't find the unused odd character from ASCII(127-255) in FSC TEXT section!");
 
 		std::string soddChar;
 		soddChar.push_back(oddChar);
@@ -96,7 +110,6 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 			if((i)%2 == 1)
 			{
 				if(token.empty())
-					// Rcpp::stop (temporarily switch from stop to range_error due to a bug in Rcpp 0.12.8)
 					throw std::range_error("Empty keyword name detected!If it is due to the double delimiters in keyword value, please set emptyValue to FALSE and try again!");
 				kw.first = token;//set key
 			}
@@ -114,11 +127,26 @@ myPairs fcsTextParse(std::string txt, bool emptyValue){
 		 if(j%2 == 1){
 			 std::string serror = "uneven number of tokens: ";
 		     serror.append(boost::lexical_cast<std::string>(j));
-		     Rcpp::Rcout << serror << std::endl;
-			 Rcpp::Rcout << "The last keyword is dropped." << std::endl;
+		     serror.append("\n");
+  			  Rprintf(serror.data());
+			    Rprintf("The last keyword is dropped.\n");
+
 		 }
 
 
 
-		return(pairs);
+		// Convert pairs to a named vector, which is what R expects.
+  cpp11::writable::strings returned_named_vector(pairs.size());
+  std::vector<std::string> keys(pairs.size());
+  try {
+    for (int i = 0; i < pairs.size(); i++) {
+      keys[i] = pairs[i].first;
+      returned_named_vector[i] = pairs[i].second;
+    }
+    returned_named_vector.names() = keys;
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << '\n';
+  }
+  return (returned_named_vector);
+
 }

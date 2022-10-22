@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Ozette Technologies
 /*
 Header file added to flowCore by John Ramey
 The `R_zeroin` function used to be and is no longer apart of the R API.

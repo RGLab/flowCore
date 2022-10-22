@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Ozette Technologies
 #include "logicle.h"
 #include <memory.h>
 #include <cmath>

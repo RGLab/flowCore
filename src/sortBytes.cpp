@@ -1,29 +1,26 @@
-#include <Rcpp.h>
+#include <cpp11.hpp>
 #include "convertRawBytes.h"
-// [[Rcpp::plugins("cpp11")]]
 
 /*
  * sort each element based on the byte order
  * The input is from readBin call
  */
-// [[Rcpp::export]]
-BYTES sortBytes(BYTES bytes, std::vector<unsigned short> byte_order)
+[[cpp11::register]] cpp11::raws sortBytes(cpp11::raws bytes,
+                                         cpp11::doubles byte_order) 
 {
 
   
-  unsigned elementSize = byte_order.size();
-  unsigned nTotalBytes = bytes.size();
+  int elementSize = byte_order.size();
+  int nTotalBytes = bytes.size();
   //how many element to return
-  unsigned nElement = nTotalBytes / elementSize ;
-  BYTES output(nTotalBytes);
-  for(unsigned ind = 0; ind < nElement; ind++){
-    for(unsigned i = 0; i < elementSize; i++){
+  int nElement = nTotalBytes / elementSize ;
+  cpp11::writable::raws output(nTotalBytes);
+  for(int ind = 0; ind < nElement; ind++){
+    for(int i = 0; i < elementSize; i++){
       auto j = byte_order.at(i);
       
-      auto pos_old = ind * elementSize + i;
-      auto pos_new = ind * elementSize + j;
-//       if(ind<=10)
-//         Rcpp::Rcout << pos_old <<":" << pos_new << std::endl;
+      int pos_old = ind * elementSize + i;
+      int pos_new = ind * elementSize + j;
       output.at(pos_new) = bytes.at(pos_old);;
     }
 

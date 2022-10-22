@@ -9,7 +9,6 @@
 #define FLOWCORE_TYPES_H_
 
 
-#include "pairVectorRcppWrap.h"
 #include "convertRawBytes.h"
 #include <cytolib/in_polygon.hpp>
 

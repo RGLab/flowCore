@@ -1,12 +1,4 @@
-/**
-  Hyperlog transformation added by Josef Spidlen.
-  This hyperlog implementation is based on Java reference 
-  implementation that is part of the full Gating-ML 2.0
-  specification. The Java reference implementation has
-  been provided by Wayne Moore, see hyperlog.notice.html
-  for details. Josef Spidlen ported it to C/CPP and 
-  integrated it with R/flowCore.
-*/
+
 
 #include "hyperlog.h"
 #include "zeroin.h"
@@ -52,13 +44,13 @@ const char * Hyperlog::Exception::message () const
 Hyperlog::IllegalArgument::IllegalArgument (double value)
 {
     buffer = new char[128];
-    sprintf(buffer, "Illegal argument value %.17g", value);
+    snprintf(buffer, sizeof(buffer), "Illegal argument value %.17g", value);
 }
 
 Hyperlog::IllegalArgument::IllegalArgument (int value)
 {
     buffer = new char[128];
-    sprintf(buffer, "Illegal argument value %d", value);
+    snprintf(buffer, sizeof(buffer), "Illegal argument value %d", value);
 }
 
 Hyperlog::IllegalParameter::IllegalParameter (const char * const message) : Exception(message)
