@@ -1,6 +1,7 @@
-#include <Rcpp.h>
+// Copyright (c) 2021 Ozette Technologies
 #include "convertRawBytes.h"
-
+#include <string>
+#include "cpp11.hpp"
 template <class T>
 T convertRaw_impl(const BYTES & src, unsigned short thisSize, bool isBigEndian, unsigned thisStart, unsigned thisEnd)
 {
@@ -13,9 +14,6 @@ T convertRaw_impl(const BYTES & src, unsigned short thisSize, bool isBigEndian, 
       tmp.at(k % thisSize) = src.at(k);
     std::reverse(tmp.begin(),tmp.end());
 
-    //         for(auto byte : tmp)
-    //           Rcpp::Rcout << std::hex << int(byte);
-    //         Rcpp::Rcout << std::endl;
 
     memcpy(&dest, &tmp.at(0), thisSize);
   }
@@ -28,56 +26,46 @@ T convertRaw_impl(const BYTES & src, unsigned short thisSize, bool isBigEndian, 
 }
 
 
-// [[Rcpp::plugins("cpp11")]]
 
 /*
  * convert the raw vector to the respective type with the data that has different colSize across parameters
  * The input is from readBin call
  */
-// [[Rcpp::export]]
-std::vector<double> convertRawBytes( BYTES bytes, bool isInt, std::vector<unsigned short> colSize
-                    , unsigned short ncol, bool isBigEndian)
-{
-
-  if(colSize.size()!=ncol)
+[[cpp11::register]] cpp11::sexp convertRawBytes(
+   std::vector<unsigned char> bytes, bool isInt, cpp11::integers colSize,
+   int ncol, bool isBigEndian) {
+ if (static_cast<std::size_t>(colSize.size()) !=
+     static_cast<std::size_t>(ncol))
     throw std::range_error("The length of 'colSize' vector does not match to 'ncol'!");
 
-  unsigned nBytes = bytes.size();
+  int nBytes = bytes.size();
   //total bytes for each row
-  unsigned short nRowSize = 0;
+  int nRowSize = 0;
   for(auto size : colSize)
     nRowSize+=size;
   //how many rows
-  unsigned nrow = nBytes/nRowSize;
+  int nrow = nBytes/nRowSize;
   //how many element to return
-  auto nElement = nrow * ncol;
+  int nElement = nrow * ncol;
   //for the simplicity, we always convert the data to double regardless of datatype
   //because we need to do this anyway when datatype uint32
-  std::vector<double> output(nElement);
+  cpp11::writable::doubles output(nElement);
 
-  auto pos = 0;
-  // Rcpp::Rcout << "event=" << nrow << " ncol=" << ncol << std::endl;
+  int pos = 0;
 
-  for(unsigned i = 0; i < nrow; i++){
+  for(int i = 0; i < nrow; i++){
 
-    for(unsigned j = 0; j < ncol; j++){
+    for(int j = 0; j < ncol; j++){
       //convert each element
-      auto thisStart = pos;
-      auto thisSize = colSize.at(j);
+      int thisStart = pos;
+      int thisSize = colSize.at(j);
 
       if(thisSize != 1 && thisSize != 2 && thisSize !=  4 && thisSize !=  8)
         throw std::range_error("Multiple different odd bitwidths are not supported!");
 
-      auto thisEnd = pos + thisSize - 1;
-      auto ind = i * ncol + j;
+      int thisEnd = pos + thisSize - 1;
+      int ind = i * ncol + j;
 
-      // Rcpp::Rcout << "start="  << thisStart << " " << "end=" << thisEnd << " " << "index=" << ind << std::endl;
-      // Rcpp::Rcout << "bytes" << std::endl;
-
-//       for(auto k = thisStart; k <= thisEnd; k++)
-//         Rcpp::Rcout << std::hex << int(bytes.at(k));
-//       Rcpp::Rcout << std::endl;
-      // Rcpp::Rcout << std::to_string(thisSize) << std::endl;
       if(isInt){
         switch(thisSize)
         {

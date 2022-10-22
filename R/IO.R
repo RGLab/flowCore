@@ -1126,7 +1126,6 @@ readFCSdata <- function(con, offsets, x, transformation, which.lines,
 	      # browser()
 	      if(dattype == "numeric" && length(unique(size)) > 1)
 	        stop("we don't support different bitwdiths for numeric data type!")
-	      dat <- convertRawBytes(bytes, isInt = dattype == "integer", colSize = size, ncol = nrpar, isBigEndian = endian == "big")
 	    } else {
 	      dat <-
           .readFCSdataRawMultiple(

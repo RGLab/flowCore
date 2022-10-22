@@ -1,4 +1,7 @@
-#include <Rcpp.h>
+// Copyright (c) 2021 Ozette Technologies
+#include <cpp11.hpp>
+#include <vector>
+
 #include <R_ext/Applic.h>
 #include "zeroin.h"
 
@@ -33,8 +36,7 @@ S(x,a,b,c,d,f) = ae^(bx) -ce^(-dx) +f  instead of the logicle function
 it was calculating earlier
 */
 
-//[[Rcpp::export]]
-std::vector<double> biexponential_transform(std::vector<double> input,double A,double B,double C,double D,double F,double W,double tol,int maxIt) {
+[[cpp11::register]] std::vector<double> biexponential_transform(std::vector<double> input,double A,double B,double C,double D,double F,double W,double tol,int maxIt) {
 
 	struct biexponential_info params;
 	
@@ -65,7 +67,7 @@ std::vector<double> biexponential_transform(std::vector<double> input,double A,d
 		}
         }
 	if(fail>0)
-		Rcpp::warning("%d values of %d have not converged.",fail,nLen);
+		Rf_warning("%d values of %d have not converged.",fail,nLen);
 
 	return input;
 }

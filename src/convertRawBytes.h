@@ -7,7 +7,7 @@
 
 #ifndef CONVERTRAWBYTES_H_
 #define CONVERTRAWBYTES_H_
-
+#include <vector>
 typedef unsigned char BYTE;
 typedef std::vector<BYTE> BYTES;
 

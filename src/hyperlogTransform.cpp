@@ -8,17 +8,16 @@
   integrated it with R/flowCore.
 */
 
-#include <Rcpp.h>
+#include "cpp11.hpp"
 #include "hyperlog.h"
-
+#include <vector>
 
 /**
  * Hyperlog tranform/inverse transform wrapper function, makes use of the Hyperlog
  * class adapted from Wayne Moore's Java Hyperlog implementation for the underlying
  * calculation of the transformation.
  **/
-//[[Rcpp::export]]
-std::vector<double> hyperlog_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
+[[cpp11::register]] std::vector<double> hyperlog_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
 	unsigned nLen = input.size();
 
 	    try{
@@ -33,7 +32,7 @@ std::vector<double> hyperlog_transform(std::vector<double> input, double T, doub
 	    catch(const char * str){
 	      std::string tmp= "Hyperlog Exception: ";
 
-	    	Rcpp::stop(tmp.append(str));
+	    	cpp11::stop(tmp.append(str));
 	    }
 
         return(input);

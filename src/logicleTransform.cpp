@@ -1,14 +1,14 @@
 //#include <iostream>
 #include "logicle.h"
-#include <Rcpp.h>
+#include "cpp11.hpp"
+#include <vector>
 using namespace std;
 /**
  * Logicle tranform/inverse transform wrapper function, makes use of the Logicle
  *  class provided Wayne Moore for the underlying calculation of the transformation.
  *
  * */
-//[[Rcpp::export]]
-std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
+[[cpp11::register]] std::vector<double> logicle_transform(std::vector<double> input, double T, double W, double M, double A, bool isInverse) {
 
 	unsigned nLen = input.size();
 
@@ -27,7 +27,7 @@ std::vector<double> logicle_transform(std::vector<double> input, double T, doubl
     catch(const char * str){
       std::string tmp= "Logicle Exception: ";
       tmp += "T = " + to_string(T) + ", W = " + to_string(W) + ", M = " + to_string(M) + ", A = " + to_string(A) + "\n";
-    	Rcpp::stop(tmp.append(str));
+    	cpp11::stop(tmp.append(str));
     }
 
 
