@@ -4,7 +4,7 @@
 \alias{write.FCS}
 \title{Write an FCS file}
 \usage{
-write.FCS(x, filename, what="numeric", delimiter = "|", endian="big")
+write.FCS(x, filename, what="numeric", delimiter = "|", endian="big", FCSversion = NULL)
 }
 \arguments{
 \item{x}{A \code{\link[flowCore:flowFrame-class]{flowFrame}}.}

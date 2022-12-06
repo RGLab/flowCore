@@ -1734,7 +1734,7 @@ collapse_desc <- function(d, collapse.spill = TRUE)
 #' @aliases write.FCS
 #' 
 #' @usage 
-#' write.FCS(x, filename, what="numeric", delimiter = "|", endian="big")
+#' write.FCS(x, filename, what="numeric", delimiter = "|", endian="big", FCSversion = NULL)
 #' 
 #' @param x A \code{\link[flowCore:flowFrame-class]{flowFrame}}.
 #' @param filename A character scalar giving the output file name.
@@ -1777,8 +1777,7 @@ collapse_desc <- function(d, collapse.spill = TRUE)
 #' 
 #' @export
 write.FCS <- function(x, filename, what="numeric", 
-                      delimiter = "|", endian = "big",
-                      FCSversion = NULL)
+                      delimiter = "|", endian = "big",  FCSversion = NULL)
 {
   # warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
