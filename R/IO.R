@@ -1590,17 +1590,22 @@ cleanup <- function() if(file.exists(".flowCoreNcdf"))
 ## ==========================================================================
 ## write new FCS file header
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-writeFCSheader <- function(con, offsets, version = c("3.0", "3.1"))
+writeFCSheader <- function(con, offsets, version = c("3.0", "3.1","3", "2"))
 {
     fcsv <- match.arg(version)
     seek(con, 0)
-    if(fcsv == "3.0"){
+    if(fcsv == "3.0" | fcsv == "3"){
       writeChar("FCS3.0    ", con, eos=NULL)
     }else{
       if(fcsv == "3.1"){
         writeChar("FCS3.1    ", con, eos=NULL)
       }else{
-        stop("Unsupported FCS version selected - choose either 3.0 or 3.1.")
+        if(fcsv == "2"){
+          writeChar("FCS2.0    ", con, eos=NULL)
+        }else{
+          stop("Unsupported FCS version selected - choose either 2,3, 3.0 or 3.1.")
+        }
+        
       }
     }
     
@@ -1784,12 +1789,17 @@ write.FCS <- function(x, filename, what="numeric",
 #        if(!length(grep(".", filename, fixed=TRUE)))
 #            filename <- paste(filename, "fcs", sep=".")
     }
-  if(is.null(FCSversion)){
-    if(!is.null(x@description$FCSversion)){
+  if(is.null(FCSversion) & inherits(x,"flowFrame")){
+    if(!is.null(x@description$FCSversion) ){
       FCSversion <- x@description$FCSversion
     }else{
-      stop("FCSversion is NULL and could not be inferred from flowFrame description.")
+      # stop("FCSversion is NULL and could not be inferred from flowFrame description.")
+      # for compatibility with flowFrame constructor
+      FCSversion <- "3"
     }
+  }else{
+    # for compatibility with raw numeric matrices in flowFrame constructor
+    FCSversion <- "3"
   }  
   
   what <- match.arg(what, c("integer", "numeric", "double"))
