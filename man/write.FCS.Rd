@@ -22,7 +22,15 @@ Default is : "|"}
 
 \item{endian}{a character, either "little" or "big" (default), specifying
 the most significant or least significant byte is stored first in a 32 bit
-word.}
+word. For FCS 3.1 this is automatically inferred from the $BYTEORD keyword
+in the flowFrame description, if present.}
+
+\item{FCSversion}{FCS version (3.0 or 3.1 to which to write the flowFrame). 
+Defaults to NULL, meaning that the FCSversion will be read from the 
+FCSversion tag in the flowFrame x description. If not present and NULL and 
+error will be thrown. Explicitly specifying the FCS version will not result
+in a conversion from the value specified in the flowFrame x description, but
+rather serves as a sanity check.}
 }
 \value{
 A character vector of the file name.
@@ -31,11 +39,11 @@ A character vector of the file name.
 Write FCS file from a flowFrame
 }
 \details{
-The function \code{write.FCS} creates FCS 3.0 standard file from an object
-of class \code{flowFrame}.
+The function \code{write.FCS} creates FCS 3.0 or FCS 3.1 standard file from 
+an object of class \code{flowFrame} or \code{cytoframe}.
 
-For specifications of FCS 3.0 see \url{http://www.isac-net.org} and the file
-\url{../doc/fcs3.html} in the \code{doc} directory of the package.
+For specifications of FCS 3.0 and 3.1 see \url{http://www.isac-net.org} and 
+the file \url{../doc/fcs3.html} in the \code{doc} directory of the package.
 }
 \examples{
 

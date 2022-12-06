@@ -1590,10 +1590,20 @@ cleanup <- function() if(file.exists(".flowCoreNcdf"))
 ## ==========================================================================
 ## write new FCS file header
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-writeFCSheader <- function(con, offsets)
+writeFCSheader <- function(con, offsets, version = c("3.0", "3.1"))
 {
+    fcsv <- match.arg(version)
     seek(con, 0)
-    writeChar("FCS3.0    ", con, eos=NULL)
+    if(fcsv == "3.0"){
+      writeChar("FCS3.0    ", con, eos=NULL)
+    }else{
+      if(fcsv == "3.1"){
+        writeChar("FCS3.1    ", con, eos=NULL)
+      }else{
+        stop("Unsupported FCS version selected - choose either 3.0 or 3.1.")
+      }
+    }
+    
     len <- length(offsets)/2
     for (i in seq_len(len)) {
         indx <- 2*(i-1) +1;
@@ -1709,11 +1719,11 @@ collapse_desc <- function(d, collapse.spill = TRUE)
 #' Write FCS file from a flowFrame
 #' 
 #' 
-#' The function \code{write.FCS} creates FCS 3.0 standard file from an object
-#' of class \code{flowFrame}.
+#' The function \code{write.FCS} creates FCS 3.0 or FCS 3.1 standard file from 
+#' an object of class \code{flowFrame} or \code{cytoframe}.
 #' 
-#' For specifications of FCS 3.0 see \url{http://www.isac-net.org} and the file
-#' \url{../doc/fcs3.html} in the \code{doc} directory of the package.
+#' For specifications of FCS 3.0 and 3.1 see \url{http://www.isac-net.org} and 
+#' the file \url{../doc/fcs3.html} in the \code{doc} directory of the package.
 #' 
 #' @name write.FCS
 #' @aliases write.FCS
@@ -1732,7 +1742,14 @@ collapse_desc <- function(d, collapse.spill = TRUE)
 #' Default is : "|"
 #' @param endian a character, either "little" or "big" (default), specifying
 #' the most significant or least significant byte is stored first in a 32 bit
-#' word.
+#' word. For FCS 3.1 this is automatically inferred from the $BYTEORD keyword
+#' in the flowFrame description, if present. 
+#' @param FCSversion FCS version (3.0 or 3.1 to which to write the flowFrame). 
+#' Defaults to NULL, meaning that the FCSversion will be read from the 
+#' FCSversion tag in the flowFrame x description. If not present and NULL and 
+#' error will be thrown. Explicitly specifying the FCS version will not result
+#' in a conversion from the value specified in the flowFrame x description, but
+#' rather serves as a sanity check. 
 #' 
 #' @return
 #' 
@@ -1754,7 +1771,9 @@ collapse_desc <- function(d, collapse.spill = TRUE)
 #' 
 #' 
 #' @export
-write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "big")
+write.FCS <- function(x, filename, what="numeric", 
+                      delimiter = "|", endian = "big",
+                      FCSversion = NULL)
 {
   # warning("'write.FCS' is not fully tested and should be considered as experimental.")
     ## Some sanity checking up front
@@ -1765,8 +1784,33 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
 #        if(!length(grep(".", filename, fixed=TRUE)))
 #            filename <- paste(filename, "fcs", sep=".")
     }
-    what <- match.arg(what, c("integer", "numeric", "double"))
+  if(is.null(FCSversion)){
+    if(!is.null(x@description$FCSversion)){
+      FCSversion <- x@description$FCSversion
+    }else{
+      stop("FCSversion is NULL and could not be inferred from flowFrame description.")
+    }
+  }  
+  
+  what <- match.arg(what, c("integer", "numeric", "double"))
+  
+  if(FCSversion == "3.1"){
+    endian <- if(x@description$`$BYTEORD` == "1,2,3,4"){
+      "little"
+      }else{
+        if(x@description$`$BYTEORD` == "4,3,2,1"){
+          "big"
+        }else{
+          stop("Unsupported endianness specified in description BYTEORD")
+        }
+      }
+  }else{
     endian <- match.arg(endian, c("little","big"))
+  }
+  
+    
+    
+    
     if(!is.character(filename) || length(filename)!=1)
         stop("Argument 'filename' has to be a character of length 1.")
     if(!is(x, "flowFrame")&&!is(x, "cytoframe"))
@@ -1790,7 +1834,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
                "$NEXTDATA"="0",
                "$PAR"=ncol(x),
                "$TOT"=nrow(x),
-               "FCSversion"="3")
+               "FCSversion"=FCSversion)
     orig.kw <- keyword(x)
     
     npar <- ncol(x)
@@ -1803,7 +1847,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     mk <- c(mk, pnb)
     old.kn <- paste0(pid, "B")
     
-#	browser()
+
     ## We need all PnE keywords and assume "0,0" if they are missing
     old.kn <- paste0(pid, "E")
     pne <- orig.kw[old.kn]
@@ -1825,6 +1869,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     mk <- c(mk, pnr)
     
     ## Now update the PnN keyword
+    # in FCS 3.1 this no longer has mandatory values, except for TIME
     pnn <- colnames(x)
     names(pnn) <- sprintf("$P%sN", newid)
     mk <- c(mk, pnn)
@@ -1841,12 +1886,14 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     old.kn <- paste0("^\\$P[0-9]+[BERNS]")
     orig.kw[grepl(old.kn, names(orig.kw))] <- NULL
     
-    # Must correct keys for the case that fr was subsetted by bumping them down to be consecutive (like newid)
-    # this is for non-standard keys such as flowCore$PnX since standard keys($P[0-9]+[BERNS]) is/will be taken care of by mk
+    # Must correct keys for the case that fr was subsetted by bumping them down 
+    # to be consecutive (like newid) this is for non-standard keys such as 
+    # flowCore$PnX since standard keys($P[0-9]+[BERNS]) is/will be taken care 
+    # of by mk
    
-     #TODO: rm unsed extra non-stand $P keys first
+    #TODO: rm unused extra non-stand $P keys first 
     
-     # bump indices on remaining keys down to their new values
+    # bump indices on remaining keys down to their new values
     knames <- names(orig.kw)
 
     new_names <- NULL
@@ -1879,7 +1926,10 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     
     #try to update the Txt with actual BEGINDATA and  ENDDATA values
     kw.len.old <- 2 #two initial '0' s
-    endTxt <- nchar(ctxt, "bytes") + begTxt - 1#must use type = "bytes" as txt could contain special character(e.g. German umlauts) that results in multi-byte write by writeChar
+    endTxt <- nchar(ctxt, "bytes") + begTxt - 1 
+    # must use type = "bytes" as txt could contain special character(e.g. German 
+    # umlauts) that results in multi-byte write by writeChar
+    
     repeat#keep updating txt until its length stop increasing 
     {
       #compute the offsets based on endTxt
@@ -1908,7 +1958,7 @@ write.FCS <- function(x, filename, what="numeric", delimiter = "|", endian = "bi
     ## Write out to file
     con <- file(filename, open="wb")
     on.exit(close(con))
-    writeFCSheader(con, offsets)
+    writeFCSheader(con, offsets, version=FCSversion)
     writeChar(ctxt, con, eos=NULL)
     
     # Break writes of data in to 2^30 bytes, to stay under 
