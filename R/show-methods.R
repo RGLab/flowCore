@@ -118,6 +118,22 @@ setMethod("show",
                         object@name, "'\n", sep=""))
       })
 
+## ==========================================================================
+## multiRangeGate
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#' @export
+setMethod("show",
+          signature=signature(object="multiRangeGate"),
+          definition=function(object)
+          {
+            parms <- as.character(parameters(object))
+            cat("MultiRange gate '", identifier(object),
+                "' with dimensions: '", sep="")
+            cat(parms[1],"'\n")
+            cat(" and ",length(object@ranges[[1]])," ranges ",sep="")
+            cat(" spanning ",min(object@ranges[["min"]]), " to ",max(object@ranges[["max"]]),'\n',sep="")
+          }
+)
 
 
 ## ==========================================================================

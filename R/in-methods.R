@@ -88,6 +88,38 @@ setMethod("%in%",
                  levels=lev)
       })
 
+## ==========================================================================
+## multiRangeGate -- as a logical filter, this returns a logical vector.
+## We only allow filtering for the case of min boundary < max boundary for all 
+## boundary pairs for the Time channel. The filter evaluation uses 'cut' for efficiency
+## reasons.
+## ---------------------------------------------------------------------------
+#' @export
+setMethod("%in%",
+          signature=signature(x="flowFrame",table="multiRangeGate"),
+          definition=function(x, table)
+          {
+            parameters=unlist(parameters(table))
+            e <- exprs(x)[,parameters, drop=FALSE]
+            tmp <- sapply(seq(along=table@ranges[["min"]]),
+                          function(i){
+                            if(table@ranges[["min"]][i] < table@ranges[["max"]][i]){
+                              !is.na(cut(e[, parameters],
+                                         c(table@ranges[["min"]][i],table@ranges[["max"]][i]),
+                                         labels=FALSE,
+                                         include.lowest = TRUE,
+                                         right=FALSE
+                              ))
+                            }else{
+                              rep(FALSE, nrow(e))
+                            }})
+            if(nrow(e)){
+              dim(tmp) <- c(nrow(e), length(table@ranges[["min"]]))
+              apply(tmp, 1, any)
+            }else{
+              return(FALSE)
+            }
+          })
 
 
 ## ==========================================================================
