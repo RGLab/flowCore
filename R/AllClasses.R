@@ -5876,6 +5876,44 @@ unitytransform <- function(parameters,
         transformationId=transformationId)
 }
 
+#' Multirange Gate class
+#' @name multiRangeGate-class
+#' @aliases multiRangeGate-class multiRangeGate summary,multiRangeGate-method
+#' show,multiRangeGate-method
+#' @docType class
+#'
+#'
+#' @usage multiRangeGate(ranges, filterId="defaultMultiRangeGate")
+#'
+#' @param filterId An optional parameter that sets the \code{filterId} of this
+#' gate. The object can later be identified by this name.
+#' @param ranges A definition of the gate. This can be a list of min,max ranges
+#' (see the prototype).
+#' @return
+#'
+#' Returns a \code{\link{multiRangeGate}} object for use in filtering
+#' \code{\link{flowFrame}}s or other flow cytometry objects.
+#'@export
+setClass("multiRangeGate", slots=c(filterId="character",ranges="list"),
+         prototype=list(filterId="defaultMultiRangeGate", ranges=list(min=c(-Inf,1),max=c(1,Inf)),parameters=new("parameters",.Data=list(unitytransform("Time")))),
+         contains="parameterFilter"
+)
+#'@export
+multiRangeGate<-function(ranges,filterId="defaultMultiRangeGate") {
+  checkClass(filterId, "character", 1)
+  checkClass(ranges,"list")
+  if(length(ranges)!=2){
+    stop("ranges must be a list of length 2 with names 'min' 'max'")
+  }
+  if(length(ranges[[1]])!=length(ranges[[2]])){
+    stop("lengths of min and max ranges must be equal")
+  }
+  if(!all(names(ranges)%in%c("min","max"))){
+    stop("names of ranges must be 'min' and 'max'")
+  }
+  x=new("multiRangeGate", filterId = filterId, ranges=ranges)
+  return(x)
+}
 
 
 ## ===========================================================================
