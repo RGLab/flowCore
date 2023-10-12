@@ -2495,7 +2495,7 @@ ellipsoidGate <- function(..., .gate, mean, distance=1,
     checkClass(distance, "numeric", 1)
     parms <- prepareInputs(parseDots(list(...)), .gate)
     names(mean) <- sapply(parms$parameters, parameters)
-    new("ellipsoidGate", filterId=filterId, parameters=parms$parameters,
+    new("ellipsoidGate", filterId=filterId, parameters=unname(parms$parameters),
         cov=parms$values, mean=mean, distance=distance)
 }
 
