@@ -826,24 +826,28 @@ setMethod("compensate",
 
 
 
-#' Transform a flowFrame or flowSet
+#' Transform a flowFrame, flowSet or gate object
 #' 
 #' Similar to the base transform method, this will transform the values of
-#' a flowFrame or flowSet object according to the transformations specified
+#' a flowFrame, flowSet or gate object according to the transformations specified
 #' in one of two ways:
-#' 1. a [transformList][flowCore::transformList-class] or list of [transform][flowCore::transform-class] objects
+#' 1. a \code{transformList} or list of \code{transform} objects
 #' 2. named arguments specifying transformations to be applied to channels (see details)
 #' 
 #' @name transform
 #' @aliases transform,flowFrame-method transform,flowSet-method
-#' @param _data a flowFrame or flowSet object
+#'   transform,rectangleGate-method transform,polygonGate-method
+#'   transform,ellipsoidGate-method transform,quadGate-method
+#'   transform,filters-method
+#' @param _data a flowFrame, flowSet or gate object
 #' @param translist a transformList object
 #' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
 #' 
+#' @return A transformed flowFrame, flowSet or gate object.
 #' 
 #' @details To specify the transformations in the second way, the names of these arguments 
 #' should correspond to the new channel names and the values should be functions applied to
-#' channels currently present in the flowFrame or flowSet. There are a few examples below.
+#' channels currently present in the flowFrame, flowSet or gate. There are a few examples below.
 #' 
 #' @examples 
 #' data(GvHD)
