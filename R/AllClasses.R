@@ -5224,9 +5224,21 @@ setClass("transformList",
 
 ## constructor
 #' @export
-transformList <- function(from, tfun, to=from,
+transformList <- function(from, tfun, to,
                           transformationId="defaultTransformation")
 {
+    if(missing(from)) {
+      from <- names(tfun)
+      if(is.null(from)) {
+        stop(
+          "channel names must be supplied to 'from' or included ",
+          "as names in 'tfun'!"
+        )
+      }
+    }
+    if(missing(to)) {
+      to <- from
+    }
     from <- unique(from)
     to <- unique(to)
     if(!is.character(from) || !is.character(to) || length(from) != length(to))
