@@ -14,7 +14,7 @@ isFCSfile <- function(files)
             con <- file(f, open="rb")
             on.exit(close(con))
             version <- readChar(con, 6)
-            isTRUE(version %in% c("FCS2.0", "FCS3.0", "FCS3.1"))
+            isTRUE(version %in% c("FCS2.0", "FCS3.0", "FCS3.1", "FCS3.2"))
         }
         else FALSE
     })
@@ -668,7 +668,7 @@ readFCSheader <- function(con, start=0)
 {
     seek(con, start)
     version <- readChar(con, 6)
-    if(!version %in% c("FCS2.0", "FCS3.0", "FCS3.1"))
+    if(!version %in% c("FCS2.0", "FCS3.0", "FCS3.1", "FCS3.2"))
         stop("This does not seem to be a valid FCS2.0, FCS3.0 or FCS3.1 file")
 
     version <-  substring(version, 4, nchar(version))
