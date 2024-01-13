@@ -1,5 +1,6 @@
-CXX_STD = CXX11
+CXX_STD = CXX17
     
+PKG_CPPFLAGS =-DBOOST_NO_AUTO_PTR -w -Wfatal-errors
 PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"`  
 
 .PHONY: all clean 
