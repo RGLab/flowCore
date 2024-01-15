@@ -669,7 +669,7 @@ readFCSheader <- function(con, start=0)
     seek(con, start)
     version <- readChar(con, 6)
     if(!version %in% c("FCS2.0", "FCS3.0", "FCS3.1", "FCS3.2"))
-        stop("This does not seem to be a valid FCS2.0, FCS3.0, FCS3.1 or FCS3.2 file")
+        stop("This does not seem to be a valid FCS2.0, FCS3.0 or FCS3.1 file")
 
     version <-  substring(version, 4, nchar(version))
     tmp <- readChar(con, 4)
