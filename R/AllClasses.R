@@ -2495,7 +2495,7 @@ ellipsoidGate <- function(..., .gate, mean, distance=1,
     checkClass(distance, "numeric", 1)
     parms <- prepareInputs(parseDots(list(...)), .gate)
     names(mean) <- sapply(parms$parameters, parameters)
-    new("ellipsoidGate", filterId=filterId, parameters=parms$parameters,
+    new("ellipsoidGate", filterId=filterId, parameters=unname(parms$parameters),
         cov=parms$values, mean=mean, distance=distance)
 }
 
@@ -5224,9 +5224,21 @@ setClass("transformList",
 
 ## constructor
 #' @export
-transformList <- function(from, tfun, to=from,
+transformList <- function(from, tfun, to,
                           transformationId="defaultTransformation")
 {
+    if(missing(from)) {
+      from <- names(tfun)
+      if(is.null(from)) {
+        stop(
+          "channel names must be supplied to 'from' or included ",
+          "as names in 'tfun'!"
+        )
+      }
+    }
+    if(missing(to)) {
+      to <- from
+    }
     from <- unique(from)
     to <- unique(to)
     if(!is.character(from) || !is.character(to) || length(from) != length(to))

@@ -4,28 +4,36 @@
 \alias{transform}
 \alias{transform,flowFrame-method}
 \alias{transform,flowSet-method}
-\title{Transform a flowFrame or flowSet}
+\alias{transform,rectangleGate-method}
+\alias{transform,polygonGate-method}
+\alias{transform,ellipsoidGate-method}
+\alias{transform,quadGate-method}
+\alias{transform,filters-method}
+\title{Transform a flowFrame, flowSet or gate object}
 \usage{
 \S4method{transform}{flowFrame}(`_data`, translist, ...)
 }
 \arguments{
-\item{_data}{a flowFrame or flowSet object}
+\item{_data}{a flowFrame, flowSet or gate object}
 
 \item{translist}{a transformList object}
 
 \item{...}{other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)}
 }
+\value{
+A transformed flowFrame, flowSet or gate object.
+}
 \description{
 Similar to the base transform method, this will transform the values of
-a flowFrame or flowSet object according to the transformations specified
+a flowFrame, flowSet or gate object according to the transformations specified
 in one of two ways:
-1. a [transformList][flowCore::transformList-class] or list of [transform][flowCore::transform-class] objects
+1. a \code{transformList} or list of \code{transform} objects
 2. named arguments specifying transformations to be applied to channels (see details)
 }
 \details{
 To specify the transformations in the second way, the names of these arguments 
 should correspond to the new channel names and the values should be functions applied to
-channels currently present in the flowFrame or flowSet. There are a few examples below.
+channels currently present in the flowFrame, flowSet or gate. There are a few examples below.
 }
 \examples{
 data(GvHD)
