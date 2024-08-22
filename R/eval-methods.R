@@ -675,7 +675,7 @@ getSpilloverFromFlowFrame <- function(myFrame, requiredParameter)
         mySpill <- myFrame@description[['$SPILL']]
     if (is.null(mySpill))
         mySpill <- getIdentityMatrixForParameter(requiredParameter)
-    if (class(mySpill) != "matrix")
+    if (!is(mySpill, "matrix"))
         mySpill <- parseMatrixFromString(mySpill, requiredParameter)
     if (!(requiredParameter %in% colnames(mySpill)))
         mySpill <- getIdentityMatrixForParameter(requiredParameter)
