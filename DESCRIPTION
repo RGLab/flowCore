@@ -79,6 +79,6 @@ License: Artistic-2.0
 biocViews: ImmunoOncology, Infrastructure, FlowCytometry, CellBasedAssays
 LinkingTo: cpp11, BH(>= 1.81.0.0), cytolib, RProtoBufLib
 VignetteBuilder: knitr
-SystemRequirements: GNU make, C++11
+SystemRequirements: GNU make, C++17
 RoxygenNote: 7.2.3
 Encoding: UTF-8
