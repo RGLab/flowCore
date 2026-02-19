@@ -1,7 +1,11 @@
 CXX_STD = CXX17
     
 PKG_CPPFLAGS =-DBOOST_NO_AUTO_PTR -w -Wfatal-errors
-PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"`  
+
+RHDF5_LIBS= $(shell echo 'Rhdf5lib::pkgconfig("PKG_CXX_LIBS")'|\
+    "${R_HOME}/bin/R" --vanilla --slave)
+
+PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` $(RHDF5_LIBS)
 
 .PHONY: all clean 
 
