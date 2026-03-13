@@ -5,7 +5,7 @@ PKG_CPPFLAGS =-DBOOST_NO_AUTO_PTR -w -Wfatal-errors
 RHDF5_LIBS= $(shell echo 'Rhdf5lib::pkgconfig("PKG_CXX_LIBS")'|\
     "${R_HOME}/bin/R" --vanilla --slave)
 
-PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` $(RHDF5_LIBS)
+PKG_LIBS = `${R_HOME}/bin/Rscript -e "cytolib:::cytolib_LdFlags()"` $(RHDF5_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS)
 
 .PHONY: all clean 
 
