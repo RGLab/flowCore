@@ -44,6 +44,7 @@ Collate:
     AllClasses.R
     flowFrame-accessors.R
     flowSet-accessors.R
+    gate-accessors.R
     transform_gate-methods.R
     coerce.R
     logicalFilterResult-accessors.R
