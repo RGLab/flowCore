@@ -6,10 +6,10 @@
 \alias{transform,flowSet-method}
 \title{Transform a flowFrame or flowSet}
 \usage{
-\S4method{transform}{flowFrame}(`_data`, translist, ...)
+\S4method{transform}{flowFrame}(x, translist, ...)
 }
 \arguments{
-\item{_data}{a flowFrame or flowSet object}
+\item{x}{a flowFrame or flowSet object}
 
 \item{translist}{a transformList object}
 

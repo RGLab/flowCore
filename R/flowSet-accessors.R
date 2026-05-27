@@ -427,19 +427,20 @@ setMethod("compensate",
 ## Transformation methods
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #' @export
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-		signature=signature(`_data`="flowSet"),
-		definition=function(`_data`, translist, ...)
+		signature=signature(x="flowSet"),
+		definition=function(x, translist, ...)
 		{
 		  if(missing(translist))
-		    fsApply(`_data`,transform, ...)
+		    fsApply(x,transform, ...)
 		  else if(is(translist, "transformList"))
-			  fsApply(`_data`,transform, translist = translist, ...)
+			  fsApply(x,transform, translist = translist, ...)
 		  else if(is(translist, "list")){
-		    sns <- sampleNames(`_data`)
+		    sns <- sampleNames(x)
 		    if(!setequal(sns, names(translist)))
 		      stop("names of 'translist' must be consistent with flow data!")
-		    fs <- copyFlowSet(`_data`)
+		    fs <- copyFlowSet(x)
 		    for(sn in sns)
 		      fs[[sn]] <- transform(fs[[sn]], translist[[sn]])
 		    fs
@@ -449,8 +450,9 @@ setMethod("transform",
 		})
 
 #' @export
+#' @importFrom BiocGenerics transform
 setMethod("transform",
-		signature=signature(`_data`="missing"),
+		signature=signature(x="missing"),
 		definition=function(...)
 		{
 			funs <- list(...)

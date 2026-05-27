@@ -19,7 +19,7 @@
   int nrd = data.nrow();
   int nrv = vertices.nrow();
   
-  /* check input argument _data */
+  /* check input argument x */
   if(nrd == 0)
   {
     std::vector<bool> res(nrd, false);
