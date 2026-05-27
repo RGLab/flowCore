@@ -836,7 +836,7 @@ setMethod("compensate",
 #' 
 #' @name transform
 #' @aliases transform,flowFrame-method transform,flowSet-method
-#' @param _data a flowFrame or flowSet object
+#' @param x a flowFrame or flowSet object
 #' @param translist a transformList object
 #' @param ... other arguments. e.g. `FL1-H` = myFunc(`FL1-H`)
 #' 
@@ -861,6 +861,7 @@ setMethod("compensate",
 #' 
 #' 
 #' @export
+#' @importFrom BiocGenerics transform
 # 
 # We are also making sure that the values of the dynamic range in the
 # parameters slot are transformed accordingly. Note that this does not
@@ -869,8 +870,8 @@ setMethod("compensate",
 # The `FL1-H` = myFunc(`FL1-H` ) form is not intended to be used in programmatic way
 # since use non-standard evalution could fail to find 'myFunc' definition. 
 setMethod("transform",
-          signature=signature(`_data`="flowFrame"),
-          definition=function(`_data`, translist, ...)
+          signature=signature(x="flowFrame"),
+          definition=function(x, translist, ...)
       {
         
           if(!(missing(translist))){
@@ -881,18 +882,17 @@ setMethod("transform",
               err_msg <- paste(err_msg, "!Please make sure the unnamed argument is a valid 'transformList' object!")
               stop(err_msg)
             }else
-                return(translist %on% `_data`)
+                return(translist %on% x)
           }else# dispach to .transform for named argument, assuming it is like `FSC-H`=asinhTrans(`FSC-H`) 
-            .transform(`_data`, ...)
+            .transform(x, ...)
    
       })
 
 #' take formal of transform(fs, `FSC-H`=asinhTrans(`FSC-H`))
 #' which do the lazy evaluation
 #' @noRd
-.transform <- function(`_data`, ...){
+.transform <- function(x, ...){
       e <- substitute(list(...))
-      x <- `_data`
       par <- parameters(x)
       ranges <- range(x)
       tranges <- as.matrix(transform(as.data.frame(ranges),...))
