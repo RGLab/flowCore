@@ -408,8 +408,19 @@ read.FCS <- function(filename,
     }
     tmp <- new("flowFrame", exprs=mat, description= description,
                parameters=params)
+    
+    # compare column datatypes to general datatype => print warning when columns don't match
     identifier(tmp) <- basename(identifier(tmp))
-
+    main_datatype <- tmp@description$"$DATATYPE"
+    datatype_keywords <- grep("P[0-9]+DATATYPE", names(tmp@description), value = TRUE)
+    if (length(datatype_keywords) > 0) {
+      datatype_nonMain <- names(which(tmp@description[datatype_keywords] != main_datatype))
+      channels_nonMain <- unlist(tmp@description[gsub("DATATYPE", "N", datatype_nonMain)])
+      if (length(channels_nonMain) > 0){
+        warning(paste0("The following columns have a different datatype than the main one, and might be wrongly loaded: ",
+                       paste(channels_nonMain, collapse = ", ")))
+      }
+    }
     return(tmp)
 }
 
